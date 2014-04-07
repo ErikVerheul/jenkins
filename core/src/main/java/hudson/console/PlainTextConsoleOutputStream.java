@@ -28,6 +28,7 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.logging.Logger;
 
 /**
  * Filters out console notes.
@@ -87,4 +88,6 @@ public class PlainTextConsoleOutputStream extends LineTransformationOutputStream
         out.close();
     }
 
+
+    private static final Logger LOGGER = Logger.getLogger(ConsoleAnnotationOutputStream.class.getName());
 }
