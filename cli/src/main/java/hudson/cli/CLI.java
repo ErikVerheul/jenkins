@@ -29,7 +29,7 @@ import hudson.remoting.PingThread;
 import hudson.remoting.Pipe;
 import hudson.remoting.RemoteInputStream;
 import hudson.remoting.RemoteOutputStream;
-import hudson.remoting.SocketInputStream;
+import hudson.remoting.SocketChannelStream;
 import hudson.remoting.SocketOutputStream;
 
 import javax.crypto.SecretKey;
@@ -201,7 +201,7 @@ public class CLI {
         } else {
             s = new Socket();
             s.connect(clip.endpoint,3000);
-            out = new SocketOutputStream(s);
+            out = SocketChannelStream.out(s);
         }
 
         closables.add(new Closeable() {
@@ -210,7 +210,7 @@ public class CLI {
             }
         });
 
-        Connection c = new Connection(new SocketInputStream(s),out);
+        Connection c = new Connection(SocketChannelStream.in(s),out);
 
         switch (clip.version) {
         case 1:
@@ -392,6 +392,8 @@ public class CLI {
 
         if (url==null)
             url = System.getenv("HUDSON_URL");
+        
+        boolean tryLoadPKey = true;
 
         while(!args.isEmpty()) {
             String head = args.get(0);
@@ -417,6 +419,11 @@ public class CLI {
                 });
                 args = args.subList(1,args.size());
                 continue;
+            }
+            if (head.equals("-noKeyAuth")) {
+            	tryLoadPKey = false;
+            	args = args.subList(1,args.size());
+            	continue;
             }
             if(head.equals("-i") && args.size()>=2) {
                 File f = new File(args.get(1));
@@ -447,7 +454,7 @@ public class CLI {
         if(args.isEmpty())
             args = Arrays.asList("help"); // default to help
 
-        if (!provider.hasKeys())
+        if (tryLoadPKey && !provider.hasKeys())
             provider.readFromDefaultLocations();
 
         CLIConnectionFactory factory = new CLIConnectionFactory().url(url).httpsProxyTunnel(httpProxy);

@@ -28,7 +28,7 @@ public class ConnectionTest extends Assert {
     }
 
     @Test
-    public void testEncyrpt() throws Throwable {
+    public void testEncrypt() throws Throwable {
         final SecretKey sessionKey = new SecretKeySpec(new byte[16],"AES");
 
         Thread t1 = new Thread() {
@@ -56,8 +56,8 @@ public class ConnectionTest extends Assert {
         };
         t2.start();
 
-        t1.join(3000);
-        t2.join(3000);
+        t1.join(9999);
+        t2.join(9999);
 
         if (t1.isAlive() || t2.isAlive()) {
             t1.interrupt();
