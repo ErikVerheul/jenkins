@@ -1,6 +1,7 @@
 package jenkins.model.lazy;
 
 import hudson.Extension;
+import hudson.ExtensionList;
 import hudson.ExtensionPoint;
 import hudson.model.Run;
 import java.lang.ref.Reference;
@@ -10,7 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-import jenkins.model.Jenkins;
+import jenkins.model.lazy.LazyBuildMixIn.RunMixIn;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 
@@ -34,7 +35,7 @@ public final class BuildReference<R> {
     private static final Logger LOGGER = Logger.getLogger(BuildReference.class.getName());
 
     final String id;
-    private final Holder<R> holder;
+    private volatile Holder<R> holder;
 
     public BuildReference(String id, R referent) {
         this.id = id;
@@ -47,7 +48,17 @@ public final class BuildReference<R> {
      * @see Holder#get
      */
     public @CheckForNull R get() {
-        return holder.get();
+        Holder<R> h = holder; // capture
+        return h!=null ? h.get() : null;
+    }
+
+    /**
+     * Clear the reference to make a particular R object effectively unreachable.
+     *
+     * @see RunMixIn#dropLinks()
+     */
+    /*package*/ void clear() {
+        holder = null;
     }
 
     @Override
@@ -100,14 +111,11 @@ public final class BuildReference<R> {
             // AbstractBuild.NONE
             return new DefaultHolderFactory.NoHolder<R>();
         }
-        Jenkins j = Jenkins.getInstance();
-        if (j != null) {
-            for (HolderFactory f : j.getExtensionList(HolderFactory.class)) {
-                Holder<R> h = f.make(referent);
-                if (h != null) {
-                    LOGGER.log(Level.FINE, "created build reference for {0} using {1}", new Object[] {referent, f});
-                    return h;
-                }
+        for (HolderFactory f : ExtensionList.lookup(HolderFactory.class)) {
+            Holder<R> h = f.make(referent);
+            if (h != null) {
+                LOGGER.log(Level.FINE, "created build reference for {0} using {1}", new Object[] {referent, f});
+                return h;
             }
         }
         return new DefaultHolderFactory().make(referent);

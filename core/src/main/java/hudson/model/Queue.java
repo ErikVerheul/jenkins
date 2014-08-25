@@ -114,6 +114,9 @@ import org.kohsuke.stapler.HttpResponses;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
+import org.kohsuke.accmod.Restricted;
+import org.kohsuke.accmod.restrictions.DoNotUse;
+
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.basic.AbstractSingleValueConverter;
 import javax.annotation.CheckForNull;
@@ -148,6 +151,14 @@ import org.kohsuke.stapler.interceptor.RequirePOST;
  */
 @ExportedBean
 public class Queue extends ResourceController implements Saveable {
+
+    /**
+     * Defines the refresh period for of the internal cache ({@link #itemsView}).
+     * Data should be defined in milliseconds, default value - 1000;
+     * @since 1.577
+     */
+    private static int CACHE_REFRESH_PERIOD = Integer.getInteger(Queue.class.getName() + ".cacheRefreshPeriod", 1000);
+    
     /**
      * Items that are waiting for its quiet period to pass.
      *
@@ -208,7 +219,7 @@ public class Queue extends ResourceController implements Saveable {
             long t = System.currentTimeMillis();
             long d = expires.get();
             if (t>d) {// need to refresh the cache
-                long next = t+1000;
+                long next = t+CACHE_REFRESH_PERIOD;
                 if (expires.compareAndSet(d,next)) {
                     // avoid concurrent cache update via CAS.
                     // if the getItems() lock is contended,
@@ -280,6 +291,7 @@ public class Queue extends ResourceController implements Saveable {
             return workUnit == null && !executor.getOwner().isOffline() && executor.getOwner().isAcceptingTasks();
         }
 
+        @CheckForNull
         public Node getNode() {
             return executor.getOwner().getNode();
         }
@@ -646,7 +658,7 @@ public class Queue extends ResourceController implements Saveable {
     
     public synchronized boolean cancel(Item item) {
         LOGGER.log(Level.FINE, "Cancelling {0} item#{1}", new Object[] {item.task, item.id});
-        boolean r = item.leave(this);
+        boolean r = item.cancel(this);
 
         LeftItem li = new LeftItem(item);
         li.enter(this);
@@ -736,6 +748,8 @@ public class Queue extends ResourceController implements Saveable {
 
     private void _getBuildableItems(Computer c, ItemList<BuildableItem> col, List<BuildableItem> result) {
         Node node = c.getNode();
+        if (node == null)   // Deleted computers cannot take build items... 
+            return;
         for (BuildableItem p : col.values()) {
             if (node.canTake(p) == null)
                 result.add(p);
@@ -819,11 +833,13 @@ public class Queue extends ResourceController implements Saveable {
     public synchronized int countBuildableItemsFor(Label l) {
         int r = 0;
         for (BuildableItem bi : buildables.values())
-            if(bi.getAssignedLabel()==l)
-                r++;
+            for (SubTask st : bi.task.getSubTasks())
+                if (null==l || st.getAssignedLabel()==l)
+                    r++;
         for (BuildableItem bi : pendings.values())
-            if(bi.getAssignedLabel()==l)
-                r++;
+            for (SubTask st : bi.task.getSubTasks())
+                if (null==l || st.getAssignedLabel()==l)
+                    r++;
         return r;
     }
 
@@ -831,7 +847,7 @@ public class Queue extends ResourceController implements Saveable {
      * Counts all the {@link BuildableItem}s currently in the queue.
      */
     public synchronized int countBuildableItems() {
-        return buildables.size()+pendings.size();
+        return countBuildableItemsFor(null);
     }
 
     /**
@@ -1197,6 +1213,7 @@ public class Queue extends ResourceController implements Saveable {
         /**
          * Works just like {@link #checkAbortPermission()} except it indicates the status by a return value,
          * instead of exception.
+         * Also used by default for {@link hudson.model.Queue.Item#hasCancelPermission}.
          */
         boolean hasAbortPermission();
         
@@ -1270,14 +1287,13 @@ public class Queue extends ResourceController implements Saveable {
     public interface Executable extends Runnable {
         /**
          * Task from which this executable was created.
-         * Never null.
          *
          * <p>
          * Since this method went through a signature change in 1.377, the invocation may results in
          * {@link AbstractMethodError}.
          * Use {@link Executables#getParentOf(Queue.Executable)} that avoids this.
          */
-        SubTask getParent();
+        @Nonnull SubTask getParent();
 
         /**
          * Called by {@link Executor} to perform the task
@@ -1401,6 +1417,16 @@ public class Queue extends ResourceController implements Saveable {
             return Collections.emptyList();
         }
 
+        @Restricted(DoNotUse.class) // used from Jelly
+        public String getCausesDescription() {
+            List<Cause> causes = getCauses();
+            StringBuilder s = new StringBuilder();
+            for (Cause c : causes) {
+                s.append(c.getShortDescription()).append('\n');
+            }
+            return s.toString();
+        }
+
         protected Item(Task task, List<Action> actions, int id, FutureImpl future) {
             this.task = task;
             this.id = id;
@@ -1461,7 +1487,11 @@ public class Queue extends ResourceController implements Saveable {
         	}
         	return s.toString();
         }
-        
+
+        /**
+         * Checks whether a scheduled item may be canceled.
+         * @return by default, the same as {@link hudson.model.Queue.Task#hasAbortPermission}
+         */
         public boolean hasCancelPermission() {
             return task.hasAbortPermission();
         }
@@ -1583,7 +1613,7 @@ public class Queue extends ResourceController implements Saveable {
     	 * All registered {@link QueueDecisionHandler}s
     	 */
     	public static ExtensionList<QueueDecisionHandler> all() {
-    		return Jenkins.getInstance().getExtensionList(QueueDecisionHandler.class);
+    		return ExtensionList.lookup(QueueDecisionHandler.class);
     	}
     }
     
@@ -1862,7 +1892,7 @@ public class Queue extends ResourceController implements Saveable {
          * the primary executable (such as {@link AbstractBuild}) that created out of it.
          */
         @Exported
-        public Executable getExecutable() {
+        public @CheckForNull Executable getExecutable() {
             return outcome!=null ? outcome.getPrimaryWorkUnit().getExecutable() : null;
         }
 

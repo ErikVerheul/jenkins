@@ -57,6 +57,9 @@ import static hudson.init.InitMilestone.JOB_LOADED;
  * @see AsyncPeriodicWork
  */
 public abstract class PeriodicWork extends SafeTimerTask implements ExtensionPoint {
+
+    /** @deprecated Use your own logger, or send messages to the logger in {@link AsyncPeriodicWork#execute}. */
+    @SuppressWarnings("NonConstantLogger")
     protected final Logger logger = Logger.getLogger(getClass().getName());
 
     /**
@@ -90,7 +93,7 @@ public abstract class PeriodicWork extends SafeTimerTask implements ExtensionPoi
      * Returns all the registered {@link PeriodicWork}s.
      */
     public static ExtensionList<PeriodicWork> all() {
-        return Jenkins.getInstance().getExtensionList(PeriodicWork.class);
+        return ExtensionList.lookup(PeriodicWork.class);
     }
 
     @Initializer(after= JOB_LOADED)

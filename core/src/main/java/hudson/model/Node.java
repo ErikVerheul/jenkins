@@ -25,11 +25,7 @@
 package hudson.model;
 
 import com.infradna.tool.bridge_method_injector.WithBridgeMethods;
-import hudson.Extension;
-import hudson.ExtensionPoint;
-import hudson.FilePath;
-import hudson.FileSystemProvisioner;
-import hudson.Launcher;
+import hudson.*;
 import hudson.model.Descriptor.FormException;
 import hudson.model.Queue.Task;
 import hudson.model.labels.LabelAtom;
@@ -103,7 +99,11 @@ public abstract class Node extends AbstractModelObject implements Reconfigurable
     }
 
     public String getSearchUrl() {
-        return "computer/"+getNodeName();
+        Computer c = toComputer();
+        if (c != null) {
+            return c.getUrl();
+        }
+        return "computer/" + Util.rawEncode(getNodeName());
     }
 
     public boolean isHoldOffLaunchUntilSave() {
@@ -117,7 +117,7 @@ public abstract class Node extends AbstractModelObject implements Reconfigurable
      *      "" if this is master
      */
     @Exported(visibility=999)
-    public abstract String getNodeName();
+    public abstract @Nonnull String getNodeName();
 
     /**
      * When the user clones a {@link Node}, Hudson uses this method to change the node name right after
@@ -202,7 +202,7 @@ public abstract class Node extends AbstractModelObject implements Reconfigurable
             // At startup, we need to restore any previously in-effect temp offline cause.
             // We wait until the computer is started rather than getting the data to it sooner
             // so that the normal computer start up processing works as expected.
-            if (node.temporaryOfflineCause != null && node.temporaryOfflineCause != c.getOfflineCause()) {
+            if (node!= null && node.temporaryOfflineCause != null && node.temporaryOfflineCause != c.getOfflineCause()) {
                 c.setTemporarilyOffline(true, node.temporaryOfflineCause);
             }
         }
@@ -345,7 +345,6 @@ public abstract class Node extends AbstractModelObject implements Reconfigurable
         Authentication identity = item.authenticate();
         if (!getACL().hasPermission(identity,Computer.BUILD)) {
             // doesn't have a permission
-            // TODO: does it make more sense to define a separate permission?
             return CauseOfBlockage.fromMessage(Messages._Node_LackingBuildPermission(identity.getName(),getNodeName()));
         }
 

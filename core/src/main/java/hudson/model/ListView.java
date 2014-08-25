@@ -63,7 +63,7 @@ import org.kohsuke.stapler.interceptor.RequirePOST;
  *
  * @author Kohsuke Kawaguchi
  */
-public class ListView extends View implements Saveable {
+public class ListView extends View implements DirectlyModifiableView {
 
     /**
      * List of job names. This is what gets serialized.
@@ -146,6 +146,7 @@ public class ListView extends View implements Saveable {
     	return jobFilters;
     }
 
+    @Override
     public DescribableList<ListViewColumn, Descriptor<ListViewColumn>> getColumns() {
         return columns;
     }
@@ -157,6 +158,7 @@ public class ListView extends View implements Saveable {
      * This method returns a separate copy each time to avoid
      * concurrent modification issue.
      */
+    @Override
     public List<TopLevelItem> getItems() {
         SortedSet<String> names;
         List<TopLevelItem> items = new ArrayList<TopLevelItem>();
@@ -170,7 +172,13 @@ public class ListView extends View implements Saveable {
         includeItems(parent, parentItems, names);
 
         Boolean statusFilter = this.statusFilter; // capture the value to isolate us from concurrent update
-        for (TopLevelItem item : Items.getAllItems(getOwnerItemGroup(), TopLevelItem.class)) {
+        Iterable<? extends TopLevelItem> candidates;
+        if (recurse) {
+            candidates = Items.getAllItems(parent, TopLevelItem.class);
+        } else {
+            candidates = parent.getItems();
+        }
+        for (TopLevelItem item : candidates) {
             if (!names.contains(item.getRelativeNameFrom(getOwnerItemGroup()))) continue;
             // Add if no status filter or filter matches enabled/disabled status:
             if(statusFilter == null || !(item instanceof AbstractProject)
@@ -229,18 +237,32 @@ public class ListView extends View implements Saveable {
         return jobNames.contains(item.getRelativeNameFrom(getOwnerItemGroup()));
     }
 
-    
-
     /**
      * Adds the given item to this view.
      *
      * @since 1.389
      */
+    @Override
     public void add(TopLevelItem item) throws IOException {
         synchronized (this) {
             jobNames.add(item.getRelativeNameFrom(getOwnerItemGroup()));
         }
         save();
+    }
+
+    /**
+     * Removes given item from this view.
+     *
+     * @since 1.566
+     */
+    @Override
+    public boolean remove(TopLevelItem item) throws IOException {
+        synchronized (this) {
+            String name = item.getRelativeNameFrom(getOwnerItemGroup());
+            if (!jobNames.remove(name)) return false;
+        }
+        save();
+        return true;
     }
 
     public String getIncludeRegex() {
@@ -251,10 +273,10 @@ public class ListView extends View implements Saveable {
         return recurse;
     }
     
-    /*
-     * For testing purposes
+    /**
+     * @since 1.568
      */
-    void setRecurse(boolean recurse) {
+    public void setRecurse(boolean recurse) {
         this.recurse = recurse;
     }
 
@@ -266,6 +288,8 @@ public class ListView extends View implements Saveable {
         return statusFilter;
     }
 
+    @Override
+    @RequirePOST
     public Item doCreateItem(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException {
         ItemGroup<? extends TopLevelItem> ig = getOwnerItemGroup();
         if (ig instanceof ModifiableItemGroup) {
@@ -281,31 +305,46 @@ public class ListView extends View implements Saveable {
         return null;
     }
 
+    @Override
     @RequirePOST
     public HttpResponse doAddJobToView(@QueryParameter String name) throws IOException, ServletException {
         checkPermission(View.CONFIGURE);
         if(name==null)
             throw new Failure("Query parameter 'name' is required");
 
-        if (getOwnerItemGroup().getItem(name) == null)
+        TopLevelItem item = resolveName(name);
+        if (item == null)
             throw new Failure("Query parameter 'name' does not correspond to a known item");
 
-        if (jobNames.add(name))
-            owner.save();
+        if (contains(item)) return HttpResponses.ok();
+
+        add(item);
+        owner.save();
 
         return HttpResponses.ok();
     }
 
+    @Override
     @RequirePOST
     public HttpResponse doRemoveJobFromView(@QueryParameter String name) throws IOException, ServletException {
         checkPermission(View.CONFIGURE);
         if(name==null)
             throw new Failure("Query parameter 'name' is required");
 
-        if (jobNames.remove(name))
+        TopLevelItem item = resolveName(name);
+        if (remove(item))
             owner.save();
 
         return HttpResponses.ok();
+    }
+
+    private TopLevelItem resolveName(String name) {
+        TopLevelItem item = getOwnerItemGroup().getItem(name);
+        if (item == null) {
+            name = Items.getCanonicalName(getOwnerItemGroup(), name);
+            item = Jenkins.getInstance().getItemByFullName(name, TopLevelItem.class);
+        }
+        return item;
     }
 
     /**
@@ -360,6 +399,7 @@ public class ListView extends View implements Saveable {
 
     @Extension
     public static class DescriptorImpl extends ViewDescriptor {
+        @Override
         public String getDisplayName() {
             return Messages.ListView_DisplayName();
         }
@@ -384,6 +424,7 @@ public class ListView extends View implements Saveable {
      * @deprecated as of 1.391
      *  Use {@link ListViewColumn#createDefaultInitialColumnList()}
      */
+    @Deprecated
     public static List<ListViewColumn> getDefaultColumns() {
         return ListViewColumn.createDefaultInitialColumnList();
     }
@@ -391,53 +432,72 @@ public class ListView extends View implements Saveable {
     @Restricted(NoExternalUse.class)
     @Extension public static final class Listener extends ItemListener {
         @Override public void onLocationChanged(Item item, String oldFullName, String newFullName) {
-            for (Item g : Jenkins.getInstance().getAllItems()) {
+            final Jenkins jenkins = Jenkins.getInstance();
+            for (View view: jenkins.getViews()) {
+                if (view instanceof ListView) {
+                    renameViewItem(oldFullName, newFullName, jenkins, (ListView) view);
+                }
+            }
+            for (Item g : jenkins.getAllItems()) {
                 if (g instanceof ViewGroup) {
                     ViewGroup vg = (ViewGroup) g;
                     for (View v : vg.getViews()) {
                         if (v instanceof ListView) {
-                            ListView lv = (ListView) v;
-                            boolean needsSave;
-                            synchronized (lv) {
-                                Set<String> oldJobNames = new HashSet<String>(lv.jobNames);
-                                lv.jobNames.clear();
-                                for (String oldName : oldJobNames) {
-                                    lv.jobNames.add(Items.computeRelativeNamesAfterRenaming(oldFullName, newFullName, oldName, vg.getItemGroup()));
-                                }
-                                needsSave = !oldJobNames.equals(lv.jobNames);
-                            }
-                            if (needsSave) { // do not hold ListView lock at the time
-                                try {
-                                    g.save();
-                                } catch (IOException x) {
-                                    Logger.getLogger(ListView.class.getName()).log(Level.WARNING, null, x);
-                                }
-                            }
+                            renameViewItem(oldFullName, newFullName, vg, (ListView) v);
                         }
                     }
                 }
             }
         }
+
+        private void renameViewItem(String oldFullName, String newFullName, ViewGroup vg, ListView lv) {
+            boolean needsSave;
+            synchronized (lv) {
+                Set<String> oldJobNames = new HashSet<String>(lv.jobNames);
+                lv.jobNames.clear();
+                for (String oldName : oldJobNames) {
+                    lv.jobNames.add(Items.computeRelativeNamesAfterRenaming(oldFullName, newFullName, oldName, vg.getItemGroup()));
+                }
+                needsSave = !oldJobNames.equals(lv.jobNames);
+            }
+            if (needsSave) { // do not hold ListView lock at the time
+                try {
+                    lv.save();
+                } catch (IOException x) {
+                    Logger.getLogger(ListView.class.getName()).log(Level.WARNING, null, x);
+                }
+            }
+        }
+
         @Override public void onDeleted(Item item) {
-            for (Item g : Jenkins.getInstance().getAllItems()) {
+            final Jenkins jenkins = Jenkins.getInstance();
+            for (View view: jenkins.getViews()) {
+                if (view instanceof ListView) {
+                    deleteViewItem(item, jenkins, (ListView) view);
+                }
+            }
+            for (Item g : jenkins.getAllItems()) {
                 if (g instanceof ViewGroup) {
                     ViewGroup vg = (ViewGroup) g;
                     for (View v : vg.getViews()) {
                         if (v instanceof ListView) {
-                            ListView lv = (ListView) v;
-                            boolean needsSave;
-                            synchronized (lv) {
-                                needsSave = lv.jobNames.remove(item.getRelativeNameFrom(vg.getItemGroup()));
-                            }
-                            if (needsSave) {
-                                try {
-                                    g.save();
-                                } catch (IOException x) {
-                                    Logger.getLogger(ListView.class.getName()).log(Level.WARNING, null, x);
-                                }
-                            }
+                            deleteViewItem(item, vg, (ListView) v);
                         }
                     }
+                }
+            }
+        }
+
+        private void deleteViewItem(Item item, ViewGroup vg, ListView lv) {
+            boolean needsSave;
+            synchronized (lv) {
+                needsSave = lv.jobNames.remove(item.getRelativeNameFrom(vg.getItemGroup()));
+            }
+            if (needsSave) {
+                try {
+                    lv.save();
+                } catch (IOException x) {
+                    Logger.getLogger(ListView.class.getName()).log(Level.WARNING, null, x);
                 }
             }
         }

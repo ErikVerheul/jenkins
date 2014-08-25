@@ -303,7 +303,7 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
                                         cgd.run(getPlugins());
 
                                         // obtain topologically sorted list and overwrite the list
-                                        ListIterator<PluginWrapper> litr = plugins.listIterator();
+                                        ListIterator<PluginWrapper> litr = getPlugins().listIterator();
                                         for (PluginWrapper p : cgd.getSorted()) {
                                             litr.next();
                                             litr.set(p);
@@ -412,11 +412,21 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
      */
     public void dynamicLoad(File arc) throws IOException, InterruptedException, RestartRequiredException {
         LOGGER.info("Attempting to dynamic load "+arc);
-        final PluginWrapper p = strategy.createPluginWrapper(arc);
-        String sn = p.getShortName();
+        PluginWrapper p = null;
+        String sn;
+        try {
+            sn = strategy.getShortName(arc);
+        } catch (AbstractMethodError x) {
+            LOGGER.log(WARNING, "JENKINS-12753 fix not active: {0}", x.getMessage());
+            p = strategy.createPluginWrapper(arc);
+            sn = p.getShortName();
+        }
         if (getPlugin(sn)!=null)
             throw new RestartRequiredException(Messages._PluginManager_PluginIsAlreadyInstalled_RestartRequired(sn));
 
+        if (p == null) {
+            p = strategy.createPluginWrapper(arc);
+        }
         if (p.supportsDynamicLoad()== YesNoMaybe.NO)
             throw new RestartRequiredException(Messages._PluginManager_PluginDoesntSupportDynamicLoad_RestartRequired(sn));
 
@@ -425,6 +435,9 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
 
         plugins.add(p);
         activePlugins.add(p);
+        synchronized (((UberClassLoader) uberClassLoader).loaded) {
+            ((UberClassLoader) uberClassLoader).loaded.clear();
+        }
 
         try {
             p.resolvePluginDependencies();
@@ -442,10 +455,11 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
 
         // run initializers in the added plugin
         Reactor r = new Reactor(InitMilestone.ordering());
-        r.addAll(new InitializerFinder(p.classLoader) {
+        final ClassLoader loader = p.classLoader;
+        r.addAll(new InitializerFinder(loader) {
             @Override
             protected boolean filter(Method e) {
-                return e.getDeclaringClass().getClassLoader()!=p.classLoader || super.filter(e);
+                return e.getDeclaringClass().getClassLoader() != loader || super.filter(e);
             }
         }.discoverTasks(r));
         try {
@@ -576,7 +590,9 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
      */
     @Exported
     public List<PluginWrapper> getPlugins() {
-        return plugins;
+        List<PluginWrapper> out = new ArrayList<PluginWrapper>(plugins.size());
+        out.addAll(plugins);
+        return out;
     }
 
     public List<FailedPlugin> getFailedPlugins() {
@@ -589,7 +605,7 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
      * @return The plugin singleton or <code>null</code> if a plugin with the given short name does not exist.
      */
     public PluginWrapper getPlugin(String shortName) {
-        for (PluginWrapper p : plugins) {
+        for (PluginWrapper p : getPlugins()) {
             if(p.getShortName().equals(shortName))
                 return p;
         }
@@ -603,7 +619,7 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
      * @return The plugin singleton or <code>null</code> if for some reason the plugin is not loaded.
      */
     public PluginWrapper getPlugin(Class<? extends Plugin> pluginClazz) {
-        for (PluginWrapper p : plugins) {
+        for (PluginWrapper p : getPlugins()) {
             if(pluginClazz.isInstance(p.getPlugin()))
                 return p;
         }
@@ -618,7 +634,7 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
      */
     public List<PluginWrapper> getPlugins(Class<? extends Plugin> pluginSuperclass) {
         List<PluginWrapper> result = new ArrayList<PluginWrapper>();
-        for (PluginWrapper p : plugins) {
+        for (PluginWrapper p : getPlugins()) {
             if(pluginSuperclass.isInstance(p.getPlugin()))
                 result.add(p);
         }
@@ -719,7 +735,9 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
                     String pluginName = n.substring(0, index);
                     String siteName = n.substring(index + 1);
                     UpdateSite updateSite = Jenkins.getInstance().getUpdateCenter().getById(siteName);
-                    if (siteName != null) {
+                    if (updateSite == null) {
+                        throw new Failure("No such update center: " + siteName);
+                    } else {
                         UpdateSite.Plugin plugin = updateSite.getPlugin(pluginName);
                         if (plugin != null) {
                             if (p != null) {
@@ -1000,6 +1018,8 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
          * Keyed by the generated class name.
          */
         private ConcurrentMap<String, WeakReference<Class>> generatedClasses = new ConcurrentHashMap<String, WeakReference<Class>>();
+        /** Cache of loaded, or known to be unloadable, classes. */
+        private final Map<String,Class<?>> loaded = new HashMap<String,Class<?>>();
 
         public UberClassLoader() {
             super(PluginManager.class.getClassLoader());
@@ -1018,13 +1038,35 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
                 else            generatedClasses.remove(name,wc);
             }
 
+            if (name.startsWith("SimpleTemplateScript")) { // cf. groovy.text.SimpleTemplateEngine
+                throw new ClassNotFoundException("ignoring " + name);
+            }
+            synchronized (loaded) {
+                if (loaded.containsKey(name)) {
+                    Class<?> c = loaded.get(name);
+                    if (c != null) {
+                        return c;
+                    } else {
+                        throw new ClassNotFoundException("cached miss for " + name);
+                    }
+                }
+            }
             if (FAST_LOOKUP) {
                 for (PluginWrapper p : activePlugins) {
                     try {
                         Class<?> c = ClassLoaderReflectionToolkit._findLoadedClass(p.classLoader, name);
-                        if (c!=null)    return c;
+                        if (c != null) {
+                            synchronized (loaded) {
+                                loaded.put(name, c);
+                            }
+                            return c;
+                        }
                         // calling findClass twice appears to cause LinkageError: duplicate class def
-                        return ClassLoaderReflectionToolkit._findClass(p.classLoader, name);
+                        c = ClassLoaderReflectionToolkit._findClass(p.classLoader, name);
+                        synchronized (loaded) {
+                            loaded.put(name, c);
+                        }
+                        return c;
                     } catch (ClassNotFoundException e) {
                         //not found. try next
                     }
@@ -1037,6 +1079,9 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
                         //not found. try next
                     }
                 }
+            }
+            synchronized (loaded) {
+                loaded.put(name, null);
             }
             // not found in any of the classloader. delegate.
             throw new ClassNotFoundException(name);
@@ -1155,7 +1200,7 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
          * @return this monitor.
          */
         public static final PluginUpdateMonitor getInstance() {
-            return Jenkins.getInstance().getExtensionList(PluginUpdateMonitor.class).get(0);
+            return ExtensionList.lookup(PluginUpdateMonitor.class).get(0);
         }
         
         /**

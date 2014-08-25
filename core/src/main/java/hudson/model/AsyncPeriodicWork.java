@@ -3,12 +3,11 @@ package hudson.model;
 import hudson.security.ACL;
 import hudson.util.StreamTaskListener;
 import jenkins.model.Jenkins;
-import org.acegisecurity.context.SecurityContext;
-import org.acegisecurity.context.SecurityContextHolder;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
+import java.util.logging.LogRecord;
 
 /**
  * {@link PeriodicWork} that takes a long time to run.
@@ -35,15 +34,16 @@ public abstract class AsyncPeriodicWork extends PeriodicWork {
     /**
      * Schedules this periodic work now in a new thread, if one isn't already running.
      */
+    @SuppressWarnings("deprecation") // in this case we really want to use PeriodicWork.logger since it reports the impl class
     public final void doRun() {
         try {
             if(thread!=null && thread.isAlive()) {
-                logger.log(this.getNormalLoggingLevel(), name+" thread is still running. Execution aborted.");
+                logger.log(this.getSlowLoggingLevel(), "{0} thread is still running. Execution aborted.", name);
                 return;
             }
             thread = new Thread(new Runnable() {
                 public void run() {
-                    logger.log(getNormalLoggingLevel(), "Started "+name);
+                    logger.log(getNormalLoggingLevel(), "Started {0}", name);
                     long startTime = System.currentTimeMillis();
 
                     StreamTaskListener l = createListener();
@@ -59,13 +59,16 @@ public abstract class AsyncPeriodicWork extends PeriodicWork {
                         l.closeQuietly();
                     }
 
-                    logger.log(getNormalLoggingLevel(), "Finished "+name+". "+
-                        (System.currentTimeMillis()-startTime)+" ms");
+                    logger.log(getNormalLoggingLevel(), "Finished {0}. {1,number} ms",
+                            new Object[]{name, (System.currentTimeMillis()-startTime)});
                 }
             },name+" thread");
             thread.start();
         } catch (Throwable t) {
-            logger.log(this.getErrorLoggingLevel(), name+" thread failed with error", t);
+            LogRecord lr = new LogRecord(this.getErrorLoggingLevel(), "{0} thread failed with error");
+            lr.setThrown(t);
+            lr.setParameters(new Object[]{name});
+            logger.log(lr);
         }
     }
 
@@ -96,6 +99,18 @@ public abstract class AsyncPeriodicWork extends PeriodicWork {
         return Level.INFO;
     }
     
+    /**
+     * Returns the logging level at which previous task still executing messages is displayed.
+     *
+     * @return
+     *      The logging level as @Level.
+     *
+     * @since 1.565
+     */
+    protected Level getSlowLoggingLevel() {
+        return getNormalLoggingLevel();
+    }
+
     /**
      * Returns the logging level at which error messages are displayed.
      * 

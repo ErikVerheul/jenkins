@@ -30,6 +30,7 @@ import com.jcraft.jzlib.GZIPOutputStream;
 import hudson.Launcher.LocalLauncher;
 import hudson.Launcher.RemoteLauncher;
 import hudson.model.AbstractProject;
+import hudson.model.Computer;
 import hudson.model.Item;
 import hudson.model.TaskListener;
 import hudson.org.apache.tools.tar.TarInputStream;
@@ -69,6 +70,7 @@ import org.apache.tools.zip.ZipEntry;
 import org.apache.tools.zip.ZipFile;
 import org.kohsuke.stapler.Stapler;
 
+import javax.annotation.CheckForNull;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileFilter;
@@ -898,14 +900,9 @@ public final class FilePath implements Serializable {
             // run this on a remote system
             try {
                 DelegatingCallable<T,IOException> wrapper = new FileCallableWrapper<T>(callable, cl);
-                Jenkins instance = Jenkins.getInstance();
-                if (instance != null) { // this happens during unit tests
-                    ExtensionList<FileCallableWrapperFactory> factories = instance.getExtensionList(FileCallableWrapperFactory.class);
-                    for (FileCallableWrapperFactory factory : factories) {
-                        wrapper = factory.wrap(wrapper);
-                    }
+                for (FileCallableWrapperFactory factory : ExtensionList.lookup(FileCallableWrapperFactory.class)) {
+                    wrapper = factory.wrap(wrapper);
                 }
-
                 return channel.call(wrapper);
             } catch (TunneledInterruptedException e) {
                 throw (InterruptedException)new InterruptedException(e.getMessage()).initCause(e);
@@ -983,14 +980,9 @@ public final class FilePath implements Serializable {
     public <T> Future<T> actAsync(final FileCallable<T> callable) throws IOException, InterruptedException {
         try {
             DelegatingCallable<T,IOException> wrapper = new FileCallableWrapper<T>(callable);
-            Jenkins instance = Jenkins.getInstance();
-            if (instance != null) { // this happens during unit tests
-                ExtensionList<FileCallableWrapperFactory> factories = instance.getExtensionList(FileCallableWrapperFactory.class);
-                for (FileCallableWrapperFactory factory : factories) {
-                    wrapper = factory.wrap(wrapper);
-                }
+            for (FileCallableWrapperFactory factory : ExtensionList.lookup(FileCallableWrapperFactory.class)) {
+                wrapper = factory.wrap(wrapper);
             }
-
             return (channel!=null ? channel : localChannel)
                 .callAsync(wrapper);
         } catch (IOException e) {
@@ -1054,6 +1046,23 @@ public final class FilePath implements Serializable {
      */
     public VirtualFile toVirtualFile() {
         return VirtualFile.forFilePath(this);
+    }
+
+    /**
+     * If this {@link FilePath} represents a file on a particular {@link Computer}, return it.
+     * Otherwise null.
+     * @since 1.571
+     */
+    public @CheckForNull Computer toComputer() {
+        Jenkins j = Jenkins.getInstance();
+        if (j != null) {
+            for (Computer c : j.getComputers()) {
+                if (getChannel()==c.getChannel()) {
+                    return c;
+                }
+            }
+        }
+        return null;
     }
 
     /**
@@ -1766,14 +1775,20 @@ public final class FilePath implements Serializable {
         act(new FileCallable<Void>() {
             private static final long serialVersionUID = 1L;
             public Void invoke(File f, VirtualChannel channel) throws IOException {
+                // JENKINS-16846: if f.getName() is the same as one of the files/directories in f,
+                // then the rename op will fail
+                File tmp = new File(f.getAbsolutePath()+".__rename");
+                if (!f.renameTo(tmp))
+                    throw new IOException("Failed to rename "+f+" to "+tmp);
+
                 File t = new File(target.getRemote());
                 
-                for(File child : f.listFiles()) {
+                for(File child : tmp.listFiles()) {
                     File target = new File(t, child.getName());
                     if(!child.renameTo(target))
                         throw new IOException("Failed to rename "+child+" to "+target);
                 }
-                f.delete();
+                tmp.delete();
                 return null;
             }
         });
@@ -2292,9 +2307,9 @@ public final class FilePath implements Serializable {
     /**
      * Shortcut for {@link #validateFileMask(String)} in case the left-hand side can be null.
      */
-    public static FormValidation validateFileMask(FilePath pathOrNull, String value) throws IOException {
-        if(pathOrNull==null) return FormValidation.ok();
-        return pathOrNull.validateFileMask(value);
+    public static FormValidation validateFileMask(@CheckForNull FilePath path, String value) throws IOException {
+        if(path==null) return FormValidation.ok();
+        return path.validateFileMask(value);
     }
 
     /**

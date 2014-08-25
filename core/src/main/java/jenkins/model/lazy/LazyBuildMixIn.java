@@ -46,6 +46,8 @@ import javax.annotation.Nonnull;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.DoNotUse;
 
+import static java.util.logging.Level.FINER;
+
 /**
  * Makes it easier to use a lazy {@link RunMap} from a {@link Job} implementation.
  * Provides method implementations for some abstract {@link Job} methods,
@@ -183,6 +185,7 @@ public abstract class LazyBuildMixIn<JobT extends Job<JobT,RunT> & Queue.Task & 
         try {
             RunT lastBuild = getBuildClass().getConstructor(asJob().getClass()).newInstance(asJob());
             builds.put(lastBuild);
+            lastBuild.getPreviousBuild(); // JENKINS-20662: create connection to previous build
             return lastBuild;
         } catch (InstantiationException e) {
             throw new Error(e);
@@ -280,7 +283,7 @@ public abstract class LazyBuildMixIn<JobT extends Job<JobT,RunT> & Queue.Task & 
 
     /**
      * Accompanying helper for the run type.
-     * Stateful but should be held in a {@code transient} field.
+     * Stateful but should be held in a {@code transient final} field.
      */
     public static abstract class RunMixIn<JobT extends Job<JobT,RunT> & Queue.Task & LazyBuildMixIn.LazyLoadingJob<JobT,RunT>, RunT extends Run<JobT,RunT> & LazyLoadingRun<JobT,RunT>> {
 
@@ -290,12 +293,18 @@ public abstract class LazyBuildMixIn<JobT extends Job<JobT,RunT> & Queue.Task & 
          *
          * <p>
          * Some {@link Run}s do lazy-loading, so we don't use
-         * {@link #previousBuild} and {@link #nextBuild}, and instead use these
+         * {@link #previousBuildR} and {@link #nextBuildR}, and instead use these
          * fields and point to {@link #selfReference} (or {@link #none}) of
          * adjacent builds.
          */
         private volatile BuildReference<RunT> previousBuildR, nextBuildR;
 
+        /**
+         * Used in {@link #previousBuildR} and {@link #nextBuildR} to indicate
+         * that we know there is no next/previous build (as opposed to {@code null},
+         * which is used to indicate we haven't determined if there is a next/previous
+         * build.)
+         */
         @SuppressWarnings({"unchecked", "rawtypes"})
         private static final BuildReference NONE = new BuildReference("NONE", null);
 
@@ -336,6 +345,9 @@ public abstract class LazyBuildMixIn<JobT extends Job<JobT,RunT> & Queue.Task & 
                     pb.getRunMixIn().nextBuildR = nextBuildR;
                 }
             }
+
+            // make this build object unreachable by other Runs
+            createReference().clear();
         }
 
         /**
@@ -355,6 +367,7 @@ public abstract class LazyBuildMixIn<JobT extends Job<JobT,RunT> & Queue.Task & 
                     if (pb != null) {
                         pb.getRunMixIn().nextBuildR = createReference();   // establish bi-di link
                         this.previousBuildR = pb.getRunMixIn().createReference();
+                        LOGGER.log(FINER, "Linked {0}<->{1} in getPreviousBuild()", new Object[]{this, pb});
                         return pb;
                     } else {
                         this.previousBuildR = none();
@@ -388,6 +401,7 @@ public abstract class LazyBuildMixIn<JobT extends Job<JobT,RunT> & Queue.Task & 
                     if (nb != null) {
                         nb.getRunMixIn().previousBuildR = createReference();   // establish bi-di link
                         this.nextBuildR = nb.getRunMixIn().createReference();
+                        LOGGER.log(FINER, "Linked {0}<->{1} in getNextBuild()", new Object[]{this, nb});
                         return nb;
                     } else {
                         this.nextBuildR = none();

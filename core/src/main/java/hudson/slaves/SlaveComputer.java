@@ -43,52 +43,31 @@ import hudson.slaves.OfflineCause.ChannelTermination;
 import hudson.util.Futures;
 import hudson.util.NullStream;
 import hudson.util.RingBufferLogHandler;
-import hudson.util.Secret;
 import hudson.util.StreamTaskListener;
 import hudson.util.io.ReopenableFileOutputStream;
 import hudson.util.io.ReopenableRotatingFileOutputStream;
 import jenkins.model.Jenkins;
+import jenkins.slaves.EncryptedSlaveAgentJnlpFile;
 import jenkins.slaves.JnlpSlaveAgentProtocol;
 import jenkins.slaves.systemInfo.SlaveSystemInfo;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
-import org.kohsuke.stapler.QueryParameter;
-import org.kohsuke.stapler.HttpResponse;
-import org.kohsuke.stapler.HttpRedirect;
-
-import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponseWrapper;
 import org.acegisecurity.context.SecurityContext;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.apache.commons.io.IOUtils;
 import org.kohsuke.stapler.HttpRedirect;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.QueryParameter;
-import org.kohsuke.stapler.ResponseImpl;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.WebMethod;
-import org.kohsuke.stapler.compression.FilterServletOutputStream;
+import org.kohsuke.stapler.interceptor.RequirePOST;
 
-import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponseWrapper;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.io.PrintWriter;
 import java.nio.charset.Charset;
-import java.security.GeneralSecurityException;
-import java.security.SecureRandom;
 import java.security.Security;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -99,7 +78,10 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
+import javax.annotation.CheckForNull;
+import jenkins.model.Jenkins;
 import static hudson.slaves.SlaveComputer.LogHolder.*;
+
 
 /**
  * {@link Computer} for {@link Slave}s.
@@ -189,9 +171,16 @@ public class SlaveComputer extends Computer {
         return isUnix;
     }
 
+    @CheckForNull
     @Override
     public Slave getNode() {
-        return (Slave)super.getNode();
+        Node node = super.getNode();
+        if (node == null || node instanceof Slave) {
+            return (Slave)node;
+        } else {
+            logger.log(Level.WARNING, "found an unexpected kind of node {0} from {1} with nodeName={2}", new Object[] {node, this, nodeName});
+            return null;
+        }
     }
 
     @Override
@@ -433,7 +422,7 @@ public class SlaveComputer extends Computer {
     }
 
     /**
-     * Sets up the connection through an exsting channel.
+     * Sets up the connection through an existing channel.
      *
      * @since 1.444
      */
@@ -469,10 +458,15 @@ public class SlaveComputer extends Computer {
 
         String defaultCharsetName = channel.call(new DetectDefaultCharset());
 
-        String remoteFs = getNode().getRemoteFS();
+        Slave node = getNode();
+        if (node == null) { // Node has been disabled/removed during the connection
+            throw new IOException("Node "+nodeName+" has been deleted during the channel setup");
+        }
+        
+        String remoteFs = node.getRemoteFS();
         if(_isUnix && !remoteFs.contains("/") && remoteFs.contains("\\"))
             log.println("WARNING: "+remoteFs+" looks suspiciously like Windows path. Maybe you meant "+remoteFs.replace('\\','/')+"?");
-        FilePath root = new FilePath(channel,getNode().getRemoteFS());
+        FilePath root = new FilePath(channel,remoteFs);
 
         // reference counting problem is known to happen, such as JENKINS-9017, and so as a preventive measure
         // we pin the base classloader so that it'll never get GCed. When this classloader gets released,
@@ -540,6 +534,7 @@ public class SlaveComputer extends Computer {
             return channel.call(new SlaveLogFetcher());
     }
 
+    @RequirePOST
     public HttpResponse doDoDisconnect(@QueryParameter String offlineMessage) throws IOException, ServletException {
         if (channel!=null) {
             //does nothing in case computer is already disconnected
@@ -564,6 +559,7 @@ public class SlaveComputer extends Computer {
         });
     }
 
+    @RequirePOST
     public void doLaunchSlaveAgent(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException {
         if(channel!=null) {
             req.getView(this,"already-launched.jelly").forward(req, rsp);
@@ -598,40 +594,8 @@ public class SlaveComputer extends Computer {
     }
 
     @WebMethod(name="slave-agent.jnlp")
-    public void doSlaveAgentJnlp(StaplerRequest req, StaplerResponse res) throws IOException, ServletException {
-        RequestDispatcher view = req.getView(this, "slave-agent.jnlp.jelly");
-        if ("true".equals(req.getParameter("encrypt"))) {
-            final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            StaplerResponse temp = new ResponseImpl(req.getStapler(), new HttpServletResponseWrapper(res) {
-                @Override public ServletOutputStream getOutputStream() throws IOException {
-                    return new FilterServletOutputStream(baos);
-                }
-                @Override public PrintWriter getWriter() throws IOException {
-                    throw new IllegalStateException();
-                }
-            });
-            view.forward(req, temp);
-
-            byte[] iv = new byte[128/8];
-            new SecureRandom().nextBytes(iv);
-
-            byte[] jnlpMac = JnlpSlaveAgentProtocol.SLAVE_SECRET.mac(getName().getBytes("UTF-8"));
-            SecretKey key = new SecretKeySpec(jnlpMac, 0, /* export restrictions */ 128 / 8, "AES");
-            byte[] encrypted;
-            try {
-                Cipher c = Secret.getCipher("AES/CFB8/NoPadding");
-                c.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(iv));
-                encrypted = c.doFinal(baos.toByteArray());
-            } catch (GeneralSecurityException x) {
-                throw new IOException(x);
-            }
-            res.setContentType("application/octet-stream");
-            res.getOutputStream().write(iv);
-            res.getOutputStream().write(encrypted);
-        } else {
-            checkPermission(CONNECT);
-            view.forward(req, res);
-        }
+    public HttpResponse doSlaveAgentJnlp(StaplerRequest req, StaplerResponse res) throws IOException, ServletException {
+        return new EncryptedSlaveAgentJnlpFile(this, "slave-agent.jnlp.jelly", getName(), CONNECT);
     }
 
     @Override
@@ -661,7 +625,7 @@ public class SlaveComputer extends Computer {
                 logger.log(Level.SEVERE, "Failed to terminate channel to " + getDisplayName(), e);
             }
             for (ComputerListener cl : ComputerListener.all())
-                cl.onOffline(this);
+                cl.onOffline(this, offlineCause);
         }
     }
 

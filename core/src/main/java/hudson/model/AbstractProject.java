@@ -32,6 +32,7 @@ import com.infradna.tool.bridge_method_injector.WithBridgeMethods;
 import hudson.AbortException;
 import hudson.CopyOnWrite;
 import hudson.EnvVars;
+import hudson.ExtensionList;
 import hudson.ExtensionPoint;
 import hudson.FeedAdapter;
 import hudson.FilePath;
@@ -43,7 +44,7 @@ import hudson.cli.declarative.CLIResolver;
 import hudson.model.Cause.LegacyCodeCause;
 import hudson.model.Descriptor.FormException;
 import hudson.model.Fingerprint.RangeSet;
-import hudson.model.PermalinkProjectAction.Permalink;
+import hudson.model.Node.Mode;
 import hudson.model.Queue.Executable;
 import hudson.model.Queue.Task;
 import hudson.model.labels.LabelAtom;
@@ -67,6 +68,7 @@ import hudson.scm.SCMS;
 import hudson.search.SearchIndexBuilder;
 import hudson.security.ACL;
 import hudson.security.Permission;
+import hudson.slaves.Cloud;
 import hudson.slaves.WorkspaceList;
 import hudson.tasks.BuildStep;
 import hudson.tasks.BuildStepDescriptor;
@@ -90,7 +92,6 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -107,7 +108,6 @@ import javax.annotation.Nonnull;
 import javax.servlet.ServletException;
 import jenkins.model.Jenkins;
 import jenkins.model.JenkinsLocationConfiguration;
-import jenkins.model.ModelObjectWithChildren;
 import jenkins.model.ParameterizedJobMixIn;
 import jenkins.model.Uptime;
 import jenkins.model.lazy.LazyBuildMixIn;
@@ -117,8 +117,6 @@ import jenkins.scm.SCMCheckoutStrategyDescriptor;
 import jenkins.util.TimeDuration;
 import net.sf.json.JSONObject;
 import org.acegisecurity.Authentication;
-import org.acegisecurity.context.SecurityContext;
-import org.acegisecurity.context.SecurityContextHolder;
 import org.jenkinsci.bytecode.AdaptField;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
@@ -143,7 +141,7 @@ import org.kohsuke.stapler.interceptor.RequirePOST;
  * @see AbstractBuild
  */
 @SuppressWarnings("rawtypes")
-public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends AbstractBuild<P,R>> extends Job<P,R> implements BuildableItem, ModelObjectWithChildren, LazyBuildMixIn.LazyLoadingJob<P,R>, ParameterizedJobMixIn.ParameterizedJob {
+public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends AbstractBuild<P,R>> extends Job<P,R> implements BuildableItem, LazyBuildMixIn.LazyLoadingJob<P,R>, ParameterizedJobMixIn.ParameterizedJob {
 
     /**
      * {@link SCM} associated with the project.
@@ -346,12 +344,14 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
     public EnvVars getEnvironment(Node node, TaskListener listener) throws IOException, InterruptedException {
         EnvVars env =  super.getEnvironment(node, listener);
 
-        JDK jdk = getJDK();
-        if (jdk != null) {
+        JDK jdkTool = getJDK();
+        if (jdkTool != null) {
             if (node != null) { // just in case were not in a build
-                jdk = jdk.forNode(node, listener);
+                jdkTool = jdkTool.forNode(node, listener);
             }
-            jdk.buildEnvVars(env);
+            jdkTool.buildEnvVars(env);
+        } else if (jdk != null && !jdk.equals(JDK.DEFAULT_NAME)) {
+            listener.getLogger().println("No JDK named ‘" + jdk + "’ found");
         }
 
         return env;
@@ -543,10 +543,10 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
      *      null if there's no available workspace.
      * @since 1.319
      */
-    public final FilePath getSomeWorkspace() {
+    public final @CheckForNull FilePath getSomeWorkspace() {
         R b = getSomeBuildWithWorkspace();
         if (b!=null) return b.getWorkspace();
-        for (WorkspaceBrowser browser : Jenkins.getInstance().getExtensionList(WorkspaceBrowser.class)) {
+        for (WorkspaceBrowser browser : ExtensionList.lookup(WorkspaceBrowser.class)) {
             FilePath f = browser.getWorkspace(this);
             if (f != null) return f;
         }
@@ -723,7 +723,7 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
     @Override
     public BallColor getIconColor() {
         if(isDisabled())
-            return BallColor.DISABLED;
+            return isBuilding() ? BallColor.DISABLED_ANIME : BallColor.DISABLED;
         else
             return super.getIconColor();
     }
@@ -775,78 +775,11 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
 
         updateTransientActions();
 
-        Set<AbstractProject> upstream = Collections.emptySet();
-        if(req.getParameter("pseudoUpstreamTrigger")!=null) {
-            upstream = new HashSet<AbstractProject>(Items.fromNameList(getParent(),req.getParameter("upstreamProjects"),AbstractProject.class));
-        }
-
-        convertUpstreamBuildTrigger(upstream);
-
         // notify the queue as the project might be now tied to different node
         Jenkins.getInstance().getQueue().scheduleMaintenance();
 
         // this is to reflect the upstream build adjustments done above
         Jenkins.getInstance().rebuildDependencyGraphAsync();
-    }
-
-    /**
-     * Reflect the submission of the pseudo 'upstream build trigger'.
-     */
-    /* package */ void convertUpstreamBuildTrigger(Set<AbstractProject> upstream) throws IOException {
-
-        SecurityContext saveCtx = ACL.impersonate(ACL.SYSTEM);
-        try {
-            for (AbstractProject<?,?> p : Jenkins.getInstance().getAllItems(AbstractProject.class)) {
-                // Don't consider child projects such as MatrixConfiguration:
-                if (!p.isConfigurable()) continue;
-                boolean isUpstream = upstream.contains(p);
-                synchronized(p) {
-                    // does 'p' include us in its BuildTrigger?
-                    DescribableList<Publisher,Descriptor<Publisher>> pl = p.getPublishersList();
-                    BuildTrigger trigger = pl.get(BuildTrigger.class);
-                    List<AbstractProject> newChildProjects = trigger == null ? new ArrayList<AbstractProject>():trigger.getChildProjects(p);
-                    if(isUpstream) {
-                        if(!newChildProjects.contains(this))
-                            newChildProjects.add(this);
-                    } else {
-                        newChildProjects.remove(this);
-                    }
-
-                    if(newChildProjects.isEmpty()) {
-                        pl.remove(BuildTrigger.class);
-                    } else {
-                        // here, we just need to replace the old one with the new one,
-                        // but there was a regression (we don't know when it started) that put multiple BuildTriggers
-                        // into the list. For us not to lose the data, we need to merge them all.
-                        List<BuildTrigger> existingList = pl.getAll(BuildTrigger.class);
-                        BuildTrigger existing;
-                        switch (existingList.size()) {
-                        case 0:
-                            existing = null;
-                            break;
-                        case 1:
-                            existing = existingList.get(0);
-                            break;
-                        default:
-                            pl.removeAll(BuildTrigger.class);
-                            Set<AbstractProject> combinedChildren = new HashSet<AbstractProject>();
-                            for (BuildTrigger bt : existingList)
-                                combinedChildren.addAll(bt.getChildProjects(p));
-                            existing = new BuildTrigger(new ArrayList<AbstractProject>(combinedChildren),existingList.get(0).getThreshold());
-                            pl.add(existing);
-                            break;
-                        }
-
-                        if(existing!=null && existing.hasSame(p,newChildProjects))
-                            continue;   // no need to touch
-                        pl.replace(new BuildTrigger(newChildProjects,
-                            existing==null? Result.SUCCESS:existing.getThreshold()));
-                    }
-                }
-            }
-        } finally {
-            SecurityContextHolder.setContext(saveCtx);
-        }
     }
 
     /**
@@ -1250,17 +1183,17 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
         return r;
     }
 
-    public R createExecutable() throws IOException {
+    public @CheckForNull R createExecutable() throws IOException {
         if(isDisabled())    return null;
         return newBuild();
     }
 
     public void checkAbortPermission() {
-        checkPermission(AbstractProject.ABORT);
+        checkPermission(CANCEL);
     }
 
     public boolean hasAbortPermission() {
-        return hasPermission(AbstractProject.ABORT);
+        return hasPermission(CANCEL);
     }
 
     /**
@@ -1435,7 +1368,7 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
             WorkspaceOfflineReason workspaceOfflineReason = workspaceOffline( b );
             if ( workspaceOfflineReason != null ) {
                 // workspace offline
-                for (WorkspaceBrowser browser : Jenkins.getInstance().getExtensionList(WorkspaceBrowser.class)) {
+                for (WorkspaceBrowser browser : ExtensionList.lookup(WorkspaceBrowser.class)) {
                     ws = browser.getWorkspace(this);
                     if (ws != null) {
                         return pollWithWorkspace(listener, scm, b, ws, browser.getWorkspaceList());
@@ -1445,12 +1378,19 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
                 // At this point we start thinking about triggering a build just to get a workspace,
                 // because otherwise there's no way we can detect changes.
                 // However, first there are some conditions in which we do not want to do so.
-
                 // give time for slaves to come online if we are right after reconnection (JENKINS-8408)
                 long running = Jenkins.getInstance().getInjector().getInstance(Uptime.class).getUptime();
                 long remaining = TimeUnit2.MINUTES.toMillis(10)-running;
-                if (remaining>0) {
+                if (remaining>0 && /* this logic breaks tests of polling */!Functions.getIsUnitTest()) {
                     listener.getLogger().print(Messages.AbstractProject_AwaitingWorkspaceToComeOnline(remaining/1000));
+                    listener.getLogger().println( " (" + workspaceOfflineReason.name() + ")");
+                    return NO_CHANGES;
+                }
+
+                // Do not trigger build, if no suitable slave is online
+                if (workspaceOfflineReason.equals(WorkspaceOfflineReason.all_suitable_nodes_are_offline)) {
+                    // No suitable executor is online
+                    listener.getLogger().print(Messages.AbstractProject_AwaitingWorkspaceToComeOnline(running/1000));
                     listener.getLogger().println( " (" + workspaceOfflineReason.name() + ")");
                     return NO_CHANGES;
                 }
@@ -1479,12 +1419,11 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
             } else {
                 WorkspaceList l = b.getBuiltOn().toComputer().getWorkspaceList();
                 return pollWithWorkspace(listener, scm, b, ws, l);
-
             }
+			
         } else {
             // polling without workspace
             LOGGER.fine("Polling SCM changes of " + getName());
-
             if (pollingBaseline==null) // see NOTE-NO-BASELINE above
                 calcPollingBaseline(getLastBuild(),null,listener);
             PollingResult r = scm.poll(this, null, null, listener, pollingBaseline);
@@ -1519,11 +1458,55 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
     enum WorkspaceOfflineReason {
         nonexisting_workspace,
         builton_node_gone,
-        builton_node_no_executors
+        builton_node_no_executors,
+        all_suitable_nodes_are_offline,
+        use_ondemand_slave
+    }
+
+    /**
+     * Returns true if all suitable nodes for the job are offline.
+     *
+     */
+    private boolean isAllSuitableNodesOffline(R build) {
+        Label label = getAssignedLabel();        
+        List<Node> allNodes = Jenkins.getInstance().getNodes();
+
+        if (label != null) {
+            //Invalid label. Put in queue to make administrator fix
+            if(label.getNodes().isEmpty()) {
+                return false;
+            }
+            //Returns true, if all suitable nodes are offline
+            return label.isOffline();
+        } else {
+            if(canRoam) {                 
+                for (Node n : Jenkins.getInstance().getNodes()) {                
+                    Computer c = n.toComputer();
+                    if (c != null && c.isOnline() && c.isAcceptingTasks() && n.getMode() == Mode.NORMAL) {
+                        // Some executor is online that  is ready and this job can run anywhere
+                        return false;
+                    }
+                }                
+                //We can roam, check that the master is set to be used as much as possible, and not tied jobs only.
+                if(Jenkins.getInstance().getMode() == Mode.EXCLUSIVE) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     private WorkspaceOfflineReason workspaceOffline(R build) throws IOException, InterruptedException {
         FilePath ws = build.getWorkspace();
+        Label label = getAssignedLabel();
+
+        if (isAllSuitableNodesOffline(build)) {            
+            Collection<Cloud> applicableClouds = label == null ? Jenkins.getInstance().clouds : label.getClouds();
+            return applicableClouds.isEmpty() ? WorkspaceOfflineReason.all_suitable_nodes_are_offline : WorkspaceOfflineReason.use_ondemand_slave;            
+        }
+
         if (ws==null || !ws.exists()) {
             return WorkspaceOfflineReason.nonexisting_workspace;
         }
@@ -1640,7 +1623,7 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
     /**
      * Returns only those upstream projects that defines {@link BuildTrigger} to this project.
      * This is a subset of {@link #getUpstreamProjects()}
-     *
+     * <p>No longer used in the UI.
      * @return A List of upstream projects that has a {@link BuildTrigger} to this project.
      */
     public final List<AbstractProject> getBuildTriggerUpstreamProjects() {
@@ -1842,6 +1825,8 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
         }
         canRoam = assignedNode==null;
 
+        keepDependencies = req.getParameter("keepDependencies") != null;
+
         concurrentBuild = req.getSubmittedForm().has("concurrentBuild");
 
         authToken = BuildAuthorizationToken.create(req);
@@ -1853,20 +1838,6 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
         triggers.replaceBy(buildDescribable(req, Trigger.for_(this)));
         for (Trigger t : triggers())
             t.start(this,true);
-
-        for (Publisher _t : Descriptor.newInstancesFromHeteroList(req, json, "publisher", Jenkins.getInstance().getExtensionList(BuildTrigger.DescriptorImpl.class))) {
-            BuildTrigger t = (BuildTrigger) _t;
-            List<AbstractProject> childProjects;
-            SecurityContext orig = ACL.impersonate(ACL.SYSTEM);
-            try {
-                childProjects = t.getChildProjects(this);
-            } finally {
-                SecurityContextHolder.setContext(orig);
-            }
-            for (AbstractProject downstream : childProjects) {
-                downstream.checkPermission(BUILD);
-            }
-        }
     }
 
     /**
@@ -1892,17 +1863,6 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
         return r;
     }
 
-    public ContextMenu doChildrenContextMenu(StaplerRequest request, StaplerResponse response) throws Exception {
-        // not sure what would be really useful here. This needs more thoughts.
-        // for the time being, I'm starting with permalinks
-        ContextMenu menu = new ContextMenu();
-        for (Permalink p : getPermalinks()) {
-            if (p.resolve(this)!=null)
-                menu.add(p.getId(),p.getDisplayName());
-        }
-        return menu;
-    }
-
     /**
      * Serves the workspace files.
      */
@@ -1918,7 +1878,14 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
             req.getView(this,"noWorkspace.jelly").forward(req,rsp);
             return null;
         } else {
-            return new DirectoryBrowserSupport(this, ws, getDisplayName()+" workspace", "folder.png", true);
+            Computer c = ws.toComputer();
+            String title;
+            if (c == null) {
+                title = Messages.AbstractProject_WorkspaceTitle(getDisplayName());
+            } else {
+                title = Messages.AbstractProject_WorkspaceTitleOnComputer(getDisplayName(), c.getDisplayName());
+            }
+            return new DirectoryBrowserSupport(this, ws, title, "folder.png", true);
         }
     }
 
@@ -2060,6 +2027,9 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
                         Messages.AbstractProject_AssignedLabelString_InvalidBooleanExpression(e.getMessage()));
             }
             Jenkins j = Jenkins.getInstance();
+            if (j == null) {
+                return FormValidation.ok(); // ?
+            }
             Label l = j.getLabel(value);
             if (l.isEmpty()) {
                 for (LabelAtom a : l.listAtoms()) {
@@ -2169,7 +2139,7 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
      * Finds a {@link AbstractProject} that has the name closest to the given name.
      * @see Items#findNearest
      */
-    public static AbstractProject findNearest(String name) {
+    public static @CheckForNull AbstractProject findNearest(String name) {
         return findNearest(name,Jenkins.getInstance());
     }
 
@@ -2179,7 +2149,7 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
      * @since 1.419
      * @see Items#findNearest
      */
-    public static AbstractProject findNearest(String name, ItemGroup context) {
+    public static @CheckForNull AbstractProject findNearest(String name, ItemGroup context) {
         return Items.findNearest(AbstractProject.class, name, context);
     }
 
@@ -2192,7 +2162,7 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
     private static final Logger LOGGER = Logger.getLogger(AbstractProject.class.getName());
 
     /**
-     * Permission to abort a build
+     * @deprecated Just use {@link #CANCEL}.
      */
     public static final Permission ABORT = CANCEL;
 

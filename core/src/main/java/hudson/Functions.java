@@ -28,7 +28,6 @@ package hudson;
 import hudson.cli.CLICommand;
 import hudson.console.ConsoleAnnotationDescriptor;
 import hudson.console.ConsoleAnnotatorFactory;
-import hudson.matrix.MatrixProject;
 import hudson.model.AbstractProject;
 import hudson.model.Action;
 import hudson.model.Describable;
@@ -47,7 +46,6 @@ import hudson.model.PageDecorator;
 import hudson.model.PaneStatusProperties;
 import hudson.model.ParameterDefinition;
 import hudson.model.ParameterDefinition.ParameterDescriptor;
-import hudson.model.Project;
 import hudson.model.Run;
 import hudson.model.TopLevelItem;
 import hudson.model.User;
@@ -141,6 +139,7 @@ import org.apache.commons.jelly.XMLOutput;
 import org.apache.commons.jexl.parser.ASTSizeFunction;
 import org.apache.commons.jexl.util.Introspector;
 import org.apache.commons.lang.StringUtils;
+import org.jenkins.ui.icon.IconSet;
 import org.jvnet.tiger_types.Types;
 import org.kohsuke.stapler.Ancestor;
 import org.kohsuke.stapler.Stapler;
@@ -190,11 +189,9 @@ public class Functions {
         return o instanceof ModelObjectWithChildren;
     }
     
-    /**
-     * @since 1.524
-     */
+    @Deprecated
     public static boolean isMatrixProject(Object o) {
-        return o instanceof MatrixProject;
+        return o != null && o.getClass().getName().equals("hudson.matrix.MatrixProject");
     }
 
     public static String xsDate(Calendar cal) {
@@ -206,7 +203,8 @@ public class Functions {
     }
     
     public static void initPageVariables(JellyContext context) {
-        String rootURL = Stapler.getCurrentRequest().getContextPath();
+        StaplerRequest currentRequest = Stapler.getCurrentRequest();
+        String rootURL = currentRequest.getContextPath();
 
         Functions h = new Functions();
         context.setVariable("h", h);
@@ -226,6 +224,9 @@ public class Functions {
          */
         context.setVariable("resURL",rootURL+getResourcePath());
         context.setVariable("imagesURL",rootURL+getResourcePath()+"/images");
+
+        context.setVariable("userAgent", currentRequest.getHeader("User-Agent"));
+        IconSet.initPageVariables(context);
     }
 
     /**
@@ -409,7 +410,7 @@ public class Functions {
         return Node.Mode.values();
     }
 
-    public static String getProjectListString(List<Project> projects) {
+    public static String getProjectListString(List<AbstractProject> projects) {
         return Items.toNameList(projects);
     }
 
@@ -542,6 +543,20 @@ public class Functions {
             return map.tailMap(Integer.parseInt(to));
 
         return map.subMap(Integer.parseInt(to),Integer.parseInt(from)-1);
+    }
+
+    /**
+     * Creates a sub map by using the given range (upper end inclusive).
+     */
+    @Restricted(NoExternalUse.class)
+    public static <V> SortedMap<Integer,V> filterExcludingFrom(SortedMap<Integer,V> map, String from, String to) {
+        if(from==null && to==null)      return map;
+        if(to==null)
+            return map.headMap(Integer.parseInt(from));
+        if(from==null)
+            return map.tailMap(Integer.parseInt(to));
+
+        return map.subMap(Integer.parseInt(to),Integer.parseInt(from));
     }
 
     private static final SimpleFormatter formatter = new SimpleFormatter();
@@ -898,7 +913,7 @@ public class Functions {
      * @since 1.494
      */
     public static Collection<Descriptor> getSortedDescriptorsForGlobalConfig(Predicate<GlobalConfigurationCategory> predicate) {
-        ExtensionList<Descriptor> exts = Jenkins.getInstance().getExtensionList(Descriptor.class);
+        ExtensionList<Descriptor> exts = ExtensionList.lookup(Descriptor.class);
         List<Tag> r = new ArrayList<Tag>(exts.size());
 
         for (ExtensionComponent<Descriptor> c : exts.getComponents()) {
@@ -1832,9 +1847,11 @@ public class Functions {
      * @since 1.517
      */
     public static String breakableString(final String plain) {
-
+        if (plain == null) {
+            return null;
+        }
         return plain.replaceAll("([\\p{Punct}&&[^;]]+\\w)", "<wbr>$1")
-                .replaceAll("([^\\p{Punct}\\s-]{10})(?=[^\\p{Punct}\\s-]{3})", "$1<wbr>")
+                .replaceAll("([^\\p{Punct}\\s-]{20})(?=[^\\p{Punct}\\s-]{10})", "$1<wbr>")
         ;
     }
 

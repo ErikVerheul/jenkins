@@ -98,6 +98,7 @@ import java.net.Inet4Address;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import static javax.servlet.http.HttpServletResponse.*;
@@ -203,7 +204,7 @@ public /*transient*/ abstract class Computer extends Actionable implements Acces
 
     /**
      * This is where the log from the remote agent goes.
-     *
+     * The method also creates a log directory if required.
      * @see #relocateOldLogs()
      */
     protected File getLogFile() {
@@ -455,8 +456,8 @@ public /*transient*/ abstract class Computer extends Actionable implements Acces
     /**
      * Returns {@link Node#getNodeName() the name of the node}.
      */
-    public String getName() {
-        return nodeName;
+    public @Nonnull String getName() {
+        return nodeName != null ? nodeName : "";
     }
 
     /**
@@ -474,7 +475,7 @@ public /*transient*/ abstract class Computer extends Actionable implements Acces
 
     @Exported
     public LoadStatistics getLoadStatistics() {
-        return LabelAtom.get(nodeName != null ? nodeName : "").loadStatistics;
+        return LabelAtom.get(nodeName != null ? nodeName : Jenkins.getInstance().getSelfLabel().toString()).loadStatistics;
     }
 
     public BuildTimelineWidget getTimeline() {
@@ -608,6 +609,14 @@ public /*transient*/ abstract class Computer extends Actionable implements Acces
             return "computer.png";
     }
 
+    @Exported
+    public String getIconClassName() {
+        if(isOffline())
+            return "icon-computer-x";
+        else
+            return "icon-computer";
+    }
+
     public String getIconAltText() {
         if(isOffline())
             return "[offline]";
@@ -616,7 +625,7 @@ public /*transient*/ abstract class Computer extends Actionable implements Acces
     }
 
     @Exported
-    public String getDisplayName() {
+    @Override public @Nonnull String getDisplayName() {
         return nodeName;
     }
 
@@ -625,7 +634,7 @@ public /*transient*/ abstract class Computer extends Actionable implements Acces
     }
 
     public String getUrl() {
-        return "computer/" + Util.rawEncode(getDisplayName()) + "/";
+        return "computer/" + Util.rawEncode(getName()) + "/";
     }
 
     /**
@@ -720,9 +729,16 @@ public /*transient*/ abstract class Computer extends Actionable implements Acces
             availableNumbers.remove(executor.getNumber());
 
         for (Integer number : availableNumbers) {
-            Executor e = new Executor(this, number);
-            executors.add(e);
+            /* There may be busy executors with higher index, so only
+               fill up until numExecutors is reached.
+               Extra executors will call removeExecutor(...) and that
+               will create any necessary executors from #0 again. */
+            if (executors.size() < numExecutors) {
+                Executor e = new Executor(this, number);
+                executors.add(e);
+            }
         }
+
     }
 
     /**
@@ -864,7 +880,7 @@ public /*transient*/ abstract class Computer extends Actionable implements Acces
     }
 
     public String getSearchUrl() {
-        return "computer/"+nodeName;
+        return getUrl();
     }
 
     /**
@@ -917,7 +933,7 @@ public /*transient*/ abstract class Computer extends Actionable implements Acces
      * @see ProcStarter#envs(Map)
      * @since 1.489
      */
-    public EnvVars buildEnvironment(TaskListener listener) throws IOException, InterruptedException {
+    public @Nonnull EnvVars buildEnvironment(@Nonnull TaskListener listener) throws IOException, InterruptedException {
         EnvVars env = new EnvVars();
 
         Node node = getNode();
@@ -1084,6 +1100,7 @@ public /*transient*/ abstract class Computer extends Actionable implements Acces
             runs.newBuilds(), Run.FEED_ADAPTER, req, rsp );
     }
 
+    @RequirePOST
     public HttpResponse doToggleOffline(@QueryParameter String offlineMessage) throws IOException, ServletException {
         if(!temporarilyOffline) {
             checkPermission(DISCONNECT);
@@ -1097,6 +1114,7 @@ public /*transient*/ abstract class Computer extends Actionable implements Acces
         return HttpResponses.redirectToDot();
     }
 
+    @RequirePOST
     public HttpResponse doChangeOfflineCause(@QueryParameter String offlineMessage) throws IOException, ServletException {
         checkPermission(DISCONNECT);
         offlineMessage = Util.fixEmptyAndTrim(offlineMessage);
@@ -1193,7 +1211,11 @@ public /*transient*/ abstract class Computer extends Actionable implements Acces
             // read
             checkPermission(EXTENDED_READ);
             rsp.setContentType("application/xml");
-            Jenkins.XSTREAM2.toXMLUTF8(getNode(), rsp.getOutputStream());
+            Node node = getNode();
+            if (node == null) {
+                throw HttpResponses.notFound();
+            }
+            Jenkins.XSTREAM2.toXMLUTF8(node, rsp.getOutputStream());
             return;
         }
         if (req.getMethod().equals("POST")) {
@@ -1215,7 +1237,8 @@ public /*transient*/ abstract class Computer extends Actionable implements Acces
         // replace the old Node object by the new one
         synchronized (app) {
             List<Node> nodes = new ArrayList<Node>(app.getNodes());
-            int i = nodes.indexOf(getNode());
+            Node node = getNode();
+            int i  = (node != null) ? nodes.indexOf(node) : -1;
             if(i<0) {
                 throw new IOException("This slave appears to be removed while you were editing the configuration");
             }
@@ -1240,6 +1263,7 @@ public /*transient*/ abstract class Computer extends Actionable implements Acces
      * Really deletes the slave.
      */
     @CLIMethod(name="delete-node")
+    @RequirePOST
     public HttpResponse doDoDelete() throws IOException {
         checkPermission(DELETE);
         Node node = getNode();
@@ -1344,7 +1368,12 @@ public /*transient*/ abstract class Computer extends Actionable implements Acces
             if (m.matches()) {
                 File newLocation = new File(dir, "logs/slaves/" + m.group(1) + "/slave.log" + Util.fixNull(m.group(2)));
                 newLocation.getParentFile().mkdirs();
-                f.renameTo(newLocation);
+                boolean relocationSuccessfull=f.renameTo(newLocation);
+                if (relocationSuccessfull) { // The operation will fail if mkdir fails 
+                    LOGGER.log(Level.INFO, "Relocated log file {0} to {1}",new Object[] {f.getPath(),newLocation.getPath()});
+                } else {
+                    LOGGER.log(Level.WARNING, "Cannot relocate log file {0} to {1}",new Object[] {f.getPath(),newLocation.getPath()});
+                }
             } else {
                 assert false;
             }

@@ -49,7 +49,6 @@ import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
-import org.kohsuke.stapler.export.Flavor;
 
 /**
  * Keeps a list of the parameters defined for a project.
@@ -122,7 +121,7 @@ public class ParametersDefinitionProperty extends JobProperty<Job<?, ?>>
     /** @deprecated use {@link #_doBuild(StaplerRequest, StaplerResponse, TimeDuration)} */
     @Deprecated
     public void _doBuild(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException {
-        _doBuild(req,rsp,TimeDuration.fromString(req.getParameter("delay")));
+        _doBuild(req, rsp, TimeDuration.fromString(req.getParameter("delay")));
     }
 
     /**
@@ -148,7 +147,11 @@ public class ParametersDefinitionProperty extends JobProperty<Job<?, ?>>
             if(d==null)
                 throw new IllegalArgumentException("No such parameter definition: " + name);
             ParameterValue parameterValue = d.createValue(req, jo);
-            values.add(parameterValue);
+            if (parameterValue != null) {
+                values.add(parameterValue);
+            } else {
+                throw new IllegalArgumentException("Cannot retrieve the parameter value: " + name);
+            }
         }
 
     	WaitingItem item = Jenkins.getInstance().getQueue().schedule(
@@ -179,22 +182,14 @@ public class ParametersDefinitionProperty extends JobProperty<Job<?, ?>>
         }
         if (delay==null)    delay=new TimeDuration(getJob().getQuietPeriod());
 
-        Jenkins.getInstance().getQueue().schedule(
-                getJob(), delay.getTime(), new ParametersAction(values), ParameterizedJobMixIn.getBuildCause(getJob(), req));
+        Queue.Item item = Jenkins.getInstance().getQueue().schedule2(
+                getJob(), delay.getTime(), new ParametersAction(values), ParameterizedJobMixIn.getBuildCause(getJob(), req)).getItem();
 
-        if (requestWantsJson(req)) {
-            rsp.setContentType("application/json");
-            rsp.serveExposedBean(req, owner, Flavor.JSON);
+        if (item != null) {
+            rsp.sendRedirect(SC_CREATED, req.getContextPath() + '/' + item.getUrl());
         } else {
-            // send the user back to the job top page.
             rsp.sendRedirect(".");
         }
-    }
-
-    private boolean requestWantsJson(StaplerRequest req) {
-        String a = req.getHeader("Accept");
-        if (a==null)    return false;
-        return !a.contains("text/html") && a.contains("application/json");
     }
 
     /**

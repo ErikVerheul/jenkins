@@ -23,14 +23,13 @@
  */
 package hudson.model;
 
+import hudson.ExtensionList;
 import hudson.Util;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import jenkins.model.Jenkins;
 import jenkins.model.ModelObjectWithContextMenu;
 import jenkins.model.TransientActionFactory;
 import org.kohsuke.stapler.StaplerRequest;
@@ -90,7 +89,7 @@ public abstract class Actionable extends AbstractModelObject implements ModelObj
     @Exported(name="actions")
     public final List<? extends Action> getAllActions() {
         List<Action> _actions = new ArrayList<Action>(getActions());
-        for (TransientActionFactory<?> taf : Jenkins.getInstance().getExtensionList(TransientActionFactory.class)) {
+        for (TransientActionFactory<?> taf : ExtensionList.lookup(TransientActionFactory.class)) {
             if (taf.type().isInstance(this)) {
                 _actions.addAll(createFor(taf));
             }
@@ -175,7 +174,7 @@ public abstract class Actionable extends AbstractModelObject implements ModelObj
         return null;
     }
 
-    public ContextMenu doContextMenu(StaplerRequest request, StaplerResponse response) throws Exception {
+    @Override public ContextMenu doContextMenu(StaplerRequest request, StaplerResponse response) throws Exception {
         return new ContextMenu().from(this,request,response);
     }
 }

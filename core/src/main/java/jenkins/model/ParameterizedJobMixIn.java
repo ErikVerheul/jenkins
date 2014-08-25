@@ -25,7 +25,6 @@
 package jenkins.model;
 
 import hudson.Util;
-import static hudson.model.AbstractProject.ABORT;
 import hudson.model.Action;
 import hudson.model.BuildableItem;
 import hudson.model.Cause;
@@ -75,12 +74,12 @@ public abstract class ParameterizedJobMixIn<JobT extends Job<JobT, RunT> & Param
     /** @see BuildableItem#scheduleBuild() */
     @SuppressWarnings("deprecation")
     public final boolean scheduleBuild() {
-        return scheduleBuild(Jenkins.getInstance().getQuietPeriod(), new Cause.LegacyCodeCause());
+        return scheduleBuild(asJob().getQuietPeriod(), new Cause.LegacyCodeCause());
     }
 
     /** @see BuildableItem#scheduleBuild(Cause) */
     public final boolean scheduleBuild(Cause c) {
-        return scheduleBuild(Jenkins.getInstance().getQuietPeriod(), c);
+        return scheduleBuild(asJob().getQuietPeriod(), c);
     }
 
     /** @see BuildableItem#scheduleBuild(int) */
@@ -206,7 +205,7 @@ public abstract class ParameterizedJobMixIn<JobT extends Job<JobT, RunT> & Param
      */
     @RequirePOST
     public final void doCancelQueue( StaplerRequest req, StaplerResponse rsp ) throws IOException, ServletException {
-        asJob().checkPermission(ABORT);
+        asJob().checkPermission(Item.CANCEL);
         Jenkins.getInstance().getQueue().cancel(asJob());
         rsp.forwardToPreviousPage(req);
     }
