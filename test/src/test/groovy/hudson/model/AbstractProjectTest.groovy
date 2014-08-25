@@ -35,6 +35,8 @@ import hudson.tasks.Publisher
 import hudson.tasks.Recorder;
 import hudson.tasks.Shell;
 import hudson.scm.NullSCM;
+import hudson.scm.SCM
+import hudson.scm.SCMDescriptor
 import hudson.Launcher;
 import hudson.FilePath;
 import hudson.Functions;
@@ -192,6 +194,13 @@ public class AbstractProjectTest extends HudsonTestCase {
             @Override public boolean requiresWorkspaceForPolling() {
                 return true;
             }
+            @Override public SCMDescriptor<?> getDescriptor() {
+                return new SCMDescriptor<SCM>(null) {
+                    @Override public String getDisplayName() {
+                        return "";
+                    }
+                };
+            }
         };
         Thread t = new Thread() {
             @Override public void run() {
@@ -289,41 +298,6 @@ public class AbstractProjectTest extends HudsonTestCase {
     }
     */
 
-    @Bug(13502)
-    public void testHandleBuildTrigger() {
-        Project u = createFreeStyleProject("u"),
-                d = createFreeStyleProject("d"),
-                e = createFreeStyleProject("e");
-
-        u.addPublisher(new BuildTrigger("d", Result.SUCCESS));
-
-        jenkins.setSecurityRealm(createDummySecurityRealm());
-        ProjectMatrixAuthorizationStrategy authorizations = new ProjectMatrixAuthorizationStrategy();
-        jenkins.setAuthorizationStrategy(authorizations);
-
-        authorizations.add(Jenkins.ADMINISTER, "admin");
-        authorizations.add(Jenkins.READ, "user");
-
-        // user can READ u and CONFIGURE e
-        Map<Permission, Set<String>> permissions = new HashMap<Permission, Set<String>>();
-        permissions.put(Job.READ, Collections.singleton("user"));
-        u.addProperty(new AuthorizationMatrixProperty(permissions));
-
-        permissions = new HashMap<Permission, Set<String>>();
-        permissions.put(Job.CONFIGURE, Collections.singleton("user"));
-        e.addProperty(new AuthorizationMatrixProperty(permissions));
-
-        User user = User.get("user");
-        SecurityContext sc = ACL.impersonate(user.impersonate());
-        try {
-            e.convertUpstreamBuildTrigger(Collections.<AbstractProject> emptySet());
-        } finally {
-            SecurityContextHolder.setContext(sc);
-        }
-
-        assert 1 == u.getPublishersList().size();
-    }
-
     @Bug(17137)
     public void testExternalBuildDirectorySymlinks() {
         // TODO when using JUnit 4 add: Assume.assumeFalse(Functions.isWindows()); // symlinks may not be available
@@ -407,6 +381,7 @@ public class AbstractProjectTest extends HudsonTestCase {
         assert "job/d/" == deleteRedirectTarget("job/d/job/j3");
         assert "job/d/view/v2/" == deleteRedirectTarget("job/d/view/v2/job/j4");
         assert "view/v1/job/d/" == deleteRedirectTarget("view/v1/job/d/job/j5");
+        assert "view/v1/" == deleteRedirectTarget("view/v1/job/d"); // JENKINS-23375
     }
 
     private String deleteRedirectTarget(String job) {

@@ -456,7 +456,6 @@ function registerValidator(e) {
         e.onchange = function() { checker.call(this); oldOnchange.call(this); }
     } else
         e.onchange = checker;
-    e.onblur = checker;
 
     var v = e.getAttribute("checkDependsOn");
     if (v) {
@@ -847,6 +846,7 @@ var jenkinsRules = {
                 editor.DOMReady=true;
                 editor.fireQueue();
                 editor.render();
+                layoutUpdateCallback.call();
             } catch(e) {
                 alert(e);
             }
@@ -873,6 +873,7 @@ var jenkinsRules = {
                 ev = Event.getEvent(ev);
                 function max(a,b) { if(a<b) return b; else return a; }
                 s.style.height = max(32, offset + Event.getPageY(ev)) + 'px';
+                layoutUpdateCallback.call();
                 return false;
             };
             document.onmouseup = function() {
@@ -1157,7 +1158,10 @@ var jenkinsRules = {
             var pos = DOM.getRegion(shadow);
 
             sticker.style.position = "fixed";
-            sticker.style.bottom = Math.max(0, viewport.bottom - pos.bottom) + "px"
+
+            var bottomPos = Math.max(0, viewport.bottom - pos.bottom);
+
+            sticker.style.bottom = bottomPos + "px"
             sticker.style.left = Math.max(0,pos.left-viewport.left) + "px"
         }
 
@@ -1563,14 +1567,21 @@ function updateBuildHistory(ajaxUrl,nBuild) {
             if (bh.headers == null) {
                 // Yahoo.log("Missing headers in buildHistory element");
             }
+
+            function getDataTable(buildHistoryDiv) {
+                return $(buildHistoryDiv).getElementsBySelector('table.pane')[0];
+            }
+
             new Ajax.Request(ajaxUrl, {
                 requestHeaders: bh.headers,
                 onSuccess: function(rsp) {
-                    var rows = bh.rows;
+                    var dataTable = getDataTable(bh);
+                    var rows = dataTable.rows;
 
                     //delete rows with transitive data
-                    while (rows.length > 2 && Element.hasClassName(rows[1], "transitive"))
-                        Element.remove(rows[1]);
+                    while (rows.length > 0 && Element.hasClassName(rows[0], "transitive")) {
+                        Element.remove(rows[0]);
+                    }
 
                     // insert new rows
                     var div = document.createElement('div');
@@ -1578,9 +1589,16 @@ function updateBuildHistory(ajaxUrl,nBuild) {
                     Behaviour.applySubtree(div);
 
                     var pivot = rows[0];
-                    var newRows = $(div).firstDescendant().rows;
-                    for (var i = newRows.length - 1; i >= 0; i--) {
-                        pivot.parentNode.insertBefore(newRows[i], pivot.nextSibling);
+                    var newRows = getDataTable(div).rows;
+                    while (newRows.length > 0) {
+                        if (pivot !== undefined) {
+                            // The data table has rows.  Insert before a "pivot" row (first row).
+                            pivot.parentNode.insertBefore(newRows[0], pivot);
+                        } else {
+                            // The data table has no rows.  In this case, we just add all new rows directly to the
+                            // table, one after the other i.e. we don't insert before a "pivot" row (first row).
+                            dataTable.appendChild(newRows[0]);
+                        }
                     }
 
                     // next update
@@ -1814,6 +1832,7 @@ function buildFormTree(form) {
             }
                 
             var p;
+            var r;
             var type = e.getAttribute("type");
             if(type==null)  type="";
             switch(type.toLowerCase()) {
@@ -1861,15 +1880,17 @@ function buildFormTree(form) {
                 break;
             case "radio":
                 if(!e.checked)  break;
-                while (e.name.substring(0,8)=='removeme')
-                    e.name = e.name.substring(e.name.indexOf('_',8)+1);
+                r=0;
+                while (e.name.substring(r,r+8)=='removeme')
+                    r = e.name.indexOf('_',r+8)+1;
+                p = findParent(e);
                 if(e.groupingNode) {
-                    p = findParent(e);
-                    addProperty(p, e.name, e.formDom = { value: e.value });
-                    break;
+                    addProperty(p, e.name.substring(r), e.formDom = { value: e.value });
+                } else {
+                    addProperty(p, e.name.substring(r), e.value);
                 }
+                break;
 
-                // otherwise fall through
             default:
                 p = findParent(e);
                 addProperty(p, e.name, e.value);
