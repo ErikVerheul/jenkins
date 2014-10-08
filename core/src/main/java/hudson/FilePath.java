@@ -111,6 +111,7 @@ import java.util.regex.Pattern;
 
 import static hudson.FilePath.TarCompression.*;
 import static hudson.Util.*;
+import javax.annotation.Nonnull;
         
 /**
  * {@link File} like object with remoting support.
@@ -1161,7 +1162,7 @@ public final class FilePath implements Serializable {
      * @param relOrAbsolute a relative or absolute path
      * @return a file on the same channel
      */
-    public FilePath child(String relOrAbsolute) {
+    public @Nonnull FilePath child(String relOrAbsolute) {
         return new FilePath(this,relOrAbsolute);
     }
 
@@ -1855,7 +1856,7 @@ public final class FilePath implements Serializable {
     private void syncIO() throws InterruptedException {
         try {
             if (channel!=null)
-                _syncIO();
+                channel.syncLocalIO();
         } catch (AbstractMethodError e) {
             // legacy slave.jar. Handle this gracefully
             try {
@@ -1864,14 +1865,6 @@ public final class FilePath implements Serializable {
                 // really ignore this time
             }
         }
-    }
-
-    /**
-     * A pointless function to work around what appears to be a HotSpot problem. See JENKINS-5756 and bug 6933067
-     * on BugParade for more details.
-     */
-    private void _syncIO() throws InterruptedException {
-        channel.syncLocalIO();
     }
 
     /**
