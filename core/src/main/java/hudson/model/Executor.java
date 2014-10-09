@@ -224,7 +224,7 @@ public class Executor extends Thread implements ModelObject {
                 // by tasks. In such case Jenkins starts the workUnit in order 
                 // to report results to console outputs. 
                 if (executable == null) {
-                    throw new Error("The null Executable has been created for "+workUnit+". The task cannot be executed");
+                    throw new Exception("The null Executable has been created for "+workUnit+". The task cannot be executed");
                 }
                 
                 if (executable instanceof Actionable) {
@@ -238,7 +238,7 @@ public class Executor extends Thread implements ModelObject {
                 if (LOGGER.isLoggable(FINE))
                     LOGGER.log(FINE, getName()+" is now executing "+executable);
                 queue.execute(executable, task);
-            } catch (Throwable e) {
+            } catch (Exception e) {
                 // for some reason the executor died. this is really
                 // a bug in the code, but we don't want the executor to die,
                 // so just leave some info and go on to build other things
@@ -261,9 +261,6 @@ public class Executor extends Thread implements ModelObject {
             LOGGER.log(FINE, getName()+" interrupted",e);
             // die peacefully
         } catch(Exception e) {
-            causeOfDeath = e;
-            LOGGER.log(SEVERE, "Unexpected executor death", e);
-        } catch (Error e) {
             causeOfDeath = e;
             LOGGER.log(SEVERE, "Unexpected executor death", e);
         } finally {
