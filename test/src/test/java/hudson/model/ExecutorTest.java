@@ -33,7 +33,7 @@ public class ExecutorTest extends HudsonTestCase {
         // test the UI
         HtmlPage p = createWebClient().goTo("/");
         p = p.getAnchorByText("Dead (!)").click();
-        assertTrue(p.getWebResponse().getContentAsString().contains(ThreadDeath.class.getName()));
+        assertTrue(p.getWebResponse().getContentAsString().contains(RuntimeException.class.getName()));
         submit(p.getFormByName("yank"));
 
         assertFalse(c.getExecutors().contains(e));
