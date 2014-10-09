@@ -119,6 +119,7 @@ public class AtomicFileWriter extends Writer {
         // one way or the other, temporary file should be deleted.
         close();
         tmpFile.delete();
+        super.finalize();
     }
 
     /**

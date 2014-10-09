@@ -1681,7 +1681,7 @@ public class Queue extends ResourceController implements Saveable {
                 for (QueueListener ql : QueueListener.all()) {
                     try {
                         ql.onEnterWaiting(this);
-                    } catch (Throwable e) {
+                    } catch (Exception e) {
                         // don't let this kill the queue
                         LOGGER.log(Level.WARNING, "QueueListener failed while processing "+this,e);
                     }
@@ -1696,7 +1696,7 @@ public class Queue extends ResourceController implements Saveable {
                 for (QueueListener ql : QueueListener.all()) {
                     try {
                         ql.onLeaveWaiting(this);
-                    } catch (Throwable e) {
+                    } catch (Exception e) {
                         // don't let this kill the queue
                         LOGGER.log(Level.WARNING, "QueueListener failed while processing "+this,e);
                     }
@@ -1764,7 +1764,7 @@ public class Queue extends ResourceController implements Saveable {
             for (QueueListener ql : QueueListener.all()) {
                 try {
                     ql.onEnterBlocked(this);
-                } catch (Throwable e) {
+                } catch (Exception e) {
                     // don't let this kill the queue
                     LOGGER.log(Level.WARNING, "QueueListener failed while processing "+this,e);
                 }
@@ -1778,7 +1778,7 @@ public class Queue extends ResourceController implements Saveable {
                 for (QueueListener ql : QueueListener.all()) {
                     try {
                         ql.onLeaveBlocked(this);
-                    } catch (Throwable e) {
+                    } catch (Exception e) {
                         // don't let this kill the queue
                         LOGGER.log(Level.WARNING, "QueueListener failed while processing "+this,e);
                     }
@@ -1858,7 +1858,7 @@ public class Queue extends ResourceController implements Saveable {
             for (QueueListener ql : QueueListener.all()) {
                 try {
                     ql.onEnterBuildable(this);
-                } catch (Throwable e) {
+                } catch (Exception e) {
                     // don't let this kill the queue
                     LOGGER.log(Level.WARNING, "QueueListener failed while processing "+this,e);
                 }
@@ -1873,7 +1873,7 @@ public class Queue extends ResourceController implements Saveable {
                 for (QueueListener ql : QueueListener.all()) {
                     try {
                         ql.onLeaveBuildable(this);
-                    } catch (Throwable e) {
+                    } catch (Exception e) {
                         // don't let this kill the queue
                         LOGGER.log(Level.WARNING, "QueueListener failed while processing "+this,e);
                     }
@@ -1936,7 +1936,7 @@ public class Queue extends ResourceController implements Saveable {
             for (QueueListener ql : QueueListener.all()) {
                 try {
                     ql.onLeft(this);
-                } catch (Throwable e) {
+                } catch (Exception e) {
                     // don't let this kill the queue
                     LOGGER.log(Level.WARNING, "QueueListener failed while processing "+this,e);
                 }

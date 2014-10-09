@@ -227,7 +227,7 @@ public class WebAppMain implements ServletContextListener {
                         // at this point we are open for business and serving requests normally
                         LOGGER.info("Jenkins is fully up and running");
                         success = true;
-                    } catch (Error e) {
+                    } catch (RuntimeException e) {
                         new HudsonFailedToLoad(e).publish(context,_home);
                         throw e;
                     } catch (Exception e) {
@@ -242,9 +242,6 @@ public class WebAppMain implements ServletContextListener {
             initThread.start();
         } catch (BootFailure e) {
             e.publish(context,home);
-        } catch (Error e) {
-            LOGGER.log(SEVERE, "Failed to initialize Jenkins",e);
-            throw e;
         } catch (RuntimeException e) {
             LOGGER.log(SEVERE, "Failed to initialize Jenkins",e);
             throw e;
@@ -265,7 +262,7 @@ public class WebAppMain implements ServletContextListener {
         FileOutputStream o=null;
         try {
             o = new FileOutputStream(BootFailure.getBootFailureFile(home), true);
-            o.write((new Date().toString() + System.getProperty("line.separator", "\n")).toString().getBytes());
+            o.write((new Date().toString() + System.getProperty("line.separator", "\n")).getBytes());
         } catch (IOException e) {
             LOGGER.log(WARNING, "Failed to record boot attempts",e);
         } finally {

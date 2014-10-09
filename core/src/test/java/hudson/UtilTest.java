@@ -239,7 +239,8 @@ public class UtilTest {
         }
     }
 
-    @Test public void deleteFile() throws Exception {
+    @Test 
+    public void deleteFile() throws Exception {
         Assume.assumeTrue(Functions.isWindows());
         Class<?> c;
         try {

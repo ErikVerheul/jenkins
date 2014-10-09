@@ -1122,7 +1122,7 @@ public class UpdateCenter extends AbstractModelObject implements Saveable, OnMas
                 status = e;
                 if (status.isSuccess()) onSuccess();
                 requiresRestart |= status.requiresRestart();
-            } catch (Throwable e) {
+            } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "Failed to install "+getName(),e);
                 status = new Failure(e);
                 error = e;
@@ -1402,7 +1402,7 @@ public class UpdateCenter extends AbstractModelObject implements Saveable, OnMas
                 LOGGER.info("Downgrade successful: "+getName());
                 status = new Success();
                 onSuccess();
-            } catch (Throwable e) {
+            } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "Failed to downgrade "+getName(),e);
                 status = new Failure(e);
                 error = e;
@@ -1498,7 +1498,7 @@ public class UpdateCenter extends AbstractModelObject implements Saveable, OnMas
                 LOGGER.info("Downgrading successful: "+getName());
                 status = new Success();
                 onSuccess();
-            } catch (Throwable e) {
+            } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "Failed to downgrade "+getName(),e);
                 status = new Failure(e);
                 error = e;

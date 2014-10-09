@@ -197,7 +197,7 @@ public abstract class RunListener<R extends Run> implements ExtensionPoint {
             if(l.targetType.isInstance(r))
                 try {
                     l.onCompleted(r,listener);
-                } catch (Throwable e) {
+                } catch (Exception e) {
                     report(e);
                 }
         }
@@ -211,7 +211,7 @@ public abstract class RunListener<R extends Run> implements ExtensionPoint {
             if(l.targetType.isInstance(r))
                 try {
                     l.onStarted(r,listener);
-                } catch (Throwable e) {
+                } catch (Exception e) {
                     report(e);
                 }
         }
@@ -228,7 +228,7 @@ public abstract class RunListener<R extends Run> implements ExtensionPoint {
             if(l.targetType.isInstance(r))
                 try {
                     l.onFinalized(r);
-                } catch (Throwable e) {
+                } catch (Exception e) {
                     report(e);
                 }
         }
@@ -242,7 +242,7 @@ public abstract class RunListener<R extends Run> implements ExtensionPoint {
             if(l.targetType.isInstance(r))
                 try {
                     l.onDeleted(r);
-                } catch (Throwable e) {
+                } catch (Exception e) {
                     report(e);
                 }
         }

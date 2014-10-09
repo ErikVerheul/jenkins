@@ -212,7 +212,7 @@ public abstract class Trigger<J extends Item> implements Describable<Trigger<?>>
                 LOGGER.log(Level.FINE, "cron checking {0}", cal.getTime());
                 try {
                     checkTriggers(cal);
-                } catch (Throwable e) {
+                } catch (Exception e) {
                     LOGGER.log(Level.WARNING,"Cron thread throw an exception",e);
                     // bug in the code. Don't let the thread die.
                     e.printStackTrace();
@@ -264,7 +264,7 @@ public abstract class Trigger<J extends Item> implements Describable<Trigger<?>>
                         LOGGER.log(Level.CONFIG, "cron triggered {0}", p);
                         try {
                             t.run();
-                        } catch (Throwable e) {
+                        } catch (Exception e) {
                             // t.run() is a plugin, and some of them throw RuntimeException and other things.
                             // don't let that cancel the polling activity. report and move on.
                             LOGGER.log(Level.WARNING, t.getClass().getName() + ".run() failed for " + p, e);

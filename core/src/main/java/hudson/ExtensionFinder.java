@@ -277,7 +277,7 @@ public abstract class ExtensionFinder implements ExtensionPoint {
 
             try {
                 container = Guice.createInjector(modules);
-            } catch (Throwable e) {
+            } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "Failed to create Guice container from all the plugins",e);
                 // failing to load all bindings are disastrous, so recover by creating minimum that works
                 // by just including the core
@@ -341,7 +341,7 @@ public abstract class ExtensionFinder implements ExtensionPoint {
                         return result;
                     }
                 };
-            } catch (Throwable e) {
+            } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "Failed to create Guice container from newly added plugins",e);
                 throw new ExtensionRefreshException(e);
             }
