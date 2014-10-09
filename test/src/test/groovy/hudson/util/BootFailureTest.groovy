@@ -61,7 +61,7 @@ class BootFailureTest extends Assert {
         Jenkins.getInstance()?.cleanUp()
     }
 
-    public static class SeriousError extends Error {}
+    public static class SeriousError extends Exception {}
 
     @TestExtension()
     public static class InduceBootFailure extends ItemListener {
@@ -95,7 +95,7 @@ class BootFailureTest extends Assert {
         assert j.newHudson()==null;
         assert bootFailures(home)==2;
         assert runRecord==["1","2"]
-
+        
         // make sure the script has actually run
         assert problem.cause instanceof SeriousError
 
