@@ -199,7 +199,7 @@ public class Executor extends Thread implements ModelObject {
         ACL.impersonate(ACL.SYSTEM);
 
         try {
-            if (induceDeath)        throw new ThreadDeath();
+            if (induceDeath) throw new RuntimeException("Emulate thread death");
 
             SubTask task;
             // transition from idle to building.
