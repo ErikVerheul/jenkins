@@ -135,7 +135,7 @@ public abstract class Build <P extends Project<P,B>,B extends Build<P,B>>
             Some plugins might depend on this instance castable to Runner, so we need to use
             deprecated class here.
          */
-        
+
         protected Result doRun(@Nonnull BuildListener listener) throws Exception {
             if(!preBuild(listener,project.getBuilders()))
                 return FAILURE;

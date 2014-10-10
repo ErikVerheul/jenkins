@@ -56,8 +56,28 @@ Upcoming changes</a>
 <div id="trunk" style="display:none"><!--=TRUNK-BEGIN=-->
 <ul class=image>
   <li class=bug>
-    <code>ConcurrentModificationException</code> in <code>RunListProgressiveRendering</code>.
-    (<a href="https://issues.jenkins-ci.org/browse/JENKINS-21437">issue 21437</a>)
+    Build health computed repeatedly for a single Weather column cell.
+    (<a href="https://issues.jenkins-ci.org/browse/JENKINS-25074">issue 25074</a>)
+  <li class=rfe>
+    Missing workspace page should use 404 status code.
+    (<a href="https://issues.jenkins-ci.org/browse/JENKINS-10450">issue 10450</a>)
+  <li class=bug>
+    Fixed memory leak occurring on pages producing incremental output with a progress bar.
+    (<a href="https://issues.jenkins-ci.org/browse/JENKINS-25081">issue 25081</a>)
+  <li class=bug>
+    Updated SSH Slaves plugin to 1.8.
+  <li class=bug>
+    Due to the reaction, default umask in debian package is set back to 022
+    (<a href="https://issues.jenkins-ci.org/browse/JENKINS-25065">issue 25065</a>)
+  <li class=bug>
+    Greater-than characters are not escaped in HTML outputs like e-mails
+    (<a href="https://issues.jenkins-ci.org/browse/JENKINS-16184">issue 16184</a>)  
+  <li class=bug>
+    Integer overflow in quiet-down timeout calculation 
+    (<a href="https://issues.jenkins-ci.org/browse/JENKINS-24914">issue 24914</a>)  
+  <li class=bug>
+    Don't put session IDs in URLs even when cookies are disabled.
+    (<a href="https://issues.jenkins-ci.org/browse/JENKINS-22358">issue 22358</a>)
 </ul>
 </div><!--=TRUNK-END=-->
 
