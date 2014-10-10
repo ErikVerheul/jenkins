@@ -110,7 +110,7 @@ public class Kernel32Utils {
     /*package*/ static Kernel32 load() {
         try {
             return (Kernel32) Native.loadLibrary("kernel32", Kernel32.class);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Failed to load Kernel32", e);
             return InitializationErrorInvocationHandler.create(Kernel32.class,e);
         }

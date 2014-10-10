@@ -286,7 +286,7 @@ public abstract class AbstractNodeMonitorDescriptor<T> extends Descriptor<NodeMo
                 LOGGER.log(Level.FINE, "Node monitoring {0} completed in {1}ms", new Object[] {getDisplayName(), System.currentTimeMillis()-startTime});
             } catch (InterruptedException x) {
                 // interrupted by new one, fine
-            } catch (Throwable t) {
+            } catch (Exception t) {
                 LOGGER.log(Level.WARNING, "Unexpected node monitoring termination: "+getDisplayName(),t);
             } finally {
                 synchronized(AbstractNodeMonitorDescriptor.this) {

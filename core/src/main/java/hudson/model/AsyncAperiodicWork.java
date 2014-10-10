@@ -87,7 +87,7 @@ public abstract class AsyncAperiodicWork extends AperiodicWork {
                 }
             },name+" thread");
             thread.start(); 
-        } catch (Throwable t) {
+        } catch (Exception t) {
             logger.log(Level.SEVERE, name+" thread failed with error", t);
         }
     }

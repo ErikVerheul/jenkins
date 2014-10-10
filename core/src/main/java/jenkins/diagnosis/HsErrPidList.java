@@ -71,7 +71,7 @@ public class HsErrPidList extends AdministrativeMonitor {
             }
         } catch (UnsupportedOperationException e) {
             // ignore
-        } catch (Throwable e) {
+        } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Failed to list up hs_err_pid files", e);
         }
     }

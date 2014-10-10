@@ -1760,8 +1760,7 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
 
                     LOGGER.log(INFO, "{0} main build action completed: {1}", new Object[] {this, result});
                     CheckPoint.MAIN_COMPLETED.report();
-                } catch (ThreadDeath t) {
-                    throw t;
+                
                 } catch( AbortException e ) {// orderly abortion.
                     result = Result.FAILURE;
                     listener.error(e.getMessage());
@@ -1769,6 +1768,8 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
                 } catch( RunnerAbortedException e ) {// orderly abortion.
                     result = Result.FAILURE;
                     LOGGER.log(FINE, "Build "+this+" aborted",e);
+                } catch (RuntimeException t) {
+                    throw t;
                 } catch( InterruptedException e) {
                     // aborted
                     result = Executor.currentExecutor().abortResult();
@@ -1783,7 +1784,7 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
                 // even if the main build fails fatally, try to run post build processing
                 job.post(listener);
 
-            } catch (ThreadDeath t) {
+            } catch (RuntimeException t) {
                 throw t;
             } catch( Throwable e ) {
                 handleFatalBuildProblem(listener,e);

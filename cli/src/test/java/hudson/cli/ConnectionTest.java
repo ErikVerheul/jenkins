@@ -36,7 +36,7 @@ public class ConnectionTest extends Assert {
             public void run() {
                 try {
                     c1.encryptConnection(sessionKey,"AES/CFB8/NoPadding").writeUTF("Hello");
-                } catch (Throwable x) {
+                } catch (Exception x) {
                     e = x;
                 }
             }
@@ -49,7 +49,7 @@ public class ConnectionTest extends Assert {
                 try {
                     String data = c2.encryptConnection(sessionKey,"AES/CFB8/NoPadding").readUTF();
                     assertEquals("Hello", data);
-                } catch (Throwable x) {
+                } catch (Exception x) {
                     e = x;
                 }
             }

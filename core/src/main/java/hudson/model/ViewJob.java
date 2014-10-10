@@ -206,7 +206,7 @@ public abstract class ViewJob<JobT extends ViewJob<JobT,RunT>, RunT extends Run<
                 } catch (InterruptedException e) {
                     // treat this as a death signal
                     return;
-                } catch (Throwable t) {
+                } catch (Exception t) {
                     // otherwise ignore any error
                     t.printStackTrace();
                 }

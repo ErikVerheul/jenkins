@@ -30,7 +30,7 @@ public class StandardOutputSwapper extends ComputerListener {
         try {
             if (channel.call(new ChannelSwapper()))
                 listener.getLogger().println("Evacuated stdout");
-        } catch (Throwable e) {
+        } catch (Exception e) {
             LOGGER.fine("Fatal problem swapping file descriptors " + c.getName());
         }
     }

@@ -680,7 +680,7 @@ public class SlaveComputer extends Computer {
     private static final class SlaveVersion implements Callable<String,IOException> {
         public String call() throws IOException {
             try { return Launcher.VERSION; }
-            catch (Throwable ex) { return "< 1.335"; } // Older slave.jar won't have VERSION
+            catch (Exception ex) { return "< 1.335"; } // Older slave.jar won't have VERSION
         }
     }
     private static final class DetectOS implements Callable<Boolean,IOException> {

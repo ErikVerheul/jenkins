@@ -18,7 +18,7 @@ public class ChangeLogSetTest extends HudsonTestCase {
         boolean notCaught = false;
         try {
             change.getMsgAnnotated();
-        } catch (Throwable t) {
+        } catch (Exception t) {
             notCaught = true;
         }
         assertEquals((new EntryImpl()).getMsg(), change.getMsg());

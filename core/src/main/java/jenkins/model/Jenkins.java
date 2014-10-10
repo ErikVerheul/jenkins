@@ -3400,7 +3400,7 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
                     } else {
                         LOGGER.info("Safe-restart mode cancelled");
                     }
-                } catch (Throwable e) {
+                } catch (Exception e) {
                     LOGGER.log(Level.WARNING, "Failed to restart Jenkins",e);
                 }
             }

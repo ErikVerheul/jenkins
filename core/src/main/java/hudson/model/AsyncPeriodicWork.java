@@ -64,7 +64,7 @@ public abstract class AsyncPeriodicWork extends PeriodicWork {
                 }
             },name+" thread");
             thread.start();
-        } catch (Throwable t) {
+        } catch (Exception t) {
             LogRecord lr = new LogRecord(this.getErrorLoggingLevel(), "{0} thread failed with error");
             lr.setThrown(t);
             lr.setParameters(new Object[]{name});

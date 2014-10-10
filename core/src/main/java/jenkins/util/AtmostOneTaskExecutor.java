@@ -92,7 +92,7 @@ public class AtmostOneTaskExecutor<V> {
 
                     try {
                         inprogress.set(task.call());
-                    } catch (Throwable t) {
+                    } catch (Exception t) {
                         inprogress.setException(t);
                     } finally {
                         synchronized (AtmostOneTaskExecutor.this) {

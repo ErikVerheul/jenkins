@@ -430,7 +430,7 @@ public final class ComputerSet extends AbstractModelObject implements Describabl
                     try {
                         nm.getDescriptor();
                         sanitized.add(nm);
-                    } catch (Throwable e) {
+                    } catch (Exception e) {
                         // the descriptor didn't load? see JENKINS-15869
                     }
                 }
@@ -445,7 +445,7 @@ public final class ComputerSet extends AbstractModelObject implements Describabl
                         r.add(i);
                 }
             monitors.replaceBy(r.toList());
-        } catch (Throwable x) {
+        } catch (Exception x) {
             LOGGER.log(Level.WARNING, "Failed to instantiate NodeMonitors", x);
         }
     }

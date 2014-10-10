@@ -1142,7 +1142,7 @@ public abstract class Launcher {
                         // make sure I/O is delivered to the remote before we return
                         try {
                             Channel.current().syncIO();
-                        } catch (Throwable _) {
+                        } catch (Exception _) {
                             // this includes a failure to sync, slave.jar too old, etc
                         }
                     }

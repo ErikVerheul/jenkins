@@ -381,7 +381,7 @@ public class PluginWrapper implements Comparable<PluginWrapper>, ModelObject {
             try {
                 LOGGER.log(Level.FINE, "Stopping {0}", shortName);
                 plugin.stop();
-            } catch (Throwable t) {
+            } catch (Exception t) {
                 LOGGER.log(WARNING, "Failed to shut down " + shortName, t);
             }
         } else {

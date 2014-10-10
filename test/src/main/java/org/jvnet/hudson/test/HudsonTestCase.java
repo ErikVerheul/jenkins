@@ -431,7 +431,7 @@ public abstract class HudsonTestCase extends TestCase implements RootAction {
 
         try {
             super.runTest();
-        } catch (Throwable t) {
+        } catch (Exception t) {
             // allow the late attachment of a debugger in case of a failure. Useful
             // for diagnosing a rare failure
             try {

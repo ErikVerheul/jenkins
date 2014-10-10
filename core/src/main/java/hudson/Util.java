@@ -252,7 +252,7 @@ public class Util {
                         throw (IOException) x2;
                     }
                     // else suppress
-                } catch (Throwable x) {
+                } catch (Exception x) {
                     // linkage errors, etc.; suppress
                 }
                 // see http://www.nabble.com/Sometimes-can%27t-delete-files-from-hudson.scm.SubversionSCM%24CheckOutTask.invoke%28%29-tt17333292.html
@@ -290,7 +290,7 @@ public class Util {
             String path = f.getAbsolutePath();
             FileStat stat = posix.stat(path);
             posix.chmod(path, stat.mode()|0200); // u+w
-        } catch (Throwable t) {
+        } catch (Exception t) {
             LOGGER.log(Level.FINE,"Failed to chmod(2) "+f,t);
         }
 

@@ -54,7 +54,7 @@ public class GroupedTest extends TestSuite implements Filterable {
             }
             // everything went smoothly. report a successful test to make the ends meet
             runTest(new FailedTest(getClass(),null),result);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             // something went wrong
             runTest(new FailedTest(getClass(),e),result);
         }

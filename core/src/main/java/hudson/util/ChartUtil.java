@@ -248,7 +248,7 @@ public class ChartUtil {
     static {
         try {
             new Font("SansSerif",Font.BOLD,18).toString();
-        } catch (Throwable t) {
+        } catch (Exception t) {
             awtProblemCause = t;
             awtProblem = true;
         }

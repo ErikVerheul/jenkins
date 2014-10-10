@@ -487,7 +487,7 @@ public class JenkinsRule implements TestRule, MethodRule, RootAction {
                     ACL.impersonate(ACL.SYSTEM);
                     try {
                         base.evaluate();
-                    } catch (Throwable th) {
+                    } catch (Exception th) {
                         // allow the late attachment of a debugger in case of a failure. Useful
                         // for diagnosing a rare failure
                         try {

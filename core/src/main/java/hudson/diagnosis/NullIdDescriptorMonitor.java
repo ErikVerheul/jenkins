@@ -70,7 +70,7 @@ public class NullIdDescriptorMonitor extends AdministrativeMonitor {
             String id;
             try {
                 id = d.getId();
-            } catch (Throwable t) {
+            } catch (Exception t) {
                 LOGGER.log(Level.SEVERE,MessageFormat.format("Descriptor {0} from plugin {1} with display name {2} reported an exception for ID",
                         d, p == null ? "???" : p.getLongName(), d.getDisplayName()),t);
                 problems.add(d);
