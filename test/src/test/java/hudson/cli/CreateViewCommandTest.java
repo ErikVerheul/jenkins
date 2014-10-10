@@ -128,6 +128,6 @@ public class CreateViewCommandTest {
 
         assertThat(result, failedWith(-1));
         assertThat(result, hasNoStandardOutput());
-        assertThat(result.stderr(), containsString("Invalid view name"));
+        assertThat(result.stderr(), containsString("java.io.IOException: Unable to read"));
     }
 }
