@@ -1776,7 +1776,7 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
                     listener.getLogger().println(Messages.Run_BuildAborted());
                     Executor.currentExecutor().recordCauseOfInterruption(Run.this,listener);
                     LOGGER.log(Level.INFO, this + " aborted", e);
-                } catch( Throwable e ) {
+                } catch(Exception e ) {
                     handleFatalBuildProblem(listener,e);
                     result = Result.FAILURE;
                 }
@@ -1786,7 +1786,7 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
 
             } catch (RuntimeException t) {
                 throw t;
-            } catch( Throwable e ) {
+            } catch(Exception e ) {
                 handleFatalBuildProblem(listener,e);
                 result = Result.FAILURE;
             } finally {

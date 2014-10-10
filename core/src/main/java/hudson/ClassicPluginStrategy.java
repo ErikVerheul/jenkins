@@ -391,7 +391,7 @@ public class ClassicPluginStrategy implements PluginStrategy {
                 Plugin plugin = wrapper.getPlugin();
                 plugin.setServletContext(pluginManager.context);
                 startPlugin(wrapper);
-            } catch(Throwable t) {
+            } catch(Exception t) {
                 // gracefully handle any error in plugin.
                 throw new IOException("Failed to initialize",t);
             }

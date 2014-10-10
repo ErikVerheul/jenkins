@@ -100,7 +100,10 @@ public abstract class Graph {
             ServletOutputStream os = rsp.getOutputStream();
             ImageIO.write(image, "PNG", os);
             os.close();
-        } catch(Error e) {
+        }  catch(HeadlessException e) {
+            // not available. send out error message
+            rsp.sendRedirect2(req.getContextPath()+"/images/headless.png");
+        }  catch(RuntimeException e) {
             /* OpenJDK on ARM produces an error like this in case of headless error
                 Caused by: java.lang.Error: Probable fatal error:No fonts found.
                         at sun.font.FontManager.getDefaultPhysicalFont(FontManager.java:1088)
@@ -136,9 +139,6 @@ public abstract class Graph {
                 return;
             }
             throw e; // otherwise let the caller deal with it
-        } catch(HeadlessException e) {
-            // not available. send out error message
-            rsp.sendRedirect2(req.getContextPath()+"/images/headless.png");
         }
     }
 

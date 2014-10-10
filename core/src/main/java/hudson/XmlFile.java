@@ -142,7 +142,7 @@ public final class XmlFile {
             return xs.fromXML(in);
         } catch (XStreamException e) {
             throw new IOException("Unable to read "+file,e);
-        } catch(Error e) {// mostly reflection errors
+        } catch(RuntimeException e) {// mostly reflection errors
             throw new IOException("Unable to read "+file,e);
         } finally {
             in.close();
@@ -163,7 +163,7 @@ public final class XmlFile {
             return xs.unmarshal(DEFAULT_DRIVER.createReader(in), o);
         } catch (XStreamException e) {
             throw new IOException("Unable to read "+file,e);
-        } catch(Error e) {// mostly reflection errors
+        } catch(RuntimeException e) {// mostly reflection errors
             throw new IOException("Unable to read "+file,e);
         } finally {
             in.close();

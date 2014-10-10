@@ -52,7 +52,7 @@ public abstract class SafeTimerTask extends TimerTask {
         SecurityContext oldContext = ACL.impersonate(ACL.SYSTEM);
         try {
             doRun();
-        } catch(Throwable t) {
+        } catch(Exception t) {
             LOGGER.log(Level.SEVERE, "Timer task "+this+" failed",t);
         } finally {
             SecurityContextHolder.setContext(oldContext);

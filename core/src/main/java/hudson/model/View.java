@@ -1093,7 +1093,7 @@ public abstract class View extends AbstractModelObject implements AccessControll
             throw new IOException("Unable to read",e);
         } catch(ConversionException e) {
             throw new IOException("Unable to read",e);
-        } catch(Error e) {// mostly reflection errors
+        } catch(RuntimeException e) {// mostly reflection errors
             throw new IOException("Unable to read",e);
         } finally {
             in.close();
@@ -1226,7 +1226,7 @@ public abstract class View extends AbstractModelObject implements AccessControll
             throw new IOException("Unable to read",e);
         } catch(ConversionException e) {
             throw new IOException("Unable to read",e);
-        } catch(Error e) {// mostly reflection errors
+        } catch(RuntimeException e) {// mostly reflection errors
             throw new IOException("Unable to read",e);
         } finally {
             in.close();
