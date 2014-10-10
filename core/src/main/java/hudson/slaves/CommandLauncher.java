@@ -151,8 +151,6 @@ public class CommandLauncher extends ComputerLauncher {
             e.printStackTrace(listener.error(Messages.ComputerLauncher_abortedLaunch()));
         } catch (RuntimeException e) {
             e.printStackTrace(listener.error(Messages.ComputerLauncher_unexpectedError()));
-        } catch (Error e) {
-            e.printStackTrace(listener.error(Messages.ComputerLauncher_unexpectedError()));
         } catch (IOException e) {
             Util.displayIOException(e, listener);
 

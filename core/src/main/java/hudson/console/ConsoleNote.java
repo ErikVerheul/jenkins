@@ -230,7 +230,7 @@ public abstract class ConsoleNote<T> implements Serializable, Describable<Consol
             } finally {
                 ois.close();
             }
-        } catch (Error e) {
+        } catch (RuntimeException e) {
             // for example, bogus 'sz' can result in OutOfMemoryError.
             // package that up as IOException so that the caller won't fatally die.
             throw new IOException(e);

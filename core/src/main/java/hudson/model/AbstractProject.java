@@ -1349,9 +1349,6 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
         } catch (RuntimeException e) {
             SCMPollListener.firePollingFailed(this, listener,e);
             throw e;
-        } catch (Error e) {
-            SCMPollListener.firePollingFailed(this, listener,e);
-            throw e;
         }
     }
 

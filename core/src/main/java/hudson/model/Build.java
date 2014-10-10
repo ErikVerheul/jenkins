@@ -135,7 +135,7 @@ public abstract class Build <P extends Project<P,B>,B extends Build<P,B>>
             Some plugins might depend on this instance castable to Runner, so we need to use
             deprecated class here.
          */
-
+        
         protected Result doRun(@Nonnull BuildListener listener) throws Exception {
             if(!preBuild(listener,project.getBuilders()))
                 return FAILURE;
@@ -152,8 +152,9 @@ public abstract class Build <P extends Project<P,B>,B extends Build<P,B>>
 
                 for( BuildWrapper w : wrappers ) {
                     Environment e = w.setUp((AbstractBuild<?,?>)Build.this, launcher, listener);
-                    if(e==null)
+                    if (e == null) {
                         return (r = FAILURE);
+                    }
                     buildEnvironments.add(e);
                 }
 
@@ -164,16 +165,19 @@ public abstract class Build <P extends Project<P,B>,B extends Build<P,B>>
                 // not calling Executor.recordCauseOfInterruption here. We do that where this exception is consumed.
                 throw e;
             } finally {
-                if (r != null) setResult(r);
-                // tear down in reverse order
-                boolean failed=false;
-                for( int i=buildEnvironments.size()-1; i>=0; i-- ) {
-                    if (!buildEnvironments.get(i).tearDown(Build.this,listener)) {
-                        failed=true;
-                    }                    
+                if (r != null) {
+                    setResult(r);
                 }
-                // WARNING The return in the finally clause will trump any return before
-                if (failed) return FAILURE;
+                // tear down in reverse order
+                boolean failed = false;
+                for (int i = buildEnvironments.size() - 1; i >= 0; i--) {
+                    if (!buildEnvironments.get(i).tearDown(Build.this, listener)) {
+                        failed = true;
+                    }
+                }
+                if (failed) {
+                    r = FAILURE;
+                }
             }
 
             return r;
