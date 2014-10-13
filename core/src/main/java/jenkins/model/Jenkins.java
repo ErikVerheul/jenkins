@@ -304,7 +304,7 @@ import static javax.servlet.http.HttpServletResponse.*;
  * @author Kohsuke Kawaguchi
  */
 @ExportedBean
-public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLevelItemGroup, StaplerProxy, StaplerFallback,
+public final class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLevelItemGroup, StaplerProxy, StaplerFallback,
         ModifiableViewGroup, AccessControlled, DescriptorByNameOwner,
         ModelObjectWithContextMenu, ModelObjectWithChildren {
     private transient final Queue queue;
