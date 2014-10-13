@@ -155,17 +155,6 @@ public abstract class ProgressiveRendering {
         }
     }
 
-    @java.lang.SuppressWarnings("unchecked")
-    private static void setCurrentRequest(RequestImpl request) {
-        try {
-            Field field = Stapler.class.getDeclaredField("CURRENT_REQUEST");
-            field.setAccessible(true);
-            ((ThreadLocal<RequestImpl>) field.get(null)).set(request);
-        } catch (Exception x) {
-            LOG.log(Level.WARNING, "cannot mock Stapler request", x);
-        }
-    }
-
     /**
      * Copies important fields from the current HTTP request and makes them available during {@link #compute}.
      * This is necessary because some model methods such as {@link AbstractItem#getUrl} behave differently when called from a request.
@@ -190,7 +179,7 @@ public abstract class ProgressiveRendering {
             }
         }
         List/*<AncestorImpl>*/ ancestors = currentRequest.ancestors;
-        LOG.log(Level.FINE, "mocking ancestors {0} using {1}", new Object[] {ancestors, getters});
+        LOG.log(Level.FINER, "mocking ancestors {0} using {1}", new Object[] {ancestors, getters});
         TokenList tokens = currentRequest.tokens;
         return new RequestImpl(Stapler.getCurrent(), (HttpServletRequest) Proxy.newProxyInstance(ProgressiveRendering.class.getClassLoader(), new Class<?>[] {HttpServletRequest.class}, new InvocationHandler() {
             @Override public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
@@ -202,6 +191,17 @@ public abstract class ProgressiveRendering {
                 }
             }
         }), ancestors, tokens);
+    }
+
+    @java.lang.SuppressWarnings("unchecked")
+    private static void setCurrentRequest(RequestImpl request) {
+        try {
+            Field field = Stapler.class.getDeclaredField("CURRENT_REQUEST");
+            field.setAccessible(true);
+            ((ThreadLocal<RequestImpl>) field.get(null)).set(request);
+        } catch (Exception x) {
+            LOG.log(Level.WARNING, "cannot mock Stapler request", x);
+        }
     }
 
     /**
