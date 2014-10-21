@@ -40,4 +40,3 @@ jenkins_*.changes
 push-build.sh
 war/node_modules/
 .java-version
-/war/src/main/webapp/images/headshot-org.png
