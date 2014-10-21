@@ -41,3 +41,9 @@ push-build.sh
 war/node_modules/
 .java-version
 /war/src/main/webapp/images/headshot-org.png
+/core/nb-configuration.xml
+/nb-configuration.xml
+/plugins/nb-configuration.xml
+/cli/nb-configuration.xml
+/test/nb-configuration.xml
+/war/nb-configuration.xml
