@@ -52,9 +52,9 @@ public abstract class AsyncPeriodicWork extends PeriodicWork {
 
                         execute(l);
                     } catch (IOException e) {
-                        e.printStackTrace(l.fatalError(e.getMessage()));
+                        logger.log(Level.SEVERE, e.getMessage(), e.getStackTrace());
                     } catch (InterruptedException e) {
-                        e.printStackTrace(l.fatalError("aborted"));
+                        logger.log(Level.SEVERE, "aborted", e.getStackTrace());
                     } finally {
                         l.closeQuietly();
                     }

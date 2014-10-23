@@ -79,10 +79,10 @@ public class WorkspaceCleanupThread extends AsyncPeriodicWork {
                 try {
                     check = shouldBeDeleted(item, ws, node);
                 } catch (IOException x) {
-                    x.printStackTrace(listener.error("Failed to check " + node.getDisplayName()));
+                    LOGGER.severe("Failed to check " + node.getDisplayName() + "\n" + x.getStackTrace());
                     continue;
                 } catch (InterruptedException x) {
-                    x.printStackTrace(listener.error("Failed to check " + node.getDisplayName()));
+                    LOGGER.severe("Failed to check " + node.getDisplayName() + "\n" + x.getStackTrace());
                     continue;
                 }
                 if (check) {
@@ -90,9 +90,9 @@ public class WorkspaceCleanupThread extends AsyncPeriodicWork {
                     try {
                         ws.deleteRecursive();
                     } catch (IOException x) {
-                        x.printStackTrace(listener.error("Failed to delete " + ws + " on " + node.getDisplayName()));
+                        LOGGER.severe("Failed to delete " + ws + " on " + node.getDisplayName() + "\n" + x.getStackTrace());
                     } catch (InterruptedException x) {
-                        x.printStackTrace(listener.error("Failed to delete " + ws + " on " + node.getDisplayName()));
+                        LOGGER.severe("Failed to delete " + ws + " on " + node.getDisplayName() + "\n" + x.getStackTrace());
                     }
                 }
             }

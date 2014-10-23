@@ -31,8 +31,6 @@ import java.io.IOException;
 import java.util.logging.Level;
 
 import jenkins.model.Jenkins;
-import org.acegisecurity.context.SecurityContext;
-import org.acegisecurity.context.SecurityContextHolder;
 
 /**
  * {@link AperiodicWork} that takes a long time to run. Similar to {@link AsyncPeriodicWork}, see {@link AsyncPeriodicWork} for
@@ -75,9 +73,9 @@ public abstract class AsyncAperiodicWork extends AperiodicWork {
 
                         execute(l);
                     } catch (IOException e) {
-                        e.printStackTrace(l.fatalError(e.getMessage()));
+                        logger.log(Level.SEVERE, e.getMessage(), e.getStackTrace());
                     } catch (InterruptedException e) {
-                        e.printStackTrace(l.fatalError("aborted"));
+                        logger.log(Level.SEVERE, "aborted\n", e.getStackTrace());
                     } finally {
                         l.closeQuietly();
                     }

@@ -1879,7 +1879,7 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
             Writer w = listener.fatalError(e.getMessage());
             if(w!=null) {
                 try {
-                    e.printStackTrace(new PrintWriter(w));
+                    LOGGER.log(SEVERE, e.getMessage(), e.getStackTrace());
                     w.close();
                 } catch (IOException e1) {
                     // ignore
@@ -2195,7 +2195,7 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
         }
         catch(IOException ex){
             StringWriter writer = new StringWriter();
-            ex.printStackTrace(new PrintWriter(writer));
+            LOGGER.log(SEVERE, ex.getMessage(), ex.getStackTrace());
             req.setAttribute("stackTraces", writer);
             req.getView(this, "delete-retry.jelly").forward(req, rsp);  
             return;

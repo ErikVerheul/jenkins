@@ -1344,11 +1344,11 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
             SCMPollListener.firePollingFailed(this, listener,e);
             return NO_CHANGES;
         } catch (IOException e) {
-            e.printStackTrace(listener.fatalError(e.getMessage()));
+            LOGGER.severe(e.getMessage() + "\n" + e.getStackTrace());
             SCMPollListener.firePollingFailed(this, listener,e);
             return NO_CHANGES;
         } catch (InterruptedException e) {
-            e.printStackTrace(listener.fatalError(Messages.AbstractProject_PollingABorted()));
+            LOGGER.severe(Messages.AbstractProject_PollingABorted() + "\n" + e.getStackTrace());
             SCMPollListener.firePollingFailed(this, listener,e);
             return NO_CHANGES;
         } catch (RuntimeException e) {
