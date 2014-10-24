@@ -149,8 +149,31 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
         return realm.getUserIdStrategy();
     }
 
+    @Override
     public int compareTo(User that) {
         return idStrategy().compare(this.id, that.id);
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof User)) {
+            return false;
+        }
+        User other = (User) obj;
+        return idStrategy().equals(this.id, other.id);
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 19 * hash + (this.id != null ? this.id.hashCode() : 0);
+        return hash;
     }
 
     /**
@@ -899,11 +922,33 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
          */
         public static final String REALM = "realm";
 
+        @Override
         public int compareTo(CanonicalIdResolver o) {
             // reverse priority order
             int i = getPriority();
             int j = o.getPriority();
             return i>j ? -1 : (i==j ? 0:1);
+        }
+        
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+            if (obj == this) {
+                return true;
+            }
+            if (!(obj instanceof CanonicalIdResolver)) {
+                return false;
+            }
+            CanonicalIdResolver other = (CanonicalIdResolver) obj;
+            return getPriority() == other.getPriority();
+        }
+        
+        @Override
+        public int hashCode() {
+            int hash = 7;
+            return hash;
         }
 
         /**

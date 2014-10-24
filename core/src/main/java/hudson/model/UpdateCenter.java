@@ -1525,10 +1525,34 @@ public class UpdateCenter extends AbstractModelObject implements Saveable, OnMas
         public String category;
         private PluginEntry(Plugin p, String c) { plugin = p; category = c; }
 
+        @Override
         public int compareTo(PluginEntry o) {
             int r = category.compareTo(o.category);
             if (r==0) r = plugin.name.compareToIgnoreCase(o.plugin.name);
             return r;
+        }
+        
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+            if (obj == this) {
+                return true;
+            }
+            if (!(obj instanceof PluginEntry)) {
+                return false;
+            }
+            PluginEntry o = (PluginEntry) obj;
+            return category.compareTo(o.category) == 0 && plugin.name.compareToIgnoreCase(o.plugin.name) == 0;
+        }
+
+        @Override
+        public int hashCode() {
+            int hash = 5;
+            hash = 67 * hash + (this.plugin != null ? this.plugin.hashCode() : 0);
+            hash = 67 * hash + (this.category != null ? this.category.hashCode() : 0);
+            return hash;
         }
     }
 

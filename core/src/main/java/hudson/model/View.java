@@ -636,6 +636,7 @@ public abstract class View extends AbstractModelObject implements AccessControll
             return Util.XS_DATETIME_FORMATTER.format(lastChange.getTime());
         }
 
+        @Override
         public int compareTo(UserInfo that) {
             long rhs = that.ordinal();
             long lhs = this.ordinal();
@@ -643,6 +644,28 @@ public abstract class View extends AbstractModelObject implements AccessControll
             if(rhs<lhs) return -1;
             return 0;
         }
+        
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+            if (obj == this) {
+                return true;
+            }
+            if (!(obj instanceof UserInfo)) {
+                return false;
+            }
+            UserInfo o = (UserInfo) obj;
+            return ordinal() == o.ordinal();
+        }
+
+        @Override
+        public int hashCode() {
+            int hash = 5;
+            return hash;
+        }
+
 
         private long ordinal() {
             if(lastChange==null)    return 0;

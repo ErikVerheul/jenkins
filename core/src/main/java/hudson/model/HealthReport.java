@@ -325,8 +325,31 @@ public class HealthReport implements Serializable, Comparable<HealthReport> {
     /**
      * {@inheritDoc}
      */
+    @Override
     public int compareTo(HealthReport o) {
         return (this.score < o.score ? -1 : (this.score == o.score ? 0 : 1));
+    }
+    
+    @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+            if (obj == this) {
+                return true;
+            }
+            if (!(obj instanceof HealthReport)) {
+                return false;
+            }
+            HealthReport o = (HealthReport) obj;
+            return this.score == o.score;
+        }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 37 * hash + this.score;
+        return hash;
     }
 
     /**

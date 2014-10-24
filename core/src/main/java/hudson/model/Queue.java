@@ -1660,13 +1660,39 @@ public class Queue extends ResourceController implements Saveable {
             this.timestamp = timestamp;
         }
         
+        @Override
         public int compareTo(WaitingItem that) {
             int r = this.timestamp.getTime().compareTo(that.timestamp.getTime());
-            if (r != 0) return r;
+            if (r != 0) {
+                return r;
+            }
 
             return this.id - that.id;
         }
 
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+            if (obj == this) {
+                return true;
+            }
+            if (!(obj instanceof WaitingItem)) {
+                return false;
+            }
+            WaitingItem o = (WaitingItem) obj;
+            return this.id == o.id;
+        }
+
+        @Override
+        public int hashCode() {
+            int hash = 5;
+            hash = 23 * hash + this.id;
+            return hash;
+        }
+
+        @Override
         public CauseOfBlockage getCauseOfBlockage() {
             long diff = timestamp.getTimeInMillis() - System.currentTimeMillis();
             if (diff > 0)

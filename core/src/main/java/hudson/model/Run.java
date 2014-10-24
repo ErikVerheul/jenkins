@@ -428,9 +428,35 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
     /**
      * Ordering based on build numbers.
      */
+    @Override
     public int compareTo(@Nonnull RunT that) {
         return this.number - that.number;
     }
+    
+    @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+            if (obj == this) {
+                return true;
+            }
+            if (!(obj instanceof Run)) {
+                return false;
+            }
+            RunT o = (RunT) obj;
+            return super.equals(obj) && this.number == o.number;
+        }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 19 * hash + this.project.hashCode();
+        hash = 19 * hash + this.number;
+        return hash;
+    }
+
+   
 
     /**
      * Returns the build result.
