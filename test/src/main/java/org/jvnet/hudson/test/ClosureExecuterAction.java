@@ -50,7 +50,8 @@ public final class ClosureExecuterAction implements RootAction {
     public void doIndex(StaplerResponse rsp, @QueryParameter("uuid") String uuid) throws IOException {
         Runnable r = runnables.remove(UUID.fromString(uuid));
         if (r!=null) {
-            r.run();
+            // False positive for squid:S1217 "Thread.run() and Runnable.run() should not be called directly".
+            r.run(); //NOSONAR
         } else {
             rsp.sendError(404);
         }

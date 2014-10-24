@@ -52,11 +52,13 @@ public class SecurityContextExecutorService extends InterceptingExecutorService 
     protected Runnable wrap(final Runnable r) {
         final SecurityContext callingContext = getContext();
         return new Runnable() {
+            @Override
             public void run() {
                 SecurityContext old = getContext();
                 setContext(callingContext);
                 try {
-                    r.run();
+                    // False positive for squid:S1217 "Thread.run() and Runnable.run() should not be called directly".
+                    r.run(); //NOSONAR
                 } finally {
                     setContext(old);
                 }

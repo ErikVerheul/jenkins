@@ -208,7 +208,7 @@ public abstract class ViewJob<JobT extends ViewJob<JobT,RunT>, RunT extends Run<
                     return;
                 } catch (Exception t) {
                     // otherwise ignore any error
-                    t.printStackTrace();
+                    t.printStackTrace(); //NOSONAR
                 }
             }
         }

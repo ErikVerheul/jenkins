@@ -51,7 +51,9 @@ public class WorkspaceCleanupThread extends AsyncPeriodicWork {
     @Override public long getRecurrencePeriod() {
         return DAY;
     }
-
+    
+    // False positive for squid:S1217 "Thread.run() and Runnable.run() should not be called directly". Thread.run() is called in an ancestor.
+    @SuppressWarnings("all")
     public static void invoke() {
         ExtensionList.lookup(AsyncPeriodicWork.class).get(WorkspaceCleanupThread.class).run();
     }

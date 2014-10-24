@@ -108,6 +108,7 @@ public class SequentialExecutionQueue implements Executor {
             executors.submit(this);
         }
 
+        @Override
         public void run() {
             try {
                 synchronized (SequentialExecutionQueue.this) {
@@ -115,7 +116,8 @@ public class SequentialExecutionQueue implements Executor {
                     queued = false;
                     inProgress.add(this);
                 }
-                item.run();
+                // False positive for squid:S1217 "Thread.run() and Runnable.run() should not be called directly".
+                item.run(); //NOSONAR
             } finally {
                 synchronized (SequentialExecutionQueue.this) {
                     if(queued)

@@ -141,7 +141,8 @@ public abstract class ACL {
     public static void impersonate(@Nonnull Authentication auth, @Nonnull Runnable body) {
         SecurityContext old = impersonate(auth);
         try {
-            body.run();
+            // False positive for squid:S1217 "Thread.run() and Runnable.run() should not be called directly".
+            body.run(); //NOSONAR
         } finally {
             SecurityContextHolder.setContext(old);
         }

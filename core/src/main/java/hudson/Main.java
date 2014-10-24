@@ -54,7 +54,8 @@ public class Main {
         try {
             System.exit(run(args));
         } catch (Exception e) {
-            e.printStackTrace();
+            //we might not have a logger available
+            e.printStackTrace(); //NOSONAR
             System.exit(-1);
         }
     }

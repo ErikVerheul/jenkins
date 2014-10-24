@@ -300,7 +300,8 @@ public class JenkinsMatchers {
     private static class HasNonNullEquals extends BaseMatcher<Object> {
 
         public boolean matches(Object o) {
-            return o != null && !o.equals(null);
+            // o is not null when equals is applied
+            return o != null && !o.equals(null); //NOSONAR
         }
 
         public void describeTo(Description description) {

@@ -419,7 +419,7 @@ public abstract class HudsonTestCase extends TestCase implements RootAction {
             // but because there's no explicit dispose method on ClassLoader, they won't get GC-ed until
             // at some later point, leading to possible file descriptor overflow. So encourage GC now.
             // see http://bugs.sun.com/view_bug.do?bug_id=4950148
-            System.gc();
+            System.gc(); //NOSONAR
         }
     }
 
@@ -1821,7 +1821,8 @@ public abstract class HudsonTestCase extends TestCase implements RootAction {
                 p = super.getPage(getContextPath() + relative);
             } catch (IOException x) {
                 if (x.getCause() != null) {
-                    x.getCause().printStackTrace();
+                    //allow printing stacktraces in tests
+                    x.getCause().printStackTrace(); //NOSONAR
                 }
                 throw x;
             }

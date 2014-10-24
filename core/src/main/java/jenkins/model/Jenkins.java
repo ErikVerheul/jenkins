@@ -2755,12 +2755,12 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
             new Reactor(tf).execute(new Executor() {
                 @Override
                 public void execute(Runnable command) {
-                    command.run();
+                    // False positive for squid:S1217 "Thread.run() and Runnable.run() should not be called directly".
+                    command.run(); //NOSONAR
                 }
             });
         } catch (InterruptedException e) {
             LOGGER.log(SEVERE, "Failed to execute termination",e);
-            e.printStackTrace();
         } catch (ReactorException e) {
             LOGGER.log(SEVERE, "Failed to execute termination",e);
         } catch (IOException e) {
@@ -3240,7 +3240,7 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
     @RequirePOST
     public void doGc(StaplerResponse rsp) throws IOException {
         checkPermission(Jenkins.ADMINISTER);
-        System.gc();
+        System.gc(); //NOSONAR
         rsp.setStatus(HttpServletResponse.SC_OK);
         rsp.setContentType("text/plain");
         rsp.getWriter().println("GCed");
@@ -4076,7 +4076,7 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
             if(is!=null)
                 props.load(is);
         } catch (IOException e) {
-            e.printStackTrace(); // if the version properties is missing, that's OK.
+            LOGGER.log(SEVERE, "if the version properties is missing, that's OK",e);
         } finally {
             IOUtils.closeQuietly(is);
         }

@@ -25,7 +25,8 @@ public class ContextResettingExecutorService extends InterceptingExecutorService
                 String name = t.getName();
                 ClassLoader cl = t.getContextClassLoader();
                 try {
-                    r.run();
+                    // False positive for squid:S1217 "Thread.run() and Runnable.run() should not be called directly".
+                    r.run(); //NOSONAR
                 } finally {
                     t.setName(name);
                     t.setContextClassLoader(cl);

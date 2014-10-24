@@ -449,7 +449,8 @@ public class JenkinsRule implements TestRule, MethodRule, RootAction {
             try {
                 env.dispose();
             } catch (Exception x) {
-                x.printStackTrace();
+                //allow printing stacktraces in tests
+                x.printStackTrace(); //NOSONAR
             }
 
             // Hudson creates ClassLoaders for plugins that hold on to file descriptors of its jar files,
@@ -457,7 +458,7 @@ public class JenkinsRule implements TestRule, MethodRule, RootAction {
             // at some later point, leading to possible file descriptor overflow. So encourage GC now.
             // see http://bugs.sun.com/view_bug.do?bug_id=4950148
             // TODO use URLClassLoader.close() in Java 7
-            System.gc();
+            System.gc(); //NOSONAR
         }
     }
 
@@ -2027,7 +2028,9 @@ public class JenkinsRule implements TestRule, MethodRule, RootAction {
                 if (cause instanceof SocketTimeoutException) {
                     throw new AssumptionViolatedException("failed to get " + relative + " due to read timeout", cause);
                 } else if (cause != null) {
-                    cause.printStackTrace(); // SUREFIRE-1067 workaround
+                    // SUREFIRE-1067 workaround
+                    //allow printing stacktraces in tests
+                    cause.printStackTrace(); //NOSONAR
                 }
                 throw x;
             }

@@ -511,7 +511,8 @@ public class CLI {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace(); // if the version properties is missing, that's OK.
+            // if the version properties is missing, that's OK.
+            e.printStackTrace(); //NOSONAR
         }
         return props.getProperty("version","?");
     }

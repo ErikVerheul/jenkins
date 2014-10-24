@@ -86,7 +86,8 @@ public class ResourceController {
         }
 
         try {
-            task.run();
+            // False positive for squid:S1217 "Thread.run() and Runnable.run() should not be called directly".
+            task.run(); //NOSONAR
         } finally {
             synchronized(this) {
                 inProgress.remove(activity);

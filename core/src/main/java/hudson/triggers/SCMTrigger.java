@@ -139,7 +139,8 @@ public class SCMTrigger extends Trigger<Item> {
         if (d.synchronousPolling) {
         	LOGGER.fine("Running the trigger directly without threading, " +
         			"as it's already taken care of by Trigger.Cron");
-            new Runner(additionalActions).run();
+            // False positive for squid:S1217 "Thread.run() and Runnable.run() should not be called directly".
+            new Runner(additionalActions).run(); //NOSONAR
         } else {
             // schedule the polling.
             // even if we end up submitting this too many times, that's OK.

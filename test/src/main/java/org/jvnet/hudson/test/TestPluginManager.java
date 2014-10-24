@@ -140,12 +140,13 @@ public class TestPluginManager extends PluginManager {
                     ((TestPluginManager)INSTANCE).reallyStop();
 
                     // allow JVM cleanup handles of jar files...
-                    System.gc();
+                    System.gc(); //NOSONAR
 
                     try {
                         Util.deleteRecursive(INSTANCE.rootDir);
                     } catch (IOException x) {
-                        x.printStackTrace();
+                        //allow printing stacktraces in tests
+                        x.printStackTrace(); //NOSONAR
                     }
                 }
             });

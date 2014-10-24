@@ -97,7 +97,8 @@ public abstract class ChannelTestCase extends TestCase {
                         at hudson.remoting.Channel$ReaderThread.run(Channel.java:849)
 
              */
-            e.printStackTrace();
+            //allow printing stacktraces in tests
+            e.printStackTrace(); //NOSONAR
         }
         executors.shutdownNow();
     }

@@ -307,7 +307,7 @@ public abstract class AbstractItem extends Actionable implements Item, HttpDelet
                             Util.deleteRecursive(oldRoot);
                         } catch (IOException e) {
                             // but ignore the error, since we expect that
-                            e.printStackTrace();
+                            e.printStackTrace(); //NOSONAR
                         }
                     }
 
@@ -320,7 +320,7 @@ public abstract class AbstractItem extends Actionable implements Item, HttpDelet
 
                 try {
                     parent.onRenamed(this, oldName, newName);
-                } catch (AbstractMethodError _) {
+                } catch (AbstractMethodError e) {
                     // ignore
                 }
 

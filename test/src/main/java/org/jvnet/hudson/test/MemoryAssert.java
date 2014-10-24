@@ -147,7 +147,7 @@ public class MemoryAssert {
             }
         }
         objects = null;
-        System.gc();
+        System.gc(); //NOSONAR
         Object obj = reference.get();
         if (obj != null) {
             fail(LiveReferences.fromRoots(Collections.singleton(obj)).toString());

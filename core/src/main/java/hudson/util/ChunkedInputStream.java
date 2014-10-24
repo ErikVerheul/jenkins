@@ -230,7 +230,7 @@ public class ChunkedInputStream extends InputStream {
                         case '\r':
                             state = 1;
                             break;
-                        case '\"':
+                        case '\"': //NOSONAR
                             state = 2;
                             /* fall through */
                         default:
@@ -254,7 +254,7 @@ public class ChunkedInputStream extends InputStream {
                             b = in.read();
                             baos.write(b);
                             break;
-                        case '\"':
+                        case '\"': //NOSONAR
                             state = 0;
                             /* fall through */
                         default:

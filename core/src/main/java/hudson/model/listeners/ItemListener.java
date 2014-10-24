@@ -173,7 +173,8 @@ public class ItemListener implements ExtensionPoint {
         if (asSystem) {
             ACL.impersonate(ACL.SYSTEM, r);
         } else {
-            r.run();
+            // False positive for squid:S1217 "Thread.run() and Runnable.run() should not be called directly".
+            r.run(); //NOSONAR
         }
     }
 

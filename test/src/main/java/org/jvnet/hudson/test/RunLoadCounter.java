@@ -72,7 +72,8 @@ public final class RunLoadCounter {
         project._getRuns().purgeCache();
         currProject.set(project.getFullName());
         currCount.set(new AtomicInteger());
-        thunk.run();
+        // False positive for squid:S1217 "Thread.run() and Runnable.run() should not be called directly".
+        thunk.run(); //NOSONAR
         return currCount.get().get();
     }
 

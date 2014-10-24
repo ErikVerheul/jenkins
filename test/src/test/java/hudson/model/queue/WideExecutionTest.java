@@ -58,7 +58,8 @@ public class WideExecutionTest extends HudsonTestCase {
                             try {
                                 b.setDescription("I was here");
                             } catch (IOException e) {
-                                e.printStackTrace();
+                                //allow printing stacktraces in tests
+                                e.printStackTrace(); //NOSONAR
                             }
                         }
 
