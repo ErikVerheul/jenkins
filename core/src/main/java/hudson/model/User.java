@@ -166,7 +166,7 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
             return false;
         }
         User other = (User) obj;
-        return idStrategy().equals(this.id, other.id);
+        return idStrategy().equalId(this.id, other.id);
     }
 
     @Override
@@ -429,7 +429,7 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
                     try {
                         Object o = legacyXml.read();
                         if (o instanceof User) {
-                            if (idStrategy().equals(id, legacyUserDir.getName()) && !idStrategy().filenameOf(legacyUserDir.getName())
+                            if (idStrategy().equalId(id, legacyUserDir.getName()) && !idStrategy().filenameOf(legacyUserDir.getName())
                                     .equals(legacyUserDir.getName())) {
                                 if (!legacyUserDir.renameTo(configFile.getParentFile())) {
                                     LOGGER.log(Level.WARNING, "Failed to migrate user record from {0} to {1}",
@@ -600,7 +600,7 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
         for (Cause cause : b.getCauses()) {
             if (cause instanceof Cause.UserIdCause) {
                 String userId = ((Cause.UserIdCause) cause).getUserId();
-                if (userId != null && idStrategy().equals(userId, getId())) {
+                if (userId != null && idStrategy().equalId(userId, getId())) {
                     return true;
                 }
             }
@@ -652,7 +652,7 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
         return getRootDir().listFiles(new FileFilter() {
             @Override
             public boolean accept(File pathname) {
-                return pathname.isDirectory() && new File(pathname, "config.xml").isFile() && idStrategy().equals(
+                return pathname.isDirectory() && new File(pathname, "config.xml").isFile() && idStrategy().equalId(
                         pathname.getName(), id);
             }
         });
@@ -741,7 +741,7 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
     @RequirePOST
     public void doDoDelete(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException {
         checkPermission(Jenkins.ADMINISTER);
-        if (idStrategy().equals(id, Jenkins.getAuthentication().getName())) {
+        if (idStrategy().equalId(id, Jenkins.getAuthentication().getName())) {
             rsp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Cannot delete self");
             return;
         }
@@ -810,7 +810,7 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
         // always allow a non-anonymous user full control of himself.
         return new ACL() {
             public boolean hasPermission(Authentication a, Permission permission) {
-                return (idStrategy().equals(a.getName(), id) && !(a instanceof AnonymousAuthenticationToken))
+                return (idStrategy().equalId(a.getName(), id) && !(a instanceof AnonymousAuthenticationToken))
                         || base.hasPermission(a, permission);
             }
         };
@@ -829,7 +829,7 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
      */
     public boolean canDelete() {
         final IdStrategy strategy = idStrategy();
-        return hasPermission(Jenkins.ADMINISTER) && !strategy.equals(id, Jenkins.getAuthentication().getName())
+        return hasPermission(Jenkins.ADMINISTER) && !strategy.equalId(id, Jenkins.getAuthentication().getName())
                 && new File(getRootDir(), strategy.filenameOf(id)).exists();
     }
 
@@ -857,7 +857,7 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
                 continue;
             }
             String n = a.getAuthority();
-            if (n != null && !idStrategy().equals(n, id)) {
+            if (n != null && !idStrategy().equalId(n, id)) {
                 r.add(n);
             }
         }

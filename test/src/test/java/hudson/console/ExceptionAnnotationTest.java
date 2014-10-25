@@ -19,7 +19,7 @@ public class ExceptionAnnotationTest extends HudsonTestCase {
         p.getBuildersList().add(new TestBuilder() {
             @Override
             public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
-                new Throwable().printStackTrace(listener.error("Injecting a failure"));
+                new Throwable().printStackTrace(listener.error("Injecting a failure")); //NOSONAR
                 return true;
             }
         });

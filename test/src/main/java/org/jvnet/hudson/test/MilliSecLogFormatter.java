@@ -33,7 +33,7 @@ public class MilliSecLogFormatter extends Formatter {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
             pw.println();
-            record.getThrown().printStackTrace(pw);
+            record.getThrown().printStackTrace(pw); //NOSONAR
             pw.close();
             throwable = sw.toString();
         }

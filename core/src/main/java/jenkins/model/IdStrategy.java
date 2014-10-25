@@ -85,14 +85,14 @@ public abstract class IdStrategy extends AbstractDescribableImpl<IdStrategy> imp
      * @param id2 the second id.
      * @return {@code true} if and only if the two ids are the same.
      */
-    public boolean equals(@Nonnull String id1, @Nonnull String id2) {
+    public boolean equalId(@Nonnull String id1, @Nonnull String id2) {
         return compare(id1, id2) == 0;
     }
 
     /**
-     * Compare tow IDs and return their sorting order. If {@link #equals(String, String)} is {@code true} then this
+     * Compare tow IDs and return their sorting order. If {@link #equalId(String, String)} is {@code true} then this
      * must return {@code 0} but {@link #compare(String, String)} returning {@code 0} need not imply that
-     * {@link #equals(String, String)} is {@code true}.
+     * {@link #equalId(String, String)} is {@code true}.
      *
      * @param id1 the first id.
      * @param id2 the second id.
@@ -281,7 +281,7 @@ public abstract class IdStrategy extends AbstractDescribableImpl<IdStrategy> imp
          * {@inheritDoc}
          */
         @Override
-        public boolean equals(@Nonnull String id1, @Nonnull String id2) {
+        public boolean equalId(@Nonnull String id1, @Nonnull String id2) {
             return StringUtils.equals(id1, id2);
         }
 
@@ -341,7 +341,7 @@ public abstract class IdStrategy extends AbstractDescribableImpl<IdStrategy> imp
          * {@inheritDoc}
          */
         @Override
-        public boolean equals(@Nonnull String id1, @Nonnull String id2) {
+        public boolean equalId(@Nonnull String id1, @Nonnull String id2) {
             return StringUtils.equals(keyFor(id1), keyFor(id2));
         }
 
