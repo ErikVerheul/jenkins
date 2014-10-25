@@ -29,7 +29,6 @@ import hudson.triggers.Trigger;
 import hudson.ExtensionPoint;
 import hudson.Extension;
 import hudson.ExtensionList;
-import jenkins.model.Jenkins;
 import jenkins.util.Timer;
 
 import java.util.concurrent.TimeUnit;

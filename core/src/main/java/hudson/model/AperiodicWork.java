@@ -27,11 +27,9 @@ import hudson.ExtensionList;
 import hudson.ExtensionPoint;
 import hudson.init.Initializer;
 import hudson.triggers.SafeTimerTask;
-import jenkins.model.Jenkins;
 import jenkins.util.Timer;
 
 import java.util.Random;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
@@ -52,6 +50,7 @@ import static hudson.init.InitMilestone.JOB_LOADED;
 public abstract class AperiodicWork extends SafeTimerTask implements ExtensionPoint {
 	
 	protected final Logger logger = Logger.getLogger(getClass().getName());
+	
 	
     /**
      * Gets the number of milliseconds between successive executions.
