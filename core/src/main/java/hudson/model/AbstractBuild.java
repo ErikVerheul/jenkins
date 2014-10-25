@@ -651,7 +651,7 @@ public abstract class AbstractBuild<P extends AbstractProject<P,R>,R extends Abs
                     throw (InterruptedException)new InterruptedException().initCause(e);
                 } catch (IOException e) {
                     // checkout error not yet reported
-                    LOGGER.severe(e.getMessage() + "\n" + e.getStackTrace());
+                    LOGGER.log(Level.SEVERE, e.getMessage(), e);
                 }
 
                 if (retryCount == 0)   // all attempts failed
@@ -746,7 +746,7 @@ public abstract class AbstractBuild<P extends AbstractProject<P,R>,R extends Abs
 
         private void reportError(BuildStep bs, Throwable e, BuildListener listener, boolean phase) {
             String msg = "Publisher " + bs.getClass().getName() + " aborted due to exception " + e.getMessage();
-            LOGGER.log(WARNING, msg, e.getStackTrace());
+            LOGGER.log(WARNING, msg, e);
             if (phase) {
                 setResult(Result.FAILURE);
             }

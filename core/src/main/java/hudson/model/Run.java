@@ -1896,23 +1896,20 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
      * Handles a fatal build problem (exception) that occurred during the build.
      */
     private void handleFatalBuildProblem(@Nonnull BuildListener listener, @Nonnull Throwable e) {
-        if(listener!=null) {
-            LOGGER.log(FINE, getDisplayName()+" failed to build",e);
+        LOGGER.log(FINE, getDisplayName() + " failed to build", e);
 
-            if(e instanceof IOException)
-                Util.displayIOException((IOException)e,listener);
+        if (e instanceof IOException) {
+            Util.displayIOException((IOException) e, listener);
+        }
 
-            Writer w = listener.fatalError(e.getMessage());
-            if(w!=null) {
-                try {
-                    LOGGER.log(SEVERE, e.getMessage(), e.getStackTrace());
-                    w.close();
-                } catch (IOException e1) {
-                    // ignore
-                }
+        Writer w = listener.fatalError(e.getMessage());
+        if (w != null) {
+            try {
+                LOGGER.log(SEVERE, e.getMessage(), e);
+                w.close();
+            } catch (IOException e1) {
+                // ignore
             }
-        } else {
-            LOGGER.log(SEVERE, getDisplayName()+" failed to build and we don't even have a listener",e);
         }
     }
 
@@ -2221,7 +2218,7 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
         }
         catch(IOException ex){
             StringWriter writer = new StringWriter();
-            LOGGER.log(SEVERE, ex.getMessage(), ex.getStackTrace());
+            LOGGER.log(SEVERE, ex.getMessage(), ex);
             req.setAttribute("stackTraces", writer);
             req.getView(this, "delete-retry.jelly").forward(req, rsp);  
             return;

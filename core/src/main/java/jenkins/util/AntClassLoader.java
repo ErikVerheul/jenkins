@@ -1033,7 +1033,11 @@ public class AntClassLoader extends ClassLoader implements SubBuildListener {
         } catch (Exception e) {
             String msg = "Unable to obtain resource from " + file + ": ";
             log(msg + e, Project.MSG_WARN);
-            System.err.println(msg + "\n" + e.getStackTrace());
+            System.err.println(this.getClass().getName());
+            System.err.println(msg + e);
+            for (StackTraceElement ste: e.getStackTrace()) {
+                System.err.println(ste);
+            }
         }
         return null;
     }

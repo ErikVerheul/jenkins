@@ -73,9 +73,9 @@ public abstract class AsyncAperiodicWork extends AperiodicWork {
 
                         execute(l);
                     } catch (IOException e) {
-                        logger.log(Level.SEVERE, e.getMessage(), e.getStackTrace());
+                        logger.log(Level.SEVERE, e.getMessage(), e);
                     } catch (InterruptedException e) {
-                        logger.log(Level.SEVERE, "aborted\n", e.getStackTrace());
+                        logger.log(Level.SEVERE, "aborted", e);
                     } finally {
                         l.closeQuietly();
                     }
