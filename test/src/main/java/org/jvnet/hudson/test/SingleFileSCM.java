@@ -47,7 +47,8 @@ public class SingleFileSCM extends NullSCM {
     private final String path;
     private final byte[] contents;
 
-    public SingleFileSCM(String path, byte[] contents) {
+    // Suppress warning Constructors and methods receiving arrays should clone objects and store the copy. Trust the code.
+    public SingleFileSCM(String path, byte[] contents) { //NOSONAR
         this.path = path;
         this.contents = contents;
     }

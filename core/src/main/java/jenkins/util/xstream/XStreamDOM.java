@@ -144,7 +144,8 @@ public class XStreamDOM {
         this.children = children;
     }
 
-    private XStreamDOM(String tagName, String[] attributes, List<XStreamDOM> children, String value) {
+    // Suppress warning Constructors and methods receiving arrays should clone objects and store the copy. Trust the code.
+    private XStreamDOM(String tagName, String[] attributes, List<XStreamDOM> children, String value) { //NOSONAR
         this.tagName = tagName;
         this.attributes = attributes;
         this.children = children;

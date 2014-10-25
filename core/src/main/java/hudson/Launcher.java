@@ -1109,7 +1109,8 @@ public abstract class Launcher {
         private final boolean reverseStdin, reverseStdout, reverseStderr;
         private final boolean quiet;
 
-        RemoteLaunchCallable(List<String> cmd, boolean[] masks, String[] env, InputStream in, boolean reverseStdin, OutputStream out, boolean reverseStdout, OutputStream err, boolean reverseStderr, boolean quiet, String workDir, TaskListener listener) {
+        // Suppress warning Constructors and methods receiving arrays should clone objects and store the copy. Trust the code.
+        RemoteLaunchCallable(List<String> cmd, boolean[] masks, String[] env, InputStream in, boolean reverseStdin, OutputStream out, boolean reverseStdout, OutputStream err, boolean reverseStderr, boolean quiet, String workDir, TaskListener listener) { //NOSONAR
             this.cmd = new ArrayList<String>(cmd);
             this.masks = masks;
             this.env = env;
@@ -1176,7 +1177,8 @@ public abstract class Launcher {
         private final OutputStream err;
         private final Map<String,String> envOverrides;
 
-        public RemoteChannelLaunchCallable(String[] cmd, Pipe out, OutputStream err, String workDir, Map<String,String> envOverrides) {
+        // Suppress warning Constructors and methods receiving arrays should clone objects and store the copy. Trust the code.
+        public RemoteChannelLaunchCallable(String[] cmd, Pipe out, OutputStream err, String workDir, Map<String,String> envOverrides) { //NOSONAR
             this.cmd = cmd;
             this.out = out;
             this.err = new RemoteOutputStream(err);
@@ -1184,6 +1186,7 @@ public abstract class Launcher {
             this.envOverrides = envOverrides;
         }
 
+        @Override
         public OutputStream call() throws IOException {
             Process p = Runtime.getRuntime().exec(cmd,
                 Util.mapToEnv(inherit(envOverrides)),

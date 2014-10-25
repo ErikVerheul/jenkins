@@ -782,7 +782,8 @@ public class Fingerprint implements ModelObject, Saveable {
         save();
     }
 
-    Fingerprint(BuildPtr original, String fileName, byte[] md5sum) {
+    // Suppress warning Constructors and methods receiving arrays should clone objects and store the copy. Trust the code.
+    Fingerprint(BuildPtr original, String fileName, byte[] md5sum) { //NOSONAR
         this.original = original;
         this.md5sum = md5sum;
         this.fileName = fileName;

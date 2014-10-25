@@ -466,7 +466,8 @@ public class SCMTrigger extends Trigger<Item> {
             additionalActions = new Action[0];
         }
         
-        public Runner(Action[] actions) {
+        // Suppress warning Constructors and methods receiving arrays should clone objects and store the copy. Trust the code.
+        public Runner(Action[] actions) { //NOSONAR
             if (actions == null) {
                 additionalActions = new Action[0];
             } else {

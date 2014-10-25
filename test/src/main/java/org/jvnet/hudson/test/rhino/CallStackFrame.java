@@ -56,7 +56,9 @@ public class CallStackFrame implements DebugFrame {
         this.fnOrScript = fnOrScript;
     }
 
-    public void onEnter(Context cx, Scriptable activation, Scriptable thisObj, Object[] args) {
+    // Suppress warning Constructors and methods receiving arrays should clone objects and store the copy. Trust the code.
+    @Override
+    public void onEnter(Context cx, Scriptable activation, Scriptable thisObj, Object[] args) { //NOSONAR
         this.activation = activation;
         this.thisObj = thisObj;
         this.args = args;
