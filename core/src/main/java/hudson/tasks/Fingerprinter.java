@@ -135,7 +135,7 @@ public class Fingerprinter extends Recorder implements Serializable, DependencyD
                 Jenkins.getInstance().rebuildDependencyGraphAsync();
             }
         } catch (IOException e) {
-            e.printStackTrace(listener.error(Messages.Fingerprinter_Failed()));
+            e.printStackTrace(listener.error(Messages.Fingerprinter_Failed())); //NOSONAR
             build.setResult(Result.FAILURE);
         }
 
@@ -404,7 +404,7 @@ public class Fingerprinter extends Recorder implements Serializable, DependencyD
                     if(fp!=null)
                         m.put(r.getKey(), fp);
                 } catch (IOException e) {
-                    logger.log(Level.WARNING,e.getMessage(),e);
+                    LOGGER.log(Level.WARNING,e.getMessage(),e);
                 }
             }
 
@@ -463,7 +463,7 @@ public class Fingerprinter extends Recorder implements Serializable, DependencyD
         }
     }
 
-    private static final Logger logger = Logger.getLogger(Fingerprinter.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(Fingerprinter.class.getName());
 
     private static final long serialVersionUID = 1L;
 }

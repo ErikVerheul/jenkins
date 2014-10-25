@@ -131,8 +131,8 @@ public class CommandLauncher extends ComputerLauncher {
                 public void onClosed(Channel channel, IOException cause) {
                     try {
                         int exitCode = proc.exitValue();
-                        if (exitCode!=0) {
-                            listener.error("Process terminated with exit code "+exitCode);
+                        if (exitCode != 0) {
+                            listener.error("Process terminated with exit code "+ exitCode); //NOSONAR
                         }
                     } catch (IllegalThreadStateException e) {
                         // hasn't terminated yet
@@ -148,9 +148,9 @@ public class CommandLauncher extends ComputerLauncher {
 
             LOGGER.info("slave agent launched for " + computer.getDisplayName());
         } catch (InterruptedException e) {
-            e.printStackTrace(listener.error(Messages.ComputerLauncher_abortedLaunch()));
+            e.printStackTrace(listener.error(Messages.ComputerLauncher_abortedLaunch())); //NOSONAR
         } catch (RuntimeException e) {
-            e.printStackTrace(listener.error(Messages.ComputerLauncher_unexpectedError()));
+            e.printStackTrace(listener.error(Messages.ComputerLauncher_unexpectedError())); //NOSONAR
         } catch (IOException e) {
             Util.displayIOException(e, listener);
 
@@ -162,13 +162,13 @@ public class CommandLauncher extends ComputerLauncher {
             }
             msg = hudson.model.Messages.Slave_UnableToLaunch(computer.getDisplayName(), msg);
             LOGGER.log(Level.SEVERE, msg, e);
-            e.printStackTrace(listener.error(msg));
+            e.printStackTrace(listener.error(msg)); //NOSONAR
 
             if(_proc!=null)
                 try {
                     ProcessTree.get().killAll(_proc, _cookie);
                 } catch (InterruptedException x) {
-                    x.printStackTrace(listener.error(Messages.ComputerLauncher_abortedLaunch()));
+                    x.printStackTrace(listener.error(Messages.ComputerLauncher_abortedLaunch())); //NOSONAR
                 }
         }
     }
@@ -177,6 +177,7 @@ public class CommandLauncher extends ComputerLauncher {
 
     @Extension
     public static class DescriptorImpl extends Descriptor<ComputerLauncher> {
+        @Override
         public String getDisplayName() {
             return Messages.CommandLauncher_displayName();
         }

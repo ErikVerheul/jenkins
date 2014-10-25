@@ -243,10 +243,10 @@ public class SlaveComputer extends Computer {
                         throw e;
                     } catch (IOException e) {
                         Util.displayIOException(e,taskListener);
-                        e.printStackTrace(taskListener.error(Messages.ComputerLauncher_unexpectedError()));
+                        e.printStackTrace(taskListener.error(Messages.ComputerLauncher_unexpectedError())); //NOSONAR
                         throw e;
                     } catch (InterruptedException e) {
-                        e.printStackTrace(taskListener.error(Messages.ComputerLauncher_abortedLaunch()));
+                        e.printStackTrace(taskListener.error(Messages.ComputerLauncher_abortedLaunch())); //NOSONAR
                         throw e;
                     }
                 } finally {
@@ -438,8 +438,8 @@ public class SlaveComputer extends Computer {
         if(this.channel!=null)
             throw new IllegalStateException("Already connected");
 
-        final TaskListener taskListener = new StreamTaskListener(launchLog);
-        PrintStream log = taskListener.getLogger();
+        final TaskListener taskListenerLocal = new StreamTaskListener(launchLog);
+        PrintStream logLocal = taskListenerLocal.getLogger();
 
         channel.addListener(new Channel.Listener() {
             @Override
@@ -449,20 +449,20 @@ public class SlaveComputer extends Computer {
                     offlineCause = new ChannelTermination(cause);
                     cause.printStackTrace(taskListener.error("Connection terminated"));
                 } else {
-                    taskListener.getLogger().println("Connection terminated");
+                    taskListenerLocal.getLogger().println("Connection terminated"); //NOSONAR
                 }
                 closeChannel();
-                launcher.afterDisconnect(SlaveComputer.this, taskListener);
+                launcher.afterDisconnect(SlaveComputer.this, taskListenerLocal);
             }
         });
         if(listener!=null)
             channel.addListener(listener);
 
         String slaveVersion = channel.call(new SlaveVersion());
-        log.println("Slave.jar version: " + slaveVersion);
+        logLocal.println("Slave.jar version: " + slaveVersion);
 
         boolean _isUnix = channel.call(new DetectOS());
-        log.println(_isUnix? hudson.model.Messages.Slave_UnixSlave():hudson.model.Messages.Slave_WindowsSlave());
+        logLocal.println(_isUnix? hudson.model.Messages.Slave_UnixSlave():hudson.model.Messages.Slave_WindowsSlave());
 
         String defaultCharsetName = channel.call(new DetectDefaultCharset());
 
@@ -473,7 +473,7 @@ public class SlaveComputer extends Computer {
         
         String remoteFs = node.getRemoteFS();
         if(_isUnix && !remoteFs.contains("/") && remoteFs.contains("\\"))
-            log.println("WARNING: "+remoteFs+" looks suspiciously like Windows path. Maybe you meant "+remoteFs.replace('\\','/')+"?");
+            logLocal.println("WARNING: "+remoteFs+" looks suspiciously like Windows path. Maybe you meant "+remoteFs.replace('\\','/')+"?");
         FilePath root = new FilePath(channel,remoteFs);
 
         // reference counting problem is known to happen, such as JENKINS-9017, and so as a preventive measure
@@ -485,7 +485,7 @@ public class SlaveComputer extends Computer {
         SecurityContext old = ACL.impersonate(ACL.SYSTEM);
         try {
             for (ComputerListener cl : ComputerListener.all()) {
-                cl.preOnline(this,channel,root,taskListener);
+                cl.preOnline(this,channel,root,taskListenerLocal);
             }
         } finally {
             SecurityContextHolder.setContext(old);
@@ -517,12 +517,12 @@ public class SlaveComputer extends Computer {
         old = ACL.impersonate(ACL.SYSTEM);
         try {
             for (ComputerListener cl : ComputerListener.all()) {
-                cl.onOnline(this,taskListener);
+                cl.onOnline(this,taskListenerLocal);
             }
         } finally {
             SecurityContextHolder.setContext(old);
         }
-        log.println("Slave successfully connected and online");
+        logLocal.println("Slave successfully connected and online");
         Jenkins.getInstance().getQueue().scheduleMaintenance();
     }
 

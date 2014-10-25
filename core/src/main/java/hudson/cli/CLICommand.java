@@ -250,7 +250,11 @@ public abstract class CLICommand implements ExtensionPoint, Cloneable {
             stderr.println("Bad Credentials. Search the server log for "+id+" for more details.");
             return -1;
         } catch (Exception e) {
-            e.printStackTrace(stderr);
+            stderr.println(this.getClass().getName());
+            stderr.println("SEVERE: " + e.getMessage() + e);
+            for (StackTraceElement ste: e.getStackTrace()) {
+                stderr.println(ste);
+            }
             return -1;
         } finally {
             sc.setAuthentication(old); // restore
@@ -282,8 +286,13 @@ public abstract class CLICommand implements ExtensionPoint, Cloneable {
             if (channel!=null)
                 return new ClientAuthenticationCache(channel).get();
         } catch (IOException e) {
-            stderr.println("Failed to access the stored credential");
-            e.printStackTrace(stderr);  // recover
+            // recover
+            stderr.println("Failed to access the stored credential");          
+            stderr.println(this.getClass().getName());
+            stderr.println("WARNING: " + e.getMessage() + e);
+            for (StackTraceElement ste: e.getStackTrace()) {
+                stderr.println(ste);
+            }
         }
         return Jenkins.ANONYMOUS;
     }

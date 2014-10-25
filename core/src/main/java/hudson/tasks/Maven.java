@@ -331,7 +331,7 @@ public class Maven extends Builder {
                 }
             } catch (IOException e) {
                 Util.displayIOException(e,listener);
-                e.printStackTrace( listener.fatalError(Messages.Maven_ExecFailed()) );
+                e.printStackTrace( listener.fatalError(Messages.Maven_ExecFailed()) ); //NOSONAR
                 return false;
             }
             startIndex = endIndex + 1;
@@ -703,5 +703,5 @@ public class Maven extends Builder {
          */
         MavenInstallation inferMavenInstallation();
     }
-
+    
 }

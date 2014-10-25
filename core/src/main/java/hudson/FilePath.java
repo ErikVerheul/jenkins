@@ -753,7 +753,7 @@ public final class FilePath implements Serializable {
                     return true;
                 } catch (IOException x) {
                     if (listener != null) {
-                        x.printStackTrace(listener.error("Failed to download " + archive + " from slave; will retry from master"));
+                        x.printStackTrace(listener.error("Failed to download " + archive + " from slave; will retry from master")); //NOSONAR
                     }
                 }
             }

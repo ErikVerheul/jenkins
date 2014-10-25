@@ -82,7 +82,7 @@ public abstract class CommandInterpreter extends Builder {
                 script = createScriptFile(ws);
             } catch (IOException e) {
                 Util.displayIOException(e,listener);
-                e.printStackTrace(listener.fatalError(Messages.CommandInterpreter_UnableToProduceScript()));
+                e.printStackTrace(listener.fatalError(Messages.CommandInterpreter_UnableToProduceScript())); //NOSONAR
                 return false;
             }
 
@@ -97,7 +97,7 @@ public abstract class CommandInterpreter extends Builder {
                 r = join(launcher.launch().cmds(buildCommandLine(script)).envs(envVars).stdout(listener).pwd(ws).start());
             } catch (IOException e) {
                 Util.displayIOException(e, listener);
-                e.printStackTrace(listener.fatalError(Messages.CommandInterpreter_CommandFailed()));
+                e.printStackTrace(listener.fatalError(Messages.CommandInterpreter_CommandFailed())); //NOSONAR
             }
             return r==0;
         } finally {
@@ -116,10 +116,10 @@ public abstract class CommandInterpreter extends Builder {
                     LOGGER.log(Level.FINE, "Script deletion failed", e);
                 } else {
                     Util.displayIOException(e,listener);
-                    e.printStackTrace( listener.fatalError(Messages.CommandInterpreter_UnableToDelete(script)) );
+                    e.printStackTrace( listener.fatalError(Messages.CommandInterpreter_UnableToDelete(script)) ); //NOSONAR
                 }
             } catch (Exception e) {
-                e.printStackTrace( listener.fatalError(Messages.CommandInterpreter_UnableToDelete(script)) );
+                e.printStackTrace( listener.fatalError(Messages.CommandInterpreter_UnableToDelete(script)) ); //NOSONAR
             }
         }
     }
