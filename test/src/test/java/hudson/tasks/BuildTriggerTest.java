@@ -128,7 +128,8 @@ public class BuildTriggerTest extends HudsonTestCase {
             try {
                 new SAXReader().read(problematic);
             } catch (DocumentException x) {
-                x.printStackTrace();
+                //allow printing stacktraces in tests
+                x.printStackTrace(); //NOSONAR
                 return;
                 // JUnit 4: Assume.assumeNoException("somehow maven-surefire-plugin-2.4.3.pom got corrupted on CI builders", x);
             }

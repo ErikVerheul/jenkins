@@ -185,7 +185,8 @@ public class AbstractProjectTest extends HudsonTestCase {
                 try {
                     sync.block();
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    //allow printing stacktraces in tests
+                    e.printStackTrace(); //NOSONAR
                 }
                 return true;
             }
@@ -552,7 +553,8 @@ public class AbstractProjectTest extends HudsonTestCase {
                 fail("rename as an overwrite should have failed");
             } catch (Exception e) {
                 // expected rename to fail in some non-descriptive generic way
-                e.printStackTrace()
+                //allow printing stacktraces in tests
+                e.printStackTrace(); //NOSONAR
             }
         }
 
