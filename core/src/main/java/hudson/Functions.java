@@ -1374,7 +1374,7 @@ public class Functions {
 
     public static String printThrowable(Throwable t) {
         StringWriter sw = new StringWriter();
-        t.printStackTrace(new PrintWriter(sw));
+        t.printStackTrace(new PrintWriter(sw)); //NOSONAR
         return sw.toString();
     }
 

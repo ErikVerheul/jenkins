@@ -250,11 +250,7 @@ public abstract class CLICommand implements ExtensionPoint, Cloneable {
             stderr.println("Bad Credentials. Search the server log for "+id+" for more details.");
             return -1;
         } catch (Exception e) {
-            stderr.println(this.getClass().getName());
-            stderr.println("SEVERE: " + e.getMessage() + e);
-            for (StackTraceElement ste: e.getStackTrace()) {
-                stderr.println(ste);
-            }
+            e.printStackTrace(stderr); //NOSONAR
             return -1;
         } finally {
             sc.setAuthentication(old); // restore

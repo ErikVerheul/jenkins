@@ -3018,7 +3018,7 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
                 r.put(e.getKey(), e.getValue().get(endTime-System.currentTimeMillis(), TimeUnit.MILLISECONDS));
             } catch (Exception x) {
                 StringWriter sw = new StringWriter();
-                x.printStackTrace(new PrintWriter(sw,true));
+                x.printStackTrace(new PrintWriter(sw,true)); //NOSONAR
                 r.put(e.getKey(), Collections.singletonMap("Failed to retrieve thread dump",sw.toString()));
             }
         }

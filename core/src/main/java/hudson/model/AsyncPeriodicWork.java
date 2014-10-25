@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 /**
  * {@link PeriodicWork} that takes a long time to run.
@@ -20,6 +21,9 @@ import java.util.logging.LogRecord;
  * @author Kohsuke Kawaguchi
  */
 public abstract class AsyncPeriodicWork extends PeriodicWork {
+    
+    protected static final Logger LOGGER = Logger.getLogger(AsyncPeriodicWork.class.getName());
+    
     /**
      * Human readable name of the work.
      */
@@ -38,12 +42,12 @@ public abstract class AsyncPeriodicWork extends PeriodicWork {
     public final void doRun() {
         try {
             if(thread!=null && thread.isAlive()) {
-                logger.log(this.getSlowLoggingLevel(), "{0} thread is still running. Execution aborted.", name);
+                LOGGER.log(this.getSlowLoggingLevel(), "{0} thread is still running. Execution aborted.", name);
                 return;
             }
             thread = new Thread(new Runnable() {
                 public void run() {
-                    logger.log(getNormalLoggingLevel(), "Started {0}", name);
+                    LOGGER.log(getNormalLoggingLevel(), "Started {0}", name);
                     long startTime = System.currentTimeMillis();
 
                     StreamTaskListener l = createListener();
@@ -52,14 +56,14 @@ public abstract class AsyncPeriodicWork extends PeriodicWork {
 
                         execute(l);
                     } catch (IOException e) {
-                        logger.log(Level.SEVERE, e.getMessage(), e);
+                        LOGGER.log(Level.SEVERE, e.getMessage(), e);
                     } catch (InterruptedException e) {
-                        logger.log(Level.SEVERE, "aborted", e);
+                        LOGGER.log(Level.SEVERE, "aborted", e);
                     } finally {
                         l.closeQuietly();
                     }
 
-                    logger.log(getNormalLoggingLevel(), "Finished {0}. {1,number} ms",
+                    LOGGER.log(getNormalLoggingLevel(), "Finished {0}. {1,number} ms",
                             new Object[]{name, (System.currentTimeMillis()-startTime)});
                 }
             },name+" thread");
@@ -68,7 +72,7 @@ public abstract class AsyncPeriodicWork extends PeriodicWork {
             LogRecord lr = new LogRecord(this.getErrorLoggingLevel(), "{0} thread failed with error");
             lr.setThrown(t);
             lr.setParameters(new Object[]{name});
-            logger.log(lr);
+            LOGGER.log(lr);
         }
     }
 

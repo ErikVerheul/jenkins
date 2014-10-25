@@ -140,7 +140,7 @@ public final class RemotingDiagnostics {
                 if(output!=null)
                 pw.println("Result: "+output);
             } catch (Exception t) {
-                t.printStackTrace(pw);
+                t.printStackTrace(pw); //NOSONAR
             }
             return out.toString();
         }

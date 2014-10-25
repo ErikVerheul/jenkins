@@ -174,7 +174,7 @@ public class SecretRewriter {
                             rewritten++;
                         }
                     } catch (IOException e) {
-                        e.printStackTrace(listener.error("Failed to rewrite "+child));
+                        e.printStackTrace(listener.error("Failed to rewrite "+child)); //NOSONAR
                     }
                 }
                 if (child.isDirectory()) {

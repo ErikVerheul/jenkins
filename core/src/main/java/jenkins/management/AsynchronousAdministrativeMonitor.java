@@ -106,7 +106,7 @@ public abstract class AsynchronousAdministrativeMonitor extends AdministrativeMo
             } catch (AbortException e) {
                 listener.error(e.getMessage());
             } catch (Exception e) {
-                e.printStackTrace(listener.error(getName() + " failed"));
+                e.printStackTrace(listener.error(getName() + " failed")); //NOSONAR
                 LOGGER.log(Level.WARNING, getName()+" failed", e);
             }
         }

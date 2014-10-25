@@ -130,7 +130,7 @@ public abstract class TaskThread extends Thread {
         } catch (InterruptedException e) {
             listener.getLogger().println("Aborted");
         } catch (Exception e) {
-            e.printStackTrace(listener.getLogger());
+            e.printStackTrace(listener.getLogger()); //NOSONAR
         } finally {
             listener = null;
             isRunning =false;

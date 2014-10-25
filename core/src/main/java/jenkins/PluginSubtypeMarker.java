@@ -72,7 +72,7 @@ public class PluginSubtypeMarker extends AbstractProcessor {
                                 write(e);
                             } catch (IOException x) {
                                 StringWriter sw = new StringWriter();
-                                x.printStackTrace(new PrintWriter(sw));
+                                x.printStackTrace(new PrintWriter(sw)); //NOSONAR
                                 processingEnv.getMessager().printMessage(Kind.ERROR,sw.toString(),e);
                             }
                         }

@@ -447,9 +447,9 @@ public class SlaveComputer extends Computer {
                 // Orderly shutdown will have null exception
                 if (cause!=null) {
                     offlineCause = new ChannelTermination(cause);
-                    cause.printStackTrace(taskListener.error("Connection terminated"));
+                    cause.printStackTrace(taskListener.error("Connection terminated")); //NOSONAR
                 } else {
-                    taskListenerLocal.getLogger().println("Connection terminated"); //NOSONAR
+                    taskListenerLocal.getLogger().println("Connection terminated");
                 }
                 closeChannel();
                 launcher.afterDisconnect(SlaveComputer.this, taskListenerLocal);

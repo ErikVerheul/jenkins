@@ -200,7 +200,7 @@ public class CLIRegisterer extends ExtensionFinder {
                                 printUsage(stderr,parser);
                                 return 1;
                             } catch (Exception e) {
-                                e.printStackTrace(stderr);
+                                e.printStackTrace(stderr); //NOSONAR
                                 return 1;
                             }
                         }

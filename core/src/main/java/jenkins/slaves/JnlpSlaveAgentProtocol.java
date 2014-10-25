@@ -137,7 +137,7 @@ public class JnlpSlaveAgentProtocol extends AgentProtocol {
                 throw e;
             } catch (IOException e) {
                 logw.println("Failed to establish the connection with the slave " + nodeName);
-                e.printStackTrace(logw);
+                e.printStackTrace(logw); //NOSONAR
                 throw e;
             }
         }
