@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  */
 public abstract class AsyncPeriodicWork extends PeriodicWork {
     
-    protected static final Logger LOGGER = Logger.getLogger(AsyncPeriodicWork.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(AsyncPeriodicWork.class.getName());
     
     /**
      * Human readable name of the work.

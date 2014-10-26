@@ -42,7 +42,7 @@ import jenkins.model.Jenkins;
  */
 public abstract class AsyncAperiodicWork extends AperiodicWork {
     
-    protected static final Logger LOGGER = Logger.getLogger(AsyncAperiodicWork.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(AsyncAperiodicWork.class.getName());
 	
     /**
      * Name of the work.

@@ -1398,5 +1398,5 @@ public /*transient*/ abstract class Computer extends Actionable implements Acces
     public static final Permission CONNECT = new Permission(PERMISSIONS,"Connect", Messages._Computer_ConnectPermission_Description(), DISCONNECT, PermissionScope.COMPUTER);
     public static final Permission BUILD = new Permission(PERMISSIONS, "Build", Messages._Computer_BuildPermission_Description(),  Permission.WRITE, PermissionScope.COMPUTER);
 
-    protected static final Logger LOGGER = Logger.getLogger(Computer.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(Computer.class.getName());
 }
