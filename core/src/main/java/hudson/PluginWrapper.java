@@ -547,8 +547,32 @@ public class PluginWrapper implements Comparable<PluginWrapper>, ModelObject {
     /**
      * Sort by short name.
      */
+    @Override
     public int compareTo(PluginWrapper pw) {
         return shortName.compareToIgnoreCase(pw.shortName);
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof PluginWrapper)) {
+            return false;
+        }
+        PluginWrapper o = (PluginWrapper) obj;
+
+        return shortName.compareToIgnoreCase(o.shortName) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 67 * hash + (this.shortName != null ? this.shortName.hashCode() : 0);
+        return hash;
     }
 
     /**

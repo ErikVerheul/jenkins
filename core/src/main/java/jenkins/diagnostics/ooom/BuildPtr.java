@@ -90,4 +90,27 @@ public final class BuildPtr implements Comparable<BuildPtr> {
     public int compareTo(BuildPtr that) {
         return this.id.compareTo(that.id);
     }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof BuildPtr)) {
+            return false;
+        }
+        BuildPtr o = (BuildPtr) obj;
+
+        return this.id.compareTo(o.id) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 37 * hash + (this.id != null ? this.id.hashCode() : 0);
+        return hash;
+    }
 }

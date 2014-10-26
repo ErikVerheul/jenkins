@@ -290,10 +290,38 @@ public class Search {
                 prefixMatch = i.getPath().startsWith(tokenList)?1:0;
             }
 
+            @Override
             public int compareTo(Tag that) {
                 int r = this.prefixMatch -that.prefixMatch;
                 if(r!=0)    return -r;  // ones with head match should show up earlier
                 return this.distance-that.distance;
+            }
+        
+            @Override
+            public boolean equals(Object obj) {
+                if (obj == null) {
+                    return false;
+                }
+                if (obj == this) {
+                    return true;
+                }
+                if (!(obj instanceof Tag)) {
+                    return false;
+                }
+                Tag o = (Tag) obj;
+
+                if (this.prefixMatch == o.prefixMatch) {
+                    return true;
+                }
+                return this.distance == o.distance;
+            }
+
+            @Override
+            public int hashCode() {
+                int hash = 7;
+                hash = 59 * hash + this.distance;
+                hash = 59 * hash + this.prefixMatch;
+                return hash;
             }
         }
 

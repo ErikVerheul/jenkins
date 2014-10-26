@@ -72,6 +72,7 @@ public class ConsistentHash<T> {
      * Used for remembering the computed MD5 hash, since it's bit expensive to do it all over again.
      */
     private static final class Point implements Comparable<Point> {
+
         final int hash;
         final Object item;
 
@@ -80,10 +81,38 @@ public class ConsistentHash<T> {
             this.item = item;
         }
 
+        @Override
         public int compareTo(Point that) {
-            if(this.hash<that.hash) return -1;
-            if(this.hash==that.hash) return 0;
+            if (this.hash < that.hash) {
+                return -1;
+            }
+            if (this.hash == that.hash) {
+                return 0;
+            }
             return 1;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+            if (obj == this) {
+                return true;
+            }
+            if (!(obj instanceof Point)) {
+                return false;
+            }
+            Point o = (Point) obj;
+
+            return this.hash == o.hash;
+        }
+
+        @Override
+        public int hashCode() {
+            int hash = 5;
+            hash = 37 * hash + this.hash;
+            return hash;
         }
     }
 

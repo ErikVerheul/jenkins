@@ -99,6 +99,7 @@ public final class PermissionGroup implements Iterable<Permission>, Comparable<P
         return null;
     }
 
+    @Override
     public int compareTo(PermissionGroup that) {
         // first, sort by the 'compare order' number. This is so that
         // we can put Hudson.PERMISSIONS first.
@@ -108,6 +109,32 @@ public final class PermissionGroup implements Iterable<Permission>, Comparable<P
         // among the permissions of the same group, just sort by their names
         // so that the sort order is consistent regardless of classloading order.
         return this.owner.getName().compareTo(that.owner.getName());
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof PermissionGroup)) {
+            return false;
+        }
+        PermissionGroup o = (PermissionGroup) obj;
+        if (this.compareOrder() == o.compareOrder()) {
+            return true;
+        }      
+        return this.owner.getName().compareTo(o.owner.getName()) == 0;    
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 67 * hash + (this.permisisons != null ? this.permisisons.hashCode() : 0);
+        hash = 67 * hash + (this.owner != null ? this.owner.hashCode() : 0);
+        return hash;
     }
 
     private int compareOrder() {

@@ -64,11 +64,35 @@ public class MarkupText extends AbstractMarkupText {
             this.markup = markup;
         }
 
+        @Override
         public int compareTo(Tag that) {
             return this.pos-that.pos;
         }
-    }
+        
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+            if (obj == this) {
+                return true;
+            }
+            if (!(obj instanceof Tag)) {
+                return false;
+            }
+            Tag o = (Tag) obj;
 
+            return this.pos == o.pos;
+        }
+
+        @Override
+        public int hashCode() {
+            int hash = 7;
+            hash = 79 * hash + this.pos;
+            return hash;
+        }
+    }
+    
     /**
      * Represents a substring of a {@link MarkupText}.
      */

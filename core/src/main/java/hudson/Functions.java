@@ -980,12 +980,41 @@ public class Functions {
             return buf.append(c.getName());
         }
 
+        @Override
         public int compareTo(Tag that) {
             int r = Double.compare(this.ordinal, that.ordinal);
             if (r!=0)   return -r; // descending for ordinal
             return this.hierarchy.compareTo(that.hierarchy);
         }
+        
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+            if (obj == this) {
+                return true;
+            }
+            if (!(obj instanceof Tag)) {
+                return false;
+            }
+            Tag o = (Tag) obj;
+
+            if (Double.compare(this.ordinal, o.ordinal) == 0) {
+                return true;
+            }
+            return this.hierarchy.compareTo(o.hierarchy) == 0;
+        } 
+
+        @Override
+        public int hashCode() {
+            int hash = 7;
+            hash = 79 * hash + (int) (Double.doubleToLongBits(this.ordinal) ^ (Double.doubleToLongBits(this.ordinal) >>> 32));
+            hash = 79 * hash + (this.hierarchy != null ? this.hierarchy.hashCode() : 0);
+            return hash;
+        }
     }
+    
     /**
      * Computes the path to the icon of the given action
      * from the context path.
