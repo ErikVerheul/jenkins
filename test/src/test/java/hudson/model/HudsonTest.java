@@ -168,6 +168,7 @@ public class HudsonTest extends HudsonTestCase {
     @Email("http://www.nabble.com/1.286-version-and-description-The-requested-resource-%28%29-is-not--available.-td22233801.html")
     public void testLegacyDescriptorLookup() throws Exception {
         Descriptor dummy = new Descriptor(HudsonTest.class) {
+            @Override
             public String getDisplayName() {
                 return "dummy";
             }

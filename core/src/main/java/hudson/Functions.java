@@ -1000,8 +1000,8 @@ public class Functions {
             }
             Tag o = (Tag) obj;
 
-            if (Double.compare(this.ordinal, o.ordinal) == 0) {
-                return true;
+            if (Double.compare(this.ordinal, o.ordinal) != 0) {
+                return false;
             }
             return this.hierarchy.compareTo(o.hierarchy) == 0;
         } 
@@ -1009,10 +1009,11 @@ public class Functions {
         @Override
         public int hashCode() {
             int hash = 7;
-            hash = 79 * hash + (int) (Double.doubleToLongBits(this.ordinal) ^ (Double.doubleToLongBits(this.ordinal) >>> 32));
-            hash = 79 * hash + (this.hierarchy != null ? this.hierarchy.hashCode() : 0);
+            hash = 89 * hash + (int) (Double.doubleToLongBits(this.ordinal) ^ (Double.doubleToLongBits(this.ordinal) >>> 32));
+            hash = 89 * hash + (this.hierarchy != null ? this.hierarchy.hashCode() : 0);
             return hash;
         }
+
     }
     
     /**

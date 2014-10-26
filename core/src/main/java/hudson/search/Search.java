@@ -310,8 +310,8 @@ public class Search {
                 }
                 Tag o = (Tag) obj;
 
-                if (this.prefixMatch == o.prefixMatch) {
-                    return true;
+                if (this.prefixMatch != o.prefixMatch) {
+                    return false;
                 }
                 return this.distance == o.distance;
             }
@@ -319,8 +319,8 @@ public class Search {
             @Override
             public int hashCode() {
                 int hash = 7;
-                hash = 59 * hash + this.distance;
-                hash = 59 * hash + this.prefixMatch;
+                hash = 37 * hash + this.distance;
+                hash = 37 * hash + this.prefixMatch;
                 return hash;
             }
         }

@@ -117,8 +117,8 @@ public class ExtensionComponent<T> implements Comparable<ExtensionComponent<T>> 
             return false;
         }
         ExtensionComponent o = (ExtensionComponent) obj;
-        if (this.ordinal() == o.ordinal()) {
-            return true;
+        if (this.ordinal() != o.ordinal()) {
+            return false;
         }
 
         return this.instance.getClass().getName().compareTo(o.instance.getClass().getName()) == 0;

@@ -123,8 +123,8 @@ public final class PermissionGroup implements Iterable<Permission>, Comparable<P
             return false;
         }
         PermissionGroup o = (PermissionGroup) obj;
-        if (this.compareOrder() == o.compareOrder()) {
-            return true;
+        if (this.compareOrder() != o.compareOrder()) {
+            return false;
         }      
         return this.owner.getName().compareTo(o.owner.getName()) == 0;    
     }
@@ -132,8 +132,8 @@ public final class PermissionGroup implements Iterable<Permission>, Comparable<P
     @Override
     public int hashCode() {
         int hash = 5;
-        hash = 67 * hash + (this.permisisons != null ? this.permisisons.hashCode() : 0);
-        hash = 67 * hash + (this.owner != null ? this.owner.hashCode() : 0);
+        hash = 83 * hash + (this.permisisons != null ? this.permisisons.hashCode() : 0);
+        hash = 83 * hash + (this.owner != null ? this.owner.hashCode() : 0);
         return hash;
     }
 
