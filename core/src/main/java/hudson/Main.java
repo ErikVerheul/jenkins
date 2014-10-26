@@ -52,11 +52,11 @@ import java.nio.charset.Charset;
 public class Main {
     public static void main(String[] args) {
         try {
-            System.exit(run(args));
+            System.exit(run(args)); //NOSONAR
         } catch (Exception e) {
             //we might not have a logger available
             e.printStackTrace(); //NOSONAR
-            System.exit(-1);
+            System.exit(-1); //NOSONAR
         }
     }
 

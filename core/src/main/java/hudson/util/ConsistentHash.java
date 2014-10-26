@@ -110,9 +110,9 @@ public class ConsistentHash<T> {
 
         @Override
         public int hashCode() {
-            int hash = 5;
-            hash = 37 * hash + this.hash;
-            return hash;
+            int hashLocal = 5;
+            hashLocal = 37 * hashLocal + this.hash;
+            return hashLocal;
         }
     }
 

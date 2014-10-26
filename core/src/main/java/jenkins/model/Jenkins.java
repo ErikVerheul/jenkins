@@ -799,7 +799,7 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
             );
 
             if(KILL_AFTER_LOAD)
-                System.exit(0);
+                System.exit(0); //NOSONAR
 
             if(slaveAgentPort!=-1) {
                 try {
@@ -3451,7 +3451,7 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
             w.close();
         }
 
-        System.exit(0);
+        System.exit(0); //NOSONAR
     }
 
 
@@ -3481,7 +3481,7 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
                     // Make sure isQuietingDown is still true.
                     if (isQuietingDown) {
                         cleanUp();
-                        System.exit(0);
+                        System.exit(0); //NOSONAR
                     }
                 } catch (InterruptedException e) {
                     LOGGER.log(Level.WARNING, "Failed to shutdown Hudson",e);

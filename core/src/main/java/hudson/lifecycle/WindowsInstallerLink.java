@@ -225,7 +225,7 @@ public class WindowsInstallerLink extends ManagementLink {
                         }
                     });
 
-                    System.exit(0);
+                    System.exit(0); //NOSONAR
                 } catch (InterruptedException e) {
                     //we might not have a logger available
                     e.printStackTrace(); //NOSONAR

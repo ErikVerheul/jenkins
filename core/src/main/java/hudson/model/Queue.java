@@ -1341,7 +1341,7 @@ public class Queue extends ResourceController implements Saveable {
         @Exported
     	public final int id;
     	
-		/**
+        /**
          * Project to be built.
          */
         @Exported
@@ -1681,14 +1681,18 @@ public class Queue extends ResourceController implements Saveable {
             if (!(obj instanceof WaitingItem)) {
                 return false;
             }
+            
             WaitingItem o = (WaitingItem) obj;
+            if (this.timestamp.getTime().compareTo(o.timestamp.getTime()) != 0) {
+                return false;
+            }
             return this.id == o.id;
         }
 
         @Override
         public int hashCode() {
-            int hash = 5;
-            hash = 23 * hash + this.id;
+            int hash = 7;
+            hash = 97 * hash + (this.timestamp != null ? this.timestamp.hashCode() : 0);
             return hash;
         }
 

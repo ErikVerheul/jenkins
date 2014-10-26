@@ -41,6 +41,6 @@ public class SolarisSMFLifecycle extends Lifecycle {
         Jenkins h = Jenkins.getInstance();
         if (h != null)
             h.cleanUp();
-        System.exit(0);
+        System.exit(0); //NOSONAR
     }
 }

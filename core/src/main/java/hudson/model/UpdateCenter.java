@@ -1544,7 +1544,8 @@ public class UpdateCenter extends AbstractModelObject implements Saveable, OnMas
                 return false;
             }
             PluginEntry o = (PluginEntry) obj;
-            return category.compareTo(o.category) == 0 && plugin.name.compareToIgnoreCase(o.plugin.name) == 0;
+            if (category.compareTo(o.category) != 0) return false;
+            return (plugin.name.compareToIgnoreCase(o.plugin.name) == 0);
         }
 
         @Override

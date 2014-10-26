@@ -379,7 +379,7 @@ public class CLI {
 //        h.setLevel(ALL);
 //        l.addHandler(h);
 //
-        System.exit(_main(_args));
+        System.exit(_main(_args)); //NOSONAR
     }
 
     public static int _main(String[] _args) throws Exception {
