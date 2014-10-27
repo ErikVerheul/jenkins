@@ -208,8 +208,9 @@ public abstract class Plugin implements Saveable {
             throw HttpResponses.notFound();
         }
 
-        if(path.length()==0)
+        if(path.length()==0) {
             path = "/";
+        }
 
         // Stapler routes requests like the "/static/.../foo/bar/zot" to be treated like "/foo/bar/zot"
         // and this is used to serve long expiration header, by using Jenkins.VERSION_HASH as "..."
@@ -240,8 +241,9 @@ public abstract class Plugin implements Saveable {
      */
     protected void load() throws IOException {
         XmlFile xml = getConfigXml();
-        if(xml.exists())
+        if(xml.exists()) {
             xml.unmarshal(this);
+        }
     }
 
     /**
@@ -250,7 +252,9 @@ public abstract class Plugin implements Saveable {
      * @since 1.245
      */
     public void save() throws IOException {
-        if(BulkChange.contains(this))   return;
+        if(BulkChange.contains(this)) {
+            return;
+        }
         XmlFile config = getConfigXml();
         config.write(this);
         SaveableListener.fireOnChange(this, config);

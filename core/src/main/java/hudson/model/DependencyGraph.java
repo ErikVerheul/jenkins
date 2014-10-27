@@ -91,8 +91,9 @@ public class DependencyGraph implements Comparator<AbstractProject> {
         SecurityContext saveCtx = ACL.impersonate(ACL.SYSTEM);
         try {
             this.computationalData = new HashMap<Class<?>, Object>();
-            for( AbstractProject p : getAllProjects() )
+            for( AbstractProject p : getAllProjects() ) {
                 p.buildDependencyGraph(this);
+            }
 
             forward = finalize(forward);
             backward = finalize(backward);
@@ -199,9 +200,13 @@ public class DependencyGraph implements Comparator<AbstractProject> {
 
     private List<AbstractProject> get(Map<AbstractProject, List<DependencyGroup>> map, AbstractProject src, boolean up) {
         List<DependencyGroup> v = map.get(src);
-        if(v==null) return Collections.emptyList();
+        if(v==null) {
+            return Collections.emptyList();
+        }
         List<AbstractProject> result = new ArrayList<AbstractProject>(v.size());
-        for (DependencyGroup d : v) result.add(up ? d.getUpstreamProject() : d.getDownstreamProject());
+        for (DependencyGroup d : v) {
+            result.add(up ? d.getUpstreamProject() : d.getDownstreamProject());
+        }
         return result;
     }
 
@@ -245,8 +250,9 @@ public class DependencyGraph implements Comparator<AbstractProject> {
      * Called during the dependency graph build phase to add a dependency edge.
      */
     public void addDependency(Dependency dep) {
-        if(built)
+        if(built) {
             throw new IllegalStateException();
+        }
         add(forward,dep.getUpstreamProject(),dep);
         add(backward, dep.getDownstreamProject(), dep);
     }
@@ -256,8 +262,9 @@ public class DependencyGraph implements Comparator<AbstractProject> {
      */
     @Deprecated
     public void addDependency(AbstractProject upstream, Collection<? extends AbstractProject> downstream) {
-        for (AbstractProject p : downstream)
+        for (AbstractProject p : downstream) {
             addDependency(upstream,p);
+        }
     }
 
     /**
@@ -265,8 +272,9 @@ public class DependencyGraph implements Comparator<AbstractProject> {
      */
     @Deprecated
     public void addDependency(Collection<? extends AbstractProject> upstream, AbstractProject downstream) {
-        for (AbstractProject p : upstream)
+        for (AbstractProject p : upstream) {
             addDependency(p,downstream);
+        }
     }
 
     /**
@@ -296,10 +304,12 @@ public class DependencyGraph implements Comparator<AbstractProject> {
 
         while(!queue.isEmpty()) {
             AbstractProject p = queue.pop();
-            if(p==dst)
+            if(p==dst) {
                 return true;
-            if(visited.add(p))
+            }
+            if(visited.add(p)) {
                 queue.addAll(getDownstream(p));
+            }
         }
 
         return false;
@@ -329,8 +339,9 @@ public class DependencyGraph implements Comparator<AbstractProject> {
             AbstractProject p = queue.pop();
 
             for (AbstractProject child : get(direction,p,up)) {
-                if(visited.add(child))
+                if(visited.add(child)) {
                     queue.add(child);
+                }
             }
         }
 
@@ -438,8 +449,12 @@ public class DependencyGraph implements Comparator<AbstractProject> {
 
         @Override
         public boolean equals(Object obj) {
-            if (obj == null) return false;
-            if (getClass() != obj.getClass()) return false;
+            if (obj == null) {
+                return false;
+            }
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
 
             final Dependency that = (Dependency) obj;
             return this.upstream == that.upstream || this.downstream == that.downstream;

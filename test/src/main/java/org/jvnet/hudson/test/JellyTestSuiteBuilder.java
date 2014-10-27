@@ -58,8 +58,9 @@ public class JellyTestSuiteBuilder {
         final JellyClassLoaderTearOff jct = new MetaClassLoader(JellyTestSuiteBuilder.class.getClassLoader()).loadTearOff(JellyClassLoaderTearOff.class);
 
         if (res.isDirectory()) {
-            for (final File jelly : (Collection <File>)FileUtils.listFiles(res,new String[]{"jelly"},true))
+            for (final File jelly : (Collection <File>)FileUtils.listFiles(res,new String[]{"jelly"},true)) {
                 ts.addTest(new JellyCheck(jelly.toURI().toURL(), jelly.getAbsolutePath().substring((res.getAbsolutePath() + File.separator).length()), jct, requirePI));
+            }
         }
         if (res.getName().endsWith(".jar")) {
             String jarUrl = res.toURI().toURL().toExternalForm();
@@ -67,8 +68,9 @@ public class JellyTestSuiteBuilder {
             Enumeration<JarEntry> e = jf.entries();
             while (e.hasMoreElements()) {
                 JarEntry ent =  e.nextElement();
-                if (ent.getName().endsWith(".jelly"))
+                if (ent.getName().endsWith(".jelly")) {
                     ts.addTest(new JellyCheck(new URL("jar:"+jarUrl+"!/"+ent.getName()), ent.getName(), jct, requirePI));
+                }
             }
             jf.close();
         }
@@ -94,8 +96,9 @@ public class JellyTestSuiteBuilder {
             checkLabelFor(dom);
             if (requirePI) {
                 ProcessingInstruction pi = dom.processingInstruction("jelly");
-                if (pi==null || !pi.getText().contains("escape-by-default"))
+                if (pi==null || !pi.getText().contains("escape-by-default")) {
                     throw new AssertionError("<?jelly escape-by-default='true'?> is missing");
+                }
 
             }
             // TODO: what else can we check statically? use of taglibs?
@@ -106,10 +109,11 @@ public class JellyTestSuiteBuilder {
          */
         private void checkLabelFor(Document dom) {
             if (isConfigJelly() || isGlobalJelly()) {
-                if (!dom.selectNodes("//label[@for]").isEmpty())
+                if (!dom.selectNodes("//label[@for]").isEmpty()) {
                     throw new AssertionError("<label for=...> shouldn't be used because it doesn't work " +
                             "when the configuration item is repeated. Use <label class=\"attach-previous\"> " +
                             "to have your label attach to the previous DOM node instead.");
+                }
             }
         }
 

@@ -62,8 +62,9 @@ public class CoreEnvironmentContributor extends EnvironmentContributor {
                 env.put("NODE_NAME", e.getOwner().getName());
             }
             Node n = e.getOwner().getNode();
-            if (n != null)
+            if (n != null) {
                 env.put("NODE_LABELS", Util.join(n.getAssignedLabels(), " "));
+            }
         }
     }
 }

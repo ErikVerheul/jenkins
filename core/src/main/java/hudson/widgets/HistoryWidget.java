@@ -107,9 +107,11 @@ public class HistoryWidget<O extends ModelObject,T> extends Widget {
 
     private Iterable<T> updateFirstTransientBuildKey(Iterable<T> source) {
         String key=null;
-        for (T t : source)
-            if(adapter.isBuilding(t))
+        for (T t : source) {
+            if(adapter.isBuilding(t)) {
                 key = adapter.getKey(t);
+            }
+        }
         firstTransientBuildKey = key;
         return source;
     }
@@ -122,15 +124,17 @@ public class HistoryWidget<O extends ModelObject,T> extends Widget {
             List<T> lst;
             if (baseList instanceof List) {
                 lst = (List<T>) baseList;
-                if(lst.size()>THRESHOLD)
+                if(lst.size()>THRESHOLD) {
                     return updateFirstTransientBuildKey(lst.subList(0,THRESHOLD));
+                }
                 trimmed=false;
                 return updateFirstTransientBuildKey(lst);
             } else {
                 lst = new ArrayList<T>(THRESHOLD);
                 Iterator<T> itr = baseList.iterator();
-                while(lst.size()<=THRESHOLD && itr.hasNext())
+                while(lst.size()<=THRESHOLD && itr.hasNext()) {
                     lst.add(itr.next());
+                }
                 trimmed = itr.hasNext(); // if we don't have enough items in the base list, setting this to false will optimize the next getRenderList() invocation.
                 return updateFirstTransientBuildKey(lst);
             }
@@ -158,7 +162,9 @@ public class HistoryWidget<O extends ModelObject,T> extends Widget {
     public void doAjax( StaplerRequest req, StaplerResponse rsp,
                   @Header("n") String n ) throws IOException, ServletException {
 
-        if (n==null)    throw HttpResponses.error(SC_BAD_REQUEST,new Exception("Missing the 'n' HTTP header"));
+        if (n==null) {
+            throw HttpResponses.error(SC_BAD_REQUEST,new Exception("Missing the 'n' HTTP header"));
+        }
 
         rsp.setContentType("text/html;charset=UTF-8");
 
@@ -171,10 +177,12 @@ public class HistoryWidget<O extends ModelObject,T> extends Widget {
         for (T t : baseList) {
             if(adapter.compare(t,n)>=0) {
                 items.add(t);
-                if(adapter.isBuilding(t))
+                if(adapter.isBuilding(t)) {
                     nn = adapter.getKey(t); // the next fetch should start from youngest build in progress
-            } else
+                }
+            } else {
                 break;
+            }
         }
 
         if (nn==null) {

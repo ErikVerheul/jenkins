@@ -134,7 +134,9 @@ public abstract class Trigger<J extends Item> implements Describable<Trigger<?>>
     public Collection<? extends Action> getProjectActions() {
         // delegate to getJobAction (singular) for backward compatible behavior
         Action a = getProjectAction();
-        if (a==null)    return Collections.emptyList();
+        if (a==null) {
+            return Collections.emptyList();
+        }
         return Collections.singletonList(a);
     }
 
@@ -305,13 +307,17 @@ public abstract class Trigger<J extends Item> implements Describable<Trigger<?>>
     public static List<TriggerDescriptor> for_(Item i) {
         List<TriggerDescriptor> r = new ArrayList<TriggerDescriptor>();
         for (TriggerDescriptor t : all()) {
-            if(!t.isApplicable(i))  continue;
+            if(!t.isApplicable(i)) {
+                continue;
+            }
 
             if (i instanceof TopLevelItem) {// ugly
                 TopLevelItemDescriptor tld = ((TopLevelItem) i).getDescriptor();
                 // tld shouldn't be really null in contract, but we often write test Describables that
                 // doesn't have a Descriptor.
-                if(tld!=null && !tld.isApplicable(t))    continue;
+                if(tld!=null && !tld.isApplicable(t)) {
+                    continue;
+                }
             }
 
             r.add(t);

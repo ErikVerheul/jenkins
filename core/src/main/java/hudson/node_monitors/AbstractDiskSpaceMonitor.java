@@ -30,8 +30,9 @@ public abstract class AbstractDiskSpaceMonitor extends NodeMonitor {
     }
 
     public long getThresholdBytes() {
-        if (freeSpaceThreshold==null)
+        if (freeSpaceThreshold==null) {
             return DEFAULT_THRESHOLD; // backward compatibility with the data format that didn't have 'freeSpaceThreshold'
+        }
         try {
             return DiskSpace.parse(freeSpaceThreshold).size;
         } catch (ParseException e) {
@@ -44,11 +45,13 @@ public abstract class AbstractDiskSpaceMonitor extends NodeMonitor {
     	DiskSpace size = markNodeOfflineIfDiskspaceIsTooLow(c);
     	
     	// mark online (again), if free space is over threshold
-        if(size!=null && size.size > getThresholdBytes() && c.isOffline() && c.getOfflineCause() instanceof DiskSpace)
-            if(this.getClass().equals(((DiskSpace)c.getOfflineCause()).getTrigger()))
-                if(getDescriptor().markOnline(c)) {
-                    LOGGER.warning(Messages.DiskSpaceMonitor_MarkedOnline(c.getName()));
+        if(size!=null && size.size > getThresholdBytes() && c.isOffline() && c.getOfflineCause() instanceof DiskSpace) {
+                if (this.getClass().equals(((DiskSpace)c.getOfflineCause()).getTrigger())) {
+                    if(getDescriptor().markOnline(c)) {
+                        LOGGER.warning(Messages.DiskSpaceMonitor_MarkedOnline(c.getName()));
+                    }
                 }
+            }
         return size;
     }
 

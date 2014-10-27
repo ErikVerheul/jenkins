@@ -57,14 +57,16 @@ public class StreamCopyThread extends Thread {
             try {
                 byte[] buf = new byte[8192];
                 int len;
-                while ((len = in.read(buf)) >= 0)
+                while ((len = in.read(buf)) >= 0) {
                     out.write(buf, 0, len);
+                }
             } finally {
                 // it doesn't make sense not to close InputStream that's already EOF-ed,
                 // so there's no 'closeIn' flag.
                 in.close();
-                if(closeOut)
+                if(closeOut) {
                     out.close();
+                }
             }
         } catch (IOException e) {
             // TODO: what to do?

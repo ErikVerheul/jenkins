@@ -59,8 +59,9 @@ public class JenkinsLocationConfiguration extends GlobalConfiguration {
             if (file.exists()) {
                 try {
                     file.unmarshal(this);
-                    if (jenkinsUrl==null)
+                    if (jenkinsUrl==null) {
                         jenkinsUrl = hudsonUrl;
+                    }
                 } catch (IOException e) {
                     LOGGER.log(Level.WARNING, "Failed to load "+file, e);
                 }
@@ -74,7 +75,9 @@ public class JenkinsLocationConfiguration extends GlobalConfiguration {
 
     public String getAdminAddress() {
         String v = adminAddress;
-        if(v==null)     v = Messages.Mailer_Address_Not_Configured();
+        if(v==null) {
+            v = Messages.Mailer_Address_Not_Configured();
+        }
         return v;
     }
 
@@ -94,8 +97,9 @@ public class JenkinsLocationConfiguration extends GlobalConfiguration {
 
     public void setUrl(String hudsonUrl) {
         String url = Util.nullify(hudsonUrl);
-        if(url!=null && !url.endsWith("/"))
+        if(url!=null && !url.endsWith("/")) {
             url += '/';
+        }
         this.jenkinsUrl = url;
         save();
         updateSecureSessionFlag();
@@ -144,8 +148,9 @@ public class JenkinsLocationConfiguration extends GlobalConfiguration {
      * Checks the URL in <tt>global.jelly</tt>
      */
     public FormValidation doCheckUrl(@QueryParameter String value) {
-        if(value.startsWith("http://localhost"))
+        if(value.startsWith("http://localhost")) {
             return FormValidation.warning(Messages.Mailer_Localhost_Error());
+        }
         return FormValidation.ok();
     }
 

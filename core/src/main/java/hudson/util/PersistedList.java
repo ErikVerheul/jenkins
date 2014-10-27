@@ -90,9 +90,11 @@ public class PersistedList<T> extends AbstractList<T> {
     }
 
     public <U extends T> U get(Class<U> type) {
-        for (T t : data)
-            if(type.isInstance(t))
+        for (T t : data) {
+            if(type.isInstance(t)) {
                 return type.cast(t);
+            }
+        }
         return null;
     }
 
@@ -101,9 +103,11 @@ public class PersistedList<T> extends AbstractList<T> {
      */
     public <U extends T> List<U> getAll(Class<U> type) {
         List<U> r = new ArrayList<U>();
-        for (T t : data)
-            if(type.isInstance(t))
+        for (T t : data) {
+            if(type.isInstance(t)) {
                 r.add(type.cast(t));
+            }
+        }
         return r;
     }
 
@@ -133,15 +137,18 @@ public class PersistedList<T> extends AbstractList<T> {
     public void replace(T from, T to) throws IOException {
         List<T> copy = new ArrayList<T>(data.getView());
         for (int i=0; i<copy.size(); i++) {
-            if (copy.get(i).equals(from))
+            if (copy.get(i).equals(from)) {
                 copy.set(i,to);
+            }
         }
         data.replaceBy(copy);
     }
 
     public boolean remove(Object o) {
         boolean b = data.remove((T)o);
-        if (b)  _onModified();
+        if (b) {
+            _onModified();
+        }
         return b;
     }
 
@@ -153,8 +160,9 @@ public class PersistedList<T> extends AbstractList<T> {
                 modified=true;
             }
         }
-        if(modified)
+        if(modified) {
             onModified();
+        }
     }
 
 
@@ -233,8 +241,9 @@ public class PersistedList<T> extends AbstractList<T> {
         }
 
         public void marshal(Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
-            for (Object o : (PersistedList) source)
+            for (Object o : (PersistedList) source) {
                 writeItem(o, context, writer);
+            }
         }
 
         public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {

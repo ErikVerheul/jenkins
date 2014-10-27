@@ -46,8 +46,9 @@ public abstract class CollectionSearchIndex<SMT extends SearchableModelObject> i
 
     public void find(String token, List<SearchItem> result) {
         SearchItem p = get(token);
-        if(p!=null)
+        if(p!=null) {
             result.add(p);
+        }
     }
 
     public void suggest(String token, List<SearchItem> result) {
@@ -56,13 +57,17 @@ public abstract class CollectionSearchIndex<SMT extends SearchableModelObject> i
         if(isCaseSensitive){
           token = token.toLowerCase();
         }
-        if(items==null)     return;
+        if(items==null) {
+            return;
+         }
         for (SMT o : items) {
             String name = getName(o);
-            if(isCaseSensitive)
+            if(isCaseSensitive) {
                 name=name.toLowerCase();
-            if(o!=null && name.contains(token))
+            }
+            if(o!=null && name.contains(token)) {
                 result.add(o);
+            }
         }
     }
 

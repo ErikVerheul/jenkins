@@ -139,9 +139,11 @@ public class TreeView extends View implements ViewGroup {
     }
 
     public View getView(String name) {
-        for (View v : views)
-            if(v.getViewName().equals(name))
+        for (View v : views) {
+            if(v.getViewName().equals(name)) {
                 return v;
+            }
+        }
         return null;
     }
 
@@ -162,10 +164,11 @@ public class TreeView extends View implements ViewGroup {
     // this feature is not public yet
     @Extension
     public static ViewDescriptor register() {
-        if(Boolean.getBoolean("hudson.TreeView"))
+        if(Boolean.getBoolean("hudson.TreeView")) {
             return new DescriptorImpl();
-        else
+        } else {
             return null;
+        }
     }
 
     public static final class DescriptorImpl extends ViewDescriptor {

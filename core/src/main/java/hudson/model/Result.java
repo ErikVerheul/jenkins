@@ -103,10 +103,11 @@ public final class Result implements Serializable, CustomExportedBean {
      * Combines two {@link Result}s and returns the worse one.
      */
     public Result combine(Result that) {
-        if(this.ordinal < that.ordinal)
+        if(this.ordinal < that.ordinal) {
             return that;
-        else
+        } else {
             return this;
+        }
     }
 
     public boolean isWorseThan(Result that) {
@@ -144,24 +145,29 @@ public final class Result implements Serializable, CustomExportedBean {
     }
     
     public static Result fromString(String s) {
-        for (Result r : all)
-            if (s.equalsIgnoreCase(r.name))
+        for (Result r : all) {
+            if (s.equalsIgnoreCase(r.name)) {
                 return r;
+            }
+        }
         return FAILURE;
     }
 
     private static List<String> getNames() {
         List<String> l = new ArrayList<String>();
-        for (Result r : all)
+        for (Result r : all) {
             l.add(r.name);
+        }
         return l;
     }
 
     // Maintain each Result as a singleton deserialized (like build result from a slave node)
     private Object readResolve() {
-        for (Result r : all)
-            if (ordinal==r.ordinal)
+        for (Result r : all) {
+            if (ordinal==r.ordinal) {
                 return r;
+            }
+        }
         return FAILURE;
     }
 
@@ -189,9 +195,10 @@ public final class Result implements Serializable, CustomExportedBean {
         public int parseArguments(Parameters params) throws CmdLineException {
             String param = params.getParameter(0);
             Result v = fromString(param.replace('-', '_'));
-            if (v==null)
+            if (v==null) {
                 throw new CmdLineException(owner,"No such status '"+param+"'. Did you mean "+
                         EditDistance.findNearest(param.replace('-', '_').toUpperCase(), getNames()));
+            }
             setter.addValue(v);
             return 1;
         }

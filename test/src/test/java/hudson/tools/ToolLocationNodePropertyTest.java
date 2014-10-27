@@ -120,10 +120,11 @@ public class ToolLocationNodePropertyTest extends HudsonTestCase {
     }
 
     private void configureDumpEnvBuilder() throws IOException {
-        if(Functions.isWindows())
+        if(Functions.isWindows()) {
             project.getBuildersList().add(new BatchFile("set"));
-        else
+        } else {
             project.getBuildersList().add(new Shell("export"));
+        }
     }
 
     public void testAnt() throws Exception {

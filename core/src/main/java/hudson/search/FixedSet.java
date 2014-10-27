@@ -51,8 +51,9 @@ public class FixedSet implements SearchIndex {
                 token=token.toLowerCase();
                 name=name.toLowerCase();
             }
-            if(token.equals(i.getSearchName()))
+            if(token.equals(i.getSearchName())) {
                 result.add(i);
+            }
         }
     }
 
@@ -64,8 +65,9 @@ public class FixedSet implements SearchIndex {
                 token=token.toLowerCase();
                 name=name.toLowerCase();
             }
-            if(name.contains(token))
+            if(name.contains(token)) {
                 result.add(i);
+            }
         }
     }
 }

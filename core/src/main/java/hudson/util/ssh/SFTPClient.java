@@ -39,10 +39,11 @@ public class SFTPClient extends SFTPv3Client {
             return stat(path);
         } catch (SFTPException e) {
             int c = e.getServerErrorCode();
-            if (c== ErrorCodes.SSH_FX_NO_SUCH_FILE || c==ErrorCodes.SSH_FX_NO_SUCH_PATH)
+            if (c== ErrorCodes.SSH_FX_NO_SUCH_FILE || c==ErrorCodes.SSH_FX_NO_SUCH_PATH) {
                 return null;
-            else
+            } else {
                 throw e;
+            }
         }
     }
 
@@ -51,12 +52,14 @@ public class SFTPClient extends SFTPv3Client {
      */
     public void mkdirs(String path, int posixPermission) throws IOException {
         SFTPv3FileAttributes atts = _stat(path);
-        if (atts!=null && atts.isDirectory())
+        if (atts!=null && atts.isDirectory()) {
             return;
+        }
 
         int idx = path.lastIndexOf("/");
-        if (idx>0)
+        if (idx>0) {
             mkdirs(path.substring(0,idx), posixPermission);
+        }
 
         try {
             mkdir(path, posixPermission);
@@ -96,15 +99,18 @@ public class SFTPClient extends SFTPv3Client {
 
             public int read() throws IOException {
                 byte[] b = new byte[1];
-                if(read(b)<0)
+                if(read(b)<0) {
                     return -1;
+                }
                 return b[0];
             }
 
             @Override
             public int read(byte[] b, int off, int len) throws IOException {
                 int r = SFTPClient.this.read(h,offset,b,off,len);
-                if (r<0)    return -1;
+                if (r<0) {
+                    return -1;
+                }
                 offset += r;
                 return r;
             }

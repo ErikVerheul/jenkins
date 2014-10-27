@@ -80,7 +80,9 @@ public class NodeProvisioner {
          * @param numExecutors The number of executors that will be provided by the launched {@link Node}.
          */
         public PlannedNode(String displayName, Future<Node> future, int numExecutors) {
-            if(displayName==null || future==null || numExecutors<1)  throw new IllegalArgumentException();
+            if(displayName==null || future==null || numExecutors<1) {
+                throw new IllegalArgumentException();
+            }
             this.displayName = displayName;
             this.future = future;
             this.numExecutors = numExecutors;
@@ -178,8 +180,9 @@ public class NodeProvisioner {
             if(f.future.isDone()) {
                 try {
                     Node node = f.future.get();
-                    for (CloudProvisioningListener cl : CloudProvisioningListener.all())
+                    for (CloudProvisioningListener cl : CloudProvisioningListener.all()) {
                         cl.onComplete(f,node);
+                    }
 
                     hudson.addNode(node);
                     LOGGER.info(f.displayName+" provisioning successfully completed. We have now "+hudson.getComputers().length+" computer(s)");
@@ -187,19 +190,22 @@ public class NodeProvisioner {
                     throw new AssertionError(e); // since we confirmed that the future is already done
                 } catch (ExecutionException e) {
                     LOGGER.log(Level.WARNING, "Provisioned slave "+f.displayName+" failed to launch",e.getCause());
-                    for (CloudProvisioningListener cl : CloudProvisioningListener.all())
+                    for (CloudProvisioningListener cl : CloudProvisioningListener.all()) {
                         cl.onFailure(f,e.getCause());
+                    }
                 } catch (IOException e) {
                     LOGGER.log(Level.WARNING, "Provisioned slave "+f.displayName+" failed to launch",e);
-                    for (CloudProvisioningListener cl : CloudProvisioningListener.all())
+                    for (CloudProvisioningListener cl : CloudProvisioningListener.all()) {
                         cl.onFailure(f,e);
+                    }
                 }
 
                 f.spent();
 
                 itr.remove();
-            } else
+            } else {
                 plannedCapacitySnapshot += f.numExecutors;
+            }
         }
         float plannedCapacity = plannedCapacitySnapshot;
         plannedCapacitiesEMA.update(plannedCapacity);
@@ -261,7 +267,9 @@ public class NodeProvisioner {
 
             CLOUD:
                 for( Cloud c : hudson.clouds ) {
-                    if(excessWorkload<0)    break;  // enough slaves allocated
+                    if(excessWorkload<0) {
+                        break;  // enough slaves allocated
+                    }
 
                     // Make sure this cloud actually can provision for this label.
                     if (c.canProvision(label)) {
@@ -273,15 +281,18 @@ public class NodeProvisioner {
 
                         int workloadToProvision = (int) Math.round(Math.floor(excessWorkload + m));
 
-                        for (CloudProvisioningListener cl : CloudProvisioningListener.all())
+                        for (CloudProvisioningListener cl : CloudProvisioningListener.all()) {
                             // consider displaying reasons in a future cloud ux
-                            if (cl.canProvision(c,label,workloadToProvision) != null)
+                            if (cl.canProvision(c,label,workloadToProvision) != null) {
                                 break CLOUD;
+                            }
+                        }
 
                         Collection<PlannedNode> additionalCapacities = c.provision(label, workloadToProvision);
 
-                        for (CloudProvisioningListener cl : CloudProvisioningListener.all())
+                        for (CloudProvisioningListener cl : CloudProvisioningListener.all()) {
                             cl.onStarted(c, label, additionalCapacities);
+                        }
 
                         for (PlannedNode ac : additionalCapacities) {
                             excessWorkload -= ac.numExecutors;
@@ -364,8 +375,9 @@ public class NodeProvisioner {
         protected void doRun() {
             Jenkins h = Jenkins.getInstance();
             h.unlabeledNodeProvisioner.update();
-            for( Label l : h.getLabels() )
+            for( Label l : h.getLabels() ) {
                 l.nodeProvisioner.update();
+            }
         }
     }
 
@@ -379,12 +391,13 @@ public class NodeProvisioner {
 
     private static float getFloatSystemProperty(String propName, float defaultValue) {
         String v = System.getProperty(propName);
-        if (v!=null)
+        if (v!=null) {
             try {
                 return Float.parseFloat(v);
             } catch (NumberFormatException e) {
                 LOGGER.warning("Failed to parse a float value from system property "+propName+". value was "+v);
             }
+        }
         return defaultValue;
     }
 }

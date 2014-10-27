@@ -70,13 +70,18 @@ public class SparseACL extends SidACL {
 
     @Override
     public boolean hasPermission(Authentication a, Permission permission) {
-        if(a==SYSTEM)   return true;
+        if(a==SYSTEM) {
+            return true;
+        }
         Boolean b = _hasPermission(a,permission);
-        if(b!=null) return b;
+        if(b!=null) {
+            return b;
+        }
 
         if(parent!=null) {
-            if(LOGGER.isLoggable(FINE))
+            if(LOGGER.isLoggable(FINE)) {
                 LOGGER.fine("hasPermission("+a+","+permission+") is delegating to parent ACL: "+parent);
+            }
             return parent.hasPermission(a,permission);
         }
 
@@ -88,8 +93,9 @@ public class SparseACL extends SidACL {
     protected Boolean hasPermission(Sid p, Permission permission) {
         for( ; permission!=null; permission=permission.impliedBy ) {
             for (Entry e : entries) {
-                if(e.permission==permission && e.sid.equals(p))
+                if(e.permission==permission && e.sid.equals(p)) {
                     return e.allowed;
+                }
             }
         }
         return null;

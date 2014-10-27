@@ -324,11 +324,13 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
         for (Trigger t : triggers()) {
             t.start(this, Items.currentlyUpdatingByXml());
         }
-        if(scm==null)
+        if(scm==null) {
             scm = new NullSCM(); // perhaps it was pointing to a plugin that no longer exists.
+        }
 
-        if(transientActions==null)
+        if(transientActions==null) {
             transientActions = new Vector<Action>();    // happens when loaded from disk
+        }
         updateTransientActions();
     }
 
@@ -365,8 +367,9 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
         if(ws!=null) {
             Node on = getLastBuiltOn();
             getScm().processWorkspaceBeforeDeletion(this, ws, on);
-            if(on!=null)
+            if(on!=null) {
                 on.getFileSystemProvisioner().discardWorkspace(this,ws);
+            }
         }
         super.performDelete();
     }
@@ -390,11 +393,13 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
      * return that {@link Node}. Otherwise null.
      */
     public @CheckForNull Label getAssignedLabel() {
-        if(canRoam)
+        if(canRoam) {
             return null;
+        }
 
-        if(assignedNode==null)
+        if(assignedNode==null) {
             return Jenkins.getInstance().getSelfLabel();
+        }
         return Jenkins.getInstance().getLabel(assignedNode);
     }
 
@@ -417,7 +422,9 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
      * Gets the textual representation of the assigned label as it was entered by the user.
      */
     public String getAssignedLabelString() {
-        if (canRoam || assignedNode==null)    return null;
+        if (canRoam || assignedNode==null) {
+            return null;
+        }
         try {
             LabelExpression.parseExpression(assignedNode);
             return assignedNode;
@@ -436,8 +443,11 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
             assignedNode = null;
         } else {
             canRoam = false;
-            if(l== Jenkins.getInstance().getSelfLabel())  assignedNode = null;
-            else                                        assignedNode = l.getExpression();
+            if(l== Jenkins.getInstance().getSelfLabel()) {
+                assignedNode = null;
+            } else {
+                assignedNode = l.getExpression();
+            }
         }
         save();
     }
@@ -483,8 +493,9 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
             return this;
         } else {
             ItemGroup p = this.getParent();
-            if (p instanceof AbstractProject)
+            if (p instanceof AbstractProject) {
                 return ((AbstractProject) p).getRootProject();
+            }
             return this;
         }
     }
@@ -522,12 +533,15 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
             Executable exe = e.getCurrentExecutable();
             if (exe instanceof AbstractBuild) {
                 AbstractBuild b = (AbstractBuild) exe;
-                if(b.getProject()==this)
+                if(b.getProject()==this) {
                     return b;
+                }
             }
         }
         R lb = getLastBuild();
-        if(lb!=null)    return lb;
+        if(lb!=null) {
+            return lb;
+        }
         return null;
     }
 
@@ -545,10 +559,14 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
      */
     public final @CheckForNull FilePath getSomeWorkspace() {
         R b = getSomeBuildWithWorkspace();
-        if (b!=null) return b.getWorkspace();
+        if (b!=null) {
+            return b.getWorkspace();
+        }
         for (WorkspaceBrowser browser : ExtensionList.lookup(WorkspaceBrowser.class)) {
             FilePath f = browser.getWorkspace(this);
-            if (f != null) return f;
+            if (f != null) {
+                return f;
+            }
         }
         return null;
     }
@@ -562,7 +580,9 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
         int cnt=0;
         for (R b = getLastBuild(); cnt<5 && b!=null; b=b.getPreviousBuild()) {
             FilePath ws = b.getWorkspace();
-            if (ws!=null)   return b;
+            if (ws!=null) {
+                return b;
+            }
         }
         return null;
     }
@@ -571,7 +591,9 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
         int cnt=0;
         for (R b = getLastBuild(); cnt<5 && b!=null; b=b.getPreviousBuild()) {
             FilePath ws = b.getWorkspace();
-            if (ws!=null && ws.exists())   return b;
+            if (ws!=null && ws.exists()) {
+                return b;
+            }
         }
         return null;
     }
@@ -680,8 +702,9 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
      */
     public FormValidation doCheckRetryCount(@QueryParameter String value)throws IOException,ServletException{
         // retry count is optional so this is ok
-        if(value == null || value.trim().equals(""))
+        if(value == null || value.trim().equals("")) {
             return FormValidation.ok();
+        }
         if (!value.matches("[0-9]*")) {
             return FormValidation.error("Invalid retry count");
         } 
@@ -696,11 +719,16 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
      * @since 1.585 Do not disable projects if {@link #supportsMakeDisabled()} returns false
      */
     public void makeDisabled(boolean b) throws IOException {
-        if(disabled==b)     return; // noop
-        if (b && !supportsMakeDisabled()) return; // do nothing if the disabling is unsupported
+        if(disabled==b) {
+            return; // noop
+        }
+        if (b && !supportsMakeDisabled()) {
+            return; // do nothing if the disabling is unsupported
+        }
         this.disabled = b;
-        if(b)
+        if(b) {
             Jenkins.getInstance().getQueue().cancel(this);
+        }
         
         save();
         ItemListener.fireOnUpdated(this);
@@ -727,10 +755,11 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
 
     @Override
     public BallColor getIconColor() {
-        if(isDisabled())
+        if(isDisabled()) {
             return isBuilding() ? BallColor.DISABLED_ANIME : BallColor.DISABLED;
-        else
+        } else {
             return super.getIconColor();
+        }
     }
 
     /**
@@ -747,11 +776,13 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
     protected List<Action> createTransientActions() {
         Vector<Action> ta = new Vector<Action>();
 
-        for (JobProperty<? super P> p : Util.fixNull(properties))
+        for (JobProperty<? super P> p : Util.fixNull(properties)) {
             ta.addAll(p.getJobActions((P)this));
+        }
 
-        for (TransientProjectActionFactory tpaf : TransientProjectActionFactory.all())
+        for (TransientProjectActionFactory tpaf : TransientProjectActionFactory.all()) {
             ta.addAll(Util.fixNull(tpaf.createFor(this))); // be defensive against null
+        }
         return ta;
     }
 
@@ -891,9 +922,13 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
      * Schedules a polling of this project.
      */
     public boolean schedulePolling() {
-        if(isDisabled())    return false;
+        if(isDisabled()) {
+            return false;
+        }
         SCMTrigger scmt = getTrigger(SCMTrigger.class);
-        if(scmt==null)      return false;
+        if(scmt==null) {
+            return false;
+        }
         scmt.run();
         return true;
     }
@@ -1037,10 +1072,11 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
     public Node getLastBuiltOn() {
         // where was it built on?
         AbstractBuild b = getLastBuild();
-        if(b==null)
+        if(b==null) {
             return null;
-        else
+        } else {
             return b.getBuiltOn();
+        }
     }
 
     public Object getSameNodeConstraint() {
@@ -1088,8 +1124,9 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
         public String getShortDescription() {
             Executor e = build.getExecutor();
             String eta = "";
-            if (e != null)
+            if (e != null) {
                 eta = Messages.AbstractProject_ETA(e.getEstimatedRemainingTime());
+            }
             int lbn = build.getNumber();
             return Messages.AbstractProject_BuildInProgress(lbn, eta);
         }
@@ -1129,17 +1166,20 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
 
     public CauseOfBlockage getCauseOfBlockage() {
         // Block builds until they are done with post-production
-        if (isLogUpdated() && !isConcurrentBuild())
+        if (isLogUpdated() && !isConcurrentBuild()) {
             return new BecauseOfBuildInProgress(getLastBuild());
+        }
         if (blockBuildWhenDownstreamBuilding()) {
             AbstractProject<?,?> bup = getBuildingDownstream();
-            if (bup!=null)
+            if (bup!=null) {
                 return new BecauseOfDownstreamBuildInProgress(bup);
+            }
         }
         if (blockBuildWhenUpstreamBuilding()) {
             AbstractProject<?,?> bup = getBuildingUpstream();
-            if (bup!=null)
+            if (bup!=null) {
                 return new BecauseOfUpstreamBuildInProgress(bup);
+            }
         }
         return null;
     }
@@ -1155,8 +1195,9 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
         Set<Task> unblockedTasks = Jenkins.getInstance().getQueue().getUnblockedTasks();
 
         for (AbstractProject tup : getTransitiveDownstreamProjects()) {
-			if (tup!=this && (tup.isBuilding() || unblockedTasks.contains(tup)))
-                return tup;
+			if (tup!=this && (tup.isBuilding() || unblockedTasks.contains(tup))) {
+                            return tup;
+                        }
         }
         return null;
     }
@@ -1172,8 +1213,9 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
         Set<Task> unblockedTasks = Jenkins.getInstance().getQueue().getUnblockedTasks();
 
         for (AbstractProject tup : getTransitiveUpstreamProjects()) {
-			if (tup!=this && (tup.isBuilding() || unblockedTasks.contains(tup)))
-                return tup;
+			if (tup!=this && (tup.isBuilding() || unblockedTasks.contains(tup))) {
+                            return tup;
+                        }
         }
         return null;
     }
@@ -1181,15 +1223,19 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
     public List<SubTask> getSubTasks() {
         List<SubTask> r = new ArrayList<SubTask>();
         r.add(this);
-        for (SubTaskContributor euc : SubTaskContributor.all())
+        for (SubTaskContributor euc : SubTaskContributor.all()) {
             r.addAll(euc.forProject(this));
-        for (JobProperty<? super P> p : properties)
+        }
+        for (JobProperty<? super P> p : properties) {
             r.addAll(p.getSubTasks());
+        }
         return r;
     }
 
     public @CheckForNull R createExecutable() throws IOException {
-        if(isDisabled())    return null;
+        if(isDisabled()) {
+            return null;
+        }
         return newBuild();
     }
 
@@ -1243,8 +1289,9 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
 
     public boolean checkout(AbstractBuild build, Launcher launcher, BuildListener listener, File changelogFile) throws IOException, InterruptedException {
         SCM scm = getScm();
-        if(scm==null)
+        if(scm==null) {
             return true;    // no SCM
+        }
 
         FilePath workspace = build.getWorkspace();
         try {
@@ -1275,8 +1322,9 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
             } catch (AbstractMethodError e) {
                 baseline = SCMRevisionState.NONE; // pre-1.345 SCM implementations, which doesn't use the baseline in polling
             }
-            if (baseline!=null)
+            if (baseline!=null) {
                 build.addAction(baseline);
+            }
         }
         pollingBaseline = baseline;
     }
@@ -1325,7 +1373,9 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
                     pollingBaseline = s;
                     break;
                 }
-                if (r==success) break;  // searched far enough
+                if (r==success) {
+                    break;  // searched far enough
+                }
             }
             // NOTE-NO-BASELINE:
             // if we don't have baseline yet, it means the data is built by old Hudson that doesn't set the baseline
@@ -1363,7 +1413,9 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
     private PollingResult _poll(TaskListener listener, SCM scm) throws IOException, InterruptedException {
         if (scm.requiresWorkspaceForPolling()) {
             R b = getSomeBuildWithExistingWorkspace();
-            if (b == null) b = getLastBuild();
+            if (b == null) {
+                b = getLastBuild();
+            }
             // lock the workspace for the given build
             FilePath ws=b.getWorkspace();
 
@@ -1426,8 +1478,9 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
         } else {
             // polling without workspace
             LOGGER.fine("Polling SCM changes of " + getName());
-            if (pollingBaseline==null) // see NOTE-NO-BASELINE above
+            if (pollingBaseline==null) { // see NOTE-NO-BASELINE above
                 calcPollingBaseline(getLastBuild(),null,listener);
+            }
             PollingResult r = scm.poll(this, null, null, listener, pollingBaseline);
             pollingBaseline = r.remote;
             return r;
@@ -1447,8 +1500,9 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
         try {
             listener.getLogger().println("Polling SCM changes on " + node.getSelfLabel().getName());
             LOGGER.fine("Polling SCM changes of " + getName());
-            if (pollingBaseline==null) // see NOTE-NO-BASELINE above
+            if (pollingBaseline==null) { // see NOTE-NO-BASELINE above
                 calcPollingBaseline(lb,launcher,listener);
+            }
             PollingResult r = scm.poll(this, launcher, ws, listener, pollingBaseline);
             pollingBaseline = r.remote;
             return r;
@@ -1531,9 +1585,11 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
      * @since 1.191
      */
     public boolean hasParticipant(User user) {
-        for( R build = getLastBuild(); build!=null; build=build.getPreviousBuild())
-            if(build.hasParticipant(user))
+        for( R build = getLastBuild(); build!=null; build=build.getPreviousBuild()) {
+            if(build.hasParticipant(user)) {
                 return true;
+            }
+        }
         return false;
     }
 
@@ -1592,8 +1648,9 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
      */
     public <T extends Trigger> T getTrigger(Class<T> clazz) {
         for (Trigger p : triggers()) {
-            if(clazz.isInstance(p))
+            if(clazz.isInstance(p)) {
                 return clazz.cast(p);
+            }
         }
         return null;
     }
@@ -1632,9 +1689,11 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
         ArrayList<AbstractProject> result = new ArrayList<AbstractProject>();
         for (AbstractProject<?,?> ap : getUpstreamProjects()) {
             BuildTrigger buildTrigger = ap.getPublishersList().get(BuildTrigger.class);
-            if (buildTrigger != null)
-                if (buildTrigger.getChildProjects(ap).contains(this))
+            if (buildTrigger != null) {
+                if (buildTrigger.getChildProjects(ap).contains(this)) {
                     result.add(ap);
+                }
+            }
         }        
         return result;
     }    
@@ -1682,16 +1741,18 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
     private void checkAndRecord(AbstractProject that, TreeMap<Integer, RangeSet> r, Collection<R> builds) {
         for (R build : builds) {
             RangeSet rs = build.getDownstreamRelationship(that);
-            if(rs==null || rs.isEmpty())
+            if(rs==null || rs.isEmpty()) {
                 continue;
+            }
 
             int n = build.getNumber();
 
             RangeSet value = r.get(n);
-            if(value==null)
+            if(value==null) {
                 r.put(n,rs);
-            else
+            } else {
                 value.add(rs);
+            }
         }
     }
 
@@ -1743,12 +1804,18 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
      */
     public int getDelay(StaplerRequest req) throws ServletException {
         String delay = req.getParameter("delay");
-        if (delay==null)    return getQuietPeriod();
+        if (delay==null) {
+            return getQuietPeriod();
+        }
 
         try {
             // TODO: more unit handling
-            if(delay.endsWith("sec"))   delay=delay.substring(0,delay.length()-3);
-            if(delay.endsWith("secs"))  delay=delay.substring(0,delay.length()-4);
+            if(delay.endsWith("sec")) {
+                delay=delay.substring(0,delay.length()-3);
+            }
+            if(delay.endsWith("secs")) {
+                delay=delay.substring(0,delay.length()-4);
+            }
             return Integer.parseInt(delay);
         } catch (NumberFormatException e) {
             throw new ServletException("Invalid delay parameter value: "+delay);
@@ -1816,11 +1883,12 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
             customWorkspace = null;
         }
 
-        if (json.has("scmCheckoutStrategy"))
+        if (json.has("scmCheckoutStrategy")) {
             scmCheckoutStrategy = req.bindJSON(SCMCheckoutStrategy.class,
-                json.getJSONObject("scmCheckoutStrategy"));
-        else
+                    json.getJSONObject("scmCheckoutStrategy"));
+        } else {
             scmCheckoutStrategy = null;
+        }
 
         if(json.optBoolean("hasSlaveAffinity", json.has("label"))) {
             assignedNode = Util.fixEmptyAndTrim(json.optString("label"));
@@ -1837,11 +1905,13 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
 
         setScm(SCMS.parseSCM(req,this));
 
-        for (Trigger t : triggers())
+        for (Trigger t : triggers()) {
             t.stop();
+        }
         triggers.replaceBy(buildDescribable(req, Trigger.for_(this)));
-        for (Trigger t : triggers())
+        for (Trigger t : triggers()) {
             t.start(this,true);
+        }
     }
 
     /**
@@ -1951,8 +2021,9 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
 
         for(R r=getLastBuild(); r!=null; r=r.getPreviousBuild()) {
             int idx=0;
-            for( ChangeLogSet.Entry e : r.getChangeSet())
+            for( ChangeLogSet.Entry e : r.getChangeSet()) {
                 entries.add(new FeedItem(e,idx++));
+            }
         }
 
         RSS.forwardToRss(
@@ -1973,8 +2044,9 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
 
                 public String getEntryDescription(FeedItem item) {
                     StringBuilder buf = new StringBuilder();
-                    for(String path : item.e.getAffectedPaths())
+                    for(String path : item.e.getAffectedPaths()) {
                         buf.append(path).append('\n');
+                    }
                     return buf.toString();
                 }
 
@@ -2022,8 +2094,9 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
 
         public FormValidation doCheckLabel(@AncestorInPath AbstractProject<?,?> project,
                                            @QueryParameter String value) {
-            if (Util.fixEmpty(value)==null)
+            if (Util.fixEmpty(value)==null) {
                 return FormValidation.ok(); // nothing typed yet
+            }
             try {
                 Label.parseExpression(value);
             } catch (ANTLRException e) {
@@ -2059,10 +2132,11 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
         }
 
         public FormValidation doCheckCustomWorkspace(@QueryParameter String customWorkspace){
-        	if(Util.fixEmptyAndTrim(customWorkspace)==null)
-        		return FormValidation.error(Messages.AbstractProject_CustomWorkspaceEmpty());
-        	else
-        		return FormValidation.ok();
+        	if(Util.fixEmptyAndTrim(customWorkspace)==null) {
+                    return FormValidation.error(Messages.AbstractProject_CustomWorkspaceEmpty());
+                } else {
+                    return FormValidation.ok();
+                }
         }
         
         public AutoCompletionCandidates doAutoCompleteUpstreamProjects(@QueryParameter String value) {
@@ -2182,8 +2256,9 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
     public static AbstractProject resolveForCLI(
             @Argument(required=true,metaVar="NAME",usage="Job name") String name) throws CmdLineException {
         AbstractProject item = Jenkins.getInstance().getItemByFullName(name, AbstractProject.class);
-        if (item==null)
+        if (item==null) {
             throw new CmdLineException(null,Messages.AbstractItem_NoSuchJobExists(name,AbstractProject.findNearest(name).getFullName()));
+        }
         return item;
     }
 

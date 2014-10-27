@@ -120,8 +120,9 @@ public abstract class Lifecycle implements ExtensionPoint {
      */
     public File getHudsonWar() {
         String war = System.getProperty("executable-war");
-        if(war!=null && new File(war).exists())
+        if(war!=null && new File(war).exists()) {
             return new File(war);
+        }
         return null;
     }
 
@@ -137,19 +138,23 @@ public abstract class Lifecycle implements ExtensionPoint {
         File dest = getHudsonWar();
         // this should be impossible given the canRewriteHudsonWar method,
         // but let's be defensive
-        if(dest==null)  throw new IOException("jenkins.war location is not known.");
+        if(dest==null) {
+            throw new IOException("jenkins.war location is not known.");
+        }
 
         // backing up the old jenkins.war before it gets lost due to upgrading
         // (newly downloaded jenkins.war and 'backup' (jenkins.war.tmp) are the same files
         // unless we are trying to rewrite jenkins.war by a backup itself
         File bak = new File(dest.getPath() + ".bak");
-        if (!by.equals(bak))
+        if (!by.equals(bak)) {
             FileUtils.copyFile(dest, bak);
+        }
        
         FileUtils.copyFile(by, dest);
         // we don't want to keep backup if we are downgrading
-        if (by.equals(bak)&&bak.exists())
+        if (by.equals(bak)&&bak.exists()) {
             bak.delete();
+        }
     }
 
     /**
@@ -193,9 +198,10 @@ public abstract class Lifecycle implements ExtensionPoint {
      */
     public void verifyRestartable() throws RestartNotSupportedException {
         // the rewriteHudsonWar method isn't overridden.
-        if (!Util.isOverridden(Lifecycle.class,getClass(), "restart"))
+        if (!Util.isOverridden(Lifecycle.class,getClass(), "restart")) {
             throw new RestartNotSupportedException("Restart is not supported in this running mode (" +
                     getClass().getName() + ").");
+        }
     }
 
     /**

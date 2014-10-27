@@ -36,7 +36,9 @@ public class ProcessTreeKillerTest extends HudsonTestCase {
     @Bug(22641)
     public void testProcessProperlyKilledUnix() throws Exception {
         ProcessTree.enabled = true;
-        if (Functions.isWindows()) return; // This test does not involve windows.
+        if (Functions.isWindows()) {
+            return; // This test does not involve windows.
+        }
 
         FreeStyleProject sleepProject = createFreeStyleProject();
         FreeStyleProject processJob = createFreeStyleProject();

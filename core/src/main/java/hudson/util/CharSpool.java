@@ -52,11 +52,13 @@ public final class CharSpool extends Writer {
     }
 
     private void renew() {
-        if(pos<last.length)
+        if(pos<last.length) {
             return;
+        }
 
-        if(buf==null)
+        if(buf==null) {
             buf = new LinkedList<char[]>();
+        }
         buf.add(last);
         last = new char[1024];
         pos = 0;

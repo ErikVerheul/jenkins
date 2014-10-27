@@ -62,9 +62,11 @@ public class ExtensionListTest extends HudsonTestCase {
     }
 
     private boolean hasInstanceOf(Collection c, Class type) {
-        for (Object o : c)
-            if(o.getClass()==type)
+        for (Object o : c) {
+            if(o.getClass()==type) {
                 return true;
+            }
+        }
         return false;
     }
 

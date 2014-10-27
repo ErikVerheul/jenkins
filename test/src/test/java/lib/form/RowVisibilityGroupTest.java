@@ -80,8 +80,9 @@ public class RowVisibilityGroupTest extends HudsonTestCase implements Describabl
         // make sure that the inner control is still hidden
         List<HtmlInput> textboxes = p.selectNodes("//INPUT[@name='_.textbox2']");
         assertEquals(2,textboxes.size());
-        for (HtmlInput e : textboxes)
+        for (HtmlInput e : textboxes) {
             assertTrue(!e.isDisplayed());
+        }
 
         // reveal the text box
         List<HtmlInput> checkboxes = p.selectNodes("//INPUT[@name='inner']");

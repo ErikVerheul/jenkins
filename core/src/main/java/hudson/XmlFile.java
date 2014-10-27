@@ -271,20 +271,24 @@ public final class XmlFile {
                 }
 
                 private void attempt() throws Eureka {
-                    if(loc==null)   return;
+                    if(loc==null) {
+                        return;
+                    }
                     if (loc instanceof Locator2) {
                         Locator2 loc2 = (Locator2) loc;
                         String e = loc2.getEncoding();
-                        if(e!=null)
+                        if(e!=null) {
                             throw new Eureka(e);
+                        }
                     }
                 }
             });
             // can't reach here
             throw new AssertionError();
         } catch (Eureka e) {
-            if(e.encoding!=null)
+            if(e.encoding!=null) {
                 return e.encoding;
+            }
             // the environment can contain old version of Xerces and others that do not support Locator2
             // in such a case, assume UTF-8 rather than fail, since Jenkins internally always write XML in UTF-8
             return "UTF-8";

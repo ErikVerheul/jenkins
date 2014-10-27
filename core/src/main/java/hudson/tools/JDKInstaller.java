@@ -196,18 +196,21 @@ public class JDKInstaller extends ToolInstaller {
             int exit = starter
                     .stdin(new ByteArrayInputStream("yes".getBytes())).stdout(out)
                     .pwd(new FilePath(launcher.getChannel(), expectedLocation)).join();
-            if (exit != 0)
+            if (exit != 0) {
                 throw new AbortException(Messages.JDKInstaller_FailedToInstallJDK(exit));
+        }
 
             // JDK creates its own sub-directory, so pull them up
             List<String> paths = fs.listSubDirectories(expectedLocation);
             for (Iterator<String> itr = paths.iterator(); itr.hasNext();) {
                 String s =  itr.next();
-                if (!s.matches("j(2s)?dk.*"))
+                if (!s.matches("j(2s)?dk.*")) {
                     itr.remove();
+                }
             }
-            if(paths.size()!=1)
+            if(paths.size()!=1) {
                 throw new AbortException("Failed to find the extracted JDKs: "+paths);
+        }
 
             // remove the intermediate directory
             fs.pullUp(expectedLocation+'/'+paths.get(0),expectedLocation);
@@ -326,8 +329,9 @@ public class JDKInstaller extends ToolInstaller {
 
         public List<String> listSubDirectories(String dir) throws IOException, InterruptedException {
             List<String> r = new ArrayList<String>();
-            for( FilePath f : $(dir).listDirectories())
+            for( FilePath f : $(dir).listDirectories()) {
                 r.add(f.getName());
+            }
             return r;
         }
 
@@ -352,16 +356,20 @@ public class JDKInstaller extends ToolInstaller {
      */
     public URL locate(TaskListener log, Platform platform, CPU cpu) throws IOException {
         File cache = getLocalCacheFile(platform, cpu);
-        if (cache.exists() && cache.length()>1*1024*1024) return cache.toURL(); // if the file is too small, don't trust it. In the past, the download site served error message in 200 status code
+        if (cache.exists() && cache.length()>1*1024*1024) {
+            return cache.toURL(); // if the file is too small, don't trust it. In the past, the download site served error message in 200 status code
+        }
 
         log.getLogger().println("Installing JDK "+id);
         JDKFamilyList families = JDKList.all().get(JDKList.class).toList();
-        if (families.isEmpty())
+        if (families.isEmpty()) {
             throw new IOException("JDK data is empty.");
+        }
 
         JDKRelease release = families.getRelease(id);
-        if (release==null)
+        if (release==null) {
             throw new IOException("Unable to find JDK with ID="+id);
+        }
 
         JDKFile primary=null,secondary=null;
         for (JDKFile f : release.files) {
@@ -369,8 +377,9 @@ public class JDKInstaller extends ToolInstaller {
 
             // JDK files have either 'windows', 'linux', or 'solaris' in its name, so that allows us to throw
             // away unapplicable stuff right away
-            if(!platform.is(vcap))
+            if(!platform.is(vcap)) {
                 continue;
+            }
 
             switch (cpu.accept(vcap)) {
             case PRIMARY:   primary = f;break;
@@ -379,9 +388,12 @@ public class JDKInstaller extends ToolInstaller {
             }
         }
 
-        if(primary==null)   primary=secondary;
-        if(primary==null)
+        if(primary==null) {
+            primary=secondary;
+        }
+        if(primary==null) {
             throw new AbortException("Couldn't find the right download for "+platform+" and "+ cpu +" combination");
+        }
         LOGGER.fine("Platform choice:"+primary);
 
         log.getLogger().println("Downloading JDK from "+primary.filepath);
@@ -392,8 +404,9 @@ public class JDKInstaller extends ToolInstaller {
         ProxyConfiguration jpc = j!=null ? j.proxy : null;
         if(jpc != null) {
             hc.getHostConfiguration().setProxy(jpc.name, jpc.port);
-            if(jpc.getUserName() != null)
+            if(jpc.getUserName() != null) {
                 hc.getState().setProxyCredentials(AuthScope.ANY,new UsernamePasswordCredentials(jpc.getUserName(),jpc.getPassword()));
+            }
         }
 
         int authCount=0, totalPageCount=0;  // counters for avoiding infinite loop
@@ -403,8 +416,9 @@ public class JDKInstaller extends ToolInstaller {
         hc.getState().addCookie(new Cookie(".oracle.com","oraclelicense","accept-securebackup-cookie", "/", -1, false));
         try {
             while (true) {
-                if (totalPageCount++>16) // looping too much
+                if (totalPageCount++>16) { // looping too much
                     throw new IOException("Unable to find the login form");
+                }
 
                 LOGGER.fine("Requesting " + m.getURI());
                 int r = hc.executeMethod(m);
@@ -415,16 +429,18 @@ public class JDKInstaller extends ToolInstaller {
                     m = new GetMethod(loc);
                     continue;
                 }
-                if (r!=200)
+                if (r!=200) {
                     throw new IOException("Failed to request " + m.getURI() +" exit code="+r);
+                }
 
                 if (m.getURI().getHost().equals("login.oracle.com")) {
                     LOGGER.fine("Appears to be a login page");
                     String resp = IOUtils.toString(m.getResponseBodyAsStream(), m.getResponseCharSet());
                     m.releaseConnection();
                     Matcher pm = Pattern.compile("<form .*?action=\"([^\"]*)\" .*?</form>", Pattern.DOTALL).matcher(resp);
-                    if (!pm.find())
+                    if (!pm.find()) {
                         throw new IllegalStateException("Unable to find a form in the response:\n"+resp);
+                    }
 
                     String form = pm.group();
                     PostMethod post = new PostMethod(
@@ -440,9 +456,12 @@ public class JDKInstaller extends ToolInstaller {
                     for (String fragment : form.split("<input")) {
                         String n = extractAttribute(fragment,"name");
                         String v = extractAttribute(fragment,"value");
-                        if (n==null || v==null)     continue;
-                        if (n.equals("ssousername"))
+                        if (n==null || v==null) {
+                            continue;
+                        }
+                        if (n.equals("ssousername")) {
                             v = u;
+                        }
                         if (n.equals("password")) {
                             v = p.getPlainText();
                             if (authCount++ > 3) {
@@ -483,7 +502,9 @@ public class JDKInstaller extends ToolInstaller {
     private static String extractAttribute(String s, String name) {
         String h = name + "=\"";
         int si = s.indexOf(h);
-        if (si<0)   return null;
+        if (si<0) {
+            return null;
+        }
         int ei = s.indexOf('\"',si+h.length());
         return s.substring(si+h.length(),ei);
     }
@@ -524,9 +545,15 @@ public class JDKInstaller extends ToolInstaller {
 
         public static Platform current() throws DetectionFailedException {
             String arch = System.getProperty("os.name").toLowerCase(Locale.ENGLISH);
-            if(arch.contains("linux"))  return LINUX;
-            if(arch.contains("windows"))   return WINDOWS;
-            if(arch.contains("sun") || arch.contains("solaris"))    return SOLARIS;
+            if(arch.contains("linux")) {
+                return LINUX;
+            }
+            if(arch.contains("windows")) {
+                return WINDOWS;
+            }
+            if(arch.contains("sun") || arch.contains("solaris")) {
+                return SOLARIS;
+            }
             throw new DetectionFailedException("Unknown CPU name: "+arch);
         }
 
@@ -557,11 +584,17 @@ public class JDKInstaller extends ToolInstaller {
 
             // 64bit Solaris, Linux, and Windows can all run 32bit executable, so fall back to 32bit if 64bit bundle is not found
             case amd64:
-                if(line.contains("SPARC") || line.contains("IA64"))  return UNACCEPTABLE;
-                if(line.contains("64"))     return PRIMARY;
+                if(line.contains("SPARC") || line.contains("IA64")) {
+                    return UNACCEPTABLE;
+            }
+                if(line.contains("64")) {
+                    return PRIMARY;
+            }
                 return SECONDARY;
             case i386:
-                if(line.contains("64") || line.contains("SPARC") || line.contains("IA64"))     return UNACCEPTABLE;
+                if(line.contains("64") || line.contains("SPARC") || line.contains("IA64")) {
+                    return UNACCEPTABLE;
+            }
                 return PRIMARY;
             }
             return UNACCEPTABLE;
@@ -585,10 +618,18 @@ public class JDKInstaller extends ToolInstaller {
          */
         public static CPU current() throws DetectionFailedException {
             String arch = System.getProperty("os.arch").toLowerCase(Locale.ENGLISH);
-            if(arch.contains("sparc"))  return Sparc;
-            if(arch.contains("ia64"))   return Itanium;
-            if(arch.contains("amd64") || arch.contains("86_64"))    return amd64;
-            if(arch.contains("86"))    return i386;
+            if(arch.contains("sparc")) {
+                return Sparc;
+            }
+            if(arch.contains("ia64")) {
+                return Itanium;
+            }
+            if(arch.contains("amd64") || arch.contains("86_64")) {
+                return amd64;
+            }
+            if(arch.contains("86")) {
+                return i386;
+            }
             throw new DetectionFailedException("Unknown CPU architecture: "+arch);
         }
 
@@ -616,8 +657,9 @@ public class JDKInstaller extends ToolInstaller {
 
         public boolean isEmpty() {
             for (JDKFamily f : data) {
-                if (f.releases.length>0)
+                if (f.releases.length>0) {
                     return false;
+                }
             }
             return true;
         }
@@ -625,8 +667,9 @@ public class JDKInstaller extends ToolInstaller {
         public JDKRelease getRelease(String productCode) {
             for (JDKFamily f : data) {
                 for (JDKRelease r : f.releases) {
-                    if (r.matchesId(productCode))
+                    if (r.matchesId(productCode)) {
                         return r;
+                    }
                 }
             }
             return null;
@@ -696,8 +739,9 @@ public class JDKInstaller extends ToolInstaller {
         }
 
         public FormValidation doCheckId(@QueryParameter String value) {
-            if (Util.fixEmpty(value) == null)
+            if (Util.fixEmpty(value) == null) {
                 return FormValidation.error(Messages.JDKInstaller_DescriptorImpl_doCheckId()); // improve message
+            }
             return FormValidation.ok();
         }
 
@@ -710,8 +754,9 @@ public class JDKInstaller extends ToolInstaller {
         }
 
         public FormValidation doCheckAcceptLicense(@QueryParameter boolean value) {
-            if (username==null || password==null)
+            if (username==null || password==null) {
                 return FormValidation.errorWithMarkup(Messages.JDKInstaller_RequireOracleAccount(Stapler.getCurrentRequest().getContextPath()+'/'+getDescriptorUrl()+"/enterCredential"));
+            }
             if (value) {
                 return FormValidation.ok();
             } else {
@@ -741,7 +786,9 @@ public class JDKInstaller extends ToolInstaller {
 
         public JDKFamilyList toList() throws IOException {
             JSONObject d = getData();
-            if(d==null) return new JDKFamilyList();
+            if(d==null) {
+                return new JDKFamilyList();
+            }
             return (JDKFamilyList)JSONObject.toBean(d,JDKFamilyList.class);
         }
     }

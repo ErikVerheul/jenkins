@@ -86,7 +86,9 @@ public final class CheckPoint {
 
     @Override
     public boolean equals(Object that) {
-        if (that == null || getClass() != that.getClass()) return false;
+        if (that == null || getClass() != that.getClass()) {
+            return false;
+        }
         return identity== ((CheckPoint) that).identity;
     }
 

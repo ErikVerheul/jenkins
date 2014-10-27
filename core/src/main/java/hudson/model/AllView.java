@@ -68,8 +68,9 @@ public class AllView extends View {
     public Item doCreateItem(StaplerRequest req, StaplerResponse rsp)
             throws IOException, ServletException {
         ItemGroup<? extends TopLevelItem> ig = getOwnerItemGroup();
-        if (ig instanceof ModifiableItemGroup)
+        if (ig instanceof ModifiableItemGroup) {
             return ((ModifiableItemGroup<? extends TopLevelItem>)ig).doCreateItem(req, rsp);
+        }
         return null;
     }
 
@@ -92,9 +93,11 @@ public class AllView extends View {
     public static final class DescriptorImpl extends ViewDescriptor {
         @Override
         public boolean isInstantiable() {
-            for (View v : Stapler.getCurrentRequest().findAncestorObject(ViewGroup.class).getViews())
-                if(v instanceof AllView)
+            for (View v : Stapler.getCurrentRequest().findAncestorObject(ViewGroup.class).getViews()) {
+                if(v instanceof AllView) {
                     return false;
+                }
+            }
             return true;
         }
 

@@ -123,17 +123,21 @@ public final class PackedMap<K,V> extends AbstractMap<K,V> {
 
     @Override
     public boolean containsKey(Object key) {
-        for (int i=0; i<kvpairs.length; i+=2)
-            if (key.equals(kvpairs[i]))
+        for (int i=0; i<kvpairs.length; i+=2) {
+            if (key.equals(kvpairs[i])) {
                 return true;
+            }
+        }
         return false;
     }
 
     @Override
     public V get(Object key) {
-        for (int i=0; i<kvpairs.length; i+=2)
-            if (key.equals(kvpairs[i]))
+        for (int i=0; i<kvpairs.length; i+=2) {
+            if (key.equals(kvpairs[i])) {
                 return (V)kvpairs[i+1];
+            }
+        }
         return null;
     }
 

@@ -207,7 +207,9 @@ public class QueueTest extends HudsonTestCase {
     public void testFileItemPersistence() throws Exception {
         // TODO: write a synchronous connector?
         byte[] testData = new byte[1024];
-        for( int i=0; i<testData.length; i++ )  testData[i] = (byte)i;
+        for( int i=0; i<testData.length; i++ ) {
+            testData[i] = (byte)i;
+        }
 
 
         Server server = new Server();
@@ -275,7 +277,9 @@ public class QueueTest extends HudsonTestCase {
         CauseAction ca = build.getAction(CauseAction.class);
         assertNotNull(ca);
         StringBuilder causes = new StringBuilder();
-        for (Cause c : ca.getCauses()) causes.append(c.getShortDescription() + "\n");
+        for (Cause c : ca.getCauses()) {
+            causes.append(c.getShortDescription() + "\n");
+        }
         assertEquals("Build causes should have all items, even duplicates",
                 "Started by user SYSTEM\nStarted by an SCM change\n"
                 + "Started by user SYSTEM\nStarted by timer\n"
@@ -311,11 +315,13 @@ public class QueueTest extends HudsonTestCase {
 
         List<Future<MatrixBuild>> r = new ArrayList<Future<MatrixBuild>>();
 
-        for (int i=0; i<3; i++)
+        for (int i=0; i<3; i++) {
             r.add(m.scheduleBuild2(0,new UserIdCause(),new ParametersAction(new StringParameterValue("FOO","value"+i))));
+        }
 
-        for (Future<MatrixBuild> f : r)
+        for (Future<MatrixBuild> f : r) {
             assertBuildStatusSuccess(f);
+        }
     }
 
     private int INITIALDELAY;
@@ -479,8 +485,9 @@ public class QueueTest extends HudsonTestCase {
         GlobalMatrixAuthorizationStrategy auth = new GlobalMatrixAuthorizationStrategy() {
             @Override
             public ACL getACL(Node node) {
-                if (node==b1.getBuiltOn())
+                if (node==b1.getBuiltOn()) {
                     return aliceCantBuild;
+                }
                 return super.getACL(node);
             }
         };
@@ -536,8 +543,9 @@ public class QueueTest extends HudsonTestCase {
              }
                 Thread.sleep(1000);
         }
-        if(project2.getLastBuild()!=null)
+        if(project2.getLastBuild()!=null) {
             return;
+        }
         Queue.getInstance().cancel(projectError); // cancel job which cause dead of executor
         e.doYank(); //restart executor
         while(!e.isIdle()){ //executor should take project2 from queue

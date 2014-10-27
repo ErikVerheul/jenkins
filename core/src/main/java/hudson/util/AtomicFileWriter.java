@@ -67,8 +67,9 @@ public class AtomicFileWriter extends Writer {
             throw new IOException("Failed to create a temporary file in "+ dir,e);
         }
         destFile = f;
-        if (encoding==null)
+        if (encoding==null) {
             encoding = Charset.defaultCharset().name();
+        }
         core = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(tmpFile),encoding));
     }
 

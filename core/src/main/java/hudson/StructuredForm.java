@@ -62,12 +62,15 @@ public class StructuredForm {
      */
     public static List<JSONObject> toList(JSONObject parent, String propertyName) {
         Object v = parent.get(propertyName);
-        if(v==null)
+        if(v==null) {
             return Collections.emptyList();
-        if(v instanceof JSONObject)
+        }
+        if(v instanceof JSONObject) {
             return Collections.singletonList((JSONObject)v);
-        if(v instanceof JSONArray)
+        }
+        if(v instanceof JSONArray) {
             return (List)(JSONArray)v;
+        }
 
         throw new IllegalArgumentException();
     }

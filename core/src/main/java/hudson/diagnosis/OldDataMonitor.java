@@ -105,9 +105,11 @@ public class OldDataMonitor extends AdministrativeMonitor {
         OldDataMonitor odm = get(Jenkins.getInstance());
         synchronized (odm) {
             odm.data.remove(referTo(obj));
-            if (isDelete && obj instanceof Job<?,?>)
-                for (Run r : ((Job<?,?>)obj).getBuilds())
+            if (isDelete && obj instanceof Job<?,?>) {
+                for (Run r : ((Job<?,?>)obj).getBuilds()) {
                     odm.data.remove(referTo(r));
+                }
+            }
         }
     }
 
@@ -150,8 +152,11 @@ public class OldDataMonitor extends AdministrativeMonitor {
             try {
                 SaveableReference ref = referTo(obj);
                 VersionRange vr = odm.data.get(ref);
-                if (vr != null) vr.add(version);
-                else            odm.data.put(ref, new VersionRange(version, null));
+                if (vr != null) {
+                    vr.add(version);
+                } else {
+                    odm.data.put(ref, new VersionRange(version, null));
+                }
             } catch (IllegalArgumentException ex) {
                 LOGGER.log(Level.WARNING, "Bad parameter given to OldDataMonitor", ex);
             }
@@ -187,11 +192,15 @@ public class OldDataMonitor extends AdministrativeMonitor {
             if (e instanceof ReportException) {
                 report(obj, ((ReportException)e).version);
             } else {
-                if (++i > 1) buf.append(", ");
+                if (++i > 1) {
+                    buf.append(", ");
+                }
                 buf.append(e.getClass().getSimpleName()).append(": ").append(e.getMessage());
             }
         }
-        if (buf.length() == 0) return;
+        if (buf.length() == 0) {
+            return;
+        }
         Jenkins j = Jenkins.getInstance();
         if (j == null) {
             // Startup failed, something is very broken, so report what we can.
@@ -204,8 +213,11 @@ public class OldDataMonitor extends AdministrativeMonitor {
         synchronized (odm) {
             SaveableReference ref = referTo(obj);
             VersionRange vr = odm.data.get(ref);
-            if (vr != null) vr.extra = buf.toString();
-            else            odm.data.put(ref, new VersionRange(null, buf.toString()));
+            if (vr != null) {
+                vr.extra = buf.toString();
+            } else {
+                odm.data.put(ref, new VersionRange(null, buf.toString()));
+            }
         }
     }
 
@@ -252,8 +264,11 @@ public class OldDataMonitor extends AdministrativeMonitor {
      */
     public synchronized Iterator<VersionNumber> getVersionList() {
         TreeSet<VersionNumber> set = new TreeSet<VersionNumber>();
-        for (VersionRange vr : data.values())
-            if (vr.max!=null) set.add(vr.max);
+        for (VersionRange vr : data.values()) {
+            if (vr.max!=null) {
+                set.add(vr.max);
+            }
+        }
         return set.iterator();
     }
 

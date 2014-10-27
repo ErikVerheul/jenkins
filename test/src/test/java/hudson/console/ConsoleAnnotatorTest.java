@@ -140,8 +140,9 @@ public class ConsoleAnnotatorTest {
         String next() throws IOException {
             WebRequestSettings req = new WebRequestSettings(new URL(r.getURL() + run.getUrl() + "/logText/progressiveHtml"+(start!=null?"?start="+start:"")));
             Map headers = new HashMap();
-            if (consoleAnnotator!=null)
+            if (consoleAnnotator!=null) {
                 headers.put("X-ConsoleAnnotator",consoleAnnotator);
+            }
             req.setAdditionalHeaders(headers);
 
             p = wc.getPage(req);
@@ -205,8 +206,9 @@ public class ConsoleAnnotatorTest {
         int n=1;
 
         public ConsoleAnnotator annotate(Object build, MarkupText text) {
-            if (text.getText().startsWith("line"))
+            if (text.getText().startsWith("line")) {
                 text.addMarkup(0,5,"<b tag="+(n++)+">","</b>");
+            }
             return this;
         }
     }

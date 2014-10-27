@@ -301,8 +301,9 @@ public abstract class HudsonTestCase extends TestCase implements RootAction {
         env.pin();
         recipe();
         for (Runner r : recipes) {
-            if (r instanceof WithoutJenkins.RunnerImpl)
+            if (r instanceof WithoutJenkins.RunnerImpl) {
                 return; // no setup
+            }
         }
         AbstractProject.WORKSPACE.toString();
         User.clear();
@@ -341,8 +342,9 @@ public abstract class HudsonTestCase extends TestCase implements RootAction {
 
         // cause all the descriptors to reload.
         // ideally we'd like to reset them to properly emulate the behavior, but that's not possible.
-        for( Descriptor d : jenkins.getExtensionList(Descriptor.class) )
+        for( Descriptor d : jenkins.getExtensionList(Descriptor.class) ) {
             d.load();
+        }
 
         // allow the test class to inject Jenkins components
         jenkins.lookup(Injector.class).injectMembers(this);
@@ -351,7 +353,9 @@ public abstract class HudsonTestCase extends TestCase implements RootAction {
     }
 
     protected void setUpTimeout() {
-        if (timeout<=0)     return; // no timeout
+        if (timeout<=0) {
+            return; // no timeout
+        }
 
         final Thread testThread = Thread.currentThread();
         timeoutTimer = new Timer();
@@ -387,8 +391,9 @@ public abstract class HudsonTestCase extends TestCase implements RootAction {
     protected void tearDown() throws Exception {
         try {
             if (jenkins!=null) {
-                for (EndOfTestListener tl : jenkins.getExtensionList(EndOfTestListener.class))
+                for (EndOfTestListener tl : jenkins.getExtensionList(EndOfTestListener.class)) {
                     tl.onTearDown();
+                }
             }
 
             if (timeoutTimer!=null) {
@@ -404,13 +409,16 @@ public abstract class HudsonTestCase extends TestCase implements RootAction {
             }
             clients.clear();
         } finally {
-            if (server!=null)
+            if (server!=null) {
                 server.stop();
-            for (LenientRunnable r : tearDowns)
+            }
+            for (LenientRunnable r : tearDowns) {
                 r.run();
+            }
 
-            if (jenkins!=null)
+            if (jenkins!=null) {
                 jenkins.cleanUp();
+            }
             env.dispose();
             ExtensionList.clearLegacyInstances();
             DescriptorExtensionList.clearLegacyInstances();
@@ -469,8 +477,9 @@ public abstract class HudsonTestCase extends TestCase implements RootAction {
      */
     protected Hudson newHudson() throws Exception {
         File home = homeLoader.allocate();
-        for (Runner r : recipes)
+        for (Runner r : recipes) {
             r.decorateHome(this,home);
+        }
         return new Hudson(home, createWebServer(), useLocalPluginManager ? null : pluginManager);
     }
 
@@ -483,8 +492,9 @@ public abstract class HudsonTestCase extends TestCase implements RootAction {
     public void setPluginManager(PluginManager pluginManager) {
         this.useLocalPluginManager = false;
         this.pluginManager = pluginManager;
-        if (jenkins !=null)
+        if (jenkins !=null) {
             throw new IllegalStateException("Too late to override the plugin manager");
+        }
     }
 
     /**
@@ -703,8 +713,9 @@ public abstract class HudsonTestCase extends TestCase implements RootAction {
         return new AbstractPasswordBasedSecurityRealm() {
             @Override
             protected UserDetails authenticate(String username, String password) throws AuthenticationException {
-                if (username.equals(password))
+                if (username.equals(password)) {
                     return loadUserByUsername(username);
+                }
                 throw new BadCredentialsException(username);
             }
 
@@ -925,8 +936,9 @@ public abstract class HudsonTestCase extends TestCase implements RootAction {
      * Asserts that the outcome of the build is a specific outcome.
      */
     public <R extends Run> R assertBuildStatus(Result status, R r) throws Exception {
-        if(status==r.getResult())
+        if(status==r.getResult()) {
             return r;
+        }
 
         // dump the build output in failure message
         String msg = "unexpected build status; build log was:\n------\n" + getLog(r) + "\n------\n";
@@ -1168,8 +1180,9 @@ public abstract class HudsonTestCase extends TestCase implements RootAction {
 
     protected HtmlButton getButtonByCaption(HtmlForm f, String s) {
         for (HtmlElement b : f.getHtmlElementsByTagName("button")) {
-            if(b.getTextContent().trim().equals(s))
+            if(b.getTextContent().trim().equals(s)) {
                 return (HtmlButton)b;
+            }
         }
         return null;
     }
@@ -1230,8 +1243,9 @@ public abstract class HudsonTestCase extends TestCase implements RootAction {
                 int m = Array.getLength(lp);
                 int n = Array.getLength(rp);
                 assertEquals("Array length is different for property "+p, m,n);
-                for (int i=0; i<m; i++)
+                for (int i=0; i<m; i++) {
                     assertEquals(p+"["+i+"] is different", Array.get(lp,i),Array.get(rp,i));
+                }
                 return;
             }
 
@@ -1248,9 +1262,15 @@ public abstract class HudsonTestCase extends TestCase implements RootAction {
      * via {@link DataBoundConstructor}
      */
     public void assertEqualDataBoundBeans(Object lhs, Object rhs) throws Exception {
-        if (lhs==null && rhs==null)     return;
-        if (lhs==null)      fail("lhs is null while rhs="+rhs);
-        if (rhs==null)      fail("rhs is null while lhs="+lhs);
+        if (lhs==null && rhs==null) {
+            return;
+        }
+        if (lhs==null) {
+            fail("lhs is null while rhs="+rhs);
+        }
+        if (rhs==null) {
+            fail("rhs is null while lhs="+lhs);
+        }
         
         Constructor<?> lc = findDataBoundConstructor(lhs.getClass());
         Constructor<?> rc = findDataBoundConstructor(rhs.getClass());
@@ -1290,8 +1310,9 @@ public abstract class HudsonTestCase extends TestCase implements RootAction {
         }
 
         // compare shallow primitive properties
-        if (!primitiveProperties.isEmpty())
+        if (!primitiveProperties.isEmpty()) {
             assertEqualBeans(lhs,rhs,Util.join(primitiveProperties,","));
+        }
     }
 
     /**
@@ -1299,14 +1320,16 @@ public abstract class HudsonTestCase extends TestCase implements RootAction {
      */
     public void assertEqualDataBoundBeans(List<?> lhs, List<?> rhs) throws Exception {
         assertEquals(lhs.size(), rhs.size());
-        for (int i=0; i<lhs.size(); i++) 
+        for (int i=0; i<lhs.size(); i++) {
             assertEqualDataBoundBeans(lhs.get(i),rhs.get(i));
+        }
     }
 
     protected Constructor<?> findDataBoundConstructor(Class<?> c) {
         for (Constructor<?> m : c.getConstructors()) {
-            if (m.getAnnotation(DataBoundConstructor.class)!=null)
+            if (m.getAnnotation(DataBoundConstructor.class)!=null) {
                 return m;
+            }
         }
         return null;
     }
@@ -1323,11 +1346,14 @@ public abstract class HudsonTestCase extends TestCase implements RootAction {
      * Returns true if Hudson is building something or going to build something.
      */
     protected boolean isSomethingHappening() {
-        if (!jenkins.getQueue().isEmpty())
+        if (!jenkins.getQueue().isEmpty()) {
             return true;
-        for (Computer n : jenkins.getComputers())
-            if (!n.isIdle())
+        }
+        for (Computer n : jenkins.getComputers()) {
+            if (!n.isIdle()) {
                 return true;
+            }
+        }
         return false;
     }
 
@@ -1350,20 +1376,23 @@ public abstract class HudsonTestCase extends TestCase implements RootAction {
 
         while (true) {
             Thread.sleep(100);
-            if (isSomethingHappening())
+            if (isSomethingHappening()) {
                 streak=0;
-            else
+            } else {
                 streak++;
+            }
 
-            if (streak>2)   // the system is quiet for a while
+            if (streak>2) {   // the system is quiet for a while
                 return;
+            }
 
             if (System.currentTimeMillis()-startTime > timeout) {
                 List<Executable> building = new ArrayList<Executable>();
                 for (Computer c : jenkins.getComputers()) {
                     for (Executor e : c.getExecutors()) {
-                        if (e.isBusy())
+                        if (e.isBusy()) {
                             building.add(e.getCurrentExecutable());
+                        }
                     }
                 }
                 throw new AssertionError(String.format("Jenkins is still doing something after %dms: queue=%s building=%s",
@@ -1393,7 +1422,9 @@ public abstract class HudsonTestCase extends TestCase implements RootAction {
             Method runMethod= getClass().getMethod(getName());
             for( final Annotation a : runMethod.getAnnotations() ) {
                 Recipe r = a.annotationType().getAnnotation(Recipe.class);
-                if(r==null)     continue;
+                if(r==null) {
+                    continue;
+                }
                 final Runner runner = r.value().newInstance();
                 recipes.add(runner);
                 tearDowns.add(new LenientRunnable() {
@@ -1423,7 +1454,9 @@ public abstract class HudsonTestCase extends TestCase implements RootAction {
         final List<URL> all = Collections.list(jpls);
         all.addAll(Collections.list(hpls));
         
-        if(all.isEmpty())    return; // nope
+        if(all.isEmpty()) {
+            return; // nope
+            }
 
         recipes.add(new Runner() {
             @Override
@@ -1434,8 +1467,9 @@ public abstract class HudsonTestCase extends TestCase implements RootAction {
                     // make the plugin itself available
                     Manifest m = new Manifest(hpl.openStream());
                     String shortName = m.getMainAttributes().getValue("Short-Name");
-                    if(shortName==null)
+                    if(shortName==null) {
                         throw new Error(hpl+" doesn't have the Short-Name attribute");
+                    }
                     FileUtils.copyURLToFile(hpl,new File(home,"plugins/"+shortName+".jpl"));
 
                     // make dependency plugins available
@@ -1485,8 +1519,9 @@ public abstract class HudsonTestCase extends TestCase implements RootAction {
                     Manifest m = new Manifest(is);
                     is.close();
 
-                    if (artifactId.equals(m.getMainAttributes().getValue("Short-Name")))
+                    if (artifactId.equals(m.getMainAttributes().getValue("Short-Name"))) {
                         return Which.jarFile(manifest);
+                    }
                 }
 
                 // need to search multiple group IDs
@@ -1547,7 +1582,9 @@ public abstract class HudsonTestCase extends TestCase implements RootAction {
     public HudsonTestCase withPresetData(String name) {
         name = "/" + name + ".zip";
         URL res = getClass().getResource(name);
-        if(res==null)   throw new IllegalArgumentException("No such data set found: "+name);
+        if(res==null) {
+            throw new IllegalArgumentException("No such data set found: "+name);
+        }
 
         return with(new CopyExisting(res));
     }
@@ -1624,18 +1661,21 @@ public abstract class HudsonTestCase extends TestCase implements RootAction {
                 final ErrorHandler defaultHandler = new DefaultCssErrorHandler();
 
                 public void warning(CSSParseException exception) throws CSSException {
-                    if (!ignore(exception))
+                    if (!ignore(exception)) {
                         defaultHandler.warning(exception);
+                    }
                 }
 
                 public void error(CSSParseException exception) throws CSSException {
-                    if (!ignore(exception))
+                    if (!ignore(exception)) {
                         defaultHandler.error(exception);
+                    }
                 }
 
                 public void fatalError(CSSParseException exception) throws CSSException {
-                    if (!ignore(exception))
+                    if (!ignore(exception)) {
                         defaultHandler.fatalError(exception);
+                    }
                 }
 
                 private boolean ignore(CSSParseException e) {
@@ -1647,8 +1687,9 @@ public abstract class HudsonTestCase extends TestCase implements RootAction {
             // so as not to interfere with the 'Dim' class.
             getJavaScriptEngine().getContextFactory().addListener(new Listener() {
                 public void contextCreated(Context cx) {
-                    if (cx.getDebugger() == null)
+                    if (cx.getDebugger() == null) {
                         cx.setDebugger(jsDebugger, null);
+                    }
                 }
 
                 public void contextReleased(Context cx) {
@@ -1732,8 +1773,9 @@ public abstract class HudsonTestCase extends TestCase implements RootAction {
             });
             goTo("closures/?uuid="+id);
 
-            if (t[0]!=null)
+            if (t[0]!=null) {
                 throw t[0];
+            }
             return r.get(0);
         }
 
@@ -1815,7 +1857,9 @@ public abstract class HudsonTestCase extends TestCase implements RootAction {
         }
 
         public Page goTo(String relative, String expectedContentType) throws IOException, SAXException {
-            while (relative.startsWith("/")) relative = relative.substring(1);
+            while (relative.startsWith("/")) {
+                relative = relative.substring(1);
+            }
             Page p;
             try {
                 p = super.getPage(getContextPath() + relative);
@@ -1839,10 +1883,11 @@ public abstract class HudsonTestCase extends TestCase implements RootAction {
          */
         public XmlPage goToXml(String path) throws IOException, SAXException {
             Page page = goTo(path, "application/xml");
-            if (page instanceof XmlPage)
+            if (page instanceof XmlPage) {
                 return (XmlPage) page;
-            else
+            } else {
                 return null;
+            }
         }
         
         /**
@@ -1943,13 +1988,14 @@ public abstract class HudsonTestCase extends TestCase implements RootAction {
             MetaClass.NO_CACHE=true;
             // load resources from the source dir.
             File dir = new File("src/main/resources");
-            if(dir.exists() && MetaClassLoader.debugLoader==null)
+            if(dir.exists() && MetaClassLoader.debugLoader==null) {
                 try {
                     MetaClassLoader.debugLoader = new MetaClassLoader(
-                        new URLClassLoader(new URL[]{dir.toURI().toURL()}));
+                            new URLClassLoader(new URL[]{dir.toURI().toURL()}));
                 } catch (MalformedURLException e) {
                     throw new AssertionError(e);
                 }
+            }
         }
 
         // suppress INFO output from Spring, which is verbose

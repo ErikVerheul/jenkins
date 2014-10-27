@@ -13,8 +13,9 @@ public class UserPropertyTest extends HudsonTestCase {
         User u = User.get("foo");
         u.addProperty(new UserProperty1());
         configRoundtrip(u);
-        for (UserProperty p : u.getAllProperties())
+        for (UserProperty p : u.getAllProperties()) {
             assertNotNull(p);
+        }
     }
 
     public static class UserProperty1 extends UserProperty {

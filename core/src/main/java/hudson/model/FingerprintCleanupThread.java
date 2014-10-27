@@ -74,8 +74,9 @@ public final class FingerprintCleanupThread extends AsyncPeriodicWork {
                 for(File file2 : files2) {
                     File[] files3 = file2.listFiles(FINGERPRINTFILE_FILTER);
                     for(File file3 : files3) {
-                        if(check(file3, listener))
+                        if(check(file3, listener)) {
                             numFiles++;
+                        }
                     }
                     deleteIfEmpty(file2);
                 }
@@ -91,9 +92,12 @@ public final class FingerprintCleanupThread extends AsyncPeriodicWork {
      */
     private void deleteIfEmpty(File dir) {
         String[] r = dir.list();
-        if(r==null)     return; // can happen in a rare occasion
-        if(r.length==0)
+        if(r==null) {
+            return; // can happen in a rare occasion
+        }
+        if(r.length==0) {
             dir.delete();
+        }
     }
 
     /**

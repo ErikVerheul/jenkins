@@ -77,7 +77,9 @@ public class TimerTrigger extends Trigger<BuildableItem> {
             try {
                 CronTabList ctl = CronTabList.create(fixNull(value), item != null ? Hash.from(item.getFullName()) : null);
                 String msg = ctl.checkSanity();
-                if(msg!=null)   return FormValidation.warning(msg);
+                if(msg!=null) {
+                    return FormValidation.warning(msg);
+                }
                 Calendar prev = ctl.previous();
                 Calendar next = ctl.next();
                 if (prev != null && next != null) {
@@ -87,8 +89,9 @@ public class TimerTrigger extends Trigger<BuildableItem> {
                     return FormValidation.warning(Messages.TimerTrigger_no_schedules_so_will_never_run());
                 }
             } catch (ANTLRException e) {
-                if (value.trim().indexOf('\n')==-1 && value.contains("**"))
+                if (value.trim().indexOf('\n')==-1 && value.contains("**")) {
                     return FormValidation.error(Messages.TimerTrigger_MissingWhitespace());
+                }
                 return FormValidation.error(e.getMessage());
             }
         }

@@ -51,10 +51,12 @@ public class SecretRewriter {
     }
 
     private String tryRewrite(String s) throws IOException, InvalidKeyException {
-        if (s.length()<24)
+        if (s.length()<24) {
             return s;   // Encrypting "" in Secret produces 24-letter characters, so this must be the minimum length
-        if (!isBase64(s))
+        }
+        if (!isBase64(s)) {
             return s;   // decode throws IOException if the input is not base64, and this is also a very quick way to filter
+        }
 
         byte[] in;
         try {
@@ -64,10 +66,12 @@ public class SecretRewriter {
         }
         cipher.init(Cipher.DECRYPT_MODE, key);
         Secret sec = Secret.tryDecrypt(cipher, in);
-        if(sec!=null) // matched
+        if(sec!=null) { // matched
             return sec.getEncryptedValue(); // replace by the new encrypted value
-        else // not encrypted with the legacy key. leave it unmodified
+        } else {
+            // not encrypted with the legacy key. leave it unmodified
             return s;
+        }
     }
 
     /**
@@ -93,14 +97,19 @@ public class SecretRewriter {
                         buf.setLength(0);
                         while (true) {
                             int sidx = line.indexOf('>',copied);
-                            if (sidx<0) break;
+                            if (sidx<0) {
+                                break;
+                            }
                             int eidx = line.indexOf('<',sidx);
-                            if (eidx<0) break;
+                            if (eidx<0) {
+                                break;
+                            }
 
                             String elementText = line.substring(sidx+1,eidx);
                             String replacement = tryRewrite(elementText);
-                            if (!replacement.equals(elementText))
+                            if (!replacement.equals(elementText)) {
                                 modified = true;
+                            }
 
                             buf.append(line.substring(copied,sidx+1));
                             buf.append(replacement);
@@ -156,20 +165,26 @@ public class SecretRewriter {
 
         try {
             File[] children = dir.listFiles();
-            if (children==null)     return 0;
+            if (children==null) {
+                return 0;
+            }
 
             int rewritten=0;
             for (File child : children) {
                 String cn = child.getName();
                 if (cn.endsWith(".xml")) {
-                    if ((count++)%100==0)
+                    if ((count++)%100==0) {
                         listener.getLogger().println("Scanning "+child);
+                    }
                     try {
                         File backup = null;
-                        if (backupDirectory!=null)  backup = new File(backupDirectory,relative+'/'+ cn);
+                        if (backupDirectory!=null) {
+                            backup = new File(backupDirectory,relative+'/'+ cn);
+                        }
                         if (rewrite(child,backup)) {
-                            if (backup!=null)
+                            if (backup!=null) {
                                 listener.getLogger().println("Copied "+child+" to "+backup+" as a backup");
+                            }
                             listener.getLogger().println("Rewritten "+child);
                             rewritten++;
                         }
@@ -178,10 +193,11 @@ public class SecretRewriter {
                     }
                 }
                 if (child.isDirectory()) {
-                    if (!isIgnoredDir(child))
+                    if (!isIgnoredDir(child)) {
                         rewritten += rewriteRecursive(child,
                                 relative.length()==0 ? cn : relative+'/'+ cn,
                                 listener);
+                    }
                 }
             }
             return rewritten;
@@ -208,16 +224,19 @@ public class SecretRewriter {
     }
 
     private static boolean isBase64(String s) {
-        for (int i=0; i<s.length(); i++)
-            if (!isBase64(s.charAt(i)))
+        for (int i=0; i<s.length(); i++) {
+            if (!isBase64(s.charAt(i))) {
                 return false;
+            }
+        }
         return true;
     }
 
     private static final boolean[] IS_BASE64 = new boolean[128];
     static {
         String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-        for (int i=0; i<chars.length();i++)
+        for (int i=0; i<chars.length();i++) {
             IS_BASE64[chars.charAt(i)] = true;
+        }
     }
 }

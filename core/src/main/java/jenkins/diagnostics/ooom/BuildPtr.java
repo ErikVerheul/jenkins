@@ -59,8 +59,12 @@ public final class BuildPtr implements Comparable<BuildPtr> {
      * sign of (a-b).
      */
     private static int signOfCompare(int a, int b) {
-        if (a>b)    return 1;
-        if (a<b)    return -1;
+        if (a>b) {
+            return 1;
+        }
+        if (a<b) {
+            return -1;
+        }
         return 0;
     }
 

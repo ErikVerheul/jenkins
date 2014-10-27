@@ -48,7 +48,9 @@ public abstract class FileVisitor {
      * Decorates a visitor by a given filter.
      */
     public final FileVisitor with(FileFilter f) {
-        if(f==null) return this;
+        if(f==null) {
+            return this;
+        }
         return new FilterFileVisitor(f,this);
     }
 
@@ -62,8 +64,9 @@ public abstract class FileVisitor {
         }
 
         public void visit(File f, String relativePath) throws IOException {
-            if(f.isDirectory() || filter.accept(f))
+            if(f.isDirectory() || filter.accept(f)) {
                 visitor.visit(f,relativePath);
+            }
         }
 
         private static final FileFilter PASS_THROUGH = new FileFilter() {

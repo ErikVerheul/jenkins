@@ -79,8 +79,9 @@ public class FormFieldValidatorTest extends HudsonTestCase {
         } catch(AssertionError e) {
             if(e.getMessage().contains("doCheckXyz is broken"))
                 ; // expected
-            else
+            else {
                 throw e;
+            }
         } finally {
             Publisher.all().remove(d);
         }

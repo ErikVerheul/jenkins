@@ -73,10 +73,11 @@ public class CLIRegisterer extends ExtensionFinder {
     }
 
     public <T> Collection<ExtensionComponent<T>> find(Class<T> type, Hudson jenkins) {
-        if (type==CLICommand.class)
+        if (type==CLICommand.class) {
             return (List)discover(jenkins);
-        else
+        } else {
             return Collections.emptyList();
+        }
     }
 
     /**
@@ -84,10 +85,12 @@ public class CLIRegisterer extends ExtensionFinder {
      */
     private Method findResolver(Class type) throws IOException {
         List<Method> resolvers = Util.filter(Index.list(CLIResolver.class, Jenkins.getInstance().getPluginManager().uberClassLoader), Method.class);
-        for ( ; type!=null; type=type.getSuperclass())
-            for (Method m : resolvers)
-                if (m.getReturnType()==type)
+        for ( ; type!=null; type=type.getSuperclass()) {
+            for (Method m : resolvers) {
+                if (m.getReturnType()==type) {
                     return m;
+                }   }
+        }
         return null;
     }
 
@@ -131,8 +134,9 @@ public class CLIRegisterer extends ExtensionFinder {
                             Method method = m;
                             while (true) {
                                 chains.push(method);
-                                if (Modifier.isStatic(method.getModifiers()))
+                                if (Modifier.isStatic(method.getModifiers())) {
                                     break; // the chain is complete.
+                                }
 
                                 // the method in question is an instance method, so we need to resolve the instance by using another resolver
                                 Class<?> type = method.getDeclaringClass();
@@ -146,8 +150,9 @@ public class CLIRegisterer extends ExtensionFinder {
                                 }
                             }
 
-                            while (!chains.isEmpty())
+                            while (!chains.isEmpty()) {
                                 binders.add(new MethodBinder(chains.pop(),this,parser));
+                            }
 
                             return parser;
                         }
@@ -173,24 +178,28 @@ public class CLIRegisterer extends ExtensionFinder {
                                     parser.parseArgument(args);
 
                                     Authentication auth = authenticator.authenticate();
-                                    if (auth== Jenkins.ANONYMOUS)
+                                    if (auth== Jenkins.ANONYMOUS) {
                                         auth = loadStoredAuthentication();
+                                    }
                                     sc.setAuthentication(auth); // run the CLI with the right credential
                                     hudson.checkPermission(Jenkins.READ);
 
                                     // resolve them
                                     Object instance = null;
-                                    for (MethodBinder binder : binders)
+                                    for (MethodBinder binder : binders) {
                                         instance = binder.call(instance);
+                                    }
 
-                                    if (instance instanceof Integer)
+                                    if (instance instanceof Integer) {
                                         return (Integer) instance;
-                                    else
+                                    } else {
                                         return 0;
+                                    }
                                 } catch (InvocationTargetException e) {
                                     Throwable t = e.getTargetException();
-                                    if (t instanceof Exception)
+                                    if (t instanceof Exception) {
                                         throw (Exception) t;
+                                    }
                                     throw e;
                                 } finally {
                                     sc.setAuthentication(old); // restore

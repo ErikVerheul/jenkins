@@ -23,8 +23,9 @@ public class UnixSlaveRestarter extends SlaveRestarter {
     @Override
     public boolean canWork() {
         try {
-            if (File.pathSeparatorChar!=':')
+            if (File.pathSeparatorChar!=':') {
                 return false;     // quick test to reject non-Unix without loading all the rest of the classes
+            }
 
             args = JavaVMArguments.current();
 
@@ -54,7 +55,9 @@ public class UnixSlaveRestarter extends SlaveRestarter {
         int sz = LIBC.getdtablesize();
         for (int i = 3; i < sz; i++) {
             int flags = LIBC.fcntl(i, F_GETFD);
-            if (flags < 0) continue;
+            if (flags < 0) {
+                continue;
+            }
             LIBC.fcntl(i, F_SETFD, flags | FD_CLOEXEC);
         }
 

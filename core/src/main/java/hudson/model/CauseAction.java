@@ -75,9 +75,11 @@ public class CauseAction implements FoldableAction, RunAction2 {
      * Finds the cause of the specific type.
      */
     public <T extends Cause> T findCause(Class<T> type) {
-        for (Cause c : causes)
-            if (type.isInstance(c))
+        for (Cause c : causes) {
+            if (type.isInstance(c)) {
                 return type.cast(c);
+            }
+        }
         return null;
     }
 		
@@ -114,7 +116,9 @@ public class CauseAction implements FoldableAction, RunAction2 {
      *      but left here for backward compatibility.
      */
     public String getShortDescription() {
-        if(causes.isEmpty())    return "N/A";
+        if(causes.isEmpty()) {
+            return "N/A";
+        }
         return causes.get(0).getShortDescription();
     }
 
@@ -152,7 +156,9 @@ public class CauseAction implements FoldableAction, RunAction2 {
         @Override protected void callback(CauseAction ca, UnmarshallingContext context) {
             // if we are being read in from an older version
             if (ca.cause != null) {
-                if (ca.causes == null) ca.causes = new ArrayList<Cause>();
+                if (ca.causes == null) {
+                    ca.causes = new ArrayList<Cause>();
+                }
                 ca.causes.add(ca.cause);
                 OldDataMonitor.report(context, "1.288");
             }

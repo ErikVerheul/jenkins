@@ -50,8 +50,9 @@ public class IOUtils {
      *      This method returns the 'dir' parameter so that the method call flows better.
      */
     public static File mkdirs(File dir) throws IOException {
-        if(dir.mkdirs() || dir.exists())
+        if(dir.mkdirs() || dir.exists()) {
             return dir;
+        }
 
         // following Ant <mkdir> task to avoid possible race condition.
         try {
@@ -60,8 +61,9 @@ public class IOUtils {
             // ignore
         }
 
-        if (dir.mkdirs() || dir.exists())
+        if (dir.mkdirs() || dir.exists()) {
             return dir;
+        }
 
         throw new IOException("Failed to create a directory at "+dir);
     }
@@ -102,8 +104,9 @@ public class IOUtils {
      * @see hudson.FilePath#absolutize()
      */
     public static File absolutize(File base, String path) {
-        if (isAbsolute(path))
+        if (isAbsolute(path)) {
             return new File(path);
+        }
         return new File(base, path);
     }
 
@@ -124,7 +127,9 @@ public class IOUtils {
      * @throws PosixException if the file could not be statted, e.g. broken symlink
      */
     public static int mode(File f) throws PosixException {
-        if(Functions.isWindows())   return -1;
+        if(Functions.isWindows()) {
+            return -1;
+        }
         return PosixAPI.jnr().stat(f.getPath()).mode();
     }
 

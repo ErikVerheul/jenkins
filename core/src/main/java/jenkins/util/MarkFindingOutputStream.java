@@ -81,8 +81,9 @@ public abstract class MarkFindingOutputStream extends OutputStream {
         }
 
         // if we are partially matching, can't send that portion yet.
-        if (len-match>0)
+        if (len-match>0) {
             base.write(b, off, len-match);
+        }
     }
 
     public void flush() throws IOException {

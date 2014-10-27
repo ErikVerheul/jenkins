@@ -120,8 +120,9 @@ public class Items {
     public static String toNameList(Collection<? extends Item> items) {
         StringBuilder buf = new StringBuilder();
         for (Item item : items) {
-            if(buf.length()>0)
+            if(buf.length()>0) {
                 buf.append(", ");
+            }
             buf.append(item.getFullName());
         }
         return buf.toString();
@@ -146,8 +147,9 @@ public class Items {
         while(tokens.hasMoreTokens()) {
             String fullName = tokens.nextToken().trim();
             T item = hudson.getItem(fullName, context, type);
-            if(item!=null)
+            if(item!=null) {
                 r.add(item);
+            }
         }
         return r;
     }
@@ -163,7 +165,9 @@ public class Items {
 
         Stack name = new Stack();
         for (int i=0; i<c.length;i++) {
-            if (i==0 && c[i].equals("")) continue;
+            if (i==0 && c[i].equals("")) {
+                continue;
+            }
             name.push(c[i]);
         }
         for (int i=0; i<p.length;i++) {

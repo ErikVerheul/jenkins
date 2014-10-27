@@ -78,13 +78,15 @@ public class MyViewsProperty extends UserProperty implements ModifiableViewGroup
     }
 
     public Object readResolve() {
-        if (views == null)
+        if (views == null) {
             // this shouldn't happen, but an error in 1.319 meant the last view could be deleted
             views = new CopyOnWriteArrayList<View>();
+        }
 
-        if (views.isEmpty())
+        if (views.isEmpty()) {
             // preserve the non-empty invariant
             views.add(new AllView(Messages.Hudson_ViewName(), this));
+        }
 
         viewGroupMixIn = new ViewGroupMixIn(this) {
             protected List<View> views() { return views; }
@@ -164,7 +166,9 @@ public class MyViewsProperty extends UserProperty implements ModifiableViewGroup
         checkPermission(View.CREATE);
 
         String view = Util.fixEmpty(value);
-        if (view == null) return FormValidation.ok();
+        if (view == null) {
+            return FormValidation.ok();
+        }
         if (exists) {
         	return (getView(view)!=null) ?
             		FormValidation.ok() :

@@ -75,8 +75,9 @@ public class BasicHeaderProcessorTest extends Assert {
 
     private void makeRequestWithAuthAndVerify(String userAndPass, String username) throws IOException, SAXException {
         WebRequestSettings req = new WebRequestSettings(new URL(j.getURL(),"test"));
-        if (userAndPass!=null)
+        if (userAndPass!=null) {
             req.setAdditionalHeader("Authorization","Basic "+Scrambler.scramble(userAndPass));
+        }
         Page p = wc.getPage(req);
 
         assertEquals(username, p.getWebResponse().getContentAsString().trim());

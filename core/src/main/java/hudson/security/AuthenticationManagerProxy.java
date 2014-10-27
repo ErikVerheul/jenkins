@@ -44,10 +44,11 @@ public class AuthenticationManagerProxy implements AuthenticationManager {
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         AuthenticationManager m = delegate; // fix the reference we are working with
 
-        if(m ==null)
+        if(m ==null) {
             throw new DisabledException("Authentication service is still not ready yet");
-        else
+        } else {
             return m.authenticate(authentication);
+        }
     }
 
     public void setDelegate(AuthenticationManager manager) {

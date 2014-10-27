@@ -193,17 +193,20 @@ public class XStreamDOM {
         List<XStreamDOM> newChildren = null;
         if (children!=null) {
             newChildren = new ArrayList<XStreamDOM>(children.size());
-            for (XStreamDOM d : children)
+            for (XStreamDOM d : children) {
                 newChildren.add(d.expandMacro(vars));
+            }
         }
 
         return new XStreamDOM(tagName,newAttributes,newChildren,Util.replaceMacro(value,vars));
     }
 
     public String getAttribute(String name) {
-        for (int i=0; i<attributes.length; i+=2)
-            if (attributes[i].equals(name))
+        for (int i=0; i<attributes.length; i+=2) {
+            if (attributes[i].equals(name)) {
                 return attributes[i+1];
+            }
+        }
         return null;
     }
 
@@ -280,8 +283,9 @@ public class XStreamDOM {
 
     public Map<String, String> getAttributeMap() {
         Map<String,String> r = new HashMap<String, String>();
-        for (int i=0; i<attributes.length; i+=2)
+        for (int i=0; i<attributes.length; i+=2) {
             r.put(attributes[i],attributes[i+1]);
+        }
         return r;
     }
 
@@ -295,8 +299,9 @@ public class XStreamDOM {
             }
 
             public String peekNextChild() {
-                if (hasMoreChildren())
+                if (hasMoreChildren()) {
                     return node.children.get(pos).tagName;
+                }
                 return null;
             }
 
@@ -307,15 +312,21 @@ public class XStreamDOM {
             public String xpath() {
                 XStreamDOM child = node.children.get(pos - 1);
                 int count =0;
-                for (int i=0; i<pos-1; i++)
-                    if (node.children.get(i).tagName.equals(child.tagName))
+                for (int i=0; i<pos-1; i++) {
+                    if (node.children.get(i).tagName.equals(child.tagName)) {
                         count++;
+                    }
+                }
                 boolean more = false;
-                for (int i=pos; !more && i<node.children.size(); i++)
-                    if (node.children.get(i).tagName.equals(child.tagName))
+                for (int i=pos; !more && i<node.children.size(); i++) {
+                    if (node.children.get(i).tagName.equals(child.tagName)) {
                         more = true;
+                    }
+                }
 
-                if (count==0 && !more)  return child.tagName;   // sole child
+                if (count==0 && !more) {
+                    return child.tagName;   // sole child
+                }
                 return child.tagName+'['+count+']';
             }
         }
@@ -415,8 +426,9 @@ public class XStreamDOM {
             }
 
             void addChild(XStreamDOM dom) {
-                if (children==null)
+                if (children==null) {
                     children = new ArrayList<XStreamDOM>();
+                }
                 children.add(dom);
             }
 
@@ -463,7 +475,9 @@ public class XStreamDOM {
         }
 
         public XStreamDOM getOutput() {
-            if (pendings.size()!=1)     throw new IllegalStateException();
+            if (pendings.size()!=1) {
+                throw new IllegalStateException();
+            }
             return pendings.peek().children.get(0);
         }
     }
@@ -491,11 +505,12 @@ public class XStreamDOM {
         public void marshal(Object source, HierarchicalStreamWriter w, MarshallingContext context) {
             XStreamDOM dom = (XStreamDOM)source;
             w.startNode(unescape(dom.tagName));
-            for (int i=0; i<dom.attributes.length; i+=2)
+            for (int i=0; i<dom.attributes.length; i+=2) {
                 w.addAttribute(unescape(dom.attributes[i]),dom.attributes[i+1]);
-            if (dom.value!=null)
+            }
+            if (dom.value!=null) {
                 w.setValue(dom.value);
-            else {
+            } else {
                 for (XStreamDOM c : Util.fixNull(dom.children)) {
                     marshal(c, w, context);
                 }

@@ -200,7 +200,9 @@ public /*transient*/ abstract class Computer extends Actionable implements Acces
     @SuppressWarnings("deprecation")
     @Override
     public void addAction(Action a) {
-        if(a==null) throw new IllegalArgumentException();
+        if(a==null) {
+            throw new IllegalArgumentException();
+        }
         super.getActions().add(a);
     }
 
@@ -396,8 +398,9 @@ public /*transient*/ abstract class Computer extends Actionable implements Acces
      */
     public Future<?> disconnect(OfflineCause cause) {
         offlineCause = cause;
-        if (Util.isOverridden(Computer.class,getClass(),"disconnect"))
+        if (Util.isOverridden(Computer.class,getClass(),"disconnect")) {
             return disconnect();    // legacy subtypes that extend disconnect().
+        }
 
         connectTime=0;
         return Futures.precomputed(null);
@@ -410,9 +413,10 @@ public /*transient*/ abstract class Computer extends Actionable implements Acces
      *      Use {@link #disconnect(OfflineCause)} and specify the cause.
      */
     public Future<?> disconnect() {
-        if (Util.isOverridden(Computer.class,getClass(),"disconnect",OfflineCause.class))
+        if (Util.isOverridden(Computer.class,getClass(),"disconnect",OfflineCause.class)) {
             // if the subtype already derives disconnect(OfflineCause), delegate to it
             return disconnect(null);
+        }
 
         connectTime=0;
         return Futures.precomputed(null);
@@ -470,8 +474,9 @@ public /*transient*/ abstract class Computer extends Actionable implements Acces
      *      is not yet gone.
      */
     public @CheckForNull Node getNode() {
-        if(nodeName==null)
+        if(nodeName==null) {
             return Jenkins.getInstance();
+        }
         return Jenkins.getInstance().getNode(nodeName);
     }
 
@@ -598,32 +603,38 @@ public /*transient*/ abstract class Computer extends Actionable implements Acces
             statusChangeLock.notifyAll();
         }
         for (ComputerListener cl : ComputerListener.all()) {
-            if (temporarilyOffline)     cl.onTemporarilyOffline(this,cause);
-            else                        cl.onTemporarilyOnline(this);
+            if (temporarilyOffline) {
+                cl.onTemporarilyOffline(this,cause);
+            } else {
+                cl.onTemporarilyOnline(this);
+            }
         }
     }
 
     @Exported
     public String getIcon() {
-        if(isOffline())
+        if(isOffline()) {
             return "computer-x.png";
-        else
+        } else {
             return "computer.png";
+        }
     }
 
     @Exported
     public String getIconClassName() {
-        if(isOffline())
+        if(isOffline()) {
             return "icon-computer-x";
-        else
+        } else {
             return "icon-computer";
+        }
     }
 
     public String getIconAltText() {
-        if(isOffline())
+        if(isOffline()) {
             return "[offline]";
-        else
+        } else {
             return "[online]";
+        }
     }
 
     @Exported
@@ -657,10 +668,11 @@ public /*transient*/ abstract class Computer extends Actionable implements Acces
      */
     protected void setNode(Node node) {
         assert node!=null;
-        if(node instanceof Slave)
+        if(node instanceof Slave) {
             this.nodeName = node.getNodeName();
-        else
+        } else {
             this.nodeName = null;
+        }
 
         setNumExecutors(node.getNumExecutors());
         if (this.temporarilyOffline) {
@@ -711,9 +723,11 @@ public /*transient*/ abstract class Computer extends Actionable implements Acces
         if (diff>0) {
             // we have too many executors
             // send signal to all idle executors to potentially kill them off
-            for( Executor e : executors )
-                if(e.isIdle())
+            for( Executor e : executors ) {
+                if(e.isIdle()) {
                     e.interrupt();
+                }
+            }
         }
 
         if (diff<0) {
@@ -724,11 +738,13 @@ public /*transient*/ abstract class Computer extends Actionable implements Acces
 
     private void addNewExecutorIfNecessary() {
         Set<Integer> availableNumbers  = new HashSet<Integer>();
-        for (int i = 0; i < numExecutors; i++)
+        for (int i = 0; i < numExecutors; i++) {
             availableNumbers.add(i);
+        }
 
-        for (Executor executor : executors)
+        for (Executor executor : executors) {
             availableNumbers.remove(executor.getNumber());
+        }
 
         for (Integer number : availableNumbers) {
             /* There may be busy executors with higher index, so only
@@ -749,8 +765,9 @@ public /*transient*/ abstract class Computer extends Actionable implements Acces
     public int countIdle() {
         int n = 0;
         for (Executor e : executors) {
-            if(e.isIdle())
+            if(e.isIdle()) {
                 n++;
+            }
         }
         return n;
     }
@@ -793,11 +810,14 @@ public /*transient*/ abstract class Computer extends Actionable implements Acces
      */
     @Exported
     public final boolean isIdle() {
-        if (!oneOffExecutors.isEmpty())
+        if (!oneOffExecutors.isEmpty()) {
             return false;
-        for (Executor e : executors)
-            if(!e.isIdle())
+        }
+        for (Executor e : executors) {
+            if(!e.isIdle()) {
                 return false;
+            }
+        }
         return true;
     }
 
@@ -805,9 +825,11 @@ public /*transient*/ abstract class Computer extends Actionable implements Acces
      * Returns true if this computer has some idle executors that can take more workload.
      */
     public final boolean isPartiallyIdle() {
-        for (Executor e : executors)
-            if(e.isIdle())
+        for (Executor e : executors) {
+            if(e.isIdle()) {
                 return true;
+            }
+        }
         return false;
     }
 
@@ -866,9 +888,11 @@ public /*transient*/ abstract class Computer extends Actionable implements Acces
      * @since 1.509
      */
     protected boolean isAlive() {
-        for (Executor e : executors)
-            if (e.isActive())
+        for (Executor e : executors) {
+            if (e.isActive()) {
                 return true;
+            }
+        }
         return false;
     }
 
@@ -900,8 +924,9 @@ public /*transient*/ abstract class Computer extends Actionable implements Acces
     @Exported(inline=true)
     public Map<String/*monitor name*/,Object> getMonitorData() {
         Map<String,Object> r = new HashMap<String, Object>();
-        for (NodeMonitor monitor : NodeMonitor.getAll())
+        for (NodeMonitor monitor : NodeMonitor.getAll()) {
             r.put(monitor.getClass().getName(),monitor.data(this));
+        }
         return r;
     }
 
@@ -939,7 +964,9 @@ public /*transient*/ abstract class Computer extends Actionable implements Acces
         EnvVars env = new EnvVars();
 
         Node node = getNode();
-        if (node==null)     return env; // bail out
+        if (node==null) {
+            return env; // bail out
+        }
 
         for (NodeProperty nodeProperty: Jenkins.getInstance().getGlobalNodeProperties()) {
             nodeProperty.buildEnvVars(env,listener);
@@ -998,12 +1025,15 @@ public /*transient*/ abstract class Computer extends Actionable implements Acces
      *      because the slave is behind the firewall, etc.) 
      */
     public String getHostName() throws IOException, InterruptedException {
-        if(hostNameCached)
+        if(hostNameCached) {
             // in the worst case we end up having multiple threads computing the host name simultaneously, but that's not harmful, just wasteful.
             return cachedHostName;
+        }
 
         VirtualChannel channel = getChannel();
-        if(channel==null)   return null; // can't compute right now
+        if(channel==null) {
+            return null; // can't compute right now
+        }
 
         for( String address : channel.call(new ListPossibleNames())) {
             try {
@@ -1284,16 +1314,18 @@ public /*transient*/ abstract class Computer extends Actionable implements Acces
     @CLIMethod(name="wait-node-online")
     public void waitUntilOnline() throws InterruptedException {
         synchronized (statusChangeLock) {
-            while (!isOnline())
+            while (!isOnline()) {
                 statusChangeLock.wait(1000);
+            }
         }
     }
 
     @CLIMethod(name="wait-node-offline")
     public void waitUntilOffline() throws InterruptedException {
         synchronized (statusChangeLock) {
-            while (!isOffline())
+            while (!isOffline()) {
                 statusChangeLock.wait(1000);
+            }
         }
     }
 
@@ -1339,9 +1371,11 @@ public /*transient*/ abstract class Computer extends Actionable implements Acces
         Computer item = h.getComputer(name);
         if (item==null) {
             List<String> names = new ArrayList<String>();
-            for (Computer c : h.getComputers())
-                if (c.getName().length()>0)
+            for (Computer c : h.getComputers()) {
+                if (c.getName().length()>0) {
                     names.add(c.getName());
+                }
+            }
             throw new CmdLineException(null,Messages.Computer_NoSuchSlaveExists(name,EditDistance.findNearest(name,names)));
         }
         return item;
@@ -1367,7 +1401,9 @@ public /*transient*/ abstract class Computer extends Actionable implements Acces
                 return logfile.matcher(name).matches();
             }
         });
-        if (logfiles==null)     return;
+        if (logfiles==null) {
+            return;
+        }
 
         for (File f : logfiles) {
             Matcher m = logfile.matcher(f.getName());

@@ -230,8 +230,9 @@ public class ArtifactArchiver extends Recorder implements SimpleBuildStep {
                     } catch (Exception e) {
                     	listenerWarnOrError(listener, e.getMessage());
                     }
-                    if(msg!=null)
+                    if(msg!=null) {
                         listenerWarnOrError(listener, msg);
+                    }
                 }
                 if (!allowEmptyArchive) {
                 	build.setResult(Result.FAILURE);

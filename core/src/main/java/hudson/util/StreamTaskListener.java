@@ -75,10 +75,11 @@ public class StreamTaskListener extends AbstractTaskListener implements Serializ
 
     public StreamTaskListener(OutputStream out, Charset charset) {
         try {
-            if (charset == null)
+            if (charset == null) {
                 this.out = (out instanceof PrintStream) ? (PrintStream)out : new PrintStream(out, false);
-            else
+            } else {
                 this.out = new PrintStream(out, false, charset.name());
+            }
             this.charset = charset;
         } catch (UnsupportedEncodingException e) {
             // it's not very pretty to do this, but otherwise we'd have to touch too many call sites.

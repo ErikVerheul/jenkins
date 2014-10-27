@@ -65,7 +65,9 @@ public class JVMBuilder implements Serializable {
     }
 
     public JVMBuilder systemProperties(Map<String,String> props) {
-        if (props!=null)    this.systemProperties.putAll(props);
+        if (props!=null) {
+            this.systemProperties.putAll(props);
+        }
         return this;
     }
 

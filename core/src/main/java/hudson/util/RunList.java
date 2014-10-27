@@ -59,8 +59,9 @@ public class RunList<R extends Run> extends AbstractList<R> {
 
     public RunList(View view) {// this is a type unsafe operation
         Set<Job> jobs = new HashSet<Job>();
-        for (TopLevelItem item : view.getItems())
+        for (TopLevelItem item : view.getItems()) {
             jobs.addAll(item.getAllJobs());
+        }
 
         List<Iterable<R>> runLists = new ArrayList<Iterable<R>>();
         for (Job job : jobs) {
@@ -71,8 +72,9 @@ public class RunList<R extends Run> extends AbstractList<R> {
 
     public RunList(Collection<? extends Job> jobs) {
         List<Iterable<R>> runLists = new ArrayList<Iterable<R>>();
-        for (Job j : jobs)
+        for (Job j : jobs) {
             runLists.add(j.getBuilds());
+        }
         this.base = combine(runLists);
     }
 
@@ -81,8 +83,12 @@ public class RunList<R extends Run> extends AbstractList<R> {
             public int compare(R o1, R o2) {
                 long lhs = o1.getTimeInMillis();
                 long rhs = o2.getTimeInMillis();
-                if (lhs > rhs) return -1;
-                if (lhs < rhs) return 1;
+                if (lhs > rhs) {
+                    return -1;
+                }
+                if (lhs < rhs) {
+                    return 1;
+                }
                 return 0;
             }
         });
@@ -143,8 +149,9 @@ public class RunList<R extends Run> extends AbstractList<R> {
     public int indexOf(Object o) {
         int index=0;
         for (R r : this) {
-            if (r.equals(o))
+            if (r.equals(o)) {
                 return index;
+            }
             index++;
         }
         return -1;
@@ -155,8 +162,9 @@ public class RunList<R extends Run> extends AbstractList<R> {
         int a = -1;
         int index=0;
         for (R r : this) {
-            if (r.equals(o))
+            if (r.equals(o)) {
                 a = index;
+            }
             index++;
         }
         return a;

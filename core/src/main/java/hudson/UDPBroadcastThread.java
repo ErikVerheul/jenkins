@@ -92,8 +92,9 @@ public class UDPBroadcastThread extends Thread {
                 tag(rsp,"server-id", jenkins.getLegacyInstanceId());
                 tag(rsp,"slave-port",tal==null?null:tal.getPort());
 
-                for (UDPBroadcastFragment f : UDPBroadcastFragment.all())
+                for (UDPBroadcastFragment f : UDPBroadcastFragment.all()) {
                     f.buildFragment(rsp,sender);
+                }
 
                 rsp.append("</hudson>");
 
@@ -107,14 +108,18 @@ public class UDPBroadcastThread extends Thread {
             // makes people unnecessarily concerned, for a feature that currently does no good.
             LOGGER.log(Level.WARNING, "Failed to listen to UDP port "+PORT,e);
         } catch (IOException e) {
-            if (shutdown)   return; // forcibly closed
+            if (shutdown) {
+                return; // forcibly closed
+            }
             LOGGER.log(Level.WARNING, "UDP handling problem",e);
             udpHandlingProblem = true;
         }
     }
 
     private void tag(StringBuilder buf, String tag, Object value) {
-        if(value==null) return;
+        if(value==null) {
+            return;
+        }
         buf.append('<').append(tag).append('>').append(value).append("</").append(tag).append('>');
     }
 

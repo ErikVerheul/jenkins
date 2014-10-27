@@ -169,14 +169,16 @@ public abstract class Slave extends Node implements Serializable {
             User user = User.current();
             userId = user!=null ? user.getId() : "anonymous";     
         }
-        if (name.equals(""))
+        if (name.equals("")) {
             throw new FormException(Messages.Slave_InvalidConfig_NoName(), null);
+        }
 
 //        if (remoteFS.equals(""))
 //            throw new FormException(Messages.Slave_InvalidConfig_NoRemoteDir(name), null);
 
-        if (this.numExecutors<=0)
+        if (this.numExecutors<=0) {
             throw new FormException(Messages.Slave_InvalidConfig_Executors(name), null);
+        }
     }
     
     /**
@@ -274,7 +276,9 @@ public abstract class Slave extends Node implements Serializable {
         }
         
         FilePath r = getWorkspaceRoot();
-        if(r==null)     return null;    // offline
+        if(r==null) {
+            return null;    // offline
+        }
         return r.child(item.getFullName());
     }
 
@@ -289,7 +293,9 @@ public abstract class Slave extends Node implements Serializable {
      */
     public @CheckForNull FilePath getWorkspaceRoot() {
         FilePath r = getRootPath();
-        if(r==null) return null;
+        if(r==null) {
+            return null;
+        }
         return r.child(WORKSPACE_ROOT);
     }
 
@@ -325,7 +331,9 @@ public abstract class Slave extends Node implements Serializable {
 
         public URL getURL() throws MalformedURLException {
             String name = fileName;
-            if (name.equals("hudson-cli.jar"))  name="jenkins-cli.jar";
+            if (name.equals("hudson-cli.jar")) {
+                name="jenkins-cli.jar";
+            }
             URL res = Jenkins.getInstance().servletContext.getResource("/WEB-INF/" + name);
             if(res==null) {
                 // during the development this path doesn't have the files.
@@ -371,8 +379,12 @@ public abstract class Slave extends Node implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         final Slave that = (Slave) o;
 
@@ -394,15 +406,17 @@ public abstract class Slave extends Node implements Serializable {
                     ? new JNLPLauncher()
                     : new CommandLauncher(agentCommand);
         }
-        if(nodeProperties==null)
+        if(nodeProperties==null) {
             nodeProperties = new DescribableList<NodeProperty<?>,NodePropertyDescriptor>(Jenkins.getInstance());
+        }
         return this;
     }
 
     public SlaveDescriptor getDescriptor() {
         Descriptor d = Jenkins.getInstance().getDescriptorOrDie(getClass());
-        if (d instanceof SlaveDescriptor)
+        if (d instanceof SlaveDescriptor) {
             return (SlaveDescriptor) d;
+        }
         throw new IllegalStateException(d.getClass()+" needs to extend from SlaveDescriptor");
     }
 
@@ -415,11 +429,13 @@ public abstract class Slave extends Node implements Serializable {
          * Performs syntactical check on the remote FS for slaves.
          */
         public FormValidation doCheckRemoteFS(@QueryParameter String value) throws IOException, ServletException {
-            if(Util.fixEmptyAndTrim(value)==null)
+            if(Util.fixEmptyAndTrim(value)==null) {
                 return FormValidation.error(Messages.Slave_Remote_Director_Mandatory());
+            }
 
-            if(value.startsWith("\\\\") || value.startsWith("/net/"))
+            if(value.startsWith("\\\\") || value.startsWith("/net/")) {
                 return FormValidation.warning(Messages.Slave_Network_Mounted_File_System_Warning());
+            }
 
             if (!value.contains("\\") && !value.startsWith("/")) {
                 // Unix-looking path that doesn't start with '/'

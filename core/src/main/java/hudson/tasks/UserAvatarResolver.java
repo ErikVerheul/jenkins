@@ -101,7 +101,9 @@ public abstract class UserAvatarResolver implements ExtensionPoint {
             int height = Integer.parseInt(matcher.group(2));
             for (UserAvatarResolver r : all()) {
                 String name = r.findAvatarFor(u, width, height);
-                if(name!=null) return name;
+                if(name!=null) {
+                    return name;
+                }
             }
         } else {
             LOGGER.warning(String.format("Could not split up the avatar size (%s) into a width and height.", avatarSize));

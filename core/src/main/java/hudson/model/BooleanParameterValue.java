@@ -73,13 +73,21 @@ public class BooleanParameterValue extends ParameterValue {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
 
         BooleanParameterValue that = (BooleanParameterValue) o;
 
-        if (value != that.value) return false;
+        if (value != that.value) {
+            return false;
+        }
 
         return true;
     }

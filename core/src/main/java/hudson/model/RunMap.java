@@ -100,16 +100,18 @@ public final class RunMap<R extends Run<?,R>> extends AbstractLazyLoadRunMap<R> 
 
             public R next() {
                 last = next;
-                if (last!=null)
+                if (last!=null) {
                     next = last.getPreviousBuild();
-                else
+                } else {
                     throw new NoSuchElementException();
+                }
                 return last;
             }
 
             public void remove() {
-                if (last==null)
+                if (last==null) {
                     throw new UnsupportedOperationException();
+                }
                 removeValue(last);
             }
         };

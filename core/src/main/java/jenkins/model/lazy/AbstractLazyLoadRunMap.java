@@ -151,8 +151,11 @@ public abstract class AbstractLazyLoadRunMap<R> extends AbstractMap<Integer,R> i
 //            return byNumber.ceilingEntry(n);
 
             Set<Entry<Integer, BuildReference<R>>> s = byNumber.tailMap(n).entrySet();
-            if (s.isEmpty())    return null;
-            else                return s.iterator().next();
+            if (s.isEmpty()) {
+                return null;
+            } else {
+                return s.iterator().next();
+            }
         }
 
         /**
@@ -164,7 +167,9 @@ public abstract class AbstractLazyLoadRunMap<R> extends AbstractMap<Integer,R> i
 //            return byNumber.floorEntry(n);
 
             SortedMap<Integer, BuildReference<R>> sub = byNumber.headMap(n);
-            if (sub.isEmpty())    return null;
+            if (sub.isEmpty()) {
+                return null;
+            }
             Integer k = sub.lastKey();
             return new DefaultMapEntry(k,sub.get(k));
         }
@@ -198,8 +203,9 @@ public abstract class AbstractLazyLoadRunMap<R> extends AbstractMap<Integer,R> i
     protected void initBaseDir(File dir) {
         assert this.dir==null;
         this.dir = dir;
-        if (dir!=null)
+        if (dir!=null) {
             loadIdOnDisk();
+        }
     }
 
     /**
@@ -298,10 +304,14 @@ public abstract class AbstractLazyLoadRunMap<R> extends AbstractMap<Integer,R> i
         // subMap+firstKey/lastKey combo.
 
         R start = search(fromKey, DESC);
-        if (start==null)    return EMPTY_SORTED_MAP;
+        if (start==null) {
+            return EMPTY_SORTED_MAP;
+        }
 
         R end = search(toKey, ASC);
-        if (end==null)      return EMPTY_SORTED_MAP;
+        if (end==null) {
+            return EMPTY_SORTED_MAP;
+        }
 
         for (R i=start; i!=end; ) {
             i = search(getNumberOf(i)-1,DESC);
@@ -321,13 +331,17 @@ public abstract class AbstractLazyLoadRunMap<R> extends AbstractMap<Integer,R> i
 
     public Integer firstKey() {
         R r = newestBuild();
-        if (r==null)    throw new NoSuchElementException();
+        if (r==null) {
+            throw new NoSuchElementException();
+        }
         return getNumberOf(r);
     }
 
     public Integer lastKey() {
         R r = oldestBuild();
-        if (r==null)    throw new NoSuchElementException();
+        if (r==null) {
+            throw new NoSuchElementException();
+        }
         return getNumberOf(r);
     }
 
@@ -370,8 +384,9 @@ public abstract class AbstractLazyLoadRunMap<R> extends AbstractMap<Integer,R> i
         Entry<Integer, BuildReference<R>> c = index.ceilingEntry(n);
         if (c!=null && c.getKey()== n) {
             R r = c.getValue().get();
-            if (r!=null)
-            return r;    // found the exact #n
+            if (r!=null) {
+                return r;    // found the exact #n
+            }
         }
 
         // at this point we know that we don't have #n loaded yet
@@ -380,8 +395,9 @@ public abstract class AbstractLazyLoadRunMap<R> extends AbstractMap<Integer,R> i
             int npos = numberOnDisk.find(n);
             if (npos>=0) {// found exact match
                 R r = load(numberOnDisk.get(npos), null);
-                if (r!=null)
+                if (r!=null) {
                     return r;
+                }
             }
 
             switch (d) {
@@ -398,9 +414,9 @@ public abstract class AbstractLazyLoadRunMap<R> extends AbstractMap<Integer,R> i
                         if (idOnDisk.isInRange(prev)) {
                             R pr = getById(idOnDisk.get(prev));
                             // sign*sign is making sure that #pr and #r sandwiches #n.
-                            if (pr!=null && signOfCompare(getNumberOf(pr),n)*signOfCompare(n,getNumberOf(r))>0)
+                            if (pr!=null && signOfCompare(getNumberOf(pr),n)*signOfCompare(n,getNumberOf(r))>0) {
                                 return r;
-                            else {
+                            } else {
                                 // cache is lying. there's something fishy.
                                 // ignore the cache and do the slow search
                             }
@@ -429,7 +445,9 @@ public abstract class AbstractLazyLoadRunMap<R> extends AbstractMap<Integer,R> i
 
         // slow path: we have to find the build from idOnDisk by guessing ID of the build.
         // first, narrow down the candidate IDs to try by using two known number-to-ID mapping
-        if (idOnDisk.isEmpty())     return null;
+        if (idOnDisk.isEmpty()) {
+            return null;
+        }
 
         Entry<Integer, BuildReference<R>> f = index.floorEntry(n);
 
@@ -480,25 +498,34 @@ public abstract class AbstractLazyLoadRunMap<R> extends AbstractMap<Integer,R> i
             }
 
             int found = getNumberOf(r);
-            if (found==n)
+            if (found==n) {
                 return r;   // exact match
+            }
 
-            if (found<n)    lo = pivot+1;   // the pivot was too small. look in the upper half
-            else            hi = pivot;     // the pivot was too big. look in the lower half
+            if (found<n) {
+                lo = pivot+1;   // the pivot was too small. look in the upper half
+            } else {
+                hi = pivot;     // the pivot was too big. look in the lower half
+            }
         }
 
-        if (clonedIdOnDisk)
+        if (clonedIdOnDisk) {
             this.idOnDisk = idOnDisk;   // feedback the modified result atomically
+        }
 
         assert lo==hi;
         // didn't find the exact match
         // both lo and hi point to the insertion point on idOnDisk
         switch (d) {
         case ASC:
-            if (hi==idOnDisk.size())    return null;
+            if (hi==idOnDisk.size()) {
+                return null;
+        }
             return getById(idOnDisk.get(hi));
         case DESC:
-            if (lo<=0)                 return null;
+            if (lo<=0) {
+                return null;
+        }
             if (lo-1>=idOnDisk.size()) {
                 // assertion error, but we are so far unable to get to the bottom of this bug.
                 // but don't let this kill the loading the hard way
@@ -509,13 +536,18 @@ public abstract class AbstractLazyLoadRunMap<R> extends AbstractMap<Integer,R> i
             }
             return getById(idOnDisk.get(lo-1));
         case EXACT:
-            if (hi<=0)                 return null;
+            if (hi<=0) {
+                return null;
+        }
             R r = getById(idOnDisk.get(hi-1));
-            if (r==null)               return null;
+            if (r==null) {
+                return null;
+        }
 
             int found = getNumberOf(r);
-            if (found==n)
+            if (found==n) {
                 return r;   // exact match
+        }
             return null;
         default:
             throw new AssertionError();
@@ -526,8 +558,12 @@ public abstract class AbstractLazyLoadRunMap<R> extends AbstractMap<Integer,R> i
      * sign of (a-b).
      */
     private static int signOfCompare(int a, int b) {
-        if (a>b)    return 1;
-        if (a<b)    return -1;
+        if (a>b) {
+            return 1;
+        }
+        if (a<b) {
+            return -1;
+        }
         return 0;
     }
 
@@ -535,9 +571,13 @@ public abstract class AbstractLazyLoadRunMap<R> extends AbstractMap<Integer,R> i
         Index snapshot = index;
         if (snapshot.byId.containsKey(id)) {
             BuildReference<R> ref = snapshot.byId.get(id);
-            if (ref==null)      return null;    // known failure
+            if (ref==null) {
+                return null;    // known failure
+            }
             R v = unwrap(ref);
-            if (v!=null)        return v;       // already in memory
+            if (v!=null) {
+                return v;       // already in memory
+            }
             // otherwise fall through to load
         }
         return load(id,null);
@@ -619,8 +659,9 @@ public abstract class AbstractLazyLoadRunMap<R> extends AbstractMap<Integer,R> i
                 if (!fullyLoaded) {
                     Index copy = copy();
                     for (String id : idOnDisk) {
-                        if (!copy.byId.containsKey(id))
+                        if (!copy.byId.containsKey(id)) {
                             load(id,copy);
+                        }
                     }
                     index = copy;
                     fullyLoaded = true;
@@ -651,8 +692,9 @@ public abstract class AbstractLazyLoadRunMap<R> extends AbstractMap<Integer,R> i
 
                 // make sure what we actually loaded is #n,
                 // because the shortcuts can lie.
-                if (r!=null && getNumberOf(r)!=n)
+                if (r!=null && getNumberOf(r)!=n) {
                     r = null;
+                }
 
                 if (r==null) {
                     // if failed to locate, record that fact
@@ -686,7 +728,9 @@ public abstract class AbstractLazyLoadRunMap<R> extends AbstractMap<Integer,R> i
     protected synchronized R load(File dataDir, Index editInPlace) {
         try {
             R r = retrieve(dataDir);
-            if (r==null)    return null;
+            if (r==null) {
+                return null;
+            }
 
             Index copy = editInPlace!=null ? editInPlace : new Index(index);
 
@@ -695,7 +739,9 @@ public abstract class AbstractLazyLoadRunMap<R> extends AbstractMap<Integer,R> i
             copy.byId.put(id,ref);
             copy.byNumber.put(getNumberOf(r),ref);
 
-            if (editInPlace==null)  index = copy;
+            if (editInPlace==null) {
+                index = copy;
+            }
 
             return r;
         } catch (IOException e) {

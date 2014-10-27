@@ -82,8 +82,9 @@ public class EditDistance {
         cost = new int[a.length()+1];
         back = new int[a.length()+1]; // back buffer
 
-        for( int i=0; i<=a.length(); i++ )
+        for( int i=0; i<=a.length(); i++ ) {
             cost[i] = i;
+        }
     }
 
     /**

@@ -51,8 +51,9 @@ public final class EnvironmentList extends AbstractList<Environment> {
 
     public <T extends Environment> T get(Class<T> type) {
         for (Environment e : this) {
-            if (type.isInstance(e))
+            if (type.isInstance(e)) {
                 return type.cast(e);
+            }
         }
         return null;
     }

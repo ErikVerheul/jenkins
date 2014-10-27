@@ -70,12 +70,14 @@ public class InstallToolCommand extends CLICommand {
         // where is this build running?
         BuildIDs id = checkChannel().call(new BuildIDs());
 
-        if (!id.isComplete())
+        if (!id.isComplete()) {
             throw new AbortException("This command can be only invoked from a build executing inside Hudson");
+        }
 
         AbstractProject p = Jenkins.getInstance().getItemByFullName(id.job, AbstractProject.class);
-        if (p==null)
+        if (p==null) {
             throw new AbortException("No such job found: "+id.job);
+        }
         p.checkPermission(Item.CONFIGURE);
 
         List<String> toolTypes = new ArrayList<String>();
@@ -85,8 +87,9 @@ public class InstallToolCommand extends CLICommand {
                 List<String> toolNames = new ArrayList<String>();
                 for (ToolInstallation t : d.getInstallations()) {
                     toolNames.add(t.getName());
-                    if (t.getName().equals(toolName))
+                    if (t.getName().equals(toolName)) {
                         return install(t, id, p);
+                    }
                 }
 
                 // didn't find the right tool name
@@ -102,10 +105,11 @@ public class InstallToolCommand extends CLICommand {
     }
 
     private int error(List<String> candidates, String given, String noun) throws AbortException {
-        if (given ==null)
+        if (given ==null) {
             throw new AbortException("No tool "+ noun +" was specified. Valid values are "+candidates.toString());
-        else
+        } else {
             throw new AbortException("Unrecognized tool "+noun+". Perhaps you meant '"+ EditDistance.findNearest(given,candidates)+"'?");
+        }
     }
 
     /**
@@ -114,12 +118,14 @@ public class InstallToolCommand extends CLICommand {
     private int install(ToolInstallation t, BuildIDs id, AbstractProject p) throws IOException, InterruptedException {
 
         Run b = p.getBuildByNumber(Integer.parseInt(id.number));
-        if (b==null)
+        if (b==null) {
             throw new AbortException("No such build: "+id.number);
+        }
 
         Executor exec = b.getExecutor();
-        if (exec==null)
+        if (exec==null) {
             throw new AbortException(b.getFullDisplayName()+" is not building");
+        }
 
         Node node = exec.getOwner().getNode();
         if (node == null) {

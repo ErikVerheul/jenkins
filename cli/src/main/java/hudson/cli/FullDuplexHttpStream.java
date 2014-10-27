@@ -43,8 +43,9 @@ public class FullDuplexHttpStream {
     }
 
     private static String basicAuth(String userInfo) {
-        if (userInfo != null)
+        if (userInfo != null) {
             return "Basic "+new String(new Base64().encodeBase64(userInfo.getBytes()));
+        }
         return null;
     }
 
@@ -77,8 +78,9 @@ public class FullDuplexHttpStream {
         con.getOutputStream().close();
         input = con.getInputStream();
         // make sure we hit the right URL
-        if(con.getHeaderField("Hudson-Duplex")==null)
+        if(con.getHeaderField("Hudson-Duplex")==null) {
             throw new IOException(target+" doesn't look like Jenkins");
+        }
 
         // client->server uses chunked encoded POST for unlimited capacity. 
         con = (HttpURLConnection) target.openConnection();

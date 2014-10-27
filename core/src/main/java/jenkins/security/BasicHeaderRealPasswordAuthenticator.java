@@ -46,11 +46,13 @@ public class BasicHeaderRealPasswordAuthenticator extends BasicHeaderAuthenticat
 
     @Override
     public Authentication authenticate(HttpServletRequest req, HttpServletResponse rsp, String username, String password) throws IOException, ServletException {
-        if (DISABLE)
+        if (DISABLE) {
             return null;
+        }
 
-        if (!authenticationIsRequired(username))
+        if (!authenticationIsRequired(username)) {
             return null;
+        }
 
         UsernamePasswordAuthenticationToken authRequest =
                 new UsernamePasswordAuthenticationToken(username, password);

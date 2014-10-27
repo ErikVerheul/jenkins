@@ -83,8 +83,9 @@ public final class ResourceList {
             ResourceList r = new ResourceList();
             for (ResourceList l : lists) {
                 r.all.addAll(l.all);
-                for (Entry<Resource, Integer> e : l.write.entrySet())
+                for (Entry<Resource, Integer> e : l.write.entrySet()) {
                     r.write.put(e.getKey(), unbox(r.write.get(e.getKey()))+e.getValue());
+                }
             }
             return r;
         }
@@ -120,7 +121,9 @@ public final class ResourceList {
      */
     public Resource getConflict(ResourceList that) {
         Resource r = _getConflict(this,that);
-        if(r!=null)     return r;
+        if(r!=null) {
+            return r;
+        }
         return _getConflict(that,this);
     }
 
@@ -128,10 +131,12 @@ public final class ResourceList {
         for (Entry<Resource,Integer> r : lhs.write.entrySet()) {
             for (Resource l : rhs.all) {
                 Integer v = rhs.write.get(l);
-                if(v!=null) // this is write/write conflict.
+                if(v!=null) { // this is write/write conflict.
                     v += r.getValue();
-                else // Otherwise set it to a very large value, since it's read/write conflict
+                } else {
+                    // Otherwise set it to a very large value, since it's read/write conflict
                     v = MAX_INT;
+                }
                 if(r.getKey().isCollidingWith(l,unbox(v))) {
                     LOGGER.info("Collision with " + r + " and " + l);
                     return r.getKey();
@@ -144,10 +149,12 @@ public final class ResourceList {
     @Override
     public String toString() {
         Map<Resource,String> m = new HashMap<Resource,String>();
-        for (Resource r : all)
+        for (Resource r : all) {
             m.put(r,"R");
-        for (Entry<Resource,Integer> e : write.entrySet())
+        }
+        for (Entry<Resource,Integer> e : write.entrySet()) {
             m.put(e.getKey(),"W"+e.getValue());
+        }
         return m.toString();
     }
 

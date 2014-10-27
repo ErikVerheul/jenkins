@@ -80,11 +80,17 @@ public abstract class Graph {
 
     private BufferedImage render(StaplerRequest req, ChartRenderingInfo info) {
         String w = req.getParameter("width");
-        if(w==null)     w=String.valueOf(defaultW);
+        if(w==null) {
+            w=String.valueOf(defaultW);
+        }
         String h = req.getParameter("height");
-        if(h==null)     h=String.valueOf(defaultH);
+        if(h==null) {
+            h=String.valueOf(defaultH);
+        }
 
-        if (graph==null)    graph = createGraph();
+        if (graph==null) {
+            graph = createGraph();
+        }
         return graph.createBufferedImage(Integer.parseInt(w),Integer.parseInt(h),info);
     }
 
@@ -92,7 +98,9 @@ public abstract class Graph {
      * Renders a graph.
      */
     public void doPng(StaplerRequest req, StaplerResponse rsp) throws IOException {
-        if (req.checkIfModified(timestamp, rsp)) return;
+        if (req.checkIfModified(timestamp, rsp)) {
+            return;
+        }
 
         try {
             BufferedImage image = render(req,null);
@@ -146,7 +154,9 @@ public abstract class Graph {
      * Renders a clickable map.
      */
     public void doMap(StaplerRequest req, StaplerResponse rsp) throws IOException {
-        if (req.checkIfModified(timestamp, rsp)) return;
+        if (req.checkIfModified(timestamp, rsp)) {
+            return;
+        }
 
         ChartRenderingInfo info = new ChartRenderingInfo();
         render(req,info);

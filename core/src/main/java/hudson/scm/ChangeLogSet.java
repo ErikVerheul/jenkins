@@ -108,8 +108,9 @@ public abstract class ChangeLogSet<T extends ChangeLogSet.Entry> implements Iter
     @Exported
     public final Object[] getItems() {
         List<T> r = new ArrayList<T>();
-        for (T t : this)
+        for (T t : this) {
             r.add(t);
+        }
         return r.toArray();
     }
 
@@ -237,7 +238,9 @@ public abstract class ChangeLogSet<T extends ChangeLogSet.Entry> implements Iter
 	        ChangeLogSet parent = getParent();
 	        if ( null != parent ) {
 		        String kind = parent.getKind();
-		        if ( null != kind && kind.trim().length() > 0 ) scm = kind;
+		        if ( null != kind && kind.trim().length() > 0 ) {
+                            scm = kind;
+                        }
 	        }
 	        throw new UnsupportedOperationException("getAffectedFiles() is not implemented by " + scm);
         }
@@ -247,14 +250,15 @@ public abstract class ChangeLogSet<T extends ChangeLogSet.Entry> implements Iter
          */
         public String getMsgAnnotated() {
             MarkupText markup = new MarkupText(getMsg());
-            for (ChangeLogAnnotator a : ChangeLogAnnotator.all())
+            for (ChangeLogAnnotator a : ChangeLogAnnotator.all()) {
                 try {
                     a.annotate(parent.run, this, markup);
                 } catch(Exception e) {
                     LOGGER.info("ChangeLogAnnotator " + a.toString() + " failed to annotate message '" + getMsg() + "'; " + e.getMessage());
                 } catch(AbstractMethodError e) {
                     LOGGER.severe("ChangeLogAnnotator " + a.toString() + " failed to annotate message '" + getMsg() + "'; " + e.getMessage());
-                } 
+                }
+            } 
 
             return markup.toString(false);
         }

@@ -56,10 +56,11 @@ public class LineEndNormalizingWriter extends FilterWriter {
     }
 
     public void write(int c) throws IOException {
-        if(!seenCR && c==LF)
+        if(!seenCR && c==LF) {
             super.write("\r\n");
-        else
+        } else {
             super.write(c);
+        }
         seenCR = (c==CR);
     }
 

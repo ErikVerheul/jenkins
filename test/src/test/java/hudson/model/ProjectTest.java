@@ -387,8 +387,9 @@ public class ProjectTest {
     }
 
     private void assertInstanceOf(String msg, Object o, Class t) {
-        if (t.isInstance(o))
+        if (t.isInstance(o)) {
             return;
+        }
         fail(msg + ": " + o);
     }
     
@@ -401,10 +402,12 @@ public class ProjectTest {
         boolean containsSubTaskImpl = false;
         boolean containsSubTaskImpl2 = false;
         for(SubTask sub: subtasks){
-            if(sub instanceof SubTaskImpl)
+            if(sub instanceof SubTaskImpl) {
                 containsSubTaskImpl = true;
-            if(sub instanceof SubTaskImpl2)
+            }
+            if(sub instanceof SubTaskImpl2) {
                 containsSubTaskImpl2 = true;
+            }
         }
         createSubTask = false;
         assertTrue("Project should return subtasks provided by SubTaskContributor.", containsSubTaskImpl2);
@@ -459,8 +462,9 @@ public class ProjectTest {
         p.scheduleBuild2(0);
         assertEquals("Project which build is building should have polling result result no change.", PollingResult.Change.NONE, p.poll(TaskListener.NULL).change);
         p.setAssignedLabel(null);
-        while(p.getLastBuild()==null)
+        while(p.getLastBuild()==null) {
             Thread.sleep(100); //wait until build start
+        }
         assertEquals("Project should have polling result no change", PollingResult.Change.NONE, p.poll(TaskListener.NULL).change);
         p.setScm(alwaysChange);
         j.buildAndAssertSuccess(p);
@@ -796,8 +800,9 @@ public class ProjectTest {
         @Override
         public Collection<? extends Action> createFor(AbstractProject target) {
             List<Action> actions = new ArrayList<Action>();
-            if(createAction)
+            if(createAction) {
                 actions.add(new TransientAction());
+            }
             return actions;
         }
         
@@ -865,8 +870,9 @@ public class ProjectTest {
 
         @Override
         public FilePath getWorkspace(Job job) {
-            if(getFilePath)
+            if(getFilePath) {
                 return new FilePath(new File("some_file_path"));
+            }
             return null;
         }
         

@@ -132,9 +132,9 @@ public class Executor extends Thread implements ModelObject {
      */
     public void interrupt(Result result) {
         Authentication a = Jenkins.getAuthentication();
-        if (a == ACL.SYSTEM)
+        if (a == ACL.SYSTEM) {
             interrupt(result, new CauseOfInterruption[0]);
-        else {
+        } else {
             // worth recording who did it
             // avoid using User.get() to avoid deadlock.
             interrupt(result, new UserInterruption(a.getName()));
@@ -145,8 +145,9 @@ public class Executor extends Thread implements ModelObject {
      * Interrupt the execution. Mark the cause and the status accordingly.
      */
     public void interrupt(Result result, CauseOfInterruption... causes) {
-        if (LOGGER.isLoggable(FINE))
+        if (LOGGER.isLoggable(FINE)) {
             LOGGER.log(FINE, String.format("%s is interrupted(%s): %s", getDisplayName(), result, Util.join(Arrays.asList(causes),",")), new InterruptedException());
+        }
 
         synchronized (this) {
             if (!started) {
@@ -159,8 +160,9 @@ public class Executor extends Thread implements ModelObject {
         interruptStatus = result;
         synchronized (this.causes) {
             for (CauseOfInterruption c : causes) {
-                if (!this.causes.contains(c))
+                if (!this.causes.contains(c)) {
                     this.causes.add(c);
+                }
             }
         }
         super.interrupt();
@@ -168,7 +170,9 @@ public class Executor extends Thread implements ModelObject {
 
     public Result abortResult() {
         Result r = interruptStatus;
-        if (r==null)    r = Result.ABORTED; // this is when we programmatically throw InterruptedException instead of calling the interrupt method.
+        if (r==null) {
+            r = Result.ABORTED; // this is when we programmatically throw InterruptedException instead of calling the interrupt method.
+        }
         return r;
     }
 
@@ -182,14 +186,17 @@ public class Executor extends Thread implements ModelObject {
 
         // atomically get&clear causes, and minimize the lock.
         synchronized (causes) {
-            if (causes.isEmpty())   return;
+            if (causes.isEmpty()) {
+                return;
+            }
             r = new ArrayList<CauseOfInterruption>(causes);
             causes.clear();
         }
 
         build.addAction(new InterruptedBuildAction(r));
-        for (CauseOfInterruption c : r)
+        for (CauseOfInterruption c : r) {
             c.print(listener);
+        }
     }
 
     @Override
@@ -199,7 +206,9 @@ public class Executor extends Thread implements ModelObject {
         ACL.impersonate(ACL.SYSTEM);
 
         try {
-            if (induceDeath) throw new RuntimeException("Emulate thread death");
+            if (induceDeath) {
+                throw new RuntimeException("Emulate thread death");
+            }
 
             SubTask task;
             // transition from idle to building.
@@ -207,14 +216,16 @@ public class Executor extends Thread implements ModelObject {
             synchronized (queue) {
                 workUnit.setExecutor(this);
                 queue.onStartExecuting(this);
-                if (LOGGER.isLoggable(FINE))
+                if (LOGGER.isLoggable(FINE)) {
                     LOGGER.log(FINE, getName()+" grabbed "+workUnit+" from queue");
+                }
                 task = workUnit.work;
                 executable = task.createExecutable();
                 workUnit.setExecutable(executable);
             }
-            if (LOGGER.isLoggable(FINE))
+            if (LOGGER.isLoggable(FINE)) {
                 LOGGER.log(FINE, getName()+" is going to execute "+executable);
+            }
 
             Throwable problems = null;
             try {
@@ -235,8 +246,9 @@ public class Executor extends Thread implements ModelObject {
 
                 ACL.impersonate(workUnit.context.item.authenticate());
                 setName(getName() + " : executing " + executable.toString());
-                if (LOGGER.isLoggable(FINE))
+                if (LOGGER.isLoggable(FINE)) {
                     LOGGER.log(FINE, getName()+" is now executing "+executable);
+                }
                 queue.execute(executable, task);
             } catch (Exception e) {
                 // for some reason the executor died. this is really
@@ -247,8 +259,9 @@ public class Executor extends Thread implements ModelObject {
                 problems = e;
             } finally {
                 long time = System.currentTimeMillis()-startTime;
-                if (LOGGER.isLoggable(FINE))
+                if (LOGGER.isLoggable(FINE)) {
                     LOGGER.log(FINE, getName()+" completed "+executable+" in "+time+"ms");
+                }
                 try {
                     workUnit.context.synchronizeEnd(executable,problems,time);
                 } catch (InterruptedException e) {
@@ -264,9 +277,10 @@ public class Executor extends Thread implements ModelObject {
             causeOfDeath = e;
             LOGGER.log(SEVERE, "Unexpected executor death", e);
         } finally {
-            if (causeOfDeath==null)
+            if (causeOfDeath==null) {
                 // let this thread die and be replaced by a fresh unstarted instance
                 owner.removeExecutor(this);
+            }
 
             queue.scheduleMaintenance();
         }
@@ -309,7 +323,9 @@ public class Executor extends Thread implements ModelObject {
      */
     public FilePath getCurrentWorkspace() {
         Executable e = executable;
-        if(e==null) return null;
+        if(e==null) {
+            return null;
+        }
         if (e instanceof AbstractBuild) {
             AbstractBuild ab = (AbstractBuild) e;
             return ab.getWorkspace();
@@ -390,12 +406,18 @@ public class Executor extends Thread implements ModelObject {
     @Exported
     public int getProgress() {
         Queue.Executable e = executable;
-        if(e==null)     return -1;
+        if(e==null) {
+            return -1;
+        }
         long d = Executables.getEstimatedDurationFor(e);
-        if(d<0)         return -1;
+        if(d<0) {
+            return -1;
+        }
 
         int num = (int)(getElapsedTime()*100/d);
-        if(num>=100)    num=99;
+        if(num>=100) {
+            num=99;
+        }
         return num;
     }
 
@@ -409,7 +431,9 @@ public class Executor extends Thread implements ModelObject {
     @Exported
     public boolean isLikelyStuck() {
         Queue.Executable e = executable;
-        if(e==null)     return false;
+        if(e==null) {
+            return false;
+        }
 
         long elapsed = getElapsedTime();
         long d = Executables.getEstimatedDurationFor(e);
@@ -451,13 +475,19 @@ public class Executor extends Thread implements ModelObject {
      */
     public String getEstimatedRemainingTime() {
         Queue.Executable e = executable;
-        if(e==null)     return Messages.Executor_NotAvailable();
+        if(e==null) {
+            return Messages.Executor_NotAvailable();
+        }
 
         long d = Executables.getEstimatedDurationFor(e);
-        if(d<0)         return Messages.Executor_NotAvailable();
+        if(d<0) {
+            return Messages.Executor_NotAvailable();
+        }
 
         long eta = d-getElapsedTime();
-        if(eta<=0)      return Messages.Executor_NotAvailable();
+        if(eta<=0) {
+            return Messages.Executor_NotAvailable();
+        }
 
         return Util.getTimeSpanString(eta);
     }
@@ -468,13 +498,19 @@ public class Executor extends Thread implements ModelObject {
      */
     public long getEstimatedRemainingTimeMillis() {
         Queue.Executable e = executable;
-        if(e==null)     return -1;
+        if(e==null) {
+            return -1;
+        }
 
         long d = Executables.getEstimatedDurationFor(e);
-        if(d<0)         return -1;
+        if(d<0) {
+            return -1;
+        }
 
         long eta = d-getElapsedTime();
-        if(eta<=0)      return -1;
+        if(eta<=0) {
+            return -1;
+        }
 
         return eta;
     }
@@ -526,8 +562,9 @@ public class Executor extends Thread implements ModelObject {
     @RequirePOST
     public HttpResponse doYank() {
         Jenkins.getInstance().checkPermission(Jenkins.ADMINISTER);
-        if (isAlive())
+        if (isAlive()) {
             throw new Failure("Can't yank a live executor");
+        }
         owner.removeExecutor(this);
         return HttpResponses.redirectViaContextPath("/");
     }
@@ -548,9 +585,9 @@ public class Executor extends Thread implements ModelObject {
      * Returns when this executor started or should start being idle.
      */
     public long getIdleStartMilliseconds() {
-        if (isIdle())
+        if (isIdle()) {
             return Math.max(creationTime, owner.getConnectTime());
-        else {
+        } else {
             return Math.max(startTime + Math.max(0, Executables.getEstimatedDurationFor(executable)),
                     System.currentTimeMillis() + 15000);
         }
@@ -586,7 +623,9 @@ public class Executor extends Thread implements ModelObject {
      */
     public static @CheckForNull Executor currentExecutor() {
         Thread t = Thread.currentThread();
-        if (t instanceof Executor) return (Executor) t;
+        if (t instanceof Executor) {
+            return (Executor) t;
+        }
         return IMPERSONATION.get();
     }
     

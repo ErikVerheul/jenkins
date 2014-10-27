@@ -51,8 +51,9 @@ public class SubClassGenerator extends ClassLoader {
         for (Constructor c : base.getDeclaredConstructors()) {
             Class[] et = c.getExceptionTypes();
             String[] exceptions = new String[et.length];
-            for (int i = 0; i < et.length; i++)
+            for (int i = 0; i < et.length; i++) {
                 exceptions[i] = Type.getInternalName(et[i]);
+            }
 
             String methodDescriptor = getMethodDescriptor(c);
             MethodVisitor m = cw.visitMethod(c.getModifiers(), "<init>", methodDescriptor, null, exceptions);
@@ -77,8 +78,9 @@ public class SubClassGenerator extends ClassLoader {
         Class<? extends T> c = defineClass(name, image, 0, image.length).asSubclass(base);
 
         Jenkins h = Jenkins.getInstance();
-        if (h!=null)    // null only during tests.
+        if (h!=null) {    // null only during tests.
             ((UberClassLoader)h.pluginManager.uberClassLoader).addNamedClass(name,c); // can't change the field type as it breaks binary compatibility
+        }
         
         return c;
     }
@@ -86,8 +88,9 @@ public class SubClassGenerator extends ClassLoader {
     private String getMethodDescriptor(Constructor c) {
         StringBuilder buf = new StringBuilder();
         buf.append('(');
-        for (Class p : c.getParameterTypes())
+        for (Class p : c.getParameterTypes()) {
             buf.append(Type.getDescriptor(p));
+        }
 
         buf.append(")V");
         return buf.toString();

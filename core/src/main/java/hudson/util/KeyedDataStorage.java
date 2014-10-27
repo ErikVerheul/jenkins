@@ -84,8 +84,9 @@ public abstract class KeyedDataStorage<T,P> {
          */
         public synchronized T get() {
             try {
-                while(!set)
+                while(!set) {
                     wait();
+                }
                 return value;
             } catch (InterruptedException e) {
                 // assume the loading failed, but make sure we process interruption properly later
@@ -136,8 +137,9 @@ public abstract class KeyedDataStorage<T,P> {
             if(value instanceof Loading) {
                 // another thread is loading it. get the value from there.
                 T t = ((Loading<T>)value).get();
-                if(t!=null || !createIfNotExist)
+                if(t!=null || !createIfNotExist) {
                     return t;   // found it (t!=null) or we are just 'get' (!createIfNotExist)
+                }
             }
 
             // the fingerprint doesn't seem to be loaded thus far, so let's load it now.
@@ -154,8 +156,9 @@ public abstract class KeyedDataStorage<T,P> {
                 t = load(key);
                 if(t==null && createIfNotExist) {
                     t = create(key,createParams);    // create the new data
-                    if(t==null)
+                    if(t==null) {
                         throw new IllegalStateException(); // bug in the derived classes
+                    }
                 }
             } catch(IOException e) {
                 loadFailure.incrementAndGet();
@@ -167,10 +170,11 @@ public abstract class KeyedDataStorage<T,P> {
             }
 
             // the map needs to be updated to reflect the result of loading
-            if(t!=null)
+            if(t!=null) {
                 core.put(key,new SoftReference<T>(t));
-            else
+            } else {
                 core.remove(key);
+            }
 
             return t;
         }

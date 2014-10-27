@@ -356,10 +356,18 @@ public class HealthReport implements Serializable, Comparable<HealthReport> {
      * Utility method to find the report with the lowest health.
      */
     public static HealthReport min(HealthReport a, HealthReport b) {
-        if (a == null && b == null) return null;
-        if (a == null) return b;
-        if (b == null) return a;
-        if (a.compareTo(b) <= 0) return a;
+        if (a == null && b == null) {
+            return null;
+        }
+        if (a == null) {
+            return b;
+        }
+        if (b == null) {
+            return a;
+        }
+        if (a.compareTo(b) <= 0) {
+            return a;
+        }
         return b;
     }
 
@@ -367,10 +375,18 @@ public class HealthReport implements Serializable, Comparable<HealthReport> {
      * Utility method to find the report with the highest health.
      */
     public static HealthReport max(HealthReport a, HealthReport b) {
-        if (a == null && b == null) return null;
-        if (a == null) return b;
-        if (b == null) return a;
-        if (a.compareTo(b) >= 0) return a;
+        if (a == null && b == null) {
+            return null;
+        }
+        if (a == null) {
+            return b;
+        }
+        if (b == null) {
+            return a;
+        }
+        if (a.compareTo(b) >= 0) {
+            return a;
+        }
         return b;
     }
 

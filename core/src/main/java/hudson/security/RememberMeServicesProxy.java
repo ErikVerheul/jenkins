@@ -50,18 +50,24 @@ public class RememberMeServicesProxy implements RememberMeServices {
 
     public Authentication autoLogin(HttpServletRequest request, HttpServletResponse response) {
         RememberMeServices d = delegate;
-        if(d!=null)     return d.autoLogin(request,response);
+        if(d!=null) {
+            return d.autoLogin(request,response);
+        }
         return null;
     }
 
     public void loginFail(HttpServletRequest request, HttpServletResponse response) {
         RememberMeServices d = delegate;
-        if(d!=null)     d.loginFail(request,response);
+        if(d!=null) {
+            d.loginFail(request,response);
+        }
     }
 
     public void loginSuccess(HttpServletRequest request, HttpServletResponse response, Authentication successfulAuthentication) {
         RememberMeServices d = delegate;
-        if(d!=null)     d.loginSuccess(request,response,successfulAuthentication);
+        if(d!=null) {
+            d.loginSuccess(request,response,successfulAuthentication);
+        }
     }
 
     public void setDelegate(RememberMeServices delegate) {

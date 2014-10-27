@@ -104,9 +104,11 @@ public class DescribableList<T extends Describable<T>, D extends Descriptor<T>> 
      */
     public T getDynamic(String id) {
         // by ID
-        for (T t : data)
-            if(t.getDescriptor().getId().equals(id))
+        for (T t : data) {
+            if(t.getDescriptor().getId().equals(id)) {
                 return t;
+            }
+        }
 
         // by position
         try {
@@ -119,9 +121,11 @@ public class DescribableList<T extends Describable<T>, D extends Descriptor<T>> 
     }
 
     public T get(D descriptor) {
-        for (T t : data)
-            if(t.getDescriptor()==descriptor)
+        for (T t : data) {
+            if(t.getDescriptor()==descriptor) {
                 return t;
+            }
+        }
         return null;
     }
 
@@ -167,17 +171,20 @@ public class DescribableList<T extends Describable<T>, D extends Descriptor<T>> 
 
             T instance = null;
             if (o!=null) {
-                if (existing instanceof ReconfigurableDescribable)
+                if (existing instanceof ReconfigurableDescribable) {
                     instance = (T)((ReconfigurableDescribable)existing).reconfigure(req,o);
-                else
+                } else {
                     instance = d.newInstance(req, o);
+                }
             } else {
-                if (existing instanceof ReconfigurableDescribable)
+                if (existing instanceof ReconfigurableDescribable) {
                     instance = (T)((ReconfigurableDescribable)existing).reconfigure(req,null);
+                }
             }
 
-            if (instance!=null)
+            if (instance!=null) {
                 newList.add(instance);
+            }
         }
 
         replaceBy(newList);
@@ -255,8 +262,9 @@ public class DescribableList<T extends Describable<T>, D extends Descriptor<T>> 
         }
 
         public void marshal(Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
-            for (Object o : (DescribableList) source)
+            for (Object o : (DescribableList) source) {
                 writeItem(o, context, writer);
+            }
         }
 
         public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {

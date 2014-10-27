@@ -27,8 +27,9 @@ public class ScriptLoader implements Callable<String,IOException> {
     
     public String call() throws IOException {
         File f = new File(script);
-        if(f.exists())
+        if(f.exists()) {
             return FileUtils.readFileToString(f);
+        }
 
         URL url;
         try {

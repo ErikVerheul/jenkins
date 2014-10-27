@@ -29,8 +29,9 @@ public class NodeMonitorUpdater extends ComputerListener {
         timestamp = System.currentTimeMillis();
         Timer.get().schedule(new Runnable() {
             public void run() {
-                if (System.currentTimeMillis()-timestamp<4000)
+                if (System.currentTimeMillis()-timestamp<4000) {
                     return;
+                }
 
                 for (NodeMonitor nm : Jenkins.getInstance().getComputer().getMonitors()) {
                     nm.triggerUpdate();

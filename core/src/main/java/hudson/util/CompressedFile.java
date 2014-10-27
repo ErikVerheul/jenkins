@@ -79,8 +79,9 @@ public class CompressedFile {
      * Gets the OutputStream to write to the file.
      */
     public OutputStream write() throws FileNotFoundException {
-        if(gz.exists())
+        if(gz.exists()) {
             gz.delete();
+        }
         return new FileOutputStream(file);
     }
 
@@ -88,12 +89,14 @@ public class CompressedFile {
      * Reads the contents of a file.
      */
     public InputStream read() throws IOException {
-        if(file.exists())
+        if(file.exists()) {
             return new FileInputStream(file);
+        }
 
         // check if the compressed file exists
-        if(gz.exists())
+        if(gz.exists()) {
             return new GZIPInputStream(new FileInputStream(gz));
+        }
 
         // no such file
         throw new FileNotFoundException(file.getName());
@@ -104,13 +107,14 @@ public class CompressedFile {
      */
     public String loadAsString() throws IOException {
         long sizeGuess;
-        if(file.exists())
+        if(file.exists()) {
             sizeGuess = file.length();
-        else
-        if(gz.exists())
+        } else
+        if(gz.exists()) {
             sizeGuess = gz.length()*2;
-        else
+        } else {
             return "";
+        }
 
         StringBuilder str = new StringBuilder((int)sizeGuess);
 
@@ -118,8 +122,9 @@ public class CompressedFile {
         try {
             char[] buf = new char[8192];
             int len;
-            while((len=r.read(buf,0,buf.length))>0)
+            while((len=r.read(buf,0,buf.length))>0) {
                 str.append(buf,0,len);
+            }
         } finally {
             IOUtils.closeQuietly(r);
         }

@@ -76,7 +76,9 @@ public class Main {
 
     private static String getHudsonHome() {
         String home = EnvVars.masterEnvVars.get("JENKINS_HOME");
-        if (home!=null) return home;
+        if (home!=null) {
+            return home;
+        }
         return EnvVars.masterEnvVars.get("HUDSON_HOME");
     }
 
@@ -87,15 +89,21 @@ public class Main {
         String projectName = args[0];
 
         String home = getHudsonHome();
-        if(!home.endsWith("/"))     home = home + '/';  // make sure it ends with '/'
+        if(!home.endsWith("/")) {
+            home = home + '/';  // make sure it ends with '/'
+        }
 
         // check for authentication info
         String auth = new URL(home).getUserInfo();
-        if(auth != null) auth = "Basic " + new Base64Encoder().encode(auth.getBytes("UTF-8"));
+        if(auth != null) {
+            auth = "Basic " + new Base64Encoder().encode(auth.getBytes("UTF-8"));
+        }
 
         {// check if the home is set correctly
             HttpURLConnection con = open(new URL(home));
-            if (auth != null) con.setRequestProperty("Authorization", auth);
+            if (auth != null) {
+                con.setRequestProperty("Authorization", auth);
+            }
             con.connect();
             if(con.getResponseCode()!=200
             || con.getHeaderField("X-Hudson")==null) {
@@ -108,7 +116,9 @@ public class Main {
 
         {// check if the job name is correct
             HttpURLConnection con = open(new URL(jobURL, "acceptBuildResult"));
-            if (auth != null) con.setRequestProperty("Authorization", auth);
+            if (auth != null) {
+                con.setRequestProperty("Authorization", auth);
+            }
             con.connect();
             if(con.getResponseCode()!=200) {
                 System.err.println(jobURL + " is not a valid external job (" + con.getResponseCode() + " " + con.getResponseMessage() + ")");
@@ -121,7 +131,9 @@ public class Main {
         try {
             HttpURLConnection con = open(new URL(home +
                     "crumbIssuer/api/xml?xpath=concat(//crumbRequestField,\":\",//crumb)'"));
-            if (auth != null) con.setRequestProperty("Authorization", auth);
+            if (auth != null) {
+                con.setRequestProperty("Authorization", auth);
+            }
             String line = IOUtils.readFirstLine(con.getInputStream(),"UTF-8");
             String[] components = line.split(":");
             if (components.length == 2) {
@@ -148,8 +160,9 @@ public class Main {
                 long start = System.currentTimeMillis();
 
                 List<String> cmd = new ArrayList<String>();
-                for( int i=1; i<args.length; i++ )
+                for( int i=1; i<args.length; i++ ) {
                     cmd.add(args[i]);
+                }
                 Proc proc = new Proc.LocalProc(cmd.toArray(new String[0]),(String[])null,System.in,
                     new DualOutputStream(System.out,new EncodingStream(os)));
 
@@ -165,7 +178,9 @@ public class Main {
                 try {
                     // start a remote connection
                     HttpURLConnection con = open(location);
-                    if (auth != null) con.setRequestProperty("Authorization", auth);
+                    if (auth != null) {
+                        con.setRequestProperty("Authorization", auth);
+                    }
                     if (crumbField != null && crumbValue != null) {
                         con.setRequestProperty(crumbField, crumbValue);
                     }

@@ -225,9 +225,12 @@ public class UpdateSite {
      * Returns true if it's time for us to check for new version.
      */
     public boolean isDue() {
-        if(neverUpdate)     return false;
-        if(dataTimestamp == 0)
+        if(neverUpdate) {
+            return false;
+        }
+        if(dataTimestamp == 0) {
             dataTimestamp = getDataFile().file.lastModified();
+        }
         long now = System.currentTimeMillis();
         
         retryWindow = Math.max(retryWindow,SECONDS.toMillis(15));
@@ -301,10 +304,13 @@ public class UpdateSite {
     public List<Plugin> getAvailables() {
         List<Plugin> r = new ArrayList<Plugin>();
         Data data = getData();
-        if(data==null)     return Collections.emptyList();
+        if(data==null) {
+            return Collections.emptyList();
+        }
         for (Plugin p : data.plugins.values()) {
-            if(p.getInstalled()==null)
+            if(p.getInstalled()==null) {
                 r.add(p);
+            }
         }
         return r;
     }
@@ -320,7 +326,9 @@ public class UpdateSite {
      */
     public Plugin getPlugin(String artifactId) {
         Data dt = getData();
-        if(dt==null)    return null;
+        if(dt==null) {
+            return null;
+        }
         return dt.plugins.get(artifactId);
     }
 
@@ -334,7 +342,9 @@ public class UpdateSite {
     @Exported
     public String getConnectionCheckUrl() {
         Data dt = getData();
-        if(dt==null)    return "http://www.google.com/";
+        if(dt==null) {
+            return "http://www.google.com/";
+        }
         return dt.connectionCheckUrl;
     }
 
@@ -355,12 +365,16 @@ public class UpdateSite {
     @Exported
     public List<Plugin> getUpdates() {
         Data data = getData();
-        if(data==null)      return Collections.emptyList(); // fail to determine
+        if(data==null) {
+            return Collections.emptyList(); // fail to determine
+        }
         
         List<Plugin> r = new ArrayList<Plugin>();
         for (PluginWrapper pw : Jenkins.getInstance().getPluginManager().getPlugins()) {
             Plugin p = pw.getUpdateInfo();
-            if(p!=null) r.add(p);
+            if(p!=null) {
+                r.add(p);
+            }
         }
         
         return r;
@@ -372,13 +386,16 @@ public class UpdateSite {
     @Exported
     public boolean hasUpdates() {
         Data data = getData();
-        if(data==null)      return false;
+        if(data==null) {
+            return false;
+        }
         
         for (PluginWrapper pw : Jenkins.getInstance().getPluginManager().getPlugins()) {
-            if(!pw.isBundled() && pw.getUpdateInfo()!=null)
+            if(!pw.isBundled() && pw.getUpdateInfo()!=null) {
                 // do not advertize updates to bundled plugins, since we generally want users to get them
-                // as a part of jenkins.war updates. This also avoids unnecessary pinning of plugins. 
+                // as a part of jenkins.war updates. This also avoids unnecessary pinning of plugins.
                 return true;
+            }
         }
         return false;
     }
@@ -410,8 +427,9 @@ public class UpdateSite {
 
             We'll monitor the traffic to see if we can sustain this added traffic.
          */
-        if (url.equals("http://updates.jenkins-ci.org/update-center.json") && Jenkins.getInstance().isRootUrlSecure())
+        if (url.equals("http://updates.jenkins-ci.org/update-center.json") && Jenkins.getInstance().isRootUrlSecure()) {
             return "https"+url.substring(4);
+        }
         return url;
     }
 
@@ -618,18 +636,20 @@ public class UpdateSite {
         }
 
         private String get(JSONObject o, String prop) {
-            if(o.has(prop))
+            if(o.has(prop)) {
                 return o.getString(prop);
-            else
+            } else {
                 return null;
+            }
         }
 
         public String getDisplayName() {
             String displayName;
-            if(title!=null)
+            if(title!=null) {
                 displayName = title;
-            else
+            } else {
                 displayName = name;
+            }
             return StringUtils.removeStart(displayName, "Jenkins ");
         }
 
@@ -729,14 +749,18 @@ public class UpdateSite {
             }
             for (Plugin p: getNeededDependencies()) {
                 VersionNumber v = p.getNeededDependenciesRequiredCore();
-                if (versionNumber == null || v.isNewerThan(versionNumber)) versionNumber = v;
+                if (versionNumber == null || v.isNewerThan(versionNumber)) {
+                    versionNumber = v;
+                }
             }
             return versionNumber;
         }
 
         public boolean isNeededDependenciesForNewerJenkins() {
             for (Plugin p: getNeededDependencies()) {
-                if (p.isForNewerHudson() || p.isNeededDependenciesForNewerJenkins()) return true;
+                if (p.isForNewerHudson() || p.isNeededDependenciesForNewerJenkins()) {
+                    return true;
+                }
             }
             return false;
         }
@@ -751,8 +775,9 @@ public class UpdateSite {
          */
         public boolean isNeededDependenciesCompatibleWithInstalledVersion() {
             for (Plugin p: getNeededDependencies()) {
-                if (!p.isCompatibleWithInstalledVersion() || !p.isNeededDependenciesCompatibleWithInstalledVersion())
+                if (!p.isCompatibleWithInstalledVersion() || !p.isNeededDependenciesCompatibleWithInstalledVersion()) {
                     return false;
+                }
             }
             return true;
         }

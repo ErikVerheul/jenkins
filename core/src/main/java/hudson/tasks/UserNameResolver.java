@@ -73,7 +73,9 @@ public abstract class UserNameResolver implements ExtensionPoint {
     public static String resolve(User u) {
         for (UserNameResolver r : all()) {
             String name = r.findNameFor(u);
-            if(name!=null) return name;
+            if(name!=null) {
+                return name;
+            }
         }
 
         return null;

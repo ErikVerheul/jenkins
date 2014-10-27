@@ -50,8 +50,9 @@ public class LauncherTest extends ChannelTestCase {
             FilePath f = new FilePath(french, tmp.getPath());
             Launcher l = f.createLauncher(StreamTaskListener.fromStderr());
             Proc p = l.launch().cmds("sh", "-c", "echo $$$$ > "+tmp+"; sleep 30").stdout(System.out).stderr(System.err).start();
-            while (!tmp.exists())
+            while (!tmp.exists()) {
                 Thread.sleep(100);
+            }
             long start = System.currentTimeMillis();
             p.kill();
             assertTrue(p.join()!=0);

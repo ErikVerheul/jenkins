@@ -402,8 +402,9 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
             if(Util.isSymlink(buildDir)) {
                 // "Util.resolveSymlink(file)" resolves NTFS symlinks. 
                 File target = Util.resolveSymlinkToFile(buildDir);
-                if(target != null)
+                if(target != null) {
                     buildDir = target;
+                }
             }
             // canonicalization to ensure we are looking at the ID in the directory name
             // as opposed to build numbers which are used in symlinks
@@ -544,8 +545,9 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
         }
         for (Computer c : j.getComputers()) {
             for (Executor e : c.getExecutors()) {
-                if(e.getCurrentExecutable()==this)
+                if(e.getCurrentExecutable()==this) {
                     return e;
+                }
             }
             for (Executor e : c.getOneOffExecutors()) {
                 if(e.getCurrentExecutable()==this) {
@@ -564,8 +566,9 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
     public @CheckForNull Executor getOneOffExecutor() {
         for( Computer c : Jenkins.getInstance().getComputers() ) {
             for (Executor e : c.getOneOffExecutors()) {
-                if(e.getCurrentExecutable()==this)
+                if(e.getCurrentExecutable()==this) {
                     return e;
+                }
             }
         }
         return null;
@@ -577,7 +580,9 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
      * @since 1.257
      */   
     public final @Nonnull Charset getCharset() {
-        if(charset==null)   return Charset.defaultCharset();
+        if(charset==null) {
+            return Charset.defaultCharset();
+        }
         return Charset.forName(charset);
     }
 
@@ -594,7 +599,9 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
      */
     public @Nonnull List<Cause> getCauses() {
         CauseAction a = getAction(CauseAction.class);
-        if (a==null)    return Collections.emptyList();
+        if (a==null) {
+            return Collections.emptyList();
+        }
         return Collections.unmodifiableList(a.getCauses());
     }
 
@@ -604,9 +611,11 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
      * @since 1.362
      */ 
     public @CheckForNull <T extends Cause> T getCause(Class<T> type) {
-        for (Cause c : getCauses())
-            if (type.isInstance(c))
+        for (Cause c : getCauses()) {
+            if (type.isInstance(c)) {
                 return type.cast(c);
+            }
+        }
         return null;
     }
 
@@ -625,8 +634,9 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
      * sentence that explains why it's being kept.
      */ 
     public @CheckForNull String getWhyKeepLog() {
-        if(keepLog)
+        if(keepLog) {
             return Messages.Run_MarkedExplicitly();
+        }
         return null;    // not marked at all
     }
 
@@ -672,7 +682,9 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
      * @see #getTimestamp()
      */
     public final long getStartTimeInMillis() {
-        if (startTime==0)   return timestamp;   // fallback: approximate by the queuing time
+        if (startTime==0) {
+            return timestamp;   // fallback: approximate by the queuing time
+        }
         return startTime;
     }
 
@@ -720,8 +732,9 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
         String truncDesc = description;
 
         // Could not find a preferred truncable index, force a trunc at maxTruncLength
-        if (lastTruncatablePoint == -1)
+        if (lastTruncatablePoint == -1) {
             lastTruncatablePoint = maxTruncLength;
+        }
 
         if (displayChars >= maxDescrLength) {
             truncDesc = truncDesc.substring(0, lastTruncatablePoint) + ending;
@@ -753,9 +766,10 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
      * Gets the string that says how long the build took to run.
      */
     public @Nonnull String getDurationString() {
-        if(isBuilding())
+        if(isBuilding()) {
             return Messages.Run_InProgressDuration(
                     Util.getTimeSpanString(System.currentTimeMillis()-timestamp));
+        }
         return Util.getTimeSpanString(duration);
     }
 
@@ -779,10 +793,11 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
         // a new build is in progress
         BallColor baseColor;
         RunT pb = getPreviousBuild();
-        if(pb==null)
+        if(pb==null) {
             baseColor = BallColor.NOTBUILT;
-        else
+        } else {
             baseColor = pb.getIconColor();
+        }
 
         return baseColor.anime();
     }
@@ -844,10 +859,12 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
      * @since 1.556
      */
     protected void dropLinks() {
-        if(nextBuild!=null)
+        if(nextBuild!=null) {
             nextBuild.previousBuild = previousBuild;
-        if(previousBuild!=null)
+        }
+        if(previousBuild!=null) {
             previousBuild.nextBuild = nextBuild;
+        }
     }
 
     /**
@@ -862,8 +879,9 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
      */   
     public final @CheckForNull RunT getPreviousCompletedBuild() {
         RunT r=getPreviousBuild();
-        while (r!=null && r.isBuilding())
+        while (r!=null && r.isBuilding()) {
             r=r.getPreviousBuild();
+        }
         return r;
     }
 
@@ -876,7 +894,9 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
      * in 'fixUp' and update them later.
      */  
     public final @CheckForNull RunT getPreviousBuildInProgress() {
-        if(previousBuildInProgress==this)   return null;    // the most common case
+        if(previousBuildInProgress==this) {
+            return null;    // the most common case
+        }
 
         List<RunT> fixUp = new ArrayList<RunT>();
         RunT r = _this(); // 'r' is the source of the pointer (so that we can add it to fix up if we find that the target of the pointer is inefficient.)
@@ -903,8 +923,9 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
         }
 
         // fix up so that the next look up will run faster
-        for (RunT f : fixUp)
+        for (RunT f : fixUp) {
             f.previousBuildInProgress = answer==null ? f : answer;
+        }
         return answer;
     }
 
@@ -914,8 +935,9 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
     public @CheckForNull RunT getPreviousBuiltBuild() {
         RunT r=getPreviousBuild();
         // in certain situations (aborted m2 builds) r.getResult() can still be null, although it should theoretically never happen
-        while( r!=null && (r.getResult() == null || r.getResult()==Result.NOT_BUILT) )
+        while( r!=null && (r.getResult() == null || r.getResult()==Result.NOT_BUILT) ) {
             r=r.getPreviousBuild();
+        }
         return r;
     }
 
@@ -924,8 +946,9 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
      */ 
     public @CheckForNull RunT getPreviousNotFailedBuild() {
         RunT r=getPreviousBuild();
-        while( r!=null && r.getResult()==Result.FAILURE )
+        while( r!=null && r.getResult()==Result.FAILURE ) {
             r=r.getPreviousBuild();
+        }
         return r;
     }
 
@@ -934,8 +957,9 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
      */  
     public @CheckForNull RunT getPreviousFailedBuild() {
         RunT r=getPreviousBuild();
-        while( r!=null && r.getResult()!=Result.FAILURE )
+        while( r!=null && r.getResult()!=Result.FAILURE ) {
             r=r.getPreviousBuild();
+        }
         return r;
     }
 
@@ -945,8 +969,9 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
      */
     public @CheckForNull RunT getPreviousSuccessfulBuild() {
         RunT r=getPreviousBuild();
-        while( r!=null && r.getResult()!=Result.SUCCESS )
+        while( r!=null && r.getResult()!=Result.SUCCESS ) {
             r=r.getPreviousBuild();
+        }
         return r;
     }
 
@@ -1169,11 +1194,15 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
             }
             if (sub.isDirectory()) {
                 n += addArtifacts(sub, childPath + '/', childHref + '/', r, a, upTo-n);
-                if (n>=upTo) break;
+                if (n>=upTo) {
+                    break;
+                }
             } else {
                 // Don't store collapsed path in ArrayList (for correct data in external API)
                 r.add(collapsed ? new Artifact(child, a.relativePath, a.href, length, a.treeNodeId) : a);
-                if (++n>=upTo) break;
+                if (++n>=upTo) {
+                    break;
+                }
             }
         }
         return n;
@@ -1205,7 +1234,9 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
         }
 
         public void computeDisplayName() {
-            if(size()>LIST_CUTOFF)   return; // we are not going to display file names, so no point in computing this
+            if(size()>LIST_CUTOFF) {
+                return; // we are not going to display file names, so no point in computing this
+            }
 
             int maxDepth = 0;
             int[] len = new int[size()];
@@ -1227,15 +1258,16 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
                     Integer j = names.put(displayName, i);
                     if(j!=null) {
                         collision = true;
-                        if(j>=0)
+                        if(j>=0) {
                             len[j]++;
+                        }
                         len[i]++;
                         names.put(displayName,-1);  // occupy this name but don't let len[i] incremented with additional collisions
                     }
                 }
             } while(collision && depth++<maxDepth);
 
-            for (int i = 0; i < tokens.length; i++)
+            for (int i = 0; i < tokens.length; i++) {
                 get(i).displayPath = combineLast(tokens[i],len[i]);
 
 //            OUTER:
@@ -1259,6 +1291,7 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
 //            // we have the same artifacts archived twice, but be defensive
 //            for (Artifact a : this)
 //                a.displayPath = a.relativePath;
+            }
         }
 
         /**
@@ -1267,7 +1300,9 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
         private String combineLast(String[] token, int n) {
             StringBuilder buf = new StringBuilder();
             for( int i=Math.max(0,token.length-n); i<token.length; i++ ) {
-                if(buf.length()>0)  buf.append('/');
+                if(buf.length()>0) {
+                    buf.append('/');
+                }
                 buf.append(token[i]);
             }
             return buf.toString();
@@ -1409,8 +1444,11 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
     }
    
     public @Nonnull Reader getLogReader() throws IOException {
-        if (charset==null)  return new InputStreamReader(getLogInputStream());
-        else                return new InputStreamReader(getLogInputStream(),charset);
+        if (charset==null) {
+            return new InputStreamReader(getLogInputStream());
+        } else {
+            return new InputStreamReader(getLogInputStream(),charset);
+        }
     }
 
     /**
@@ -1471,8 +1509,9 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
                 .add("console")
                 .add("changes");
         for (Action a : getAllActions()) {
-            if(a.getIconFileName()!=null)
+            if(a.getIconFileName()!=null) {
                 builder.add(a.getUrlName());
+            }
         }
         return builder;
     }
@@ -1542,11 +1581,13 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
         Util.deleteRecursive(tmp);
         // some user reported that they see some left-over .xyz files in the workspace,
         // so just to make sure we've really deleted it, schedule the deletion on VM exit, too.
-        if(tmp.exists())
+        if(tmp.exists()) {
             tmp.deleteOnExit();
+        }
 
-        if(!renamingSucceeded)
+        if(!renamingSucceeded) {
             throw new IOException(rootDir+" is in use");
+        }
         LOGGER.log(FINE, "{0}: {1} successfully deleted", new Object[] {this, rootDir});
 
         removeRunFromParent();
@@ -1580,17 +1621,20 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
                 return;
             }
             Run b = exec.getBuild().getPreviousBuildInProgress();
-            if(b==null)     return; // no pending earlier build
+            if(b==null) {
+                return; // no pending earlier build
+            }
             Run.RunExecution runner = b.runner;
             if(runner==null) {
                 // polled at the wrong moment. try again.
                 Thread.sleep(0);
                 continue;
             }
-            if(runner.checkpoints.waitForCheckPoint(id, listener, waiter))
+            if(runner.checkpoints.waitForCheckPoint(id, listener, waiter)) {
                 return; // confirmed that the previous build reached the check point
-
-            // the previous build finished without ever reaching the check point. try again.
+                
+                // the previous build finished without ever reaching the check point. try again.
+            }
         }
     }
 
@@ -1724,8 +1768,9 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
     }
 
     protected final void execute(@Nonnull RunExecution job) {
-        if(result!=null)
+        if(result!=null) {
             return;     // already built.
+        }
 
         StreamBuildListener listener=null;
 
@@ -1920,8 +1965,9 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
         LOGGER.log(FINER, "moving to BUILDING on {0}", this);
         state = State.BUILDING;
         startTime = System.currentTimeMillis();
-        if (runner!=null)
+        if (runner!=null) {
             RunnerStack.INSTANCE.push(runner);
+        }
     }
 
     /**
@@ -1949,7 +1995,9 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
      * Save the settings to a file.
      */
     public synchronized void save() throws IOException {
-        if(BulkChange.contains(this))   return;
+        if(BulkChange.contains(this)) {
+            return;
+        }
         getDataFile().write(this);
         SaveableListener.fireOnChange(this, getDataFile());
     }
@@ -1991,8 +2039,9 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
                 // never have to hold the full contents of a huge log file in memory.
                 // Adding to and removing from the ends of a linked list are cheap
                 // operations.
-                if (lineCount > maxLines)
+                if (lineCount > maxLines) {
                     logLines.remove(0);
+                }
             }
         } finally {
             reader.close();
@@ -2001,8 +2050,9 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
         // If the log has been truncated, include that information.
         // Use set (replaces the first element) rather than add so that
         // the list doesn't grow beyond the specified maximum number of lines.
-        if (lineCount > maxLines)
+        if (lineCount > maxLines) {
             logLines.set(0, "[...truncated " + (lineCount - (maxLines - 1)) + " lines...]");
+        }
 
         return ConsoleNote.removeNotes(logLines);
     }
@@ -2074,8 +2124,9 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
             
             case STILL_FAILING : 
                 RunT since = getPreviousNotFailedBuild();
-                if(since==null)
+                if(since==null) {
                     return new Summary(false, Messages.Run_Summary_BrokenForALongTime());
+        }
                 RunT failedBuild = since.getNextBuild();
                 return new Summary(false, Messages.Run_Summary_BrokenSince(failedBuild.getDisplayName()));
            
@@ -2287,8 +2338,9 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
         env.putAll(getCharacteristicEnvVars());
 
         // apply them in a reverse order so that higher ordinal ones can modify values added by lower ordinal ones
-        for (EnvironmentContributor ec : EnvironmentContributor.all().reverseView())
+        for (EnvironmentContributor ec : EnvironmentContributor.all().reverseView()) {
             ec.buildEnvironmentFor(this,env,listener);
+        }
 
         return env;
     }
@@ -2377,8 +2429,12 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
         public int compare(@Nonnull Run lhs, @Nonnull Run rhs) {
             long lt = lhs.getTimeInMillis();
             long rt = rhs.getTimeInMillis();
-            if(lt>rt)   return -1;
-            if(lt<rt)   return 1;
+            if(lt>rt) {
+                return -1;
+            }
+            if(lt<rt) {
+                return 1;
+            }
             return 0;
         }
     };

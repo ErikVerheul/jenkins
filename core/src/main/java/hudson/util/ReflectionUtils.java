@@ -48,9 +48,11 @@ public class ReflectionUtils extends org.springframework.util.ReflectionUtils {
      * Finds a public method of the given name, regardless of its parameter definitions,
      */
     public static Method getPublicMethodNamed(Class c, String methodName) {
-        for( Method m : c.getMethods() )
-            if(m.getName().equals(methodName))
+        for( Method m : c.getMethods() ) {
+            if(m.getName().equals(methodName)) {
                 return m;
+            }
+        }
         return null;
     }
 
@@ -104,20 +106,23 @@ public class ReflectionUtils extends org.springframework.util.ReflectionUtils {
         }
 
         public Type[] genericTypes() {
-            if (genericTypes==null)
+            if (genericTypes==null) {
                 genericTypes = method.getGenericParameterTypes();
+            }
             return genericTypes;
         }
 
         public Annotation[][] annotations() {
-            if (annotations==null)
+            if (annotations==null) {
                 annotations = method.getParameterAnnotations();
+            }
             return annotations;
         }
 
         public String[] names() {
-            if (names==null)
+            if (names==null) {
                 names = ClassDescriptor.loadParameterNames(method);
+            }
             return names;
         }
     }
@@ -163,9 +168,11 @@ public class ReflectionUtils extends org.springframework.util.ReflectionUtils {
          * Gets the specified annotation on this parameter or null.
          */
         public <A extends Annotation> A annotation(Class<A> type) {
-            for (Annotation a : annotations())
-                if (a.annotationType()==type)
+            for (Annotation a : annotations()) {
+                if (a.annotationType()==type) {
                     return type.cast(a);
+                }
+            }
             return null;
         }
 
@@ -176,8 +183,9 @@ public class ReflectionUtils extends org.springframework.util.ReflectionUtils {
          */
         public String name() {
             String[] names = parent.names();
-            if (index<names.length)
+            if (index<names.length) {
                 return names[index];
+            }
             return null;
         }
     }

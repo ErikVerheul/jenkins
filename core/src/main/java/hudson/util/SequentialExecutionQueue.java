@@ -75,9 +75,11 @@ public class SequentialExecutionQueue implements Executor {
      */
     public synchronized boolean isStarving(long threshold) {
         long now = System.currentTimeMillis();
-        for (QueueEntry e : entries.values())
-            if (now-e.submissionTime > threshold)
+        for (QueueEntry e : entries.values()) {
+            if (now-e.submissionTime > threshold) {
                 return true;
+            }
+        }
         return false;
     }
 
@@ -120,11 +122,12 @@ public class SequentialExecutionQueue implements Executor {
                 item.run(); //NOSONAR
             } finally {
                 synchronized (SequentialExecutionQueue.this) {
-                    if(queued)
+                    if(queued) {
                         // another polling for this job is requested while we were doing the polling. do it again.
                         submit();
-                    else
+                    } else {
                         entries.remove(item);
+                    }
                     inProgress.remove(this);
                 }
             }

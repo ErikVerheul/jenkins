@@ -36,8 +36,9 @@ public class AlternativeUiTextProviderTest extends HudsonTestCase {
     @TestExtension
     public static class Impl extends AlternativeUiTextProvider {
         @Override public <T> String getText(Message<T> text, T context) {
-            if (text==AbstractProject.BUILD_NOW_TEXT)
+            if (text==AbstractProject.BUILD_NOW_TEXT) {
                 return "XYZ:"+AbstractProject.BUILD_NOW_TEXT.cast(context).getDisplayName();
+            }
             return null;
         }
     }

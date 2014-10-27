@@ -282,8 +282,11 @@ public abstract class Node extends AbstractModelObject implements Reconfigurable
         for (LabelFinder labeler : LabelFinder.all()) {
             // Filter out any bad(null) results from plugins
             // for compatibility reasons, findLabels may return LabelExpression and not atom.
-            for (Label label : labeler.findLabels(this))
-                if (label instanceof LabelAtom) result.add((LabelAtom)label);
+            for (Label label : labeler.findLabels(this)) {
+                if (label instanceof LabelAtom) {
+                    result.add((LabelAtom)label);
+                }
+            }
         }
         return result;
     }
@@ -346,8 +349,9 @@ public abstract class Node extends AbstractModelObject implements Reconfigurable
      */
     public CauseOfBlockage canTake(Queue.BuildableItem item) {
         Label l = item.getAssignedLabel();
-        if(l!=null && !l.contains(this))
+        if(l!=null && !l.contains(this)) {
             return CauseOfBlockage.fromMessage(Messages._Node_LabelMissing(getNodeName(),l));   // the task needs to be executed on label that this node doesn't have.
+        }
 
         if(l==null && getMode()== Mode.EXCLUSIVE) {
             // flyweight tasks need to get executed somewhere, if every node
@@ -370,7 +374,9 @@ public abstract class Node extends AbstractModelObject implements Reconfigurable
         // taking the task
         for (NodeProperty prop: getNodeProperties()) {
             CauseOfBlockage c = prop.canTake(item);
-            if (c!=null)    return c;
+            if (c!=null) {
+                return c;
+            }
         }
 
         // Looks like we can take the task
@@ -408,7 +414,9 @@ public abstract class Node extends AbstractModelObject implements Reconfigurable
      */
     public @CheckForNull FilePath createPath(String absolutePath) {
         VirtualChannel ch = getChannel();
-        if(ch==null)    return null;    // offline
+        if(ch==null) {
+            return null;    // offline
+        }
         return new FilePath(ch,absolutePath);
     }
 
@@ -440,13 +448,17 @@ public abstract class Node extends AbstractModelObject implements Reconfigurable
     }
 
     public Node reconfigure(final StaplerRequest req, JSONObject form) throws FormException {
-        if (form==null)     return null;
+        if (form==null) {
+            return null;
+        }
 
         final JSONObject jsonForProperties = form.optJSONObject("nodeProperties");
         BindInterceptor old = req.setBindListener(new BindInterceptor() {
             @Override
             public Object onConvert(Type targetType, Class targetTypeErasure, Object jsonSource) {
-                if (jsonForProperties!=jsonSource)  return DEFAULT;
+                if (jsonForProperties!=jsonSource) {
+                    return DEFAULT;
+                }
 
                 try {
                     DescribableList<NodeProperty<?>, NodePropertyDescriptor> tmp = new DescribableList<NodeProperty<?>, NodePropertyDescriptor>(Saveable.NOOP,getNodeProperties().toList());
@@ -479,8 +491,9 @@ public abstract class Node extends AbstractModelObject implements Reconfigurable
      */
     public ClockDifference getClockDifference() throws IOException, InterruptedException {
         VirtualChannel channel = getChannel();
-        if(channel==null)
+        if(channel==null) {
             throw new IOException(getNodeName()+" is offline");
+        }
 
         return channel.call(getClockDifferenceCallable());
     }

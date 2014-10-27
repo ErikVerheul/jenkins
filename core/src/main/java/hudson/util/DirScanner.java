@@ -60,8 +60,9 @@ public abstract class DirScanner implements Serializable {
             if (f.canRead()) {
                 scanSingle(f, path + f.getName(), visitor);
                 if(f.isDirectory()) {
-                    for( File child : f.listFiles() )
+                    for( File child : f.listFiles() ) {
                         scan(child,path+f.getName()+'/',visitor);
+                    }
                 }
             }
         }

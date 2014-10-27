@@ -96,7 +96,9 @@ public class UsageStatistics extends PageDecorator {
      */
     public boolean isDue() {
         // user opted out. no data collection.
-        if(!Jenkins.getInstance().isUsageStatisticsCollected() || DISABLED)     return false;
+        if(!Jenkins.getInstance().isUsageStatisticsCollected() || DISABLED) {
+            return false;
+        }
         
         long now = System.currentTimeMillis();
         if(now - lastAttempt > DAY) {
@@ -148,7 +150,9 @@ public class UsageStatistics extends PageDecorator {
 
         List<JSONObject> plugins = new ArrayList<JSONObject>();
         for( PluginWrapper pw : j.getPluginManager().getPlugins() ) {
-            if(!pw.isActive())  continue;   // treat disabled plugins as if they are uninstalled
+            if(!pw.isActive()) {
+                continue;   // treat disabled plugins as if they are uninstalled
+            }
             JSONObject p = new JSONObject();
             p.put("name",pw.getShortName());
             p.put("version",pw.getVersion());
@@ -161,8 +165,9 @@ public class UsageStatistics extends PageDecorator {
         for (TopLevelItemDescriptor d : Items.all()) {
             int cnt=0;
             for (TopLevelItem item : items) {
-                if(item.getDescriptor()==d)
+                if(item.getDescriptor()==d) {
                     cnt++;
+                }
             }
             jobs.put(d.getJsonSafeClassName(),cnt);
         }

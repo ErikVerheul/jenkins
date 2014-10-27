@@ -211,11 +211,13 @@ public abstract class Job<JobT extends Job<JobT, RunT>, RunT extends Run<JobT, R
             saveNextBuildNumber();
         }
 
-        if (properties == null) // didn't exist < 1.72
+        if (properties == null) { // didn't exist < 1.72
             properties = new CopyOnWriteList<JobProperty<? super JobT>>();
+        }
 
-        for (JobProperty p : properties)
+        for (JobProperty p : properties) {
             p.setOwner(this);
+        }
     }
 
     @Override
@@ -382,8 +384,9 @@ public abstract class Job<JobT extends Job<JobT, RunT>, RunT extends Run<JobT, R
         env.put("CLASSPATH","");
 
         // apply them in a reverse order so that higher ordinal ones can modify values added by lower ordinal ones
-        for (EnvironmentContributor ec : EnvironmentContributor.all().reverseView())
+        for (EnvironmentContributor ec : EnvironmentContributor.all().reverseView()) {
             ec.buildEnvironmentFor(this,env,listener);
+        }
 
 
         return env;
@@ -427,8 +430,9 @@ public abstract class Job<JobT extends Job<JobT, RunT>, RunT extends Run<JobT, R
      *      Use {@link #getBuildDiscarder()}.
      */
     public LogRotator getLogRotator() {
-        if (logRotator instanceof LogRotator)
+        if (logRotator instanceof LogRotator) {
             return (LogRotator) logRotator;
+        }
         return null;
     }
 
@@ -445,8 +449,9 @@ public abstract class Job<JobT extends Job<JobT, RunT>, RunT extends Run<JobT, R
      */
     public void logRotate() throws IOException, InterruptedException {
         BuildDiscarder bd = getBuildDiscarder();
-        if (bd != null)
+        if (bd != null) {
             bd.perform(this);
+        }
     }
 
     /**
@@ -461,12 +466,14 @@ public abstract class Job<JobT extends Job<JobT, RunT>, RunT extends Run<JobT, R
         return super.makeSearchIndex().add(new SearchIndex() {
             public void find(String token, List<SearchItem> result) {
                 try {
-                    if (token.startsWith("#"))
+                    if (token.startsWith("#")) {
                         token = token.substring(1); // ignore leading '#'
+                    }
                     int n = Integer.parseInt(token);
                     Run b = getBuildByNumber(n);
-                    if (b == null)
+                    if (b == null) {
                         return; // no such build
+                    }
                     result.add(SearchItems.create("#" + n, "" + n, b));
                 } catch (NumberFormatException e) {
                     // not a number.
@@ -544,8 +551,9 @@ public abstract class Job<JobT extends Job<JobT, RunT>, RunT extends Run<JobT, R
      */
     public <T extends JobProperty> T getProperty(Class<T> clazz) {
         for (JobProperty p : properties) {
-            if (clazz.isInstance(p))
+            if (clazz.isInstance(p)) {
                 return clazz.cast(p);
+            }
         }
         return null;
     }
@@ -556,9 +564,11 @@ public abstract class Job<JobT extends Job<JobT, RunT>, RunT extends Run<JobT, R
      * @since 1.403
      */
     public JobProperty getProperty(String className) {
-        for (JobProperty p : properties)
-            if (p.getClass().getName().equals(className))
+        for (JobProperty p : properties) {
+            if (p.getClass().getName().equals(className)) {
                 return p;
+            }
+        }
         return null;
     }
 
@@ -568,8 +578,9 @@ public abstract class Job<JobT extends Job<JobT, RunT>, RunT extends Run<JobT, R
      */
     public Collection<?> getOverrides() {
         List<Object> r = new ArrayList<Object>();
-        for (JobProperty<? super JobT> p : properties)
+        for (JobProperty<? super JobT> p : properties) {
             r.addAll(p.getJobOverrides());
+        }
         return r;
     }
 
@@ -704,8 +715,9 @@ public abstract class Job<JobT extends Job<JobT, RunT>, RunT extends Run<JobT, R
      */
     public RunT getBuild(String id) {
         for (RunT r : _getRuns().values()) {
-            if (r.getId().equals(id))
+            if (r.getId().equals(id)) {
                 return r;
+            }
         }
         return null;
     }
@@ -738,8 +750,9 @@ public abstract class Job<JobT extends Job<JobT, RunT>, RunT extends Run<JobT, R
         try {
             int n = Integer.parseInt(id);
             RunT r = getBuildByNumber(n);
-            if (r==null)
+            if (r==null) {
                 throw new CmdLineException(null, "No such build '#"+n+"' exists");
+            }
             return r;
         } catch (NumberFormatException e) {
             throw new CmdLineException(null, id+ "is not a number");
@@ -756,8 +769,9 @@ public abstract class Job<JobT extends Job<JobT, RunT>, RunT extends Run<JobT, R
     public RunT getNearestBuild(int n) {
         SortedMap<Integer, ? extends RunT> m = _getRuns().headMap(n - 1); // the map should
                                                                           // include n, so n-1
-        if (m.isEmpty())
+        if (m.isEmpty()) {
             return null;
+        }
         return m.get(m.lastKey());
     }
 
@@ -770,8 +784,9 @@ public abstract class Job<JobT extends Job<JobT, RunT>, RunT extends Run<JobT, R
      */
     public RunT getNearestOldBuild(int n) {
         SortedMap<Integer, ? extends RunT> m = _getRuns().tailMap(n);
-        if (m.isEmpty())
+        if (m.isEmpty()) {
             return null;
+        }
         return m.get(m.firstKey());
     }
 
@@ -784,14 +799,16 @@ public abstract class Job<JobT extends Job<JobT, RunT>, RunT extends Run<JobT, R
         } catch (NumberFormatException e) {
             // try to map that to widgets
             for (Widget w : getWidgets()) {
-                if (w.getUrlName().equals(token))
+                if (w.getUrlName().equals(token)) {
                     return w;
+                }
             }
 
             // is this a permalink?
             for (Permalink p : getPermalinks()) {
-                if(p.getId().equals(token))
+                if(p.getId().equals(token)) {
                     return p.resolve(this);
+                }
             }
 
             return super.getDynamic(token, req, rsp);
@@ -842,8 +859,9 @@ public abstract class Job<JobT extends Job<JobT, RunT>, RunT extends Run<JobT, R
     public RunT getLastBuild() {
         SortedMap<Integer, ? extends RunT> runs = _getRuns();
 
-        if (runs.isEmpty())
+        if (runs.isEmpty()) {
             return null;
+        }
         return runs.get(runs.firstKey());
     }
 
@@ -856,8 +874,9 @@ public abstract class Job<JobT extends Job<JobT, RunT>, RunT extends Run<JobT, R
     public RunT getFirstBuild() {
         SortedMap<Integer, ? extends RunT> runs = _getRuns();
 
-        if (runs.isEmpty())
+        if (runs.isEmpty()) {
             return null;
+        }
         return runs.get(runs.lastKey());
     }
 
@@ -919,8 +938,9 @@ public abstract class Job<JobT extends Job<JobT, RunT>, RunT extends Run<JobT, R
     @QuickSilver
     public RunT getLastCompletedBuild() {
         RunT r = getLastBuild();
-        while (r != null && r.isBuilding())
+        while (r != null && r.isBuilding()) {
             r = r.getPreviousBuild();
+        }
         return r;
     }
     
@@ -981,8 +1001,9 @@ public abstract class Job<JobT extends Job<JobT, RunT>, RunT extends Run<JobT, R
         }
         
         while (candidates.size() < 3) {
-            if (fallbackCandidates.isEmpty())
+            if (fallbackCandidates.isEmpty()) {
                 break;
+            }
             RunT run = fallbackCandidates.remove(0);
             candidates.add(run);
         }
@@ -993,13 +1014,17 @@ public abstract class Job<JobT extends Job<JobT, RunT>, RunT extends Run<JobT, R
     public long getEstimatedDuration() {
         List<RunT> builds = getEstimatedDurationCandidates();
         
-        if(builds.isEmpty())     return -1;
+        if(builds.isEmpty()) {
+            return -1;
+        }
 
         long totalDuration = 0;
         for (RunT b : builds) {
             totalDuration += b.getDuration();
         }
-        if(totalDuration==0) return -1;
+        if(totalDuration==0) {
+            return -1;
+        }
 
         return Math.round((double)totalDuration / builds.size());
     }
@@ -1036,13 +1061,15 @@ public abstract class Job<JobT extends Job<JobT, RunT>, RunT extends Run<JobT, R
     @Exported(visibility = 2, name = "color")
     public BallColor getIconColor() {
         RunT lastBuild = getLastBuild();
-        while (lastBuild != null && lastBuild.hasntStartedYet())
+        while (lastBuild != null && lastBuild.hasntStartedYet()) {
             lastBuild = lastBuild.getPreviousBuild();
+        }
 
-        if (lastBuild != null)
+        if (lastBuild != null) {
             return lastBuild.getIconColor();
-        else
+        } else {
             return BallColor.NOTBUILT;
+        }
     }
 
     /**
@@ -1167,10 +1194,11 @@ public abstract class Job<JobT extends Job<JobT, RunT>, RunT extends Run<JobT, R
         try {
             setDisplayName(json.optString("displayNameOrNull"));
 
-            if (json.optBoolean("logrotate"))
+            if (json.optBoolean("logrotate")) {
                 logRotator = req.bindJSON(BuildDiscarder.class, json.optJSONObject("buildDiscarder"));
-            else
+            } else {
                 logRotator = null;
+            }
 
             DescribableList<JobProperty<?>, JobPropertyDescriptor> t = new DescribableList<JobProperty<?>, JobPropertyDescriptor>(NOOP,getAllProperties());
             JSONObject jsonProperties = json.optJSONObject("properties");
@@ -1293,14 +1321,15 @@ public abstract class Job<JobT extends Job<JobT, RunT>, RunT extends Run<JobT, R
                         // TODO: consider gradation. See
                         // http://www.javadrive.jp/java2d/shape/index9.html
                         Result r = run.getResult();
-                        if (r == Result.FAILURE)
+                        if (r == Result.FAILURE) {
                             return ColorPalette.RED;
-                        else if (r == Result.UNSTABLE)
+                        } else if (r == Result.UNSTABLE) {
                             return ColorPalette.YELLOW;
-                        else if (r == Result.ABORTED || r == Result.NOT_BUILT)
+                        } else if (r == Result.ABORTED || r == Result.NOT_BUILT) {
                             return ColorPalette.GREY;
-                        else
+                        } else {
                             return ColorPalette.BLUE;
+                        }
                     }
 
                     @Override
@@ -1313,8 +1342,9 @@ public abstract class Job<JobT extends Job<JobT, RunT>, RunT extends Run<JobT, R
                         String l = run.getDisplayName();
                         if (run instanceof Build) {
                             String s = ((Build) run).getBuiltOnStr();
-                            if (s != null)
+                            if (s != null) {
                                 l += ' ' + s;
+                            }
                         }
                         return l;
                     }
@@ -1323,8 +1353,9 @@ public abstract class Job<JobT extends Job<JobT, RunT>, RunT extends Run<JobT, R
 
                 DataSetBuilder<String, ChartLabel> data = new DataSetBuilder<String, ChartLabel>();
                 for (Run r : getNewBuilds()) {
-                    if (r.isBuilding())
+                    if (r.isBuilding()) {
                         continue;
+                    }
                     data.add(((double) r.getDuration()) / (1000 * 60), "min",
                             new ChartLabel(r));
                 }

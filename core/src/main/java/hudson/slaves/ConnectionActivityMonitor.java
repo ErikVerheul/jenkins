@@ -53,7 +53,9 @@ public class ConnectionActivityMonitor extends AsyncPeriodicWork {
     }
 
     protected void execute(TaskListener listener) throws IOException, InterruptedException {
-        if (!enabled)   return;
+        if (!enabled) {
+            return;
+        }
 
         long now = System.currentTimeMillis();
         for (Computer c: Jenkins.getInstance().getComputers()) {
@@ -70,8 +72,9 @@ public class ConnectionActivityMonitor extends AsyncPeriodicWork {
                     } else {
                         // send a ping. if we receive a reply, it will be reflected in the next getLastHeard() call.
                         channel.callAsync(PING_COMMAND);
-                        if (lastPing==null)
+                        if (lastPing==null) {
                             channel.setProperty(ConnectionActivityMonitor.class,now);
+                        }
                     }
                 } else {
                     // we are receiving data nicely

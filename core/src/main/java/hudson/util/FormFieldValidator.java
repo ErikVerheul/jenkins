@@ -124,17 +124,18 @@ public abstract class FormFieldValidator {
      * Runs the validation code.
      */
     public final void process() throws IOException, ServletException {
-        if(permission!=null)
+        if(permission!=null) {
             try {
-                if(subject==null)
+                if (subject==null) {
                     throw new AccessDeniedException("No subject");
+                }
                 subject.checkPermission(permission);
             } catch (AccessDeniedException e) {
-                // if the user has hudson-wisde admin permission, all checks are allowed
-                // this is to protect Hudson administrator from broken ACL/SecurityRealm implementation/configuration.
-                if(!Jenkins.getInstance().hasPermission(Jenkins.ADMINISTER))
+                if (!Jenkins.getInstance().hasPermission(Jenkins.ADMINISTER)) {
                     throw e;
+                }
             }
+        }
 
         check();
     }
@@ -268,9 +269,11 @@ public abstract class FormFieldValidator {
          */
         protected boolean findText(BufferedReader in, String literal) throws IOException {
             String line;
-            while((line=in.readLine())!=null)
-                if(line.indexOf(literal)!=-1)
+            while((line=in.readLine())!=null) {
+                if(line.indexOf(literal)!=-1) {
                     return true;
+                }
+            }
             return false;
         }
 
@@ -283,11 +286,12 @@ public abstract class FormFieldValidator {
          */
         protected void handleIOException(String url, IOException e) throws IOException, ServletException {
             // any invalid URL comes here
-            if(e.getMessage().equals(url))
+            if(e.getMessage().equals(url)) {
                 // Sun JRE (and probably others too) often return just the URL in the error.
                 error("Unable to connect "+url);
-            else
+            } else {
                 error(e.getMessage());
+            }
         }
 
         /**
@@ -296,8 +300,9 @@ public abstract class FormFieldValidator {
         private String getCharset(URLConnection con) {
             for( String t : con.getContentType().split(";") ) {
                 t = t.trim().toLowerCase(Locale.ENGLISH);
-                if(t.startsWith("charset="))
+                if(t.startsWith("charset=")) {
                     return t.substring(8);
+                }
             }
             // couldn't find it. HTML spec says default is US-ASCII,
             // but UTF-8 is a better choice since
@@ -323,7 +328,9 @@ public abstract class FormFieldValidator {
                 return;
             }
 
-            if(!value.endsWith("/")) value+='/';
+            if(!value.endsWith("/")) {
+                value+='/';
+            }
 
             try {
                 URL url = new URL(value);
@@ -379,8 +386,11 @@ public abstract class FormFieldValidator {
                 }
 
                 String msg = ws.validateAntFileMask(value, 10000);
-                if(errorIfNotExist)     error(msg);
-                else                    warning(msg);
+                if(errorIfNotExist) {
+                    error(msg);
+                } else {
+                    warning(msg);
+                }
             } catch (InterruptedException e) {
                 ok(Messages.FormFieldValidator_did_not_manage_to_validate_may_be_too_sl(value));
             }
@@ -458,20 +468,25 @@ public abstract class FormFieldValidator {
 
                 if(ws.child(value).exists()) {
                     if (expectingFile) {
-                        if(!ws.child(value).isDirectory())
+                        if(!ws.child(value).isDirectory()) {
                             ok();
-                        else
+                        } else {
                             error(value+" is not a file");
+                        }
                     } else {
-                        if(ws.child(value).isDirectory())
+                        if(ws.child(value).isDirectory()) {
                             ok();
-                        else
+                        } else {
                             error(value+" is not a directory");
+                        }
                     }
                 } else {
                     String msg = "No such "+(expectingFile?"file":"directory")+": " + value;
-                    if(errorIfNotExist)     error(msg);
-                    else                    warning(msg);
+                    if(errorIfNotExist) {
+                        error(msg);
+                    } else {
+                        warning(msg);
+                    }
                 }
             } catch (InterruptedException e) {
                 ok(); // coundn't check
@@ -640,10 +655,11 @@ public abstract class FormFieldValidator {
         protected void check() throws IOException, ServletException {
             try {
                 String value = request.getParameter("value");
-                if(Integer.parseInt(value)<0)
+                if(Integer.parseInt(value)<0) {
                     error(hudson.model.Messages.Hudson_NotAPositiveNumber());
-                else
+                } else {
                     ok();
+                }
             } catch (NumberFormatException e) {
                 error(hudson.model.Messages.Hudson_NotANumber());
             }

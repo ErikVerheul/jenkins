@@ -109,8 +109,9 @@ public class LabelAtom extends Label implements Saveable {
     protected void updateTransientActions() {
         Vector<Action> ta = new Vector<Action>();
 
-        for (LabelAtomProperty p : properties)
+        for (LabelAtomProperty p : properties) {
             ta.addAll(p.getActions(this));
+        }
 
         transientActions = ta;
     }
@@ -164,7 +165,9 @@ public class LabelAtom extends Label implements Saveable {
     }
 
     public void save() throws IOException {
-        if(BulkChange.contains(this))   return;
+        if(BulkChange.contains(this)) {
+            return;
+        }
         try {
             getConfigFile().write(this);
             SaveableListener.fireOnChange(this, getConfigFile());
@@ -247,8 +250,9 @@ public class LabelAtom extends Label implements Saveable {
             // additional restricted chars
             for( int i=0; i<name.length(); i++ ) {
                 char ch = name.charAt(i);
-                if(" ()\t\n".indexOf(ch)!=-1)
+                if(" ()\t\n".indexOf(ch)!=-1) {
                     return true;
+                }
             }
             return false;
         } catch (Failure failure) {
@@ -257,8 +261,9 @@ public class LabelAtom extends Label implements Saveable {
     }
 
     public static String escape(String name) {
-        if (needsEscape(name))
+        if (needsEscape(name)) {
             return QuotedStringTokenizer.quote(name);
+        }
         return name;
     }
 
@@ -291,8 +296,9 @@ public class LabelAtom extends Label implements Saveable {
                 } finally {
                     context.put(IN_NESTED,false);
                 }
-            } else
+            } else {
                 leafLabelConverter.marshal(source,writer,context);
+            }
         }
 
         public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
@@ -303,8 +309,9 @@ public class LabelAtom extends Label implements Saveable {
                 } finally {
                     context.put(IN_NESTED,false);
                 }
-            } else
+            } else {
                 return leafLabelConverter.unmarshal(reader,context);
+            }
         }
 
         @Override

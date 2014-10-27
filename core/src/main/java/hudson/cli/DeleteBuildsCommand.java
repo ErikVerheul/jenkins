@@ -54,8 +54,9 @@ public class DeleteBuildsCommand extends AbstractBuildRangeCommand {
     protected int act(List<AbstractBuild<?, ?>> builds) throws IOException {
         job.checkPermission(Run.DELETE);
 
-        for (AbstractBuild build : builds)
+        for (AbstractBuild build : builds) {
             build.delete();
+        }
 
         stdout.println("Deleted "+builds.size()+" builds");
 

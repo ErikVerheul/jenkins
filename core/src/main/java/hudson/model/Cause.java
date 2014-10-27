@@ -204,16 +204,28 @@ public abstract class Cause {
         @Override
         public boolean equals(Object rhs) {
 
-            if (this == rhs) return true;
+            if (this == rhs) {
+                return true;
+            }
 
-            if (!(rhs instanceof UpstreamCause)) return false;
+            if (!(rhs instanceof UpstreamCause)) {
+                return false;
+            }
 
             final UpstreamCause o = (UpstreamCause) rhs;
 
-            if (upstreamBuild != o.upstreamBuild) return false;
-            if (!upstreamCauses.equals(o.upstreamCauses)) return false;
-            if (upstreamUrl == null ? o.upstreamUrl != null : !upstreamUrl.equals(o.upstreamUrl)) return false;
-            if (upstreamProject == null ? o.upstreamProject != null : !upstreamProject.equals(o.upstreamProject)) return false;
+            if (upstreamBuild != o.upstreamBuild) {
+                return false;
+            }
+            if (!upstreamCauses.equals(o.upstreamCauses)) {
+                return false;
+            }
+            if (upstreamUrl == null ? o.upstreamUrl != null : !upstreamUrl.equals(o.upstreamUrl)) {
+                return false;
+            }
+            if (upstreamProject == null ? o.upstreamProject != null : !upstreamProject.equals(o.upstreamProject)) {
+                return false;
+            }
 
             return true;
         }
@@ -335,7 +347,9 @@ public abstract class Cause {
             public ConverterImpl(XStream2 xstream) { super(xstream); }
             @Override protected void callback(UpstreamCause uc, UnmarshallingContext context) {
                 if (uc.upstreamCause != null) {
-                    if (uc.upstreamCauses == null) uc.upstreamCauses = new ArrayList<Cause>();
+                    if (uc.upstreamCauses == null) {
+                        uc.upstreamCauses = new ArrayList<Cause>();
+                    }
                     uc.upstreamCauses.add(uc.upstreamCause);
                     uc.upstreamCause = null;
                     OldDataMonitor.report(context, "1.288");

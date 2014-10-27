@@ -49,15 +49,17 @@ public class ConsoleCommand extends CLICommand {
         try {
             int n = Integer.parseInt(build);
             run = job.getBuildByNumber(n);
-            if (run==null)
+            if (run==null) {
                 throw new CmdLineException("No such build #"+n);
+            }
         } catch (NumberFormatException e) {
             // maybe a permalink?
             Permalink p = job.getPermalinks().get(build);
             if (p!=null) {
                 run = (AbstractBuild)p.resolve(job);
-                if (run==null)
+                if (run==null) {
                     throw new CmdLineException("Permalink "+build+" produced no build");
+                }
             } else {
                 Permalink nearest = job.getPermalinks().findNearest(build);
                 throw new CmdLineException(String.format("Not sure what you meant by \"%s\". Did you mean \"%s\"?", build, nearest.getId()));
@@ -96,8 +98,9 @@ public class ConsoleCommand extends CLICommand {
             int ptr=0;
 
             RingBuffer() {
-                for (int i=0; i<n; i++)
+                for (int i=0; i<n; i++) {
                     lastNlines[i] = -1;
+                }
             }
 
             void add(long pos) {
@@ -107,7 +110,9 @@ public class ConsoleCommand extends CLICommand {
 
             long get() {
                 long v = lastNlines[ptr];
-                if (v<0)    return lastNlines[0];   // didn't even wrap around
+                if (v<0) {
+                    return lastNlines[0];   // didn't even wrap around
+                }
                 return v;
             }
         }
@@ -124,8 +129,12 @@ public class ConsoleCommand extends CLICommand {
                 for (int i=0; i<len; i++) {
                     byte ch = buf[i];
                     boolean isNL = ch=='\r' || ch=='\n';
-                    if (!isNL && prevIsNL)  rb.add(pos);
-                    if (isNL && prevIsNL && !(prev=='\r' && ch=='\n'))  rb.add(pos);
+                    if (!isNL && prevIsNL) {
+                        rb.add(pos);
+                    }
+                    if (isNL && prevIsNL && !(prev=='\r' && ch=='\n')) {
+                        rb.add(pos);
+                    }
                     pos++;
                     prev = ch;
                     prevIsNL = isNL;

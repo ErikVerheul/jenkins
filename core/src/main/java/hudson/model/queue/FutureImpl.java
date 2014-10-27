@@ -74,9 +74,11 @@ public final class FutureImpl extends AsyncFutureImpl<Executable> implements Que
         synchronized (q) {
             synchronized (this) {
                 if(!executors.isEmpty()) {
-                    if(mayInterruptIfRunning)
-                        for (Executor e : executors)
+                    if(mayInterruptIfRunning) {
+                        for (Executor e : executors) {
                             e.interrupt();
+                        }
+                    }
                     return mayInterruptIfRunning;
                 }
                 return q.cancel(task);

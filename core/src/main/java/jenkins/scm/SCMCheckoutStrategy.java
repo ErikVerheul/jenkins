@@ -72,8 +72,9 @@ public abstract class SCMCheckoutStrategy extends AbstractDescribableImpl<SCMChe
         AbstractProject<?, ?> project = build.getProject();
         if (project instanceof BuildableItemWithBuildWrappers) {
                BuildableItemWithBuildWrappers biwbw = (BuildableItemWithBuildWrappers) project;
-               for (BuildWrapper bw : biwbw.getBuildWrappersList())
+               for (BuildWrapper bw : biwbw.getBuildWrappersList()) {
                    bw.preCheckout(build,launcher,listener);
+               }
            }
     }
 

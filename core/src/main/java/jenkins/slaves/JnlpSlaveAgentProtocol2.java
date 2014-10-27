@@ -54,8 +54,9 @@ public class JnlpSlaveAgentProtocol2 extends JnlpSlaveAgentProtocol {
             final String nodeName = request.getProperty("Node-Name");
 
             for (JnlpAgentReceiver recv : JnlpAgentReceiver.all()) {
-                if (recv.handle(nodeName,this))
+                if (recv.handle(nodeName,this)) {
                     return;
+                }
             }
 
             error("Unrecognized name: "+nodeName);

@@ -77,8 +77,9 @@ public class ResourceController {
     public void execute(@Nonnull Runnable task, ResourceActivity activity ) throws InterruptedException {
         ResourceList resources = activity.getResourceList();
         synchronized(this) {
-            while(inUse.isCollidingWith(resources))
+            while(inUse.isCollidingWith(resources)) {
                 wait();
+            }
 
             // we have a go
             inProgress.add(activity);
@@ -129,9 +130,11 @@ public class ResourceController {
      */
     public ResourceActivity getBlockingActivity(ResourceActivity activity) {
         ResourceList res = activity.getResourceList();
-        for (ResourceActivity a : inProgress)
-            if(res.isCollidingWith(a.getResourceList()))
+        for (ResourceActivity a : inProgress) {
+            if(res.isCollidingWith(a.getResourceList())) {
                 return a;
+            }
+        }
         return null;
     }
 }

@@ -94,7 +94,9 @@ public abstract class CauseOfInterruption {
 
         @Override
         public boolean equals(Object o) {
-            if (o == null || getClass() != o.getClass()) return false;
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
             UserInterruption that = (UserInterruption) o;
             return user.equals(that.user);
         }

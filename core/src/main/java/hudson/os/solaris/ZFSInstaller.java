@@ -95,20 +95,23 @@ public class ZFSInstaller extends AdministrativeMonitor implements Serializable 
     }
 
     private boolean shouldBeActive() {
-        if(!System.getProperty("os.name").equals("SunOS") || disabled)
+        if(!System.getProperty("os.name").equals("SunOS") || disabled) {
             // on systems that don't have ZFS, we don't need this monitor
             return false;
+        }
 
         try {
             LibZFS zfs = new LibZFS();
             List<ZFSFileSystem> roots = zfs.roots();
-            if(roots.isEmpty())
+            if(roots.isEmpty()) {
                 return false;       // no active ZFS pool
+            }
 
             // if we don't run on a ZFS file system, activate
             ZFSFileSystem hudsonZfs = zfs.getFileSystemByMountPoint(Jenkins.getInstance().getRootDir());
-            if(hudsonZfs!=null)
+            if(hudsonZfs!=null) {
                 return false;       // already on ZFS
+            }
 
             // decide what file system we'll create
             ZFSFileSystem pool = roots.get(0);
@@ -159,8 +162,9 @@ public class ZFSInstaller extends AdministrativeMonitor implements Serializable 
         final int uid = LIBC.geteuid();
         final int gid = LIBC.getegid();
         passwd pwd = LIBC.getpwuid(uid);
-        if(pwd==null)
+        if(pwd==null) {
             throw new IOException("Failed to obtain the current user information for "+uid);
+        }
         final String userName = pwd.pw_name;
 
         final File home = Jenkins.getInstance().getRootDir();
@@ -189,8 +193,9 @@ public class ZFSInstaller extends AdministrativeMonitor implements Serializable 
                 File dir = Util.createTempDir();
                 hudson.setMountPoint(dir);
                 hudson.mount();
-                if(LIBC.chown(dir.getPath(),uid,gid)!=0)
+                if(LIBC.chown(dir.getPath(),uid,gid)!=0) {
                     throw new IOException("Failed to chown "+dir);
+                }
                 hudson.unmount();
 
                 try {
@@ -262,7 +267,9 @@ public class ZFSInstaller extends AdministrativeMonitor implements Serializable 
                     int sz = LIBC.getdtablesize();
                     for(int i=3; i<sz; i++) {
                         int flags = LIBC.fcntl(i, F_GETFD);
-                        if(flags<0) continue;
+                        if(flags<0) {
+                            continue;
+                        }
                         LIBC.fcntl(i, F_SETFD,flags| FD_CLOEXEC);
                     }
 
@@ -301,8 +308,9 @@ public class ZFSInstaller extends AdministrativeMonitor implements Serializable 
 
         // install the monitor if applicable
         ZFSInstaller zi = new ZFSInstaller();
-        if(zi.isActivated())
+        if(zi.isActivated()) {
             return zi;
+        }
 
         return null;
     }
@@ -354,16 +362,18 @@ public class ZFSInstaller extends AdministrativeMonitor implements Serializable 
         // move the original directory to the side
         File backup = new File(home.getPath()+".backup");
         out.println("Moving "+home+" to "+backup);
-        if(backup.exists())
+        if(backup.exists()) {
             Util.deleteRecursive(backup);
+        }
         if(!home.renameTo(backup)) {
             out.println("Failed to move your current data "+home+" out of the way");
         }
 
         // update the mount point
         out.println("Creating a new mount point at "+home);
-        if(!home.mkdir())
+        if(!home.mkdir()) {
             throw new IOException("Failed to create mount point "+home);
+        }
 
         out.println("Mounting "+target);
         hudson.setMountPoint(home);
@@ -394,12 +404,14 @@ public class ZFSInstaller extends AdministrativeMonitor implements Serializable 
     }
 
     private static String computeHudsonFileSystemName(LibZFS zfs, ZFSFileSystem top) {
-        if(!zfs.exists(top.getName()+"/hudson"))
+        if(!zfs.exists(top.getName()+"/hudson")) {
             return top.getName()+"/hudson";
+        }
         for( int i=2; ; i++ ) {
             String name = top.getName() + "/hudson" + i;
-            if(!zfs.exists(name))
+            if(!zfs.exists(name)) {
                 return name;
+            }
         }
     }
 

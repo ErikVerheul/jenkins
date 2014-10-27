@@ -71,8 +71,9 @@ public class InitStrategy {
     
     private void listPluginFiles(PluginManager pm, String extension, Collection<File> all) throws IOException {
         File[] files = pm.rootDir.listFiles(new FilterByExtension(extension));
-        if (files==null)
+        if (files==null) {
             throw new IOException("Jenkins is unable to create " + pm.rootDir + "\nPerhaps its security privilege is insufficient");
+        }
 
         all.addAll(Arrays.asList(files));
     }
@@ -123,7 +124,9 @@ public class InitStrategy {
      */
     public static InitStrategy get(ClassLoader cl) throws IOException {
         List<InitStrategy> r = Service.loadInstances(cl, InitStrategy.class);
-        if (r.isEmpty())    return new InitStrategy();      // default
+        if (r.isEmpty()) {
+            return new InitStrategy();      // default
+        }
 
         InitStrategy s = r.get(0);
         LOGGER.fine("Using "+s+" as InitStrategy");
@@ -141,8 +144,9 @@ public class InitStrategy {
 
         public boolean accept(File dir, String name) {
             for (String extension : extensions) {
-                if (name.endsWith(extension))
+                if (name.endsWith(extension)) {
                     return true;
+                }
             }
             return false;
         }

@@ -64,13 +64,16 @@ public final class DataSetBuilder<Row extends Comparable,Column extends Comparab
         Comparable[] _cols = colSet.toArray(new Comparable[colSet.size()]);
 
         // insert rows and columns in the right order
-        for (Comparable r : _rows)
+        for (Comparable r : _rows) {
             ds.setValue(null, r, _cols[0]);
-        for (Comparable c : _cols)
+        }
+        for (Comparable c : _cols) {
             ds.setValue(null, _rows[0], c);
+        }
 
-        for( int i=0; i<values.size(); i++ )
+        for( int i=0; i<values.size(); i++ ) {
             ds.addValue( values.get(i), rows.get(i), columns.get(i) );
+        }
         return ds;
     }
 }

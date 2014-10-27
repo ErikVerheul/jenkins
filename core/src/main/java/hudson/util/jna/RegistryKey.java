@@ -52,8 +52,12 @@ public class RegistryKey {
     }
 
     private static String combine(String a, String b) {
-        if(a.length()==0)   return b;
-        if(b.length()==0)   return a;
+        if(a.length()==0) {
+            return b;
+        }
+        if(b.length()==0) {
+            return a;
+        }
         return a+'\\'+b;
     }
 
@@ -120,8 +124,9 @@ public class RegistryKey {
     }
 
     private void check(int r) {
-        if (r != WINERROR.ERROR_SUCCESS)
+        if (r != WINERROR.ERROR_SUCCESS) {
             throw new JnaException(r);
+        }
     }
 
     /**
@@ -290,8 +295,9 @@ public class RegistryKey {
     }
 
     public void dispose() {
-        if(handle!=0)
+        if(handle!=0) {
             Advapi32.INSTANCE.RegCloseKey(handle);
+        }
         handle = 0;
     }
 

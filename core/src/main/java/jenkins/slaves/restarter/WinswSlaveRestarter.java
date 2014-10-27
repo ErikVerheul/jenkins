@@ -20,8 +20,9 @@ public class WinswSlaveRestarter extends SlaveRestarter {
     public boolean canWork() {
         try {
             exe = System.getenv("WINSW_EXECUTABLE");
-            if (exe==null)
+            if (exe==null) {
                 return false;   // not under winsw
+            }
 
             return exec("status") ==0;
         } catch (InterruptedException e) {
@@ -41,8 +42,9 @@ public class WinswSlaveRestarter extends SlaveRestarter {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         copy(p.getInputStream(), baos);
         int r = p.waitFor();
-        if (r!=0)
+        if (r!=0) {
             LOGGER.info(exe+" cmd: output:\n"+baos);
+        }
         return r;
     }
 

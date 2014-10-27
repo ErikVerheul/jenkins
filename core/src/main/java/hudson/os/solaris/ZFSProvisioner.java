@@ -57,7 +57,9 @@ public class ZFSProvisioner extends FileSystemProvisioner implements Serializabl
 
             public String invoke(File f, VirtualChannel channel) throws IOException {
                 ZFSFileSystem fs = libzfs.getFileSystemByMountPoint(f);
-                if(fs!=null)    return fs.getName();
+                if(fs!=null) {
+                    return fs.getName();
+                }
 
                 // TODO: for now, only support slaves that are already on ZFS.
                 throw new IOException("Not on ZFS");
@@ -73,7 +75,9 @@ public class ZFSProvisioner extends FileSystemProvisioner implements Serializabl
 
             public Void invoke(File f, VirtualChannel channel) throws IOException {
                 ZFSFileSystem fs = libzfs.getFileSystemByMountPoint(f);
-                if(fs!=null)    return null;    // already on ZFS
+                if(fs!=null) {
+                    return null;    // already on ZFS
+                }
 
                 // nope. create a file system
                 String fullName = rootDataset + '/' + name;
@@ -92,8 +96,9 @@ public class ZFSProvisioner extends FileSystemProvisioner implements Serializabl
 
             public Void invoke(File f, VirtualChannel channel) throws IOException {
                 ZFSFileSystem fs = libzfs.getFileSystemByMountPoint(f);
-                if(fs!=null)
+                if(fs!=null) {
                     fs.destory(true);
+                }
                 return null;
             }
         });

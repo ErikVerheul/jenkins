@@ -68,8 +68,9 @@ public abstract class ExtensionComponentSet {
             public <T> Collection<ExtensionComponent<T>> find(Class<T> type) {
                 List<ExtensionComponent<T>> a = Lists.newArrayList();
                 for (ExtensionComponent<T> c : base.find(type)) {
-                    if (ExtensionFilter.isAllowed(type,c))
+                    if (ExtensionFilter.isAllowed(type,c)) {
                         a.add(c);
+                    }
                 }
                 return a;
             }
@@ -94,8 +95,9 @@ public abstract class ExtensionComponentSet {
             @Override
             public <T> Collection<ExtensionComponent<T>> find(Class<T> type) {
                 List<ExtensionComponent<T>> r = Lists.newArrayList();
-                for (ExtensionComponentSet d : base)
+                for (ExtensionComponentSet d : base) {
                     r.addAll(d.find(type));
+                }
                 return r;
             }
         };

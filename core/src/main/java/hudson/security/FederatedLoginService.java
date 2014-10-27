@@ -155,8 +155,9 @@ public abstract class FederatedLoginService implements ExtensionPoint {
             String id = getIdentifier();
 
             for (User u : User.getAll()) {
-                if (u.getProperty(pt).has(id))
+                if (u.getProperty(pt).has(id)) {
                     return u;
+                }
             }
             return null;
         }
@@ -201,7 +202,9 @@ public abstract class FederatedLoginService implements ExtensionPoint {
          */
         public void addToCurrentUser() throws IOException {
             User u = User.current();
-            if (u==null)    throw new IllegalStateException("Current request is unauthenticated");
+            if (u==null) {
+                throw new IllegalStateException("Current request is unauthenticated");
+            }
 
             addTo(u);
         }

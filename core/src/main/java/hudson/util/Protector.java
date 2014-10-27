@@ -61,13 +61,16 @@ public class Protector {
      * Returns null if fails to decrypt properly.
      */
     public static String unprotect(String data) {
-        if(data==null)      return null;
+        if(data==null) {
+            return null;
+        }
         try {
             Cipher cipher = Secret.getCipher(ALGORITHM);
             cipher.init(Cipher.DECRYPT_MODE, DES_KEY);
             String plainText = new String(cipher.doFinal(Base64.decode(data.toCharArray())), "UTF-8");
-            if(plainText.endsWith(MAGIC))
+            if(plainText.endsWith(MAGIC)) {
                 return plainText.substring(0,plainText.length()-3);
+            }
             return null;
         } catch (GeneralSecurityException e) {
             return null;

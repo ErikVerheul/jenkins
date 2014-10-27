@@ -119,9 +119,11 @@ public class DescriptorExtensionList<T extends Describable<T>, D extends Descrip
      * That is, if this method returns d, {@code d.clazz==type}
      */
     public D find(Class<? extends T> type) {
-        for (D d : this)
-            if (d.clazz==type)
+        for (D d : this) {
+            if (d.clazz==type) {
                 return d;
+            }
+        }
         return null;
     }
 
@@ -131,8 +133,9 @@ public class DescriptorExtensionList<T extends Describable<T>, D extends Descrip
      * by a radio button group.
      */
     public T newInstanceFromRadioList(JSONObject config) throws FormException {
-        if(config.isNullObject())
+        if(config.isNullObject()) {
             return null;    // none was selected
+        }
         int idx = config.getInt("value");
         return get(idx).newInstance(Stapler.getCurrentRequest(),config);
     }
@@ -147,9 +150,11 @@ public class DescriptorExtensionList<T extends Describable<T>, D extends Descrip
      * If none is found, null is returned.
      */
     public @CheckForNull D findByName(String id) {
-        for (D d : this)
-            if(d.getId().equals(id))
+        for (D d : this) {
+            if(d.getId().equals(id)) {
                 return d;
+            }
+        }
         return null;
     }
 
@@ -192,8 +197,9 @@ public class DescriptorExtensionList<T extends Describable<T>, D extends Descrip
         for( ExtensionComponent<Descriptor> c : set ) {
             Descriptor d = c.getInstance();
             try {
-                if(d.getT()==describableType)
+                if(d.getT()==describableType) {
                     r.add((ExtensionComponent)c);
+                }
             } catch (IllegalStateException e) {
                 LOGGER.log(Level.SEVERE, d.getClass() + " doesn't extend Descriptor with a type parameter", e); // skip this one
             }

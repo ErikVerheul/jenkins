@@ -75,14 +75,17 @@ public class Shell extends CommandInterpreter {
         if(command.startsWith("#!")) {
             // interpreter override
             int end = command.indexOf('\n');
-            if(end<0)   end=command.length();
+            if(end<0) {
+                end=command.length();
+            }
             List<String> args = new ArrayList<String>();
             args.addAll(Arrays.asList(Util.tokenize(command.substring(0,end).trim())));
             args.add(script.getRemote());
             args.set(0,args.get(0).substring(2));   // trim off "#!"
             return args.toArray(new String[args.size()]);
-        } else 
+        } else {
             return new String[] { getDescriptor().getShellOrDefault(script.getChannel()), "-xe", script.getRemote()};
+        }
     }
 
     protected String getContents() {
@@ -126,14 +129,16 @@ public class Shell extends CommandInterpreter {
          *      Use {@link #getShellOrDefault(hudson.remoting.VirtualChannel) }.
          */
         public String getShellOrDefault() {
-            if(shell==null)
+            if(shell==null) {
                 return Functions.isWindows() ?"sh":"/bin/sh";
+            }
             return shell;
         }
 
         public String getShellOrDefault(VirtualChannel channel) {
-            if (shell != null) 
+            if (shell != null) {
                 return shell;
+            }
 
             String interpreter = null;
             try {

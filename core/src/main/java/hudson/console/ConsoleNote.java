@@ -210,8 +210,9 @@ public abstract class ConsoleNote<T> implements Serializable, Describable<Consol
         try {
             byte[] preamble = new byte[PREAMBLE.length];
             in.readFully(preamble);
-            if (!Arrays.equals(preamble,PREAMBLE))
+            if (!Arrays.equals(preamble,PREAMBLE)) {
                 return null;    // not a valid preamble
+            }
 
             DataInputStream decoded = new DataInputStream(new UnbufferedBase64InputStream(in));
             int sz = decoded.readInt();
@@ -220,8 +221,9 @@ public abstract class ConsoleNote<T> implements Serializable, Describable<Consol
 
             byte[] postamble = new byte[POSTAMBLE.length];
             in.readFully(postamble);
-            if (!Arrays.equals(postamble,POSTAMBLE))
+            if (!Arrays.equals(postamble,POSTAMBLE)) {
                 return null;    // not a valid postamble
+            }
 
             ObjectInputStream ois = new ObjectInputStreamEx(
                     new GZIPInputStream(new ByteArrayInputStream(buf)), Jenkins.getInstance().pluginManager.uberClassLoader);
@@ -243,8 +245,9 @@ public abstract class ConsoleNote<T> implements Serializable, Describable<Consol
     public static void skip(DataInputStream in) throws IOException {
         byte[] preamble = new byte[PREAMBLE.length];
         in.readFully(preamble);
-        if (!Arrays.equals(preamble,PREAMBLE))
+        if (!Arrays.equals(preamble,PREAMBLE)) {
             return;    // not a valid preamble
+        }
 
         DataInputStream decoded = new DataInputStream(new UnbufferedBase64InputStream(in));
         int sz = decoded.readInt();
@@ -280,8 +283,9 @@ public abstract class ConsoleNote<T> implements Serializable, Describable<Consol
             if (buf[i]==PREAMBLE[0]) {
                 // check for the rest of the match
                 for (int j=1; j<PREAMBLE.length; j++) {
-                    if (buf[i+j]!=PREAMBLE[j])
+                    if (buf[i+j]!=PREAMBLE[j]) {
                         continue OUTER;
+                    }
                 }
                 return i; // found it
             }
@@ -296,8 +300,9 @@ public abstract class ConsoleNote<T> implements Serializable, Describable<Consol
      */
     public static List<String> removeNotes(Collection<String> logLines) {
         List<String> r = new ArrayList<String>(logLines.size());
-        for (String l : logLines)
+        for (String l : logLines) {
             r.add(removeNotes(l));
+        }
         return r;
     }
 
@@ -309,9 +314,13 @@ public abstract class ConsoleNote<T> implements Serializable, Describable<Consol
     public static String removeNotes(String line) {
         while (true) {
             int idx = line.indexOf(PREAMBLE_STR);
-            if (idx<0)  return line;
+            if (idx<0) {
+                return line;
+            }
             int e = line.indexOf(POSTAMBLE_STR,idx);
-            if (e<0)    return line;
+            if (e<0) {
+                return line;
+            }
             line = line.substring(0,idx)+line.substring(e+POSTAMBLE_STR.length());
         }
     }

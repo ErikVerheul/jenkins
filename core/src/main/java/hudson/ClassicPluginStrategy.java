@@ -178,12 +178,14 @@ public class ClassicPluginStrategy implements PluginStrategy {
             baseResourceURL = resolve(archive,atts.getValue("Resource-Path")).toURI().toURL();
         } else {
             File classes = new File(expandDir, "WEB-INF/classes");
-            if (classes.exists())
+            if (classes.exists()) {
                 paths.add(classes);
+            }
             File lib = new File(expandDir, "WEB-INF/lib");
             File[] libs = lib.listFiles(JAR_FILTER);
-            if (libs != null)
+            if (libs != null) {
                 paths.addAll(Arrays.asList(libs));
+            }
 
             baseResourceURL = expandDir.toURI().toURL();
         }
@@ -206,16 +208,18 @@ public class ClassicPluginStrategy implements PluginStrategy {
                 }
             }
         }
-        for (DetachedPlugin detached : DETACHED_LIST)
+        for (DetachedPlugin detached : DETACHED_LIST) {
             detached.fix(atts,optionalDependencies);
+        }
 
         // Register global classpath mask. This is useful for hiding JavaEE APIs that you might see from the container,
         // such as database plugin for JPA support. The Mask-Classes attribute is insufficient because those classes
         // also need to be masked by all the other plugins that depend on the database plugin.
         String masked = atts.getValue("Global-Mask-Classes");
         if(masked!=null) {
-            for (String pkg : masked.trim().split("[ \t\r\n]+"))
+            for (String pkg : masked.trim().split("[ \t\r\n]+")) {
                 coreClassLoader.add(pkg);
+            }
         }
 
         ClassLoader dependencyLoader = new DependencyClassLoader(coreClassLoader, archive, Util.join(dependencies,optionalDependencies));
@@ -274,14 +278,18 @@ public class ClassicPluginStrategy implements PluginStrategy {
         private void fix(Attributes atts, List<PluginWrapper.Dependency> optionalDependencies) {
             // don't fix the dependency for yourself, or else we'll have a cycle
             String yourName = atts.getValue("Short-Name");
-            if (shortName.equals(yourName))   return;
+            if (shortName.equals(yourName)) {
+                return;
+            }
 
             // some earlier versions of maven-hpi-plugin apparently puts "null" as a literal in Hudson-Version. watch out for them.
             String jenkinsVersion = atts.getValue("Jenkins-Version");
-            if (jenkinsVersion==null)
+            if (jenkinsVersion==null) {
                 jenkinsVersion = atts.getValue("Hudson-Version");
-            if (jenkinsVersion == null || jenkinsVersion.equals("null") || new VersionNumber(jenkinsVersion).compareTo(splitWhen) <= 0)
+            }
+            if (jenkinsVersion == null || jenkinsVersion.equals("null") || new VersionNumber(jenkinsVersion).compareTo(splitWhen) <= 0) {
                 optionalDependencies.add(new PluginWrapper.Dependency(shortName+':'+requireVersion));
+            }
         }
     }
 
@@ -310,8 +318,9 @@ public class ClassicPluginStrategy implements PluginStrategy {
      */
     private ClassLoader getBaseClassLoader(Attributes atts, ClassLoader base) {
         String masked = atts.getValue("Mask-Classes");
-        if(masked!=null)
+        if(masked!=null) {
             base = new MaskingClassLoader(base, masked.trim().split("[ \t\r\n]+"));
+        }
         return base;
     }
 
@@ -331,8 +340,9 @@ public class ClassicPluginStrategy implements PluginStrategy {
         /**
          * See {@link ExtensionFinder#scout(Class, Hudson)} for the dead lock issue and what this does.
          */
-        if (LOGGER.isLoggable(Level.FINER))
+        if (LOGGER.isLoggable(Level.FINER)) {
             LOGGER.log(Level.FINER,"Scout-loading ExtensionList: "+type, new Throwable());
+        }
         for (ExtensionFinder finder : finders) {
             finder.scout(type, hudson);
         }
@@ -343,15 +353,17 @@ public class ClassicPluginStrategy implements PluginStrategy {
                 r.addAll(finder.find(type, hudson));
             } catch (AbstractMethodError e) {
                 // backward compatibility
-                for (T t : finder.findExtensions(type, hudson))
+                for (T t : finder.findExtensions(type, hudson)) {
                     r.add(new ExtensionComponent<T>(t));
+                }
             }
         }
 
         List<ExtensionComponent<T>> filtered = Lists.newArrayList();
         for (ExtensionComponent<T> e : r) {
-            if (ExtensionFilter.isAllowed(type,e))
+            if (ExtensionFilter.isAllowed(type,e)) {
                 filtered.add(e);
+            }
         }
 
         return filtered;
@@ -436,15 +448,18 @@ public class ClassicPluginStrategy implements PluginStrategy {
 
     private static File resolve(File base, String relative) {
         File rel = new File(relative);
-        if(rel.isAbsolute())
+        if(rel.isAbsolute()) {
             return rel;
-        else
+        } else {
             return new File(base.getParentFile(),relative);
+        }
     }
 
     private static void parseClassPath(Manifest manifest, File archive, List<File> paths, String attributeName, String separator) throws IOException {
         String classPath = manifest.getMainAttributes().getValue(attributeName);
-        if(classPath==null) return; // attribute not found
+        if(classPath==null) {
+            return; // attribute not found
+        }
         for (String s : classPath.split(separator)) {
             File file = resolve(archive, s);
             if(file.getName().contains("*")) {
@@ -457,8 +472,9 @@ public class ClassicPluginStrategy implements PluginStrategy {
                     paths.add(new File(dir,included));
                 }
             } else {
-                if(!file.exists())
+                if(!file.exists()) {
                     throw new IOException("No such file: "+file);
+                }
                 paths.add(file);
             }
         }
@@ -472,8 +488,9 @@ public class ClassicPluginStrategy implements PluginStrategy {
 
         // timestamp check
         File explodeTime = new File(destDir,".timestamp2");
-        if(explodeTime.exists() && explodeTime.lastModified()==archive.lastModified())
+        if(explodeTime.exists() && explodeTime.lastModified()==archive.lastModified()) {
             return; // no need to expand
+        }
 
         // delete the contents so that old files won't interfere with new files
         Util.deleteRecursive(destDir);
@@ -593,8 +610,9 @@ public class ClassicPluginStrategy implements PluginStrategy {
                         List<PluginWrapper> dep = new ArrayList<PluginWrapper>();
                         for (Dependency d : pw.getDependencies()) {
                             PluginWrapper p = pluginManager.getPlugin(d.shortName);
-                            if (p!=null && p.isActive())
+                            if (p!=null && p.isActive()) {
                                 dep.add(p);
+                            }
                         }
                         return dep;
                     }
@@ -603,8 +621,9 @@ public class ClassicPluginStrategy implements PluginStrategy {
                 try {
                     for (Dependency d : dependencies) {
                         PluginWrapper p = pluginManager.getPlugin(d.shortName);
-                        if (p!=null && p.isActive())
+                        if (p!=null && p.isActive()) {
                             cgd.run(Collections.singleton(p));
+                        }
                     }
                 } catch (CycleDetectedException e) {
                     throw new AssertionError(e);    // such error should have been reported earlier
@@ -630,7 +649,9 @@ public class ClassicPluginStrategy implements PluginStrategy {
                 for (PluginWrapper pw : getTransitiveDependencies()) {
                     try {
                         Class<?> c = ClassLoaderReflectionToolkit._findLoadedClass(pw.classLoader, name);
-                        if (c!=null)    return c;
+                        if (c!=null) {
+                            return c;
+                        }
                         return ClassLoaderReflectionToolkit._findClass(pw.classLoader, name);
                     } catch (ClassNotFoundException e) {
                         //not found. try next
@@ -639,12 +660,13 @@ public class ClassicPluginStrategy implements PluginStrategy {
             } else {
                 for (Dependency dep : dependencies) {
                     PluginWrapper p = pluginManager.getPlugin(dep.shortName);
-                    if(p!=null)
+                    if(p!=null) {
                         try {
                             return p.classLoader.loadClass(name);
                         } catch (ClassNotFoundException _) {
                             // try next
                         }
+                    }
                 }
             }
 
@@ -658,16 +680,18 @@ public class ClassicPluginStrategy implements PluginStrategy {
             if (PluginManager.FAST_LOOKUP) {
                     for (PluginWrapper pw : getTransitiveDependencies()) {
                         Enumeration<URL> urls = ClassLoaderReflectionToolkit._findResources(pw.classLoader, name);
-                        while (urls != null && urls.hasMoreElements())
+                        while (urls != null && urls.hasMoreElements()) {
                             result.add(urls.nextElement());
+                        }
                     }
             } else {
                 for (Dependency dep : dependencies) {
                     PluginWrapper p = pluginManager.getPlugin(dep.shortName);
                     if (p!=null) {
                         Enumeration<URL> urls = p.classLoader.getResources(name);
-                        while (urls != null && urls.hasMoreElements())
+                        while (urls != null && urls.hasMoreElements()) {
                             result.add(urls.nextElement());
+                        }
                     }
                 }
             }
@@ -680,15 +704,18 @@ public class ClassicPluginStrategy implements PluginStrategy {
             if (PluginManager.FAST_LOOKUP) {
                     for (PluginWrapper pw : getTransitiveDependencies()) {
                         URL url = ClassLoaderReflectionToolkit._findResource(pw.classLoader, name);
-                        if (url!=null)    return url;
+                        if (url!=null) {
+                            return url;
+                        }
                     }
             } else {
                 for (Dependency dep : dependencies) {
                     PluginWrapper p = pluginManager.getPlugin(dep.shortName);
                     if(p!=null) {
                         URL url = p.classLoader.getResource(name);
-                        if (url!=null)
+                        if (url!=null) {
                             return url;
+                        }
                     }
                 }
             }
@@ -719,8 +746,9 @@ public class ClassicPluginStrategy implements PluginStrategy {
 
 
         public void addPathFiles(Collection<File> paths) throws IOException {
-            for (File f : paths)
+            for (File f : paths) {
                 addPathFile(f);
+            }
         }
 
         public void close() throws IOException {
@@ -751,8 +779,9 @@ public class ClassicPluginStrategy implements PluginStrategy {
 
         @Override
         protected Class defineClassFromData(File container, byte[] classData, String classname) throws IOException {
-            if (!DISABLE_TRANSFORMER)
+            if (!DISABLE_TRANSFORMER) {
                 classData = pluginManager.getCompatibilityTransformer().transform(classname, classData);
+            }
             return super.defineClassFromData(container, classData, classname);
         }
     }

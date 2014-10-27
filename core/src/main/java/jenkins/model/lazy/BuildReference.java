@@ -63,8 +63,12 @@ public final class BuildReference<R> {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         BuildReference that = (BuildReference) o;
         return id.equals(that.id);

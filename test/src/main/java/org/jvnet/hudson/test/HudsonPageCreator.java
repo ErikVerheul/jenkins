@@ -41,8 +41,9 @@ public class HudsonPageCreator extends DefaultPageCreator {
     @Override
     public Page createPage(WebResponse webResponse, WebWindow webWindow) throws IOException {
         String contentType = webResponse.getContentType().toLowerCase(Locale.ENGLISH);
-        if(contentType.equals("application/x-java-jnlp-file"))
+        if(contentType.equals("application/x-java-jnlp-file")) {
             return createXmlPage(webResponse, webWindow);
+        }
         return super.createPage(webResponse, webWindow);
     }
 

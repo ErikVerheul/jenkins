@@ -75,8 +75,9 @@ public abstract class AperiodicWork extends SafeTimerTask implements ExtensionPo
     public long getInitialDelay() {
         long l = RANDOM.nextLong();
         // Math.abs(Long.MIN_VALUE)==Long.MIN_VALUE!
-        if (l==Long.MIN_VALUE)
+        if (l==Long.MIN_VALUE) {
             l++;
+        }
         return Math.abs(l)%getRecurrencePeriod();
     }
 

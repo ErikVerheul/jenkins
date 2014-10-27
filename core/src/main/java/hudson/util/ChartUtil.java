@@ -80,7 +80,9 @@ public class ChartUtil {
 
         @Override
         public boolean equals(Object o) {
-            if(!(o instanceof NumberOnlyBuildLabel))    return false;
+            if(!(o instanceof NumberOnlyBuildLabel)) {
+                return false;
+            }
             NumberOnlyBuildLabel that = (NumberOnlyBuildLabel) o;
             return run==that.run;
         }
@@ -229,8 +231,9 @@ public class ChartUtil {
             }
         }
 
-        if(!found)
+        if(!found) {
             return; // no adjustment was necessary
+        }
 
         // some values fell outside the range, so adjust the Y-axis
 

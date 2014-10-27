@@ -50,8 +50,9 @@ public class ExtractResourceSCM extends NullSCM {
      * @param zip
      */
     public ExtractResourceSCM(URL zip) {
-        if(zip==null)
+        if(zip==null) {
             throw new IllegalArgumentException();
+        }
         this.zip = zip;
     }
 
@@ -62,8 +63,9 @@ public class ExtractResourceSCM extends NullSCM {
      * @param parentFolder
      */
     public ExtractResourceSCM(URL zip, String parentFolder) {
-        if(zip==null)
+        if(zip==null) {
             throw new IllegalArgumentException();
+        }
         this.zip = zip;
         this.parentFolder = parentFolder;
     }

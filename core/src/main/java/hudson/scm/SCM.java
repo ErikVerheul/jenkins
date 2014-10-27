@@ -129,10 +129,12 @@ public abstract class SCM implements Describable<SCM>, ExtensionPoint {
     @Exported(name="browser")
     public final @CheckForNull RepositoryBrowser<?> getEffectiveBrowser() {
         RepositoryBrowser<?> b = getBrowser();
-        if(b!=null)
+        if(b!=null) {
             return b;
-        if(autoBrowserHolder==null)
+        }
+        if(autoBrowserHolder==null) {
             autoBrowserHolder = new AutoBrowserHolder(this);
+        }
         return autoBrowserHolder.get();
 
     }
@@ -579,9 +581,10 @@ public abstract class SCM implements Describable<SCM>, ExtensionPoint {
      *      Use/override {@link #getModuleRoot(FilePath, AbstractBuild)} instead.
      */
     public FilePath getModuleRoot(FilePath workspace) {
-        if (Util.isOverridden(SCM.class,getClass(),"getModuleRoot", FilePath.class,AbstractBuild.class))
+        if (Util.isOverridden(SCM.class,getClass(),"getModuleRoot", FilePath.class,AbstractBuild.class)) {
             // if the subtype already implements newer getModuleRoot(FilePath,AbstractBuild), call that.
             return getModuleRoot(workspace,null);
+        }
 
         return workspace;
     }
@@ -620,9 +623,10 @@ public abstract class SCM implements Describable<SCM>, ExtensionPoint {
      * @since 1.382
      */
     public FilePath[] getModuleRoots(FilePath workspace, AbstractBuild build) {
-        if (Util.isOverridden(SCM.class,getClass(),"getModuleRoots", FilePath.class))
+        if (Util.isOverridden(SCM.class,getClass(),"getModuleRoots", FilePath.class)) {
             // if the subtype derives legacy getModuleRoots(FilePath), delegate to it
             return getModuleRoots(workspace);
+        }
 
         // otherwise the default implementation
         return new FilePath[]{getModuleRoot(workspace,build)};
@@ -633,9 +637,10 @@ public abstract class SCM implements Describable<SCM>, ExtensionPoint {
      *      Use/derive from {@link #getModuleRoots(FilePath, AbstractBuild)} instead.
      */
     public FilePath[] getModuleRoots(FilePath workspace) {
-        if (Util.isOverridden(SCM.class,getClass(),"getModuleRoots", FilePath.class, AbstractBuild.class))
+        if (Util.isOverridden(SCM.class,getClass(),"getModuleRoots", FilePath.class, AbstractBuild.class)) {
             // if the subtype already derives newer getModuleRoots(FilePath,AbstractBuild), delegate to it
             return getModuleRoots(workspace,null);
+        }
 
         // otherwise the default implementation
         return new FilePath[] { getModuleRoot(workspace), };
@@ -680,8 +685,12 @@ public abstract class SCM implements Describable<SCM>, ExtensionPoint {
     }
 
     protected final String nullify(String s) {
-        if(s==null)     return null;
-        if(s.trim().length()==0)    return null;
+        if(s==null) {
+            return null;
+        }
+        if(s.trim().length()==0) {
+            return null;
+        }
         return s;
     }
 
@@ -704,16 +713,22 @@ public abstract class SCM implements Describable<SCM>, ExtensionPoint {
      * @since 1.568
      */
     public static List<SCMDescriptor<?>> _for(@Nonnull final Job project) {
-        if(project==null)   return all();
+        if(project==null) {
+            return all();
+        }
         
         final Descriptor pd = Jenkins.getInstance().getDescriptor((Class) project.getClass());
         List<SCMDescriptor<?>> r = new ArrayList<SCMDescriptor<?>>();
         for (SCMDescriptor<?> scmDescriptor : all()) {
-            if(!scmDescriptor.isApplicable(project))    continue;
+            if(!scmDescriptor.isApplicable(project)) {
+                continue;
+            }
 
             if (pd instanceof TopLevelItemDescriptor) {
                 TopLevelItemDescriptor apd = (TopLevelItemDescriptor) pd;
-                if(!apd.isApplicable(scmDescriptor))    continue;
+                if(!apd.isApplicable(scmDescriptor)) {
+                    continue;
+                }
             }
 
             r.add(scmDescriptor);

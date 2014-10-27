@@ -55,15 +55,17 @@ public final class ContainerAuthentication implements Authentication {
      */
     public ContainerAuthentication(HttpServletRequest request) {
         this.principal = request.getUserPrincipal();
-        if (principal==null)
+        if (principal==null) {
             throw new IllegalStateException(); // for anonymous users, we just don't call SecurityContextHolder.getContext().setAuthentication.   
+        }
 
         // Servlet API doesn't provide a way to list up all roles the current user
         // has, so we need to ask AuthorizationStrategy what roles it is going to check against.
         List<GrantedAuthority> l = new ArrayList<GrantedAuthority>();
         for( String g : Jenkins.getInstance().getAuthorizationStrategy().getGroups()) {
-            if(request.isUserInRole(g))
+            if(request.isUserInRole(g)) {
                 l.add(new GrantedAuthorityImpl(g));
+            }
         }
         l.add(SecurityRealm.AUTHENTICATED_AUTHORITY);
         authorities = l.toArray(new GrantedAuthority[l.size()]);

@@ -116,7 +116,9 @@ public class CLI {
         ExecutorService exec = factory.exec;
         
         String url = jenkins.toExternalForm();
-        if(!url.endsWith("/"))  url+='/';
+        if(!url.endsWith("/")) {
+            url+='/';
+        }
 
         ownsPool = exec==null;
         pool = exec!=null ? exec : Executors.newCachedThreadPool();
@@ -144,8 +146,9 @@ public class CLI {
         // execute the command
         entryPoint = (CliEntryPoint)_channel.waitForRemoteProperty(CliEntryPoint.class.getName());
 
-        if(entryPoint.protocolVersion()!=CliEntryPoint.VERSION)
+        if(entryPoint.protocolVersion()!=CliEntryPoint.VERSION) {
             throw new IOException(Messages.CLI_VersionMismatch());
+        }
     }
 
     private Channel connectViaHttp(String url) throws IOException {
@@ -182,12 +185,15 @@ public class CLI {
             ByteArrayOutputStream rsp = new ByteArrayOutputStream();
             while (!rsp.toString("ISO-8859-1").endsWith("\r\n\r\n")) {
                 int ch = s.getInputStream().read();
-                if (ch<0)   throw new IOException("Failed to read the HTTP proxy response: "+rsp);
+                if (ch<0) {
+                    throw new IOException("Failed to read the HTTP proxy response: "+rsp);
+                }
                 rsp.write(ch);
             }
             String head = new BufferedReader(new StringReader(rsp.toString("ISO-8859-1"))).readLine();
-            if (!head.startsWith("HTTP/1.0 200 "))
+            if (!head.startsWith("HTTP/1.0 200 ")) {
                 throw new IOException("Failed to establish a connection through HTTP proxy: "+rsp);
+            }
 
             // HTTP proxies (at least the one I tried --- squid) doesn't seem to do half-close very well.
             // So instead of relying on it, we'll just send the close command and then let the server
@@ -223,8 +229,9 @@ public class CLI {
             dos = new DataOutputStream(s.getOutputStream());
             dos.writeUTF("Protocol:CLI2-connect");
             String greeting = dis.readUTF();
-            if (!greeting.equals("Welcome"))
+            if (!greeting.equals("Welcome")) {
                 throw new IOException("Handshaking failed: "+greeting);
+        }
             try {
                 byte[] secret = c.diffieHellman(false).generateSecret();
                 SecretKey sessionKey = new SecretKeySpec(Connection.fold(secret,128/8),"AES");
@@ -238,8 +245,9 @@ public class CLI {
                     Signature verifier = Signature.getInstance("SHA1withRSA");
                     verifier.initVerify(clip.getIdentity());
                     verifier.update(secret);
-                    if (!verifier.verify(signature))
+                    if (!verifier.verify(signature)) {
                         throw new IOException("Server identity signature validation failed.");
+                    }
                 }
 
             } catch (GeneralSecurityException e) {
@@ -267,9 +275,13 @@ public class CLI {
         }
 
         String h = head.getHeaderField("X-Jenkins-CLI-Host");
-        if (h==null)    h = head.getURL().getHost();
+        if (h==null) {
+            h = head.getURL().getHost();
+        }
         String p1 = head.getHeaderField("X-Jenkins-CLI-Port");
-        if (p1==null)    p1 = head.getHeaderField("X-Hudson-CLI-Port");   // backward compatibility
+        if (p1==null) {
+            p1 = head.getHeaderField("X-Hudson-CLI-Port");   // backward compatibility
+        }
         String p2 = head.getHeaderField("X-Jenkins-CLI2-Port");
 
         String identity = head.getHeaderField("X-Instance-Identity");
@@ -277,14 +289,18 @@ public class CLI {
         flushURLConnection(head);
         if (p1==null && p2==null) {
             // we aren't finding headers we are expecting. Is this even running Jenkins?
-            if (head.getHeaderField("X-Hudson")==null && head.getHeaderField("X-Jenkins")==null)
+            if (head.getHeaderField("X-Hudson")==null && head.getHeaderField("X-Jenkins")==null) {
                 throw new IOException("There's no Jenkins running at "+url);
+            }
 
             throw new IOException("No X-Jenkins-CLI2-Port among " + head.getHeaderFields().keySet());
         }
 
-        if (p2!=null)   return new CliPort(new InetSocketAddress(h,Integer.parseInt(p2)),identity,2);
-        else            return new CliPort(new InetSocketAddress(h,Integer.parseInt(p1)),identity,1);
+        if (p2!=null) {
+            return new CliPort(new InetSocketAddress(h,Integer.parseInt(p2)),identity,2);
+        } else {
+            return new CliPort(new InetSocketAddress(h,Integer.parseInt(p1)),identity,1);
+        }
     }
 
     /**
@@ -321,10 +337,12 @@ public class CLI {
     public void close() throws IOException, InterruptedException {
         channel.close();
         channel.join();
-        if(ownsPool)
+        if(ownsPool) {
             pool.shutdown();
-        for (Closeable c : closables)
+        }
+        for (Closeable c : closables) {
             c.close();
+        }
     }
 
     public int execute(List<String> args, InputStream stdin, OutputStream stdout, OutputStream stderr) {
@@ -368,8 +386,9 @@ public class CLI {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         if (execute(Arrays.asList("groovy", "="),
                 new ByteArrayInputStream("hudson.remoting.Channel.current().setRestricted(false)".getBytes()),
-                out,out)!=0)
+                out,out)!=0) {
             throw new SecurityException(out.toString()); // failed to upgrade
+        }
     }
 
     public static void main(final String[] _args) throws Exception {
@@ -390,8 +409,9 @@ public class CLI {
 
         String url = System.getenv("JENKINS_URL");
 
-        if (url==null)
+        if (url==null) {
             url = System.getenv("HUDSON_URL");
+        }
         
         boolean tryLoadPKey = true;
 
@@ -451,11 +471,13 @@ public class CLI {
             return -1;
         }
 
-        if(args.isEmpty())
+        if(args.isEmpty()) {
             args = Arrays.asList("help"); // default to help
+        }
 
-        if (tryLoadPKey && !provider.hasKeys())
+        if (tryLoadPKey && !provider.hasKeys()) {
             provider.readFromDefaultLocations();
+        }
 
         CLIConnectionFactory factory = new CLIConnectionFactory().url(url).httpsProxyTunnel(httpProxy);
         String userInfo = new URL(url).getUserInfo();
@@ -558,13 +580,15 @@ public class CLI {
             // try all the public keys
             for (KeyPair key : privateKeys) {
                 c.proveIdentity(sharedSecret,key);
-                if (c.readBoolean())
+                if (c.readBoolean()) {
                     return serverIdentity;  // succeeded
+                }
             }
-            if (privateKeys.iterator().hasNext())
+            if (privateKeys.iterator().hasNext()) {
                 throw new GeneralSecurityException("Authentication failed. No private key accepted.");
-            else
+            } else {
                 throw new GeneralSecurityException("No private key is available for use in authentication");
+            }
         } finally {
             c.close();
         }
@@ -575,7 +599,9 @@ public class CLI {
     }
 
     private static void printUsage(String msg) {
-        if(msg!=null)   System.out.println(msg);
+        if(msg!=null) {
+            System.out.println(msg);
+        }
         System.err.println(Messages.CLI_Usage());
     }
 

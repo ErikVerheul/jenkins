@@ -148,16 +148,22 @@ public enum BallColor implements StatusIcon {
      * Gets the animated version.
      */
     public BallColor anime() {
-        if(isAnimated())   return this;
-        else               return valueOf(name()+"_ANIME");
+        if(isAnimated()) {
+            return this;
+        } else {
+            return valueOf(name()+"_ANIME");
+        }
     }
 
     /**
      * Gets the unanimated version.
      */
     public BallColor noAnime() {
-        if(isAnimated())   return valueOf(name().substring(0,name().length()-"_ANIME".length()));
-        else               return this;
+        if(isAnimated()) {
+            return valueOf(name().substring(0,name().length()-"_ANIME".length()));
+        } else {
+            return this;
+        }
     }
 
     /**

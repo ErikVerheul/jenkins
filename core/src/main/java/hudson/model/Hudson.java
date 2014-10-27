@@ -110,8 +110,9 @@ public class Hudson extends Jenkins {
      */
     public Slave getSlave(String name) {
         Node n = getNode(name);
-        if (n instanceof Slave)
+        if (n instanceof Slave) {
             return (Slave)n;
+        }
         return null;
     }
 
@@ -205,10 +206,12 @@ public class Hudson extends Jenkins {
                                        @QueryParameter(fixEmpty=true) String errorText,
                                        @QueryParameter(fixEmpty=true) String warningText) {
         if (value == null) {
-            if (errorText != null)
+            if (errorText != null) {
                 return FormValidation.error(errorText);
-            if (warningText != null)
+            }
+            if (warningText != null) {
                 return FormValidation.warning(warningText);
+            }
             return FormValidation.error("No error or warning text was set for fieldCheck().");
         }
 
@@ -217,11 +220,13 @@ public class Hudson extends Jenkins {
                 if (type.equalsIgnoreCase("number")) {
                     NumberFormat.getInstance().parse(value);
                 } else if (type.equalsIgnoreCase("number-positive")) {
-                    if (NumberFormat.getInstance().parse(value).floatValue() <= 0)
+                    if (NumberFormat.getInstance().parse(value).floatValue() <= 0) {
                         return FormValidation.error(Messages.Hudson_NotAPositiveNumber());
+                    }
                 } else if (type.equalsIgnoreCase("number-negative")) {
-                    if (NumberFormat.getInstance().parse(value).floatValue() >= 0)
+                    if (NumberFormat.getInstance().parse(value).floatValue() >= 0) {
                         return FormValidation.error(Messages.Hudson_NotANegativeNumber());
+                    }
                 }
             } catch (ParseException e) {
                 return FormValidation.error(Messages.Hudson_NotANumber());
@@ -260,7 +265,9 @@ public class Hudson extends Jenkins {
      *      Use {@link #checkPermission(hudson.security.Permission)}
      */
     public static boolean adminCheck(StaplerRequest req,StaplerResponse rsp) throws IOException {
-        if (isAdmin(req)) return true;
+        if (isAdmin(req)) {
+            return true;
+        }
 
         rsp.sendError(StaplerResponse.SC_FORBIDDEN);
         return false;

@@ -110,7 +110,9 @@ public class BuildTriggerTest extends HudsonTestCase {
 
     private void assertDownstreamBuild(FreeStyleProject dp, Run<?,?> b) throws Exception {
         // Wait for downstream build
-        for (int i = 0; dp.getLastBuild()==null && i < 20; i++) Thread.sleep(100);
+        for (int i = 0; dp.getLastBuild()==null && i < 20; i++) {
+            Thread.sleep(100);
+        }
         assertNotNull("downstream build didn't run.. upstream log: " + getLog(b), dp.getLastBuild());
     }
 

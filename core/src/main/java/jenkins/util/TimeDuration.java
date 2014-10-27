@@ -34,13 +34,18 @@ public class TimeDuration {
     }
 
     public static @CheckForNull TimeDuration fromString(@CheckForNull String delay) {
-        if (delay==null)
+        if (delay==null) {
             return null;
+        }
 
         try {
             // TODO: more unit handling
-            if(delay.endsWith("sec"))   delay=delay.substring(0,delay.length()-3);
-            if(delay.endsWith("secs"))  delay=delay.substring(0,delay.length()-4);
+            if(delay.endsWith("sec")) {
+                delay=delay.substring(0,delay.length()-3);
+            }
+            if(delay.endsWith("secs")) {
+                delay=delay.substring(0,delay.length()-4);
+            }
             return new TimeDuration(Long.parseLong(delay));
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Invalid time duration value: "+delay);
@@ -49,8 +54,9 @@ public class TimeDuration {
 
     public static class StaplerConverterImpl implements Converter {
         public Object convert(Class type, Object value) {
-            if (value==null)
+            if (value==null) {
                 return null;
+            }
             if (value instanceof String) {
                 return fromString((String) value);
             }

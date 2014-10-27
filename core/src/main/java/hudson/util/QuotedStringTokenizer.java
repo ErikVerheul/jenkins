@@ -95,14 +95,16 @@ public class QuotedStringTokenizer
     {
         super("");
         _string=str;
-        if (delim!=null)
+        if (delim!=null) {
             _delim=delim;
+        }
         _returnDelimiters=returnDelimiters;
         _returnQuotes=returnQuotes;
 
         if (_delim.indexOf('\'')>=0 ||
-            _delim.indexOf('"')>=0)
+            _delim.indexOf('"')>=0) {
             throw new Error("Can't use quotes as delimiters: "+_delim);
+        }
 
         _token=new StringBuilder(_string.length()>1024?512:_string.length()/2);
     }
@@ -130,8 +132,9 @@ public class QuotedStringTokenizer
 
     public String[] toArray() {
         List<String> r = new ArrayList<String>();
-        while(hasMoreTokens())
+        while(hasMoreTokens()) {
             r.add(nextToken());
+        }
         return r.toArray(new String[r.size()]);
     }
 
@@ -141,8 +144,9 @@ public class QuotedStringTokenizer
     public boolean hasMoreTokens()
     {
         // Already found a token
-        if (_hasToken)
+        if (_hasToken) {
             return true;
+        }
 
         _lastStart=_i;
 
@@ -165,14 +169,16 @@ public class QuotedStringTokenizer
                   }
                   else if (c=='\'' && _single)
                   {
-                      if (_returnQuotes)
+                      if (_returnQuotes) {
                           _token.append(c);
+                      }
                       state=2;
                   }
                   else if (c=='\"' && _double)
                   {
-                      if (_returnQuotes)
+                      if (_returnQuotes) {
                           _token.append(c);
+                      }
                       state=3;
                   }
                   else
@@ -188,34 +194,39 @@ public class QuotedStringTokenizer
                   if (escape)
                   {
                       escape=false;
-                      if(ESCAPABLE_CHARS.indexOf(c)<0)
+                      if(ESCAPABLE_CHARS.indexOf(c)<0) {
                           _token.append('\\');
+                      }
                       _token.append(c);
                   }
                   else if(_delim.indexOf(c)>=0)
                   {
-                      if (_returnDelimiters)
+                      if (_returnDelimiters) {
                           _i--;
+                      }
                       return _hasToken;
                   }
                   else if (c=='\'' && _single)
                   {
-                      if (_returnQuotes)
+                      if (_returnQuotes) {
                           _token.append(c);
+                      }
                       state=2;
                   }
                   else if (c=='\"' && _double)
                   {
-                      if (_returnQuotes)
+                      if (_returnQuotes) {
                           _token.append(c);
+                      }
                       state=3;
                   }
                   else if (c=='\\')
                   {
                       escape=true;
                   }
-                  else
+                  else {
                       _token.append(c);
+            }
                   continue;
 
 
@@ -224,24 +235,28 @@ public class QuotedStringTokenizer
                   if (escape)
                   {
                       escape=false;
-                      if(ESCAPABLE_CHARS.indexOf(c)<0)
+                      if(ESCAPABLE_CHARS.indexOf(c)<0) {
                           _token.append('\\');
+                      }
                       _token.append(c);
                   }
                   else if (c=='\'')
                   {
-                      if (_returnQuotes)
+                      if (_returnQuotes) {
                           _token.append(c);
+                      }
                       state=1;
                   }
                   else if (c=='\\')
                   {
-                      if (_returnQuotes)
+                      if (_returnQuotes) {
                           _token.append(c);
+                      }
                       escape=true;
                   }
-                  else
+                  else {
                       _token.append(c);
+            }
                   continue;
 
 
@@ -250,24 +265,28 @@ public class QuotedStringTokenizer
                   if (escape)
                   {
                       escape=false;
-                      if(ESCAPABLE_CHARS.indexOf(c)<0)
+                      if(ESCAPABLE_CHARS.indexOf(c)<0) {
                           _token.append('\\');
+                      }
                       _token.append(c);
                   }
                   else if (c=='\"')
                   {
-                      if (_returnQuotes)
+                      if (_returnQuotes) {
                           _token.append(c);
+                      }
                       state=1;
                   }
                   else if (c=='\\')
                   {
-                      if (_returnQuotes)
+                      if (_returnQuotes) {
                           _token.append(c);
+                      }
                       escape=true;
                   }
-                  else
+                  else {
                       _token.append(c);
+            }
                   continue;
             }
         }
@@ -280,8 +299,9 @@ public class QuotedStringTokenizer
     public String nextToken()
         throws NoSuchElementException
     {
-        if (!hasMoreTokens() || _token==null)
+        if (!hasMoreTokens() || _token==null) {
             throw new NoSuchElementException();
+        }
         String t=_token.toString();
         _token.setLength(0);
         _hasToken=false;
@@ -335,10 +355,12 @@ public class QuotedStringTokenizer
      */
     public static String quote(String s, String delim)
     {
-        if (s==null)
+        if (s==null) {
             return null;
-        if (s.length()==0)
+        }
+        if (s.length()==0) {
             return "\"\"";
+        }
 
 
         for (int i=0;i<s.length();i++)
@@ -365,10 +387,12 @@ public class QuotedStringTokenizer
      */
     public static String quote(String s)
     {
-        if (s==null)
+        if (s==null) {
             return null;
-        if (s.length()==0)
+        }
+        if (s.length()==0) {
             return "\"\"";
+        }
 
         StringBuffer b=new StringBuffer(s.length()+8);
         quote(b,s);
@@ -431,15 +455,18 @@ public class QuotedStringTokenizer
      */
     public static String unquote(String s)
     {
-        if (s==null)
+        if (s==null) {
             return null;
-        if (s.length()<2)
+        }
+        if (s.length()<2) {
             return s;
+        }
 
         char first=s.charAt(0);
         char last=s.charAt(s.length()-1);
-        if (first!=last || (first!='"' && first!='\''))
+        if (first!=last || (first!='"' && first!='\'')) {
             return s;
+        }
 
         StringBuilder b=new StringBuilder(s.length()-2);
         boolean escape=false;
@@ -485,8 +512,9 @@ public class QuotedStringTokenizer
                 escape=true;
                 continue;
             }
-            else
+            else {
                 b.append(c);
+            }
         }
 
         return b.toString();
@@ -534,9 +562,15 @@ public class QuotedStringTokenizer
      */
     public static byte convertHexDigit( byte b )
     {
-        if ((b >= '0') && (b <= '9')) return (byte)(b - '0');
-        if ((b >= 'a') && (b <= 'f')) return (byte)(b - 'a' + 10);
-        if ((b >= 'A') && (b <= 'F')) return (byte)(b - 'A' + 10);
+        if ((b >= '0') && (b <= '9')) {
+            return (byte)(b - '0');
+        }
+        if ((b >= 'a') && (b <= 'f')) {
+            return (byte)(b - 'a' + 10);
+        }
+        if ((b >= 'A') && (b <= 'F')) {
+            return (byte)(b - 'A' + 10);
+        }
         return 0;
     }
 

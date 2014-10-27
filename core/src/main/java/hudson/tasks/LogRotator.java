@@ -82,7 +82,9 @@ public class LogRotator extends BuildDiscarder {
     }
 
     public static int parse(String p) {
-        if(p==null)     return -1;
+        if(p==null) {
+            return -1;
+        }
         try {
             return Integer.parseInt(p);
         } catch (NumberFormatException e) {
@@ -243,7 +245,9 @@ public class LogRotator extends BuildDiscarder {
     }
 
     private String toString(Integer i) {
-        if (i==null || i==-1)   return "";
+        if (i==null || i==-1) {
+            return "";
+        }
         return String.valueOf(i);
     }
 

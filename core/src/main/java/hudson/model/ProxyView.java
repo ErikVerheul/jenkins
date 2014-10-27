@@ -112,12 +112,15 @@ public class ProxyView extends View implements StaplerFallback {
         checkPermission(View.CREATE);
 
         String view = Util.fixEmpty(value);
-        if(view==null) return FormValidation.ok();
-
-        if(Jenkins.getInstance().getView(view)!=null)
+        if(view==null) {
             return FormValidation.ok();
-        else
+        }
+
+        if(Jenkins.getInstance().getView(view)!=null) {
+            return FormValidation.ok();
+        } else {
             return FormValidation.error(Messages.ProxyView_NoSuchViewExists(value));
+        }
     }
 
     @Extension

@@ -71,11 +71,12 @@ public abstract class SU {
      *      Close this channel and the SU environment will be shut down.
      */
     public static VirtualChannel start(final TaskListener listener, final String rootUsername, final String rootPassword) throws IOException, InterruptedException {
-        if(File.pathSeparatorChar==';') // on Windows
+        if(File.pathSeparatorChar==';') { // on Windows
             return newLocalChannel();  // TODO: perhaps use RunAs to run as an Administrator?
+        }
 
         String os = Util.fixNull(System.getProperty("os.name"));
-        if(os.equals("Linux"))
+        if(os.equals("Linux")) {
             return new UnixSu() {
                 protected String sudoExe() {
                     return "sudo";
@@ -95,8 +96,9 @@ public abstract class SU {
                     return p;
                 }
             }.start(listener,rootPassword);
+        }
 
-        if(os.equals("SunOS"))
+        if(os.equals("SunOS")) {
             return new UnixSu() {
                 protected String sudoExe() {
                     return "/usr/bin/pfexec";
@@ -107,9 +109,10 @@ public abstract class SU {
                     ProcessBuilder pb = new ProcessBuilder(args.prepend(sudoExe()).toCommandArray());
                     return EmbeddedSu.startWithSu(rootUsername, rootPassword, pb);
                 }
-            // in solaris, pfexec never asks for a password, so username==null means
-            // we won't be using password. this helps disambiguate empty password
+                // in solaris, pfexec never asks for a password, so username==null means
+                // we won't be using password. this helps disambiguate empty password
             }.start(listener,rootUsername==null?null:rootPassword);
+        }
 
         // TODO: Mac?
 
@@ -143,17 +146,20 @@ public abstract class SU {
         VirtualChannel start(TaskListener listener, String rootPassword) throws IOException, InterruptedException {
             final int uid = LIBC.geteuid();
 
-            if(uid==0)  // already running as root
+            if(uid==0) {  // already running as root
                 return newLocalChannel();
+            }
 
             String javaExe = System.getProperty("java.home") + "/bin/java";
             File slaveJar = Which.jarFile(Launcher.class);
 
             ArgumentListBuilder args = new ArgumentListBuilder().add(javaExe);
-            if(slaveJar.isFile())
+            if(slaveJar.isFile()) {
                 args.add("-jar").add(slaveJar);
-            else // in production code this never happens, but during debugging this is convenientud    
+            } else {
+                // in production code this never happens, but during debugging this is convenientud
                 args.add("-cp").add(slaveJar).add(hudson.remoting.Launcher.class.getName());
+            }
 
             if(rootPassword==null) {
                 // try sudo, in the hope that the user has the permission to do so without password

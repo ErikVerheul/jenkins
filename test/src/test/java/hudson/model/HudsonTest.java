@@ -146,8 +146,9 @@ public class HudsonTest extends HudsonTestCase {
     public void testDeleteHudsonComputer() throws Exception {
         HudsonTestCase.WebClient wc = new WebClient();
         HtmlPage page = wc.goTo("computer/(master)/");
-        for (HtmlAnchor a : page.getAnchors())
+        for (HtmlAnchor a : page.getAnchors()) {
             assertFalse(a.getHrefAttribute(),a.getHrefAttribute().endsWith("delete"));
+        }
 
         // try to delete it by hitting the final URL directly
         WebRequestSettings req = new WebRequestSettings(new URL(wc.getContextPath()+"computer/(master)/doDelete"), HttpMethod.POST);

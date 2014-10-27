@@ -43,8 +43,9 @@ final class ParsedQuickSilver {
 
     synchronized static ParsedQuickSilver get(Class<? extends SearchableModelObject> clazz) {
         ParsedQuickSilver pqs = TABLE.get(clazz);
-        if(pqs==null)
+        if(pqs==null) {
             TABLE.put(clazz,pqs = new ParsedQuickSilver(clazz));
+        }
         return pqs;
     }
 
@@ -57,22 +58,24 @@ final class ParsedQuickSilver {
             qs = m.getAnnotation(QuickSilver.class);
             if(qs!=null) {
                 String url = stripGetPrefix(m);
-                if(qs.value().length==0)
+                if(qs.value().length==0) {
                     getters.add(new MethodGetter(url,splitName(url),m));
-                else {
-                    for (String name : qs.value())
+                } else {
+                    for (String name : qs.value()) {
                         getters.add(new MethodGetter(url,name,m));
+                    }
                 }
             }
         }
         for (Field f : clazz.getFields()) {
             qs = f.getAnnotation(QuickSilver.class);
             if(qs!=null) {
-                if(qs.value().length==0)
+                if(qs.value().length==0) {
                     getters.add(new FieldGetter(f.getName(),splitName(f.getName()),f));
-                else {
-                    for (String name : qs.value())
+                } else {
+                    for (String name : qs.value()) {
                         getters.add(new FieldGetter(f.getName(),name,f));
+                    }
                 }
             }
         }
@@ -84,7 +87,9 @@ final class ParsedQuickSilver {
     private String splitName(String url) {
         StringBuilder buf = new StringBuilder(url.length()+5);
         for(String token : url.split("(?<=[a-z])(?=[A-Z])")) {
-            if(buf.length()>0)  buf.append(' ');
+            if(buf.length()>0) {
+                buf.append(' ');
+            }
             buf.append(Introspector.decapitalize(token));
         }
         return buf.toString();
@@ -92,8 +97,9 @@ final class ParsedQuickSilver {
 
     private String stripGetPrefix(Method m) {
         String n = m.getName();
-        if(n.startsWith("get"))
+        if(n.startsWith("get")) {
             n = Introspector.decapitalize(n.substring(3));
+        }
         return n;
     }
 
@@ -125,10 +131,12 @@ final class ParsedQuickSilver {
                 throw toError(e);
             } catch (InvocationTargetException e) {
                 Throwable x = e.getTargetException();
-                if (x instanceof Error)
+                if (x instanceof Error) {
                     throw (Error) x;
-                if (x instanceof RuntimeException)
+                }
+                if (x instanceof RuntimeException) {
                     throw (RuntimeException) x;
+                }
                 throw new Error(e);
             }
         }
@@ -158,7 +166,7 @@ final class ParsedQuickSilver {
     }
 
     public void addTo(SearchIndexBuilder builder, final Object instance) {
-        for (final Getter getter : getters)
+        for (final Getter getter : getters) {
             builder.add(new SearchItem() {
                 public String getSearchName() {
                     return getter.searchName;
@@ -170,9 +178,12 @@ final class ParsedQuickSilver {
 
                 public SearchIndex getSearchIndex() {
                     Object child = getter.get(instance);
-                    if(child==null) return SearchIndex.EMPTY;
+                    if(child==null) {
+                        return SearchIndex.EMPTY;
+                    }
                     return ((SearchableModelObject) child).getSearchIndex();
                 }
             });
+        }
     }
 }

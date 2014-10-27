@@ -156,14 +156,16 @@ public class LogRecorder extends AbstractModelObject implements Saveable {
 
         @Deprecated
         public boolean includes(LogRecord r) {
-            if(r.getLevel().intValue() < level)
+            if(r.getLevel().intValue() < level) {
                 return false;   // below the threshold
+            }
             if (name.length() == 0) {
                 return true; // like root logger, includes everything
             }
             String logName = r.getLoggerName();
-            if(logName==null || !logName.startsWith(name))
+            if(logName==null || !logName.startsWith(name)) {
                 return false;   // not within this logger
+            }
             String rest = logName.substring(name.length());
             return rest.startsWith(".") || rest.length()==0;
         }
@@ -174,8 +176,9 @@ public class LogRecorder extends AbstractModelObject implements Saveable {
                 return Boolean.valueOf(levelSufficient); // include if level matches
             }
             String logName = r.getLoggerName();
-            if(logName==null || !logName.startsWith(name))
+            if(logName==null || !logName.startsWith(name)) {
                 return null; // not in the domain of this logger
+            }
             String rest = logName.substring(name.length());
             if (rest.startsWith(".") || rest.length()==0) {
                 return Boolean.valueOf(levelSufficient); // include if level matches
@@ -195,8 +198,9 @@ public class LogRecorder extends AbstractModelObject implements Saveable {
          */
         public void enable() {
             Logger l = getLogger();
-            if(!l.isLoggable(getLevel()))
+            if(!l.isLoggable(getLevel())) {
                 l.setLevel(getLevel());
+            }
             new SetLevel(name, getLevel()).broadcast();
         }
 
@@ -291,12 +295,15 @@ public class LogRecorder extends AbstractModelObject implements Saveable {
         }
 
         List<Target> newTargets = req.bindJSONToList(Target.class, src.get("targets"));
-        for (Target t : newTargets)
+        for (Target t : newTargets) {
             t.enable();
+        }
         targets.replaceBy(newTargets);
 
         save();
-        if (oldFile!=null) oldFile.delete();
+        if (oldFile!=null) {
+            oldFile.delete();
+        }
         rsp.sendRedirect2(redirect);
     }
 
@@ -311,15 +318,18 @@ public class LogRecorder extends AbstractModelObject implements Saveable {
      */
     public synchronized void load() throws IOException {
         getConfigFile().unmarshal(this);
-        for (Target t : targets)
+        for (Target t : targets) {
             t.enable();
+        }
     }
 
     /**
      * Save the settings to a file.
      */
     public synchronized void save() throws IOException {
-        if(BulkChange.contains(this))   return;
+        if(BulkChange.contains(this)) {
+            return;
+        }
         getConfigFile().write(this);
         SaveableListener.fireOnChange(this, getConfigFile());
     }
@@ -333,11 +343,14 @@ public class LogRecorder extends AbstractModelObject implements Saveable {
         getParent().logRecorders.remove(name);
         // Disable logging for all our targets,
         // then reenable all other loggers in case any also log the same targets
-        for (Target t : targets)
+        for (Target t : targets) {
             t.disable();
-        for (LogRecorder log : getParent().logRecorders.values())
-            for (Target t : log.targets)
+        }
+        for (LogRecorder log : getParent().logRecorders.values()) {
+            for (Target t : log.targets) {
                 t.enable();
+            }
+        }
         rsp.sendRedirect2("..");
     }
 

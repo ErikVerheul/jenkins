@@ -125,8 +125,9 @@ public class WebAppMain implements ServletContextListener {
             System.out.println("Jenkins home directory: "+home+" found at: "+describedHomeDir.description);
 
             // check that home exists (as mkdirs could have failed silently), otherwise throw a meaningful error
-            if (!home.exists())
+            if (!home.exists()) {
                 throw new NoHomeDir(home);
+            }
 
             recordBootAttempt(home);
 
@@ -237,8 +238,9 @@ public class WebAppMain implements ServletContextListener {
                         new HudsonFailedToLoad(e).publish(context,_home);
                     } finally {
                         Jenkins instance = Jenkins.getInstance();
-                        if(!success && instance!=null)
+                        if(!success && instance!=null) {
                             instance.cleanUp();
+                        }
                     }
                 }
             };
@@ -341,12 +343,14 @@ public class WebAppMain implements ServletContextListener {
                 InitialContext iniCtxt = new InitialContext();
                 Context env = (Context) iniCtxt.lookup("java:comp/env");
                 String value = (String) env.lookup(name);
-                if(value!=null && value.trim().length()>0)
+                if(value!=null && value.trim().length()>0) {
                     return new FileAndDescription(new File(value.trim()),"JNDI/java:comp/env/"+name);
+                }
                 // look at one more place. See issue #1314
                 value = (String) iniCtxt.lookup(name);
-                if(value!=null && value.trim().length()>0)
+                if(value!=null && value.trim().length()>0) {
                     return new FileAndDescription(new File(value.trim()),"JNDI/"+name);
+                }
             } catch (NamingException e) {
                 // ignore
             }
@@ -355,15 +359,17 @@ public class WebAppMain implements ServletContextListener {
         // next the system property
         for (String name : HOME_NAMES) {
             String sysProp = System.getProperty(name);
-            if(sysProp!=null)
+            if(sysProp!=null) {
                 return new FileAndDescription(new File(sysProp.trim()),"System.getProperty(\""+name+"\")");
+            }
         }
 
         // look at the env var next
         for (String name : HOME_NAMES) {
             String env = EnvVars.masterEnvVars.get(name);
-            if(env!=null)
+            if(env!=null) {
                 return new FileAndDescription(new File(env.trim()).getAbsoluteFile(),"EnvVars.masterEnvVars.get(\""+name+"\")");
+            }
         }
 
         // otherwise pick a place by ourselves
@@ -371,11 +377,12 @@ public class WebAppMain implements ServletContextListener {
         String root = event.getServletContext().getRealPath("/WEB-INF/workspace");
         if(root!=null) {
             File ws = new File(root.trim());
-            if(ws.exists())
+            if(ws.exists()) {
                 // Hudson <1.42 used to prefer this before ~/.hudson, so
                 // check the existence and if it's there, use it.
                 // otherwise if this is a new installation, prefer ~/.hudson
                 return new FileAndDescription(ws,"getServletContext().getRealPath(\"/WEB-INF/workspace\")");
+            }
         }
 
         File legacyHome = new File(new File(System.getProperty("user.home")),".hudson");
@@ -390,11 +397,13 @@ public class WebAppMain implements ServletContextListener {
     public void contextDestroyed(ServletContextEvent event) {
         terminated = true;
         Jenkins instance = Jenkins.getInstance();
-        if(instance!=null)
+        if(instance!=null) {
             instance.cleanUp();
+        }
         Thread t = initThread;
-        if (t!=null)
+        if (t!=null) {
             t.interrupt();
+        }
 
         // Logger is in the system classloader, so if we don't do this
         // the whole web app will never be undepoyed.

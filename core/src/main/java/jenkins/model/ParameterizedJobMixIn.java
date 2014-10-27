@@ -105,8 +105,9 @@ public abstract class ParameterizedJobMixIn<JobT extends Job<JobT, RunT> & Param
     }
 
     private @CheckForNull QueueTaskFuture<RunT> scheduleBuild2(int quietPeriod, List<Action> actions) {
-        if (!asJob().isBuildable())
+        if (!asJob().isBuildable()) {
             return null;
+        }
 
         List<Action> queueActions = new ArrayList<Action>(actions);
         if (isParameterized() && Util.filter(queueActions, ParametersAction.class).isEmpty()) {
@@ -123,16 +124,18 @@ public abstract class ParameterizedJobMixIn<JobT extends Job<JobT, RunT> & Param
         /*
          * This check is made ONLY if someone will call this method even if isParametrized() is false.
          */
-        if(paramDefProp == null)
+        if(paramDefProp == null) {
             return defValues;
+        }
 
         /* Scan for all parameter with an associated default values */
         for(ParameterDefinition paramDefinition : paramDefProp.getParameterDefinitions())
         {
            ParameterValue defaultValue  = paramDefinition.getDefaultParameterValue();
 
-            if(defaultValue != null)
+            if(defaultValue != null) {
                 defValues.add(defaultValue);
+           }
         }
 
         return defValues;

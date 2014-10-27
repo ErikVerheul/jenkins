@@ -37,7 +37,9 @@ public class BackFiller extends LoadPredictor {
             TentativePlan tp = bi.getAction(TentativePlan.class);
             if (tp==null) {// do this even for bi==plan.item ensures that we have FIFO semantics in tentative plans.
                 tp = makeTentativePlan(bi);
-                if (tp==null)   continue;   // no viable plan.
+                if (tp==null) {
+                    continue;   // no viable plan.
+                }
             }
 
             if (tp.isStale()) {
@@ -48,15 +50,21 @@ public class BackFiller extends LoadPredictor {
             }
 
             // don't let its own tentative plan count when considering a scheduling for a job
-            if (plan.item==bi)  continue;
+            if (plan.item==bi) {
+                continue;
+            }
 
 
             // no overlap in the time span, meaning this plan is for a distant future
-            if (!timeRange.overlapsWith(tp.range)) continue;
+            if (!timeRange.overlapsWith(tp.range)) {
+                continue;
+            }
 
             // if this tentative plan has no baring on this computer, that's ignorable
             Integer i = tp.footprint.get(computer);
-            if (i==null)    continue;
+            if (i==null) {
+                continue;
+            }
 
             return Collections.singleton(tp.range.toFutureLoad(i));
         }
@@ -89,13 +97,17 @@ public class BackFiller extends LoadPredictor {
     }
 
     private TentativePlan makeTentativePlan(BuildableItem bi) {
-        if (recursion)  return null;
+        if (recursion) {
+            return null;
+        }
         recursion = true;
         try {
             // pretend for now that all executors are available and decide some assignment that's executable.
             List<PseudoExecutorSlot> slots = new ArrayList<PseudoExecutorSlot>();
             for (Computer c : Jenkins.getInstance().getComputers()) {
-                if (c.isOffline())  continue;
+                if (c.isOffline()) {
+                    continue;
+                }
                 for (Executor e : c.getExecutors()) {
                     slots.add(new PseudoExecutorSlot(e));
                 }
@@ -105,14 +117,18 @@ public class BackFiller extends LoadPredictor {
             // and we are not trying to figure out if this task is executable right now.
             MappingWorksheet worksheet = new MappingWorksheet(bi, slots, Collections.<LoadPredictor>emptyList());
             Mapping m = Jenkins.getInstance().getQueue().getLoadBalancer().map(bi.task, worksheet);
-            if (m==null)    return null;
+            if (m==null) {
+                return null;
+            }
 
             // figure out how many executors we need on each computer?
             Map<Computer,Integer> footprint = new HashMap<Computer, Integer>();
             for (Entry<WorkChunk, ExecutorChunk> e : m.toMap().entrySet()) {
                 Computer c = e.getValue().computer;
                 Integer v = footprint.get(c);
-                if (v==null)    v = 0;
+                if (v==null) {
+                    v = 0;
+                }
                 v += e.getKey().size();
                 footprint.put(c,v);
             }
@@ -123,7 +139,9 @@ public class BackFiller extends LoadPredictor {
             // The downside of guessing the duration wrong is that we can end up creating tentative plans
             // afterward that may be incorrect, but those plans will be rebuilt.
             long d = bi.task.getEstimatedDuration();
-            if (d<=0)    d = TimeUnit2.MINUTES.toMillis(5);
+            if (d<=0) {
+                d = TimeUnit2.MINUTES.toMillis(5);
+            }
 
             TimeRange slot = new TimeRange(System.currentTimeMillis(), d);
 
@@ -140,7 +158,9 @@ public class BackFiller extends LoadPredictor {
 
                 Long x = timeline.fit(slot.start, slot.duration, computer.countExecutors()-e.getValue());
                 // if no suitable range was found in [slot.start,slot.end), slot.end would be a good approximation
-                if (x==null)    x = slot.end;
+                if (x==null) {
+                    x = slot.end;
+                }
                 slot = slot.shiftTo(x);
             }
 
@@ -176,7 +196,9 @@ public class BackFiller extends LoadPredictor {
         }
 
         public TimeRange shiftTo(long newStart) {
-            if (newStart==start)    return this;
+            if (newStart==start) {
+                return this;
+            }
             return new TimeRange(newStart,duration);
         }
     }
@@ -204,8 +226,9 @@ public class BackFiller extends LoadPredictor {
      */
     @Extension
     public static BackFiller newInstance() {
-        if (Boolean.getBoolean(BackFiller.class.getName()))
+        if (Boolean.getBoolean(BackFiller.class.getName())) {
             return new BackFiller();
+        }
         return null;
     }
 }

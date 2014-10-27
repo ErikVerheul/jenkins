@@ -22,8 +22,9 @@ public class ProcessTreeTest extends ChannelTestCase {
     
     public void testRemoting() throws Exception {
         // on some platforms where we fail to list any processes, this test will just not work
-        if (ProcessTree.get()==ProcessTree.DEFAULT)
+        if (ProcessTree.get()==ProcessTree.DEFAULT) {
             return;
+        }
 
         Tag t = french.call(new MyCallable());
 

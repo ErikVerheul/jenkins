@@ -69,10 +69,14 @@ public class TemporarySpaceMonitor extends AbstractDiskSpaceMonitor {
         @Override
         protected Callable<DiskSpace,IOException> createCallable(Computer c) {
             Node node = c.getNode();
-            if (node == null) return null;
+            if (node == null) {
+                return null;
+            }
             
             FilePath p = node.getRootPath();
-            if(p==null) return null;
+            if(p==null) {
+                return null;
+            }
 
             return p.asCallableWith(new GetTempSpace());
         }
@@ -89,7 +93,9 @@ public class TemporarySpaceMonitor extends AbstractDiskSpaceMonitor {
                 // so calling File.createTempFile and figuring out the directory won't reliably work.
                 f = new File(System.getProperty("java.io.tmpdir"));
                 long s = f.getUsableSpace();
-                if(s<=0)    return null;
+                if(s<=0) {
+                    return null;
+                }
                 return new DiskSpace(f.getCanonicalPath(), s);
         }
         private static final long serialVersionUID = 1L;

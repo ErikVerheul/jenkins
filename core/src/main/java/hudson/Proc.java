@@ -219,7 +219,9 @@ public abstract class Proc {
         }
 
         private static ProcessBuilder stderr(ProcessBuilder pb, boolean redirectError) {
-            if(redirectError)    pb.redirectErrorStream(true);
+            if(redirectError) {
+                pb.redirectErrorStream(true);
+            }
             return pb;
         }
 
@@ -320,8 +322,12 @@ public abstract class Proc {
                 // see http://wiki.jenkins-ci.org/display/JENKINS/Spawning+processes+from+build
                 // problems like that shows up as infinite wait in join(), which confuses great many users.
                 // So let's do a timed wait here and try to diagnose the problem
-                if (copier!=null)   copier.join(10*1000);
-                if(copier2!=null)   copier2.join(10*1000);
+                if (copier!=null) {
+                    copier.join(10*1000);
+                }
+                if(copier2!=null) {
+                    copier2.join(10*1000);
+                }
                 if((copier!=null && copier.isAlive()) || (copier2!=null && copier2.isAlive())) {
                     // looks like handles are leaking.
                     // closing these handles should terminate the threads.
@@ -416,7 +422,9 @@ public abstract class Proc {
         private static String calcName(String[] cmd) {
             StringBuilder buf = new StringBuilder();
             for (String token : cmd) {
-                if(buf.length()>0)  buf.append(' ');
+                if(buf.length()>0) {
+                    buf.append(' ');
+                }
                 buf.append(token);
             }
             return buf.toString();
@@ -452,8 +460,9 @@ public abstract class Proc {
                 process.cancel(true);
                 throw e;
             } catch (ExecutionException e) {
-                if(e.getCause() instanceof IOException)
+                if(e.getCause() instanceof IOException) {
                     throw (IOException)e.getCause();
+                }
                 throw new IOException("Failed to join the process",e);
             } catch (CancellationException x) {
                 return -1;

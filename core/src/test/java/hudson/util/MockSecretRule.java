@@ -24,8 +24,9 @@ public class MockSecretRule extends ExternalResource {
 
     @Override
     protected void after() {
-        if (!Secret.SECRET.equals(value))
+        if (!Secret.SECRET.equals(value)) {
             throw new IllegalStateException("Someone tinkered with Secret.SECRET");
+        }
         Secret.SECRET = null;
     }
 

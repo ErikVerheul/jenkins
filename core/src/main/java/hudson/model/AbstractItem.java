@@ -218,12 +218,14 @@ public abstract class AbstractItem extends Actionable implements Item, HttpDelet
         synchronized (parent) {
             synchronized (this) {
                 // sanity check
-                if (newName == null)
+                if (newName == null) {
                     throw new IllegalArgumentException("New name is not given");
+                }
 
                 // noop?
-                if (this.name.equals(newName))
+                if (this.name.equals(newName)) {
                     return;
+                }
 
                 // the test to see if the project already exists or not needs to be done in escalated privilege
                 // to avoid overwriting
@@ -233,12 +235,12 @@ public abstract class AbstractItem extends Actionable implements Item, HttpDelet
                     public Void call() throws IOException {
                         Item existing = parent.getItem(newName);
                         if (existing != null && existing!=AbstractItem.this) {
-                            if (existing.getACL().hasPermission(user,Item.DISCOVER))
+                            if (existing.getACL().hasPermission(user,Item.DISCOVER)) {
                                 // the look up is case insensitive, so we need "existing!=this"
                                 // to allow people to rename "Foo" to "foo", for example.
                                 // see http://www.nabble.com/error-on-renaming-project-tt18061629.html
                                 throw new IllegalArgumentException("Job " + newName + " already exists");
-                            else {
+                            } else {
                                 // can't think of any real way to hide this, but at least the error message could be vague.
                                 throw new IOException("Unable to rename to " + newName);
                             }
@@ -278,8 +280,9 @@ public abstract class AbstractItem extends Actionable implements Item, HttpDelet
                         }
                     }
 
-                    if (interrupted)
+                    if (interrupted) {
                         Thread.currentThread().interrupt();
+                    }
 
                     if (!renamed) {
                         // failed to rename. it must be that some lengthy
@@ -314,8 +317,9 @@ public abstract class AbstractItem extends Actionable implements Item, HttpDelet
                     success = true;
                 } finally {
                     // if failed, back out the rename.
-                    if (!success)
+                    if (!success) {
                         doSetName(oldName);
+                    }
                 }
 
                 try {
@@ -350,14 +354,20 @@ public abstract class AbstractItem extends Actionable implements Item, HttpDelet
 
     public final String getFullName() {
         String n = getParent().getFullName();
-        if(n.length()==0)   return getName();
-        else                return n+'/'+getName();
+        if(n.length()==0) {
+            return getName();
+        } else {
+            return n+'/'+getName();
+        }
     }
 
     public final String getFullDisplayName() {
         String n = getParent().getFullDisplayName();
-        if(n.length()==0)   return getDisplayName();
-        else                return n+" » "+getDisplayName();
+        if(n.length()==0) {
+            return getDisplayName();
+        } else {
+            return n+" » "+getDisplayName();
+        }
     }
     
     /**
@@ -473,8 +483,9 @@ public abstract class AbstractItem extends Actionable implements Item, HttpDelet
     @Exported(visibility=999,name="url")
     public final String getAbsoluteUrl() {
         String r = Jenkins.getInstance().getRootUrl();
-        if(r==null)
+        if(r==null) {
             throw new IllegalStateException("Root URL isn't configured yet. Cannot compute absolute URL.");
+        }
         return Util.encode(r+getUrl());
     }
 
@@ -510,7 +521,9 @@ public abstract class AbstractItem extends Actionable implements Item, HttpDelet
      * Save the settings to a file.
      */
     public synchronized void save() throws IOException {
-        if(BulkChange.contains(this))   return;
+        if(BulkChange.contains(this)) {
+            return;
+        }
         getConfigFile().write(this);
         SaveableListener.fireOnChange(this, getConfigFile());
     }
@@ -724,8 +737,9 @@ public abstract class AbstractItem extends Actionable implements Item, HttpDelet
             @Argument(required=true,metaVar="NAME",usage="Job name") String name) throws CmdLineException {
         // TODO can this (and its pseudo-override in AbstractProject) share code with GenericItemOptionHandler, used for explicit CLICommand’s rather than CLIMethod’s?
         AbstractItem item = Jenkins.getInstance().getItemByFullName(name, AbstractItem.class);
-        if (item==null)
+        if (item==null) {
             throw new CmdLineException(null,Messages.AbstractItem_NoSuchJobExists(name,AbstractProject.findNearest(name).getFullName()));
+        }
         return item;
     }
 

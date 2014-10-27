@@ -68,8 +68,9 @@ public class TextFile {
         BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file),"UTF-8"));
         try {
             String line;
-            while((line=in.readLine())!=null)
+            while((line=in.readLine())!=null) {
                 w.println(line);
+            }
         } finally{
             in.close();
         }
@@ -101,8 +102,9 @@ public class TextFile {
         try {
             while (read<numChars) {
                 int d = r.read(buf,read,buf.length-read);
-                if (d<0)
+                if (d<0) {
                     break;
+                }
                 read += d;
             }
 

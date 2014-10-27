@@ -258,8 +258,9 @@ public class NodeTest {
         
         @Override
         public CauseOfBlockage canTake(Queue.BuildableItem item){
-            if(notTake)
+            if(notTake) {
                 return new CauseOfBlockage.BecauseLabelIsBusy(item.getAssignedLabel());
+            }
             return null;
         }
     }

@@ -50,16 +50,18 @@ public class DotNet {
             RegistryKey key = RegistryKey.LOCAL_MACHINE.openReadonly("SOFTWARE\\Microsoft\\.NETFramework");
             try {
                 for( String keyName : key.getSubKeys() ) {
-                    if (matches(keyName, major, minor))
+                    if (matches(keyName, major, minor)) {
                         return true;
+                    }
                 }
                 return false;
             } finally {
                 key.dispose();
             }
         } catch (JnaException e) {
-            if(e.getErrorCode()==2) // thrown when openReadonly fails because the key doesn't exist.
+            if(e.getErrorCode()==2) { // thrown when openReadonly fails because the key doesn't exist.
                 return false;
+            }
             throw e;
         }
     }
@@ -79,18 +81,22 @@ public class DotNet {
 
             for( int i=0; ; i++ ) {
                 String keyName = registry.winreg_EnumKey(key,i)[0];
-                if(matches(keyName,major,minor))
+                if(matches(keyName,major,minor)) {
                     return true;
+                }
             }
         } catch (JIException e) {
-            if(e.getErrorCode()==2)
+            if(e.getErrorCode()==2) {
                 return false;       // not found
+            }
             throw e;
         } finally {
-            if(hklm!=null)
+            if(hklm!=null) {
                 registry.winreg_CloseKey(hklm);
-            if(key!=null)
+            }
+            if(key!=null) {
                 registry.winreg_CloseKey(key);
+            }
             registry.closeConnection();
         }
     }
@@ -101,8 +107,9 @@ public class DotNet {
             int mj = Integer.parseInt(m.group(1));
             if(mj>=major) {
                 int mn = Integer.parseInt(m.group(2));
-                if(mn>=minor)
+                if(mn>=minor) {
                     return true;
+                }
             }
         }
         return false;

@@ -58,11 +58,12 @@ public class ClassicPluginStrategyTest extends HudsonTestCase {
         Enumeration<URL> en = p.classLoader.getResources("test-resource");
         for (int i = 0; en.hasMoreElements(); i++) {
             res = en.nextElement().toString();
-            if (i < 2)
+            if (i < 2) {
                 assertTrue("In current impl, " + res + "should be foo1 or foo2",
-                           res.contains("/foo1/") || res.contains("/foo2/"));
-            else
+                        res.contains("/foo1/") || res.contains("/foo2/"));
+            } else {
                 assertTrue("In current impl, " + res + "should be foo3", res.contains("/foo3/"));
+            }
         }
         res = p.classLoader.getResource("test-resource").toString();
         assertTrue("In current impl, " + res + " should be foo1 or foo2",
@@ -81,10 +82,11 @@ public class ClassicPluginStrategyTest extends HudsonTestCase {
         Enumeration<URL> en = p.classLoader.getResources("test-resource");
         for (int i = 0; en.hasMoreElements(); i++) {
             String res = en.nextElement().toString();
-            if (i == 0)
+            if (i == 0) {
                 assertTrue("expected foo4, found "+res , res.contains("/foo4/"));
-            else
+            } else {
                 fail("disabled dependency should not be included");
+            }
         }
     }
 }

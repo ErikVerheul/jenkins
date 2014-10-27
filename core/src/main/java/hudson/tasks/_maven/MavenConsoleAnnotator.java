@@ -57,20 +57,24 @@ public class MavenConsoleAnnotator extends LineTransformationOutputStream {
         // we also need the ability for an extension point to have notes hook into the processing
 
         Matcher m = MavenMojoNote.PATTERN.matcher(line);
-        if (m.matches())
+        if (m.matches()) {
             new MavenMojoNote().encodeTo(out);
+        }
 
         m = Maven3MojoNote.PATTERN.matcher(line);
-        if (m.matches())
+        if (m.matches()) {
             new Maven3MojoNote().encodeTo(out);
+        }
 
         m = MavenWarningNote.PATTERN.matcher(line);
-        if (m.find())
+        if (m.find()) {
             new MavenWarningNote().encodeTo(out);
+        }
 
         m = MavenErrorNote.PATTERN.matcher(line);
-        if (m.find())
+        if (m.find()) {
             new MavenErrorNote().encodeTo(out);
+        }
 
         out.write(b,0,len);
     }

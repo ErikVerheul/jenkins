@@ -55,8 +55,9 @@ public final class BuildAuthorizationToken {
     public static BuildAuthorizationToken create(StaplerRequest req) {
         if (req.getParameter("pseudoRemoteTrigger") != null) {
             String token = Util.fixEmpty(req.getParameter("authToken"));
-            if(token!=null)
+            if(token!=null) {
                 return new BuildAuthorizationToken(token);
+            }
         }
         
         return null;
@@ -68,16 +69,19 @@ public final class BuildAuthorizationToken {
     }
 
     public static void checkPermission(Job<?,?> project, BuildAuthorizationToken token, StaplerRequest req, StaplerResponse rsp) throws IOException {
-        if (!Jenkins.getInstance().isUseSecurity())
+        if (!Jenkins.getInstance().isUseSecurity()) {
             return;    // everyone is authorized
+        }
 
         if(token!=null && token.token != null) {
             //check the provided token
             String providedToken = req.getParameter("token");
-            if (providedToken != null && providedToken.equals(token.token))
+            if (providedToken != null && providedToken.equals(token.token)) {
                 return;
-            if (providedToken != null)
+            }
+            if (providedToken != null) {
                 throw new AccessDeniedException(Messages.BuildAuthorizationToken_InvalidTokenProvided());
+            }
         }
 
         project.checkPermission(Item.BUILD);

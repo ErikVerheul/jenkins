@@ -167,16 +167,20 @@ public class FileParameterValue extends ParameterValue {
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (!super.equals(obj))
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
+		if (this == obj) {
+                    return true;
+                }
+		if (!super.equals(obj)) {
+                    return false;
+                }
+		if (getClass() != obj.getClass()) {
+                    return false;
+                }
 		FileParameterValue other = (FileParameterValue) obj;
 		
-		if (location == null && other.location == null) 
-			return true; // Consider null parameters as equal
+		if (location == null && other.location == null) {
+                    return true; // Consider null parameters as equal
+                }
 
 		//TODO: check fingerprints or checksums to improve the behavior (JENKINS-25211)
 		// Return false even if files are equal

@@ -164,12 +164,13 @@ public class CommandLauncher extends ComputerLauncher {
             LOGGER.log(Level.SEVERE, msg, e);
             e.printStackTrace(listener.error(msg)); //NOSONAR
 
-            if(_proc!=null)
+            if(_proc!=null) {
                 try {
                     ProcessTree.get().killAll(_proc, _cookie);
                 } catch (InterruptedException x) {
                     x.printStackTrace(listener.error(Messages.ComputerLauncher_abortedLaunch())); //NOSONAR
                 }
+            }
         }
     }
 
@@ -183,10 +184,11 @@ public class CommandLauncher extends ComputerLauncher {
         }
 
         public FormValidation doCheckCommand(@QueryParameter String value) {
-            if(Util.fixEmptyAndTrim(value)==null)
+            if(Util.fixEmptyAndTrim(value)==null) {
                 return FormValidation.error(Messages.CommandLauncher_NoLaunchCommand());
-            else
+            } else {
                 return FormValidation.ok();
+            }
         }
     }
 }

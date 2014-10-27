@@ -118,14 +118,20 @@ public class PrivateKeyProviderTest {
             }
 
             @Override public boolean matches(Object argument) {
-                if (!(argument instanceof Iterable)) throw new IllegalArgumentException("Not an instance of Iterrable");
+                if (!(argument instanceof Iterable)) {
+                    throw new IllegalArgumentException("Not an instance of Iterrable");
+                }
 
                 @SuppressWarnings("unchecked")
                 final Iterable<KeyPair> actual = (Iterable<KeyPair>) argument;
                 int i = 0;
                 for (KeyPair akp: actual) {
-                    if (!eq(expected[i].getPublic(), akp.getPublic())) return false;
-                    if (!eq(expected[i].getPrivate(), akp.getPrivate())) return false;
+                    if (!eq(expected[i].getPublic(), akp.getPublic())) {
+                        return false;
+                    }
+                    if (!eq(expected[i].getPrivate(), akp.getPrivate())) {
+                        return false;
+                    }
                     i++;
                 }
 

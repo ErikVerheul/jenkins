@@ -50,16 +50,19 @@ public class AuthenticationProcessingFilter2 extends AuthenticationProcessingFil
         String targetUrl = request.getParameter("from");
         request.getSession().setAttribute("from", targetUrl);
 
-        if (targetUrl == null)
+        if (targetUrl == null) {
             return getDefaultTargetUrl();
+        }
 
-        if (Util.isAbsoluteUri(targetUrl))
+        if (Util.isAbsoluteUri(targetUrl)) {
             return "."; // avoid open redirect
+        }
 
         // URL returned from determineTargetUrl() is resolved against the context path,
         // whereas the "from" URL is resolved against the top of the website, so adjust this.
-        if(targetUrl.startsWith(request.getContextPath()))
+        if(targetUrl.startsWith(request.getContextPath())) {
             return targetUrl.substring(request.getContextPath().length());
+        }
 
         // not sure when this happens, but apparently this happens in some case.
         // see #1274

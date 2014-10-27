@@ -53,8 +53,9 @@ public abstract class AbstractAsyncNodeMonitorDescriptor<T> extends AbstractNode
         VirtualChannel ch = c.getChannel();
         if (ch != null) {
             Callable<T,IOException> cc = createCallable(c);
-            if (cc!=null)
+            if (cc!=null) {
                 return ch.call(cc);
+            }
         }
         return null;
     }
@@ -72,8 +73,9 @@ public abstract class AbstractAsyncNodeMonitorDescriptor<T> extends AbstractNode
                 futures.put(c,null);    // sentinel value
                 if (ch!=null) {
                     Callable<T, ?> cc = createCallable(c);
-                    if (cc!=null)
+                    if (cc!=null) {
                         futures.put(c,ch.callAsync(cc));
+                    }
                 }
             } catch (RuntimeException e) {
                 LOGGER.log(WARNING, "Failed to monitor "+c.getDisplayName()+" for "+getDisplayName(), e);

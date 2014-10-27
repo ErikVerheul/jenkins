@@ -204,7 +204,9 @@ public class ViewOptionHandlerTest {
 
         } catch (Exception ex) {
 
-            if (!type.isAssignableFrom(ex.getClass())) throw ex;
+            if (!type.isAssignableFrom(ex.getClass())) {
+                throw ex;
+            }
 
             return ex.getMessage();
         }

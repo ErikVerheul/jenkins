@@ -141,7 +141,9 @@ public abstract class SCMDescriptor<T extends SCM> extends Descriptor<SCM> {
      *      can be empty but never null.
      */
     public List<Descriptor<RepositoryBrowser<?>>> getBrowserDescriptors() {
-        if(repositoryBrowser==null)     return Collections.emptyList();
+        if(repositoryBrowser==null) {
+            return Collections.emptyList();
+        }
         return RepositoryBrowsers.filter(repositoryBrowser);
     }
 

@@ -72,8 +72,9 @@ public final class FingerprintMap extends KeyedDataStorage<Fingerprint,Fingerpri
     @Override
     protected Fingerprint get(String md5sum, boolean createIfNotExist, FingerprintParams createParams) throws IOException {
         // sanity check
-        if(md5sum.length()!=32)
+        if(md5sum.length()!=32) {
             return null;    // illegal input
+        }
         md5sum = md5sum.toLowerCase(Locale.ENGLISH);
 
         return super.get(md5sum,createIfNotExist,createParams);
@@ -81,8 +82,9 @@ public final class FingerprintMap extends KeyedDataStorage<Fingerprint,Fingerpri
 
     private byte[] toByteArray(String md5sum) {
         byte[] data = new byte[16];
-        for( int i=0; i<md5sum.length(); i+=2 )
+        for( int i=0; i<md5sum.length(); i+=2 ) {
             data[i/2] = (byte)Integer.parseInt(md5sum.substring(i,i+2),16);
+        }
         return data;
     }
 

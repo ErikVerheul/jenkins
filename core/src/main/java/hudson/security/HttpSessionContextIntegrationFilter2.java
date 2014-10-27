@@ -56,9 +56,10 @@ public class HttpSessionContextIntegrationFilter2 extends HttpSessionContextInte
                 if(a!=null) {
                     if (a.getPrincipal() instanceof InvalidatableUserDetails) {
                         InvalidatableUserDetails ud = (InvalidatableUserDetails) a.getPrincipal();
-                        if(ud.isInvalid())
+                        if(ud.isInvalid()) {
                             // don't let Acegi see invalid security context
                             session.setAttribute(ACEGI_SECURITY_CONTEXT_KEY,null);
+                        }
                     }
                 }
             }

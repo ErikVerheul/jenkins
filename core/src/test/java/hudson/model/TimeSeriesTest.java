@@ -41,7 +41,8 @@ public class TimeSeriesTest extends TestCase {
             last = ts.getLatest();
         }
 
-        for( int i=0; i<100; i++ )
-        ts.update(1);
+        for( int i=0; i<100; i++ ) {
+            ts.update(1);
+        }
     }
 }

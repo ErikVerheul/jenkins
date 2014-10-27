@@ -193,8 +193,9 @@ public class Channels {
         vmb.classpath().addJarOf(Channel.class);
         vmb.mainClass(Launcher.class);
 
-        if(classpath!=null)
+        if(classpath!=null) {
             vmb.args().add("-cp").add(classpath);
+        }
         vmb.args().add("-connectTo","localhost:"+serverSocket.getLocalPort());
 
         listener.getLogger().println("Starting "+displayName);

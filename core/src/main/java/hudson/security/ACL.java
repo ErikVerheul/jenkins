@@ -52,8 +52,9 @@ public abstract class ACL {
      */
     public final void checkPermission(@Nonnull Permission p) {
         Authentication a = Jenkins.getAuthentication();
-        if(!hasPermission(a,p))
+        if(!hasPermission(a,p)) {
             throw new AccessDeniedException2(a,p);
+        }
     }
 
     /**

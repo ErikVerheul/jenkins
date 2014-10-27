@@ -76,14 +76,17 @@ public class TemporaryDirectoryAllocator {
      */
     public synchronized void dispose() throws IOException, InterruptedException {
         IOException x = null;
-        for (File dir : tmpDirectories)
+        for (File dir : tmpDirectories) {
             try {
                 new FilePath(dir).deleteRecursive();
             } catch (IOException e) {
                 x = e;
             }
+        }
         tmpDirectories.clear();
-        if (x!=null)    throw new IOException("Failed to clean up temp dirs",x);
+        if (x!=null) {
+            throw new IOException("Failed to clean up temp dirs",x);
+        }
     }
 
     /**
@@ -95,7 +98,7 @@ public class TemporaryDirectoryAllocator {
 
         new Thread("Disposing "+base) {
             public void run() {
-                for (File dir : tbr)
+                for (File dir : tbr) {
                     try {
                         new FilePath(dir).deleteRecursive();
                     } catch (IOException e) {
@@ -103,6 +106,7 @@ public class TemporaryDirectoryAllocator {
                     } catch (InterruptedException e) {
                         e.printStackTrace(); //NOSONAR
                     }
+                }
             }
         }.start();
     }

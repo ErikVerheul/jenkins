@@ -123,9 +123,10 @@ public class AnnotatedLargeText<T> extends LargeText {
                         Jenkins.getInstance().pluginManager.uberClassLoader);
                 try {
                     long timestamp = ois.readLong();
-                    if (TimeUnit2.HOURS.toMillis(1) > abs(System.currentTimeMillis()-timestamp))
+                    if (TimeUnit2.HOURS.toMillis(1) > abs(System.currentTimeMillis()-timestamp)) {
                         // don't deserialize something too old to prevent a replay attack
                         return (ConsoleAnnotator)ois.readObject();
+                    }
                 } finally {
                     ois.close();
                 }
@@ -139,10 +140,11 @@ public class AnnotatedLargeText<T> extends LargeText {
 
     @Override
     public long writeLogTo(long start, Writer w) throws IOException {
-        if (isHtml())
+        if (isHtml()) {
             return writeHtmlTo(start, w);
-        else
+        } else {
             return super.writeLogTo(start,w);
+        }
     }
 
     /**
@@ -175,8 +177,9 @@ public class AnnotatedLargeText<T> extends LargeText {
         oos.writeObject(caw.getConsoleAnnotator());
         oos.close();
         StaplerResponse rsp = Stapler.getCurrentResponse();
-        if (rsp!=null)
+        if (rsp!=null) {
             rsp.setHeader("X-ConsoleAnnotator", new String(Base64.encode(baos.toByteArray())));
+        }
         return r;
     }
 

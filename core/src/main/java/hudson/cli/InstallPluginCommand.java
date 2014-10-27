@@ -80,11 +80,13 @@ public class InstallPluginCommand extends CLICommand {
                 FilePath f = new FilePath(channel, source);
                 if (f.exists()) {
                     stdout.println(Messages.InstallPluginCommand_InstallingPluginFromLocalFile(f));
-                    if (name==null)
+                    if (name==null) {
                         name = f.getBaseName();
+                    }
                     f.copyTo(getTargetFilePath());
-                    if (dynamicLoad)
+                    if (dynamicLoad) {
                         pm.dynamicLoad(getTargetFile());
+                    }
                     continue;
                 }
             }
@@ -98,11 +100,14 @@ public class InstallPluginCommand extends CLICommand {
                     name = name.substring(name.lastIndexOf('/')+1);
                     name = name.substring(name.lastIndexOf('\\')+1);
                     int idx = name.lastIndexOf('.');
-                    if (idx>0)  name = name.substring(0,idx);
+                    if (idx>0) {
+                        name = name.substring(0,idx);
+                    }
                 }
                 getTargetFilePath().copyFrom(u);
-                if (dynamicLoad)
+                if (dynamicLoad) {
                     pm.dynamicLoad(getTargetFile());
+                }
                 continue;
             } catch (MalformedURLException e) {
                 // not an URL
@@ -113,8 +118,9 @@ public class InstallPluginCommand extends CLICommand {
             if (p!=null) {
                 stdout.println(Messages.InstallPluginCommand_InstallingFromUpdateCenter(source));
                 Throwable e = p.deploy(dynamicLoad).get().getError();
-                if (e!=null)
+                if (e!=null) {
                     throw new IOException("Failed to install plugin "+source,e);
+                }
                 continue;
             }
 
@@ -128,10 +134,11 @@ public class InstallPluginCommand extends CLICommand {
                     Set<String> candidates = new HashSet<String>();
                     for (UpdateSite s : h.getUpdateCenter().getSites()) {
                         Data dt = s.getData();
-                        if (dt==null)
+                        if (dt==null) {
                             stdout.println(Messages.InstallPluginCommand_NoUpdateDataRetrieved(s.getUrl()));
-                        else
+                        } else {
                             candidates.addAll(dt.plugins.keySet());
+                        }
                     }
                     stdout.println(Messages.InstallPluginCommand_DidYouMean(source,EditDistance.findNearest(source,candidates)));
                 }
@@ -140,8 +147,9 @@ public class InstallPluginCommand extends CLICommand {
             return 1;
         }
 
-        if (restart)
+        if (restart) {
             h.safeRestart();
+        }
         return 0; // all success
     }
 

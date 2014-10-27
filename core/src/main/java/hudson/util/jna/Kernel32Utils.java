@@ -43,8 +43,9 @@ public class Kernel32Utils {
      */
     public static int waitForExitProcess(Pointer hProcess) throws InterruptedException {
         while (true) {
-            if (Thread.interrupted())
+            if (Thread.interrupted()) {
                 throw new InterruptedException();
+            }
 
             Kernel32.INSTANCE.WaitForSingleObject(hProcess,1000);
             IntByReference exitCode = new IntByReference();

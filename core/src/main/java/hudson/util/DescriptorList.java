@@ -139,10 +139,11 @@ public final class DescriptorList<T extends Describable<T>> extends AbstractList
      * Gets the actual data store. This is the key to control the dual-mode nature of {@link DescriptorList}
      */
     private List<Descriptor<T>> store() {
-        if(type==null)
+        if(type==null) {
             return legacy;
-        else
+        } else {
             return Jenkins.getInstance().<T,Descriptor<T>>getDescriptorList(type);
+        }
     }
 
     /**
@@ -151,8 +152,9 @@ public final class DescriptorList<T extends Describable<T>> extends AbstractList
      * by a radio button group. 
      */
     public T newInstanceFromRadioList(JSONObject config) throws FormException {
-        if(config.isNullObject())
+        if(config.isNullObject()) {
             return null;    // none was selected
+        }
         int idx = config.getInt("value");
         return get(idx).newInstance(Stapler.getCurrentRequest(),config);
     }
@@ -167,9 +169,11 @@ public final class DescriptorList<T extends Describable<T>> extends AbstractList
      * If none is found, null is returned.
      */
     public Descriptor<T> findByName(String id) {
-        for (Descriptor<T> d : this)
-            if(d.getId().equals(id))
+        for (Descriptor<T> d : this) {
+            if(d.getId().equals(id)) {
                 return d;
+            }
+        }
         return null;
     }
 

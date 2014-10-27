@@ -176,13 +176,15 @@ public class UtilTest {
 
             // test a long name
             StringBuilder buf = new StringBuilder(768);
-            for( int i=0; i<768; i++)
+            for( int i=0; i<768; i++) {
                 buf.append((char)('0'+(i%10)));
+            }
             Util.createSymlink(d,buf.toString(),"x", l);
 
             String log = baos.toString();
-            if (log.length() > 0)
+            if (log.length() > 0) {
                 System.err.println("log output: " + log);
+            }
 
             assertEquals(buf.toString(),Util.resolveSymlink(new File(d,"x")));
             

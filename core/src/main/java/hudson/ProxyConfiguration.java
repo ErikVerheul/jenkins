@@ -151,11 +151,15 @@ public final class ProxyConfiguration extends AbstractDescribableImpl<ProxyConfi
      * Returns the list of properly formatted no proxy host names.
      */
     public static List<Pattern> getNoProxyHostPatterns(String noProxyHost) {
-        if (noProxyHost==null)  return Collections.emptyList();
+        if (noProxyHost==null) {
+            return Collections.emptyList();
+        }
 
         List<Pattern> r = Lists.newArrayList();
         for (String s : noProxyHost.split("[ \t\n,|]+")) {
-            if (s.length()==0)  continue;
+            if (s.length()==0) {
+                continue;
+            }
             r.add(Pattern.compile(s.replace(".", "\\.").replace("*", ".*")));
         }
         return r;
@@ -176,24 +180,28 @@ public final class ProxyConfiguration extends AbstractDescribableImpl<ProxyConfi
     public static Proxy createProxy(String host, String name, int port, String noProxyHost) {
         if (host!=null && noProxyHost!=null) {
             for (Pattern p : getNoProxyHostPatterns(noProxyHost)) {
-                if (p.matcher(host).matches())
+                if (p.matcher(host).matches()) {
                     return Proxy.NO_PROXY;
+                }
             }
         }
         return new Proxy(Proxy.Type.HTTP, new InetSocketAddress(name,port));
     }
 
     public void save() throws IOException {
-        if(BulkChange.contains(this))   return;
+        if(BulkChange.contains(this)) {
+            return;
+        }
         XmlFile config = getXmlFile();
         config.write(this);
         SaveableListener.fireOnChange(this, config);
     }
 
     public Object readResolve() {
-        if (secretPassword == null)
+        if (secretPassword == null) {
             // backward compatibility : get crambled password and store it encrypted
             secretPassword = Secret.fromString(Scrambler.descramble(password));
+        }
         password = null;
         return this;
     }
@@ -204,10 +212,11 @@ public final class ProxyConfiguration extends AbstractDescribableImpl<ProxyConfi
 
     public static ProxyConfiguration load() throws IOException {
         XmlFile f = getXmlFile();
-        if(f.exists())
+        if(f.exists()) {
             return (ProxyConfiguration) f.read();
-        else
+        } else {
             return null;
+        }
     }
 
     /**
@@ -216,8 +225,9 @@ public final class ProxyConfiguration extends AbstractDescribableImpl<ProxyConfi
     public static URLConnection open(URL url) throws IOException {
         Jenkins h = Jenkins.getInstance(); // this code might run on slaves
         ProxyConfiguration p = h!=null ? h.proxy : null;
-        if(p==null)
+        if(p==null) {
             return url.openConnection();
+        }
 
         URLConnection con = url.openConnection(p.createProxy(url.getHost()));
         if(p.getUserName()!=null) {
@@ -225,7 +235,9 @@ public final class ProxyConfiguration extends AbstractDescribableImpl<ProxyConfi
             Authenticator.setDefault(new Authenticator() {
                 @Override
                 public PasswordAuthentication getPasswordAuthentication() {
-                    if (getRequestorType()!=RequestorType.PROXY)    return null;
+                    if (getRequestorType()!=RequestorType.PROXY) {
+                        return null;
+                    }
                     ProxyConfiguration p = Jenkins.getInstance().proxy;
                     return new PasswordAuthentication(p.getUserName(),
                             p.getPassword().toCharArray());
@@ -233,8 +245,9 @@ public final class ProxyConfiguration extends AbstractDescribableImpl<ProxyConfi
             });
         }
 
-        for (URLConnectionDecorator d : URLConnectionDecorator.all())
+        for (URLConnectionDecorator d : URLConnectionDecorator.all()) {
             d.decorate(con);
+        }
 
         return con;
     }
@@ -242,8 +255,9 @@ public final class ProxyConfiguration extends AbstractDescribableImpl<ProxyConfi
     public static InputStream getInputStream(URL url) throws IOException {
         Jenkins h = Jenkins.getInstance(); // this code might run on slaves
         final ProxyConfiguration p = (h != null) ? h.proxy : null;
-        if (p == null) 
+        if (p == null) {
             return new RetryableHttpStream(url);
+        }
 
         InputStream is = new RetryableHttpStream(url, p.createProxy(url.getHost()));
         if (p.getUserName() != null) {

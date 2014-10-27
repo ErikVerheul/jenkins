@@ -78,7 +78,9 @@ public class PrivateKeyProvider {
         boolean read = false;
         for (String path : new String[] {".ssh/id_rsa", ".ssh/id_dsa", ".ssh/identity"}) {
             final File key = new File(home, path);
-            if (!key.exists()) continue;
+            if (!key.exists()) {
+                continue;
+            }
 
             try {
 

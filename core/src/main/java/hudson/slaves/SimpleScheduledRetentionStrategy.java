@@ -233,8 +233,9 @@ public class SimpleScheduledRetentionStrategy extends RetentionStrategy<SlaveCom
         public FormValidation doCheck(@QueryParameter String value) {
             try {
                 String msg = CronTabList.create(fixNull(value)).checkSanity();
-                if (msg != null)
+                if (msg != null) {
                     return FormValidation.warning(msg);
+                }
                 return FormValidation.ok();
             } catch (ANTLRException e) {
                 return FormValidation.error(e.getMessage());

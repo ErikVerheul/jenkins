@@ -141,20 +141,23 @@ public abstract class ItemGroupMixIn {
         TopLevelItem result;
 
         String requestContentType = req.getContentType();
-        if(requestContentType==null)
+        if(requestContentType==null) {
             throw new Failure("No Content-Type header set");
+        }
 
         boolean isXmlSubmission = requestContentType.startsWith("application/xml") || requestContentType.startsWith("text/xml");
 
         String name = req.getParameter("name");
-        if(name==null)
+        if(name==null) {
             throw new Failure("Query parameter 'name' is required");
+        }
 
         {// check if the name looks good
             Jenkins.checkGoodName(name);
             name = name.trim();
-            if(parent.getItem(name)!=null)
+            if(parent.getItem(name)!=null) {
                 throw new Failure(Messages.Hudson_JobAlreadyExists(name));
+            }
         }
 
         String mode = req.getParameter("mode");
@@ -163,19 +166,23 @@ public abstract class ItemGroupMixIn {
 
             // resolve a name to Item
             Item src = null;
-            if (!from.startsWith("/"))
+            if (!from.startsWith("/")) {
                 src = parent.getItem(from);
-            if (src==null)
+            }
+            if (src==null) {
                 src = Jenkins.getInstance().getItemByFullName(from);
+            }
 
             if(src==null) {
-                if(Util.fixEmpty(from)==null)
+                if(Util.fixEmpty(from)==null) {
                     throw new Failure("Specify which job to copy");
-                else
+                } else {
                     throw new Failure("No such job: "+from);
+                }
             }
-            if (!(src instanceof TopLevelItem))
+            if (!(src instanceof TopLevelItem)) {
                 throw new Failure(from+" cannot be copied");
+            }
 
             result = copy((TopLevelItem) src,name);
         } else {
@@ -184,8 +191,9 @@ public abstract class ItemGroupMixIn {
                 rsp.setStatus(HttpServletResponse.SC_OK);
                 return result;
             } else {
-                if(mode==null)
+                if(mode==null) {
                     throw new Failure("No mode given");
+                }
                 TopLevelItemDescriptor descriptor = Items.all().findByName(mode);
                 if (descriptor == null) {
                     throw new Failure("No item type ‘" + mode + "’ is known");
@@ -276,9 +284,10 @@ public abstract class ItemGroupMixIn {
         acl.checkPermission(Item.CREATE);
 
         Jenkins.getInstance().getProjectNamingStrategy().checkName(name);
-        if(parent.getItem(name)!=null)
+        if(parent.getItem(name)!=null) {
             throw new IllegalArgumentException("Project of the name "+name+" already exists");
-        // TODO problem with DISCOVER as noted above
+            // TODO problem with DISCOVER as noted above
+        }
 
         TopLevelItem item = type.newInstance(parent, name);
         try {
@@ -290,8 +299,9 @@ public abstract class ItemGroupMixIn {
         add(item);
         Jenkins.getInstance().rebuildDependencyGraphAsync();
 
-        if (notify)
+        if (notify) {
             ItemListener.fireOnCreated(item);
+        }
 
         return item;
     }

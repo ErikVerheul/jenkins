@@ -108,8 +108,9 @@ public class ConsoleAnnotationOutputStream<T> extends LineTransformationOutputSt
                 try {
                     final ConsoleNote a = ConsoleNote.readFrom(new DataInputStream(b));
                     if (a!=null) {
-                        if (annotators==null)
+                        if (annotators==null) {
                             annotators = new ArrayList<ConsoleAnnotator<T>>();
+                        }
                         annotators.add(new ConsoleAnnotator<T>() {
                             public ConsoleAnnotator annotate(T context, MarkupText text) {
                                 return a.annotate(context,text,charPos);
@@ -134,15 +135,18 @@ public class ConsoleAnnotationOutputStream<T> extends LineTransformationOutputSt
 
             if (annotators!=null) {
                 // aggregate newly retrieved ConsoleAnnotators into the current one.
-                if (ann!=null)      annotators.add(ann);
+                if (ann!=null) {
+                    annotators.add(ann);
+                }
                 ann = ConsoleAnnotator.combine(annotators);
             }
         }
 
         lineOut.flush();
         MarkupText mt = new MarkupText(strBuf.toString());
-        if (ann!=null)
+        if (ann!=null) {
             ann = ann.annotate(context,mt);
+        }
         out.write(mt.toString(true)); // this perform escapes
     }
 
@@ -171,10 +175,11 @@ public class ConsoleAnnotationOutputStream<T> extends LineTransformationOutputSt
 
         private void reset() {
             StringBuffer buf = getStringBuffer();
-            if (buf.length()>4096)
+            if (buf.length()>4096) {
                 out = new StringWriter(256);
-            else
+            } else {
                 buf.setLength(0);
+            }
         }
 
         private StringBuffer getStringBuffer() {

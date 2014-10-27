@@ -140,8 +140,9 @@ public class HudsonFilter implements Filter {
             Filter newf = securityRealm.createFilter(this.filterConfig);
             newf.init(this.filterConfig);
             this.filter = newf;
-            if(oldf!=null)
+            if(oldf!=null) {
                 oldf.destroy();
+            }
         } else {
             // no security related filter needed.
             AUTHENTICATION_MANAGER.setDelegate(null);
@@ -167,8 +168,9 @@ public class HudsonFilter implements Filter {
 
     public void destroy() {
         // the filter can be null if the filter is not initialized yet.
-        if(filter != null)
+        if(filter != null) {
             filter.destroy();
+        }
     }
 
     private static final Logger LOGGER = Logger.getLogger(HudsonFilter.class.getName());

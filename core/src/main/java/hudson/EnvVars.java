@@ -110,10 +110,12 @@ public class EnvVars extends TreeMap<String,String> {
      */
     public EnvVars(String... keyValuePairs) {
         this();
-        if(keyValuePairs.length%2!=0)
+        if(keyValuePairs.length%2!=0) {
             throw new IllegalArgumentException(Arrays.asList(keyValuePairs).toString());
-        for( int i=0; i<keyValuePairs.length; i+=2 )
+        }
+        for( int i=0; i<keyValuePairs.length; i+=2 ) {
             put(keyValuePairs[i],keyValuePairs[i+1]);
+        }
     }
 
     /**
@@ -132,8 +134,9 @@ public class EnvVars extends TreeMap<String,String> {
         if(idx>0) {
             String realKey = key.substring(0,idx);
             String v = get(realKey);
-            if(v==null) v=value;
-            else {
+            if(v==null) {
+                v=value;
+            } else {
                 // we might be handling environment variables for a slave that can have different path separator
                 // than the master, so the following is an attempt to get it right.
                 // it's still more error prone that I'd like.
@@ -347,13 +350,17 @@ public class EnvVars extends TreeMap<String,String> {
      **/
     public String get(String key, String defaultValue) {
         String v = get(key);
-        if (v==null)    v=defaultValue;
+        if (v==null) {
+            v=defaultValue;
+        }
         return v;
     }
 
     @Override
     public String put(String key, String value) {
-        if (value==null)    throw new IllegalArgumentException("Null value not allowed as an environment variable: "+key);
+        if (value==null) {
+            throw new IllegalArgumentException("Null value not allowed as an environment variable: "+key);
+        }
         return super.put(key,value);
     }
 
@@ -361,8 +368,9 @@ public class EnvVars extends TreeMap<String,String> {
      * Add a key/value but only if the value is not-null. Otherwise no-op.
      */
     public void putIfNotNull(String key, String value) {
-        if (value!=null)
+        if (value!=null) {
             put(key,value);
+        }
     }
     
     /**
@@ -399,8 +407,9 @@ public class EnvVars extends TreeMap<String,String> {
      *      A fresh copy that can be owned and modified by the caller.
      */
     public static EnvVars getRemote(VirtualChannel channel) throws IOException, InterruptedException {
-        if(channel==null)
+        if(channel==null) {
             return new EnvVars("N/A","N/A");
+        }
         return channel.call(new GetEnvVars());
     }
 
@@ -428,11 +437,12 @@ public class EnvVars extends TreeMap<String,String> {
     private static EnvVars initMaster() {
         EnvVars vars = new EnvVars(System.getenv());
         vars.platform = Platform.current();
-        if(Main.isUnitTest || Main.isDevelopmentMode)
+        if(Main.isUnitTest || Main.isDevelopmentMode) {
             // if unit test is launched with maven debug switch,
             // we need to prevent forked Maven processes from seeing it, or else
             // they'll hang
             vars.remove("MAVEN_OPTS");
+        }
         return vars;
     }
 }

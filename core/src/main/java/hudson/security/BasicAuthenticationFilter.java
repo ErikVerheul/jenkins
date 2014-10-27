@@ -151,8 +151,9 @@ public class BasicAuthenticationFilter implements Filter {
 
         path = req.getContextPath()+"/secured"+path;
         String q = req.getQueryString();
-        if(q!=null)
+        if(q!=null) {
             path += '?'+q;
+        }
 
         // prepare a redirect
         rsp.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);

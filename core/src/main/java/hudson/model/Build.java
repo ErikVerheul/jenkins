@@ -137,18 +137,21 @@ public abstract class Build <P extends Project<P,B>,B extends Build<P,B>>
          */
 
         protected Result doRun(@Nonnull BuildListener listener) throws Exception {
-            if(!preBuild(listener,project.getBuilders()))
+            if(!preBuild(listener,project.getBuilders())) {
                 return FAILURE;
-            if(!preBuild(listener,project.getPublishersList()))
+            }
+            if(!preBuild(listener,project.getPublishersList())) {
                 return FAILURE;
+            }
 
             Result r = null;
             try {
                 List<BuildWrapper> wrappers = new ArrayList<BuildWrapper>(project.getBuildWrappers().values());
                 
                 ParametersAction parameters = getAction(ParametersAction.class);
-                if (parameters != null)
+                if (parameters != null) {
                     parameters.createBuildWrappers(Build.this,wrappers);
+                }
 
                 for( BuildWrapper w : wrappers ) {
                     Environment e = w.setUp((AbstractBuild<?,?>)Build.this, launcher, listener);
@@ -158,8 +161,9 @@ public abstract class Build <P extends Project<P,B>,B extends Build<P,B>>
                     buildEnvironments.add(e);
                 }
 
-                if(!build(listener,project.getBuilders()))
+                if(!build(listener,project.getBuilders())) {
                     r = FAILURE;
+                }
             } catch (InterruptedException e) {
                 r = Executor.currentExecutor().abortResult();
                 // not calling Executor.recordCauseOfInterruption here. We do that where this exception is consumed.
@@ -184,10 +188,12 @@ public abstract class Build <P extends Project<P,B>,B extends Build<P,B>>
         }
 
         public void post2(@Nonnull BuildListener listener) throws IOException, InterruptedException {
-            if (!performAllBuildSteps(listener, project.getPublishersList(), true))
+            if (!performAllBuildSteps(listener, project.getPublishersList(), true)) {
                 setResult(FAILURE);
-            if (!performAllBuildSteps(listener, project.getProperties(), true))
+            }
+            if (!performAllBuildSteps(listener, project.getProperties(), true)) {
                 setResult(FAILURE);
+            }
         }
 
         @Override

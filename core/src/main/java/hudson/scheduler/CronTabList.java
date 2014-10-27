@@ -48,8 +48,9 @@ public final class CronTabList {
      */
     public synchronized boolean check(Calendar cal) {
         for (CronTab tab : tabs) {
-            if(tab.check(cal))
+            if(tab.check(cal)) {
                 return true;
+            }
         }
         return false;
     }
@@ -66,7 +67,9 @@ public final class CronTabList {
     public String checkSanity() {
         for (CronTab tab : tabs) {
             String s = tab.checkSanity();
-            if(s!=null)     return s;
+            if(s!=null) {
+                return s;
+            }
         }
         return null;
     }
@@ -81,8 +84,9 @@ public final class CronTabList {
         for (String line : format.split("\\r?\\n")) {
             lineNumber++;
             line = line.trim();
-            if(line.length()==0 || line.startsWith("#"))
+            if(line.length()==0 || line.startsWith("#")) {
                 continue;   // ignorable line
+            }
             try {
                 r.add(new CronTab(line,lineNumber,hash));
             } catch (ANTLRException e) {

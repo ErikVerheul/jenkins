@@ -66,8 +66,9 @@ public class TestPluginManager extends PluginManager {
 
         File bundledPlugins = new File(WarExploder.getExplodedDir(), "WEB-INF/plugins");
         File[] children = bundledPlugins.listFiles();
-        if (children==null)
+        if (children==null) {
             throw new Error("Unable to find "+bundledPlugins);
+        }
         for (File child : children) {
             try {
                 names.add(child.getName());
@@ -82,11 +83,13 @@ public class TestPluginManager extends PluginManager {
         if(u==null){
         	u = getClass().getClassLoader().getResource("the.hpl"); // keep backward compatible 
         }
-        if (u!=null) try {
-            names.add("the.jpl");
-            copyBundledPlugin(u, "the.jpl");
-        } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Failed to copy the.jpl",e);
+        if (u!=null) {
+            try {
+                names.add("the.jpl");
+                copyBundledPlugin(u, "the.jpl");
+            } catch (IOException e) {
+                LOGGER.log(Level.SEVERE, "Failed to copy the.jpl",e);
+            }
         }
 
         // and pick up test dependency *.jpi that are placed by maven-hpi-plugin TestDependencyMojo.
@@ -117,8 +120,9 @@ public class TestPluginManager extends PluginManager {
     // Releasing plugins result fail to access files in webapp directory in following tests.
     @Override
     public void stop() {
-        for (PluginWrapper p : activePlugins)
+        for (PluginWrapper p : activePlugins) {
             p.stop();
+        }
     }
 
     /**

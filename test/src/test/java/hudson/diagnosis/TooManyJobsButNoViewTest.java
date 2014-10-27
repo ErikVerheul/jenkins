@@ -47,8 +47,9 @@ public class TooManyJobsButNoViewTest {
      * Once we have enough jobs, it should kick in
      */
     @Test public void activated() throws Exception {
-        for( int i=0; i<=TooManyJobsButNoView.THRESHOLD; i++ )
+        for( int i=0; i<=TooManyJobsButNoView.THRESHOLD; i++ ) {
             r.createFreeStyleProject();
+        }
 
         HtmlPage p = r.createWebClient().goTo("manage");
         HtmlForm f = p.getFormByName(mon.id);

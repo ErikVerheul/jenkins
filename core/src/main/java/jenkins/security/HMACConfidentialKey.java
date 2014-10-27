@@ -96,7 +96,9 @@ public class HMACConfidentialKey extends ConfidentialKey {
     }
 
     private byte[] chop(byte[] mac) {
-        if (mac.length<=length)  return mac; // already too short
+        if (mac.length<=length) {
+            return mac; // already too short
+        }
 
         byte[] b = new byte[length];
         System.arraycopy(mac,0,b,0,b.length);

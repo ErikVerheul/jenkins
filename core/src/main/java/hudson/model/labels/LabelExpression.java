@@ -97,8 +97,9 @@ public abstract class LabelExpression extends Label {
      * Puts the label name into a parenthesis if the given operator will have a higher precedence.
      */
     static String paren(LabelOperatorPrecedence op, Label l) {
-        if (op.compareTo(l.precedence())<0)
+        if (op.compareTo(l.precedence())<0) {
             return '('+l.getExpression()+')';
+        }
         return l.getExpression();
     }
 

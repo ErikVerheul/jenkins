@@ -170,8 +170,9 @@ public abstract class CLICommand implements ExtensionPoint, Cloneable {
         String name = getClass().getName();
         name = name.substring(name.lastIndexOf('.') + 1); // short name
         name = name.substring(name.lastIndexOf('$')+1);
-        if(name.endsWith("Command"))
+        if(name.endsWith("Command")) {
             name = name.substring(0,name.length()-7); // trim off the command
+        }
 
         // convert "FooBarZot" into "foo-bar-zot"
         // Locale is fixed so that "CreateInstance" always become "create-instance" no matter where this is run.
@@ -228,11 +229,13 @@ public abstract class CLICommand implements ExtensionPoint, Cloneable {
         try {
             p.parseArgument(args.toArray(new String[args.size()]));
             Authentication auth = authenticator.authenticate();
-            if (auth==Jenkins.ANONYMOUS)
+            if (auth==Jenkins.ANONYMOUS) {
                 auth = loadStoredAuthentication();
+            }
             sc.setAuthentication(auth); // run the CLI with the right credential
-            if (!(this instanceof LoginCommand || this instanceof HelpCommand))
+            if (!(this instanceof LoginCommand || this instanceof HelpCommand)) {
                 Jenkins.getInstance().checkPermission(Jenkins.READ);
+            }
             return run();
         } catch (CmdLineException e) {
             stderr.println(e.getMessage());
@@ -268,8 +271,9 @@ public abstract class CLICommand implements ExtensionPoint, Cloneable {
     }
     
     public Channel checkChannel() throws AbortException {
-        if (channel==null)
+        if (channel==null) {
             throw new AbortException("This command can only run with Jenkins CLI. See https://wiki.jenkins-ci.org/display/JENKINS/Jenkins+CLI");
+        }
         return channel;
     }
 
@@ -279,8 +283,9 @@ public abstract class CLICommand implements ExtensionPoint, Cloneable {
      */
     protected Authentication loadStoredAuthentication() throws InterruptedException {
         try {
-            if (channel!=null)
+            if (channel!=null) {
                 return new ClientAuthenticationCache(channel).get();
+            }
         } catch (IOException e) {
             // recover
             stderr.println("Failed to access the stored credential");          
@@ -331,7 +336,9 @@ public abstract class CLICommand implements ExtensionPoint, Cloneable {
      */
     public Authentication getTransportAuthentication() {
         Authentication a = transportAuth; 
-        if (a==null)    a = Jenkins.ANONYMOUS;
+        if (a==null) {
+            a = Jenkins.ANONYMOUS;
+        }
         return a;
     }
 
@@ -429,10 +436,11 @@ public abstract class CLICommand implements ExtensionPoint, Cloneable {
     }
 
     protected Charset getClientCharset() throws IOException, InterruptedException {
-        if (channel==null)
+        if (channel==null) {
             // for SSH, assume the platform default encoding
             // this is in-line with the standard SSH behavior
             return Charset.defaultCharset();
+        }
 
         String charsetName = checkChannel().call(new GetCharset());
         try {
@@ -510,9 +518,11 @@ public abstract class CLICommand implements ExtensionPoint, Cloneable {
      * Obtains a copy of the command for invocation.
      */
     public static CLICommand clone(String name) {
-        for (CLICommand cmd : all())
-            if(name.equals(cmd.getName()))
+        for (CLICommand cmd : all()) {
+            if(name.equals(cmd.getName())) {
                 return cmd.createClone();
+            }
+        }
         return null;
     }
 

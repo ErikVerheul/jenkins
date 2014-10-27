@@ -47,12 +47,16 @@ public class JnlpSlaveRestarterInstaller extends ComputerListener implements Ser
             final List<SlaveRestarter> restarters = new ArrayList<SlaveRestarter>(SlaveRestarter.all());
 
             VirtualChannel ch = c.getChannel();
-            if (ch==null) return;  // defensive check
+            if (ch==null) {
+                return;  // defensive check
+            }
 
             List<SlaveRestarter> effective = ch.call(new Callable<List<SlaveRestarter>, IOException>() {
                 public List<SlaveRestarter> call() throws IOException {
                     Engine e = Engine.current();
-                    if (e == null) return null;    // not running under Engine
+                    if (e == null) {
+                        return null;    // not running under Engine
+                    }
 
                     try {
                         Engine.class.getMethod("addListener", EngineListener.class);
@@ -63,8 +67,9 @@ public class JnlpSlaveRestarterInstaller extends ComputerListener implements Ser
                     // filter out ones that doesn't apply
                     for (Iterator<SlaveRestarter> itr = restarters.iterator(); itr.hasNext(); ) {
                         SlaveRestarter r =  itr.next();
-                        if (!r.canWork())
+                        if (!r.canWork()) {
                             itr.remove();
+                        }
                     }
 
                     e.addListener(new EngineListenerAdapter() {

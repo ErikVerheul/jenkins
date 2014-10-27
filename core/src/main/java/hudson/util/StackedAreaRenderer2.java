@@ -172,8 +172,9 @@ public class StackedAreaRenderer2 extends StackedAreaRenderer
                     g2.setStroke(getItemStroke(row, column-1));
                     g2.fill(p);
 
-                    if (entities != null)
+                    if (entities != null) {
                         addItemEntity(entities, dataset, row, column-1, p);
+                    }
 
                     // right half
                     p = new Polygon();
@@ -186,8 +187,9 @@ public class StackedAreaRenderer2 extends StackedAreaRenderer
                     g2.setStroke(getItemStroke(row, column));
                     g2.fill(p);
 
-                    if (entities != null)
+                    if (entities != null) {
                         addItemEntity(entities, dataset, row, column, p);
+                    }
                 } else {
                     if (isItemLabelVisible(row, column)) {
                         drawItemLabel(g2, plot.getOrientation(), dataset, row,

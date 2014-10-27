@@ -111,8 +111,9 @@ public abstract class DirectedGraph<N> {
             
             void traverse() {
                 for (Node n : nodes.values()) {
-                    if (n.index==-1)
+                    if (n.index==-1) {
                         visit(n);
+                    }
                 }
             }
             

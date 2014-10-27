@@ -50,10 +50,11 @@ public class HudsonExceptionNote extends ConsoleNote<Object> {
         String line = text.getText();
         int end = line.indexOf(':',charPos);
         if (end<0) {
-            if (CLASSNAME.matcher(line.substring(charPos)).matches())
+            if (CLASSNAME.matcher(line.substring(charPos)).matches()) {
                 end = line.length();
-            else
+            } else {
                 return null;    // unexpected format. abort.
+            }
         }
         text.addHyperlinkLowKey(charPos,end,annotateClassName(line.substring(charPos,end)));
 
@@ -71,13 +72,16 @@ public class HudsonExceptionNote extends ConsoleNote<Object> {
                 if (idx>=0) {
                     int s = idx + CAUSED_BY.length();
                     int e = line.indexOf(':', s);
-                    if (e<0)    e = line.length();
+                    if (e<0) {
+                        e = line.length();
+                    }
                     text.addHyperlinkLowKey(s,e,annotateClassName(line.substring(s,e)));
                     return this;
                 }
 
-                if (AND_MORE.matcher(line).matches())
+                if (AND_MORE.matcher(line).matches()) {
                     return this;
+                }
 
                 // looks like we are done with the stack trace
                 return null;

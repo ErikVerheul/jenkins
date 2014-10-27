@@ -259,20 +259,30 @@ public class Functions {
      * like "-5", "+/-0", "+3".
      */
     public static String getDiffString(int i) {
-        if(i==0)    return "±0";
+        if(i==0) {
+            return "±0";
+        }
         String s = Integer.toString(i);
-        if(i>0)     return "+"+s;
-        else        return s;
+        if(i>0) {
+            return "+"+s;
+        } else {
+            return s;
+        }
     }
 
     /**
      * {@link #getDiffString(int)} that doesn't show anything for +/-0
      */
     public static String getDiffString2(int i) {
-        if(i==0)    return "";
+        if(i==0) {
+            return "";
+        }
         String s = Integer.toString(i);
-        if(i>0)     return "+"+s;
-        else        return s;
+        if(i>0) {
+            return "+"+s;
+        } else {
+            return s;
+        }
     }
 
     /**
@@ -280,10 +290,15 @@ public class Functions {
      * if there's something to print
      */
     public static String getDiffString2(String prefix, int i, String suffix) {
-        if(i==0)    return "";
+        if(i==0) {
+            return "";
+        }
         String s = Integer.toString(i);
-        if(i>0)     return prefix+"+"+s+suffix;
-        else        return prefix+s+suffix;
+        if(i>0) {
+            return prefix+"+"+s+suffix;
+        } else {
+            return prefix+s+suffix;
+        }
     }
 
     /**
@@ -292,10 +307,11 @@ public class Functions {
     public static String addSuffix(int n, String singular, String plural) {
         StringBuilder buf = new StringBuilder();
         buf.append(n).append(' ');
-        if(n==1)
+        if(n==1) {
             buf.append(singular);
-        else
+        } else {
             buf.append(plural);
+        }
         return buf.toString();
     }
 
@@ -306,11 +322,15 @@ public class Functions {
         Ancestor f=null,l=null;
         for (Ancestor anc : ancestors) {
             if(anc.getObject() instanceof Run) {
-                if(f==null) f=anc;
+                if(f==null) {
+                    f=anc;
+                }
                 l=anc;
             }
         }
-        if(l==null) return null;    // there was no Run object
+        if(l==null) {
+            return null;    // there was no Run object
+        }
 
         String head = f.getPrev().getUrl()+'/';
         String base = l.getUrl();
@@ -325,7 +345,9 @@ public class Functions {
         String furl = f.getUrl();
         int slashCount = 0;
         // Count components in ancestor URL
-        for (int i = furl.indexOf('/'); i >= 0; i = furl.indexOf('/', i + 1)) slashCount++;
+        for (int i = furl.indexOf('/'); i >= 0; i = furl.indexOf('/', i + 1)) {
+            slashCount++;
+        }
         // Remove that many from request URL, ignoring extra slashes
         String rest = reqUri.replaceFirst("(?:/+[^/]*){" + slashCount + "}", "");
 
@@ -338,8 +360,9 @@ public class Functions {
      */
     public static Area getScreenResolution() {
         Cookie res = Functions.getCookie(Stapler.getCurrentRequest(),"screenResolution");
-        if(res!=null)
+        if(res!=null) {
             return Area.parse(res.getValue());
+        }
         return null;
     }
 
@@ -398,9 +421,9 @@ public class Functions {
         }
 
         private String getUrl(Run n) {
-            if(n ==null)
+            if(n ==null) {
                 return null;
-            else {
+            } else {
                 return head+n.getNumber()+rest;
             }
         }
@@ -507,7 +530,9 @@ public class Functions {
 
     public static String getCookie(HttpServletRequest req,String name, String defaultValue) {
         Cookie c = getCookie(req, name);
-        if(c==null || c.getValue()==null) return defaultValue;
+        if(c==null || c.getValue()==null) {
+            return defaultValue;
+        }
         return c.getValue();
     }
 
@@ -536,11 +561,15 @@ public class Functions {
      * Creates a sub map by using the given range (both ends inclusive).
      */
     public static <V> SortedMap<Integer,V> filter(SortedMap<Integer,V> map, String from, String to) {
-        if(from==null && to==null)      return map;
-        if(to==null)
+        if(from==null && to==null) {
+            return map;
+        }
+        if(to==null) {
             return map.headMap(Integer.parseInt(from)-1);
-        if(from==null)
+        }
+        if(from==null) {
             return map.tailMap(Integer.parseInt(to));
+        }
 
         return map.subMap(Integer.parseInt(to),Integer.parseInt(from)-1);
     }
@@ -550,11 +579,15 @@ public class Functions {
      */
     @Restricted(NoExternalUse.class)
     public static <V> SortedMap<Integer,V> filterExcludingFrom(SortedMap<Integer,V> map, String from, String to) {
-        if(from==null && to==null)      return map;
-        if(to==null)
+        if(from==null && to==null) {
+            return map;
+        }
+        if(to==null) {
             return map.headMap(Integer.parseInt(from));
-        if(from==null)
+        }
+        if(from==null) {
             return map.tailMap(Integer.parseInt(to));
+        }
 
         return map.subMap(Integer.parseInt(to),Integer.parseInt(from));
     }
@@ -569,8 +602,9 @@ public class Functions {
      *      with auto refresh. On those pages, disable auto-refresh.
      */
     public static void configureAutoRefresh(HttpServletRequest request, HttpServletResponse response, boolean noAutoRefresh) {
-        if(noAutoRefresh)
+        if(noAutoRefresh) {
             return;
+        }
 
         String param = request.getParameter("auto_refresh");
         boolean refresh = isAutoRefresh(request);
@@ -595,8 +629,9 @@ public class Functions {
             return Boolean.parseBoolean(param);
         }
         Cookie[] cookies = request.getCookies();
-        if(cookies==null)
+        if(cookies==null) {
             return false; // when API design messes it up, we all suffer
+        }
 
         for (Cookie c : cookies) {
             if (c.getName().equals("hudson_auto_refresh")) {
@@ -619,8 +654,9 @@ public class Functions {
         List list = req.getAncestors();
         for( int i=list.size()-1; i>=0; i-- ) {
             Ancestor anc = (Ancestor) list.get(i);
-            if(anc.getObject()==it)
+            if(anc.getObject()==it) {
                 return anc.getUrl();
+            }
         }
         return null;
     }
@@ -632,15 +668,19 @@ public class Functions {
         List list = Stapler.getCurrentRequest().getAncestors();
         for( int i=list.size()-1; i>=0; i-- ) {
             Ancestor anc = (Ancestor) list.get(i);
-            if(anc.getObject() instanceof SearchableModelObject)
+            if(anc.getObject() instanceof SearchableModelObject) {
                 return anc.getUrl()+"/search/";
+            }
         }
         return null;
     }
 
     public static String appendSpaceIfNotNull(String n) {
-        if(n==null) return null;
-        else        return n+' ';
+        if(n==null) {
+            return null;
+        } else {
+            return n+' ';
+        }
     }
 
     /**
@@ -651,8 +691,9 @@ public class Functions {
         int i = size.indexOf('x');
         i = Integer.parseInt(i > 0 ? size.substring(0, i) : size) / 10;
         StringBuilder buf = new StringBuilder(30);
-        for (int j = 0; j < i; j++)
+        for (int j = 0; j < i; j++) {
             buf.append("&nbsp;");
+        }
         return buf.toString();
     }
 
@@ -661,7 +702,9 @@ public class Functions {
     }
 
     public static boolean isMultiline(String s) {
-        if(s==null)     return false;
+        if(s==null) {
+            return false;
+        }
         return s.indexOf('\r')>=0 || s.indexOf('\n')>=0;
     }
 
@@ -685,22 +728,23 @@ public class Functions {
         StringBuilder buf = new StringBuilder(text.length()+64);
         for( int i=0; i<text.length(); i++ ) {
             char ch = text.charAt(i);
-            if(ch=='<')
+            if(ch=='<') {
                 buf.append("&lt;");
-            else
-            if(ch=='>')
+            } else
+            if(ch=='>') {
                 buf.append("&gt;");
-            else
-            if(ch=='&')
+            } else
+            if(ch=='&') {
                 buf.append("&amp;");
-            else
-            if(ch=='"')
+            } else
+            if(ch=='"') {
                 buf.append("&quot;");
-            else
-            if(ch=='\'')
+            } else
+            if(ch=='\'') {
                 buf.append("&#39;");
-            else
+            } else {
                 buf.append(ch);
+            }
         }
         return buf.toString();
     }
@@ -721,12 +765,13 @@ public class Functions {
      * Otherwise it will perform no check and that problem is hard to notice.
      */
     public static void checkPermission(Object object, Permission permission) throws IOException, ServletException {
-        if (permission == null)
+        if (permission == null) {
             return;
+        }
         
-        if (object instanceof AccessControlled)
+        if (object instanceof AccessControlled) {
             checkPermission((AccessControlled) object,permission);
-        else {
+        } else {
             List<Ancestor> ancs = Stapler.getCurrentRequest().getAncestors();
             for(Ancestor anc : Iterators.reverse(ancs)) {
                 Object o = anc.getObject();
@@ -754,11 +799,12 @@ public class Functions {
      * if "it" is not an {@link AccessControlled} object.
      */
     public static boolean hasPermission(Object object, Permission permission) throws IOException, ServletException {
-        if (permission == null)
+        if (permission == null) {
             return true;
-        if (object instanceof AccessControlled)
+        }
+        if (object instanceof AccessControlled) {
             return ((AccessControlled)object).hasPermission(permission);
-        else {
+        } else {
             List<Ancestor> ancs = Stapler.getCurrentRequest().getAncestors();
             for(Ancestor anc : Iterators.reverse(ancs)) {
                 Object o = anc.getObject();
@@ -781,8 +827,9 @@ public class Functions {
         }
 
         // make sure the user owns the necessary permission to access this page.
-        if(permission!=null)
+        if(permission!=null) {
             checkPermission(permission);
+        }
     }
 
     /**
@@ -790,14 +837,16 @@ public class Functions {
      */
     public static String inferHudsonURL(StaplerRequest req) {
         String rootUrl = Jenkins.getInstance().getRootUrl();
-        if(rootUrl !=null)
+        if(rootUrl !=null) {
             // prefer the one explicitly configured, to work with load-balancer, frontend, etc.
             return rootUrl;
+        }
         StringBuilder buf = new StringBuilder();
         buf.append(req.getScheme()).append("://");
         buf.append(req.getServerName());
-        if(! (req.getScheme().equals("http") && req.getLocalPort()==80 || req.getScheme().equals("https") && req.getLocalPort()==443))
+        if(! (req.getScheme().equals("http") && req.getLocalPort()==80 || req.getScheme().equals("https") && req.getLocalPort()==443)) {
             buf.append(':').append(req.getLocalPort());
+        }
         buf.append(req.getContextPath()).append('/');
         return buf.toString();
     }
@@ -918,20 +967,26 @@ public class Functions {
 
         for (ExtensionComponent<Descriptor> c : exts.getComponents()) {
             Descriptor d = c.getInstance();
-            if (d.getGlobalConfigPage()==null)  continue;
+            if (d.getGlobalConfigPage()==null) {
+                continue;
+            }
 
             if (d instanceof GlobalConfiguration) {
-                if (predicate.apply(((GlobalConfiguration)d).getCategory()))
+                if (predicate.apply(((GlobalConfiguration)d).getCategory())) {
                     r.add(new Tag(c.ordinal(), d));
+                }
             } else {
-                if (predicate.apply(GlobalConfigurationCategory.get(Unclassified.class)))
+                if (predicate.apply(GlobalConfigurationCategory.get(Unclassified.class))) {
                     r.add(new Tag(0, d));
+                }
             }
         }
         Collections.sort(r);
 
         List<Descriptor> answer = new ArrayList<Descriptor>(r.size());
-        for (Tag d : r) answer.add(d.d);
+        for (Tag d : r) {
+            answer.add(d.d);
+        }
 
         return DescriptorVisibilityFilter.apply(Jenkins.getInstance(),answer);
     }
@@ -976,14 +1031,18 @@ public class Functions {
 
         private StringBuilder buildSuperclassHierarchy(Class c, StringBuilder buf) {
             Class sc = c.getSuperclass();
-            if (sc!=null)   buildSuperclassHierarchy(sc,buf).append(':');
+            if (sc!=null) {
+                buildSuperclassHierarchy(sc,buf).append(':');
+            }
             return buf.append(c.getName());
         }
 
         @Override
         public int compareTo(Tag that) {
             int r = Double.compare(this.ordinal, that.ordinal);
-            if (r!=0)   return -r; // descending for ordinal
+            if (r!=0) {
+                return -r; // descending for ordinal
+            }
             return this.hierarchy.compareTo(that.hierarchy);
         }
         
@@ -1022,11 +1081,14 @@ public class Functions {
      */
     public static String getIconFilePath(Action a) {
         String name = a.getIconFileName();
-        if (name==null)     return null;
-        if (name.startsWith("/"))
+        if (name==null) {
+            return null;
+        }
+        if (name.startsWith("/")) {
             return name.substring(1);
-        else
+        } else {
             return "images/24x24/"+name;
+        }
     }
 
     /**
@@ -1034,7 +1096,9 @@ public class Functions {
      * but handle null gracefully.
      */
     public static int size2(Object o) throws Exception {
-        if(o==null) return 0;
+        if(o==null) {
+            return 0;
+        }
         return ASTSizeFunction.sizeOf(o,Introspector.getUberspect());
     }
 
@@ -1048,8 +1112,9 @@ public class Functions {
         StaplerRequest request = Stapler.getCurrentRequest();
         for( Ancestor a : request.getAncestors() ) {
             ancestors.put(a.getObject(),a.getRelativePath());
-            if(a.getObject() instanceof View)
+            if(a.getObject() instanceof View) {
                 view = (View) a.getObject();
+            }
         }
 
         String path = ancestors.get(p);
@@ -1109,8 +1174,12 @@ public class Functions {
      *      String like "foo » bar"
      */
     public static String getRelativeNameFrom(Item p, ItemGroup g, boolean useDisplayName) {
-        if (p == null) return null;
-        if (g == null) return useDisplayName ? p.getFullDisplayName() : p.getFullName();
+        if (p == null) {
+            return null;
+        }
+        if (g == null) {
+            return useDisplayName ? p.getFullDisplayName() : p.getFullName();
+        }
         String separationString = useDisplayName ? " » " : "/";
         
         // first list up all the parents
@@ -1118,16 +1187,19 @@ public class Functions {
         int depth=0;
         while (g!=null) {
             parents.put(g, depth++);
-            if (g instanceof Item)
+            if (g instanceof Item) {
                 g = ((Item)g).getParent();
-            else
+            } else {
                 g = null;
+            }
         }
 
         StringBuilder buf = new StringBuilder();
         Item i=p;
         while (true) {
-            if (buf.length()>0) buf.insert(0,separationString);
+            if (buf.length()>0) {
+                buf.insert(0,separationString);
+            }
             buf.insert(0,useDisplayName ? i.getDisplayName() : i.getName());
             ItemGroup gr = i.getParent();
 
@@ -1140,10 +1212,11 @@ public class Functions {
                 return buf.toString();
             }
 
-            if (gr instanceof Item)
+            if (gr instanceof Item) {
                 i = (Item)gr;
-            else
+            } else {
                 return null;
+            }
         }
     }
     
@@ -1197,7 +1270,9 @@ public class Functions {
 
         private ThreadSorterBase() {
             ThreadGroup tg = Thread.currentThread().getThreadGroup();
-            while (tg.getParent() != null) tg = tg.getParent();
+            while (tg.getParent() != null) {
+                tg = tg.getParent();
+            }
             Thread[] threads = new Thread[tg.activeCount()*2];
             int threadsLen = tg.enumerate(threads, true);
             for (int i = 0; i < threadsLen; i++) {
@@ -1209,8 +1284,9 @@ public class Functions {
         protected int compare(long idA, long idB) {
             String tga = map.get(idA), tgb = map.get(idB);
             int result = (tga!=null?-1:0) + (tgb!=null?1:0);  // Will be non-zero if only one is null
-            if (result==0 && tga!=null)
+            if (result==0 && tga!=null) {
                 result = tga.compareToIgnoreCase(tgb);
+            }
             return result;
         }
     }
@@ -1226,8 +1302,9 @@ public class Functions {
 
         public int compare(ThreadInfo a, ThreadInfo b) {
             int result = compare(a.getThreadId(), b.getThreadId());
-            if (result == 0)
+            if (result == 0) {
                 result = a.getThreadName().compareToIgnoreCase(b.getThreadName());
+            }
             return result;
         }
     }
@@ -1236,8 +1313,9 @@ public class Functions {
 
         public int compare(Thread a, Thread b) {
             int result = compare(a.getId(), b.getId());
-            if (result == 0)
+            if (result == 0) {
                 result = a.getName().compareToIgnoreCase(b.getName());
+            }
             return result;
         }
     }
@@ -1345,7 +1423,9 @@ public class Functions {
      * Converts "abc" to "Abc".
      */
     public static String capitalize(String s) {
-        if(s==null || s.length()==0) return s;
+        if(s==null || s.length()==0) {
+            return s;
+        }
         return Character.toUpperCase(s.charAt(0))+s.substring(1);
     }
 
@@ -1363,10 +1443,12 @@ public class Functions {
     public static String getViewResource(Object it, String path) {
         Class clazz = it.getClass();
 
-        if(it instanceof Class)
+        if(it instanceof Class) {
             clazz = (Class)it;
-        if(it instanceof Descriptor)
+        }
+        if(it instanceof Descriptor) {
             clazz = ((Descriptor)it).clazz;
+        }
 
         StringBuilder buf = new StringBuilder(Stapler.getCurrentRequest().getContextPath());
         buf.append(Jenkins.VIEW_RESOURCE_PATH).append('/');
@@ -1377,7 +1459,9 @@ public class Functions {
     }
 
     public static boolean hasView(Object it, String path) throws IOException {
-        if(it==null)    return false;
+        if(it==null) {
+            return false;
+        }
         return Stapler.getCurrentRequest().getView(it,path)!=null;
     }
 
@@ -1387,7 +1471,9 @@ public class Functions {
      * The expression will evaluate to true if scm is null.
      */
     public static boolean defaultToTrue(Boolean b) {
-        if(b==null) return true;
+        if(b==null) {
+            return true;
+        }
         return b;
     }
 
@@ -1413,7 +1499,9 @@ public class Functions {
      * Minimum 5 rows.
      */
     public static int determineRows(String s) {
-        if(s==null)     return 5;
+        if(s==null) {
+            return 5;
+        }
         return Math.max(5,LINE_END.split(s).length);
     }
 
@@ -1485,10 +1573,11 @@ public class Functions {
      * <strong>Warning:</strong> do not call this with a {@link RunList}, or you will break lazy loading!
      */
     public static <T> List<T> subList(List<T> base, int maxSize) {
-        if(maxSize<base.size())
+        if(maxSize<base.size()) {
             return base.subList(0,maxSize);
-        else
+        } else {
             return base;
+        }
     }
 
     /**
@@ -1497,12 +1586,17 @@ public class Functions {
     public static String joinPath(String... components) {
         StringBuilder buf = new StringBuilder();
         for (String s : components) {
-            if (s.length()==0)  continue;
+            if (s.length()==0) {
+                continue;
+            }
 
             if (buf.length()>0) {
-                if (buf.charAt(buf.length()-1)!='/')
+                if (buf.charAt(buf.length()-1)!='/') {
                     buf.append('/');
-                if (s.charAt(0)=='/')   s=s.substring(1);
+                }
+                if (s.charAt(0)=='/') {
+                    s=s.substring(1);
+                }
             }
             buf.append(s);
         }
@@ -1515,7 +1609,9 @@ public class Functions {
      */
     public static String getActionUrl(String itUrl,Action action) {
         String urlName = action.getUrlName();
-        if(urlName==null)   return null;    // to avoid NPE and fail to render the whole page
+        if(urlName==null) {
+            return null;    // to avoid NPE and fail to render the whole page
+        }
         try {
             if (new URI(urlName).isAbsolute()) {
                 return urlName;
@@ -1524,11 +1620,12 @@ public class Functions {
             Logger.getLogger(Functions.class.getName()).log(Level.WARNING, "Failed to parse URL for {0}: {1}", new Object[] {action, x});
             return null;
         }
-        if(urlName.startsWith("/"))
+        if(urlName.startsWith("/")) {
             return joinPath(Stapler.getCurrentRequest().getContextPath(),urlName);
-        else
+        } else {
             // relative URL name
             return joinPath(Stapler.getCurrentRequest().getContextPath()+'/'+itUrl,urlName);
+        }
     }
 
     /**
@@ -1544,10 +1641,11 @@ public class Functions {
             if(('a'<=ch && ch<='z')
             || ('z'<=ch && ch<='Z')
             || ('0'<=ch && ch<='9')
-            || "-_.".indexOf(ch)>=0)
+            || "-_.".indexOf(ch)>=0) {
                 buf.append(ch);
-            else
+            } else {
                 buf.append('_');    // escape
+            }
         }
         return projectName;
     }
@@ -1569,8 +1667,9 @@ public class Functions {
         try {
             if(url!=null) {
                 String host = new URL(url).getHost();
-                if(host!=null)
+                if(host!=null) {
                     return host;
+                }
             }
         } catch (MalformedURLException e) {
             // fall back to HTTP request
@@ -1585,7 +1684,9 @@ public class Functions {
      *      Use {@link #calcCheckUrl}
      */
     public String getCheckUrl(String userDefined, Object descriptor, String field) {
-        if(userDefined!=null || field==null)   return userDefined;
+        if(userDefined!=null || field==null) {
+            return userDefined;
+        }
         if (descriptor instanceof Descriptor) {
             Descriptor d = (Descriptor) descriptor;
             return d.getCheckUrl(field);
@@ -1598,7 +1699,9 @@ public class Functions {
      * @since 1.528
      */
     public void calcCheckUrl(Map attributes, String userDefined, Object descriptor, String field) {
-        if(userDefined!=null || field==null)   return;
+        if(userDefined!=null || field==null) {
+            return;
+        }
 
         if (descriptor instanceof Descriptor) {
             Descriptor d = (Descriptor) descriptor;
@@ -1615,11 +1718,17 @@ public class Functions {
      */
     public boolean hyperlinkMatchesCurrentPage(String href) throws UnsupportedEncodingException {
         String url = Stapler.getCurrentRequest().getRequestURL().toString();
-        if (href == null || href.length() <= 1) return ".".equals(href) && url.endsWith("/");
+        if (href == null || href.length() <= 1) {
+            return ".".equals(href) && url.endsWith("/");
+        }
         url = URLDecoder.decode(url,"UTF-8");
         href = URLDecoder.decode(href,"UTF-8");
-        if (url.endsWith("/")) url = url.substring(0, url.length() - 1);
-        if (href.endsWith("/")) href = href.substring(0, href.length() - 1);
+        if (url.endsWith("/")) {
+            url = url.substring(0, url.length() - 1);
+        }
+        if (href.endsWith("/")) {
+            href = href.substring(0, href.length() - 1);
+        }
 
         return url.endsWith(href);
     }
@@ -1633,7 +1742,9 @@ public class Functions {
      */
     public static List<PageDecorator> getPageDecorators() {
         // this method may be called to render start up errors, at which point Hudson doesn't exist yet. see HUDSON-3608 
-        if(Jenkins.getInstance()==null)  return Collections.emptyList();
+        if(Jenkins.getInstance()==null) {
+            return Collections.emptyList();
+        }
         return PageDecorator.all();
     }
     
@@ -1645,8 +1756,9 @@ public class Functions {
      * Prepend a prefix only when there's the specified body.
      */
     public String prepend(String prefix, String body) {
-        if(body!=null && body.length()>0)
+        if(body!=null && body.length()>0) {
             return prefix+body;
+        }
         return body;
     }
 
@@ -1673,10 +1785,12 @@ public class Functions {
     public static Locale getCurrentLocale() {
         Locale locale=null;
         StaplerRequest req = Stapler.getCurrentRequest();
-        if(req!=null)
+        if(req!=null) {
             locale = req.getLocale();
-        if(locale==null)
+        }
+        if(locale==null) {
             locale = Locale.getDefault();
+        }
         return locale;
     }
 
@@ -1689,17 +1803,21 @@ public class Functions {
         StringBuilder buf = new StringBuilder();
         for (ConsoleAnnotatorFactory f : ConsoleAnnotatorFactory.all()) {
             String path = cp + "/extensionList/" + ConsoleAnnotatorFactory.class.getName() + "/" + f.getClass().getName();
-            if (f.hasScript())
+            if (f.hasScript()) {
                 buf.append("<script src='").append(path).append("/script.js'></script>");
-            if (f.hasStylesheet())
+            }
+            if (f.hasStylesheet()) {
                 buf.append("<link rel='stylesheet' type='text/css' href='").append(path).append("/style.css' />");
+            }
         }
         for (ConsoleAnnotationDescriptor d : ConsoleAnnotationDescriptor.all()) {
             String path = cp+"/descriptor/"+d.clazz.getName();
-            if (d.hasScript())
+            if (d.hasScript()) {
                 buf.append("<script src='").append(path).append("/script.js'></script>");
-            if (d.hasStylesheet())
+            }
+            if (d.hasStylesheet()) {
                 buf.append("<link rel='stylesheet' type='text/css' href='").append(path).append("/style.css' />");
+            }
         }
         return buf.toString();
     }
@@ -1712,8 +1830,9 @@ public class Functions {
             try {
                 List<String> r = new ArrayList<String>();
                 Enumeration<String> e = LogManager.getLogManager().getLoggerNames();
-                while (e.hasMoreElements())
+                while (e.hasMoreElements()) {
                     r.add(e.nextElement());
+                }
                 return r;
             } catch (ConcurrentModificationException e) {
                 // retry
@@ -1725,8 +1844,12 @@ public class Functions {
      * Used by &lt;f:password/> so that we send an encrypted value to the client.
      */
     public String getPasswordValue(Object o) {
-        if (o==null)    return null;
-        if (o instanceof Secret)    return ((Secret)o).getEncryptedValue();
+        if (o==null) {
+            return null;
+        }
+        if (o instanceof Secret) {
+            return ((Secret)o).getEncryptedValue();
+        }
         if (getIsUnitTest()) {
             throw new SecurityException("attempted to render plaintext ‘" + o + "’ in password field; use a getter of type Secret instead");
         }

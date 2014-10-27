@@ -138,19 +138,24 @@ public abstract class ListViewColumn implements ExtensionPoint, Describable<List
                 }
             }
         }
-        for (Descriptor<ListViewColumn> d : left)
+        for (Descriptor<ListViewColumn> d : left) {
             try {
                 if (d instanceof ListViewColumnDescriptor) {
                     ListViewColumnDescriptor ld = (ListViewColumnDescriptor) d;
-                    if (!ld.shownByDefault())       continue;   // skip this
+                    if (!ld.shownByDefault()) {
+                        continue;   // skip this
+                    }
                 }
                 ListViewColumn lvc = d.newInstance(null, null);
-                if (!lvc.shownByDefault())      continue; // skip this
+                if (!lvc.shownByDefault()) {
+                    continue; // skip this
+                }
 
                 r.add(lvc);
             } catch (FormException e) {
                 LOGGER.log(Level.WARNING, "Failed to instantiate "+d.clazz,e);
             }
+        }
 
         return r;
     }

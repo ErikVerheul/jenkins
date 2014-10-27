@@ -60,7 +60,9 @@ public class ExecutorTest extends HudsonTestCase {
         int timeOut = 10;
         while (c.getExecutors().size() != executorCollectionSize) {
             Thread.sleep(10);
-            if (timeOut-- == 0) fail("executor collection size was not " + executorCollectionSize);
+            if (timeOut-- == 0) {
+                fail("executor collection size was not " + executorCollectionSize);
+            }
         }
     }
 
@@ -68,8 +70,9 @@ public class ExecutorTest extends HudsonTestCase {
         e.killHard();
         // trigger a new build which causes the forced death of the executor
         createFreeStyleProject().scheduleBuild2(0);
-        while (e.isActive())
+        while (e.isActive()) {
             Thread.sleep(10);
+        }
     }
 
     private Executor getExecutorByNumber(Computer c, int executorNumber) {

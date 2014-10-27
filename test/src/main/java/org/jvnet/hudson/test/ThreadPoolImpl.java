@@ -17,8 +17,9 @@ public class ThreadPoolImpl extends AbstractLifeCycle implements ThreadPool {
     }
 
     public boolean dispatch(Runnable job) {
-        if (!isRunning() || job==null)
+        if (!isRunning() || job==null) {
             return false;
+        }
 
         es.submit(job);
         return true;

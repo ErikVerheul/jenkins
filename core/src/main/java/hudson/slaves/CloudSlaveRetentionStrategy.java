@@ -27,8 +27,9 @@ public class CloudSlaveRetentionStrategy<T extends Computer> extends RetentionSt
             if (isIdleForTooLong(c)) {
                 try {
                     Node n = c.getNode();
-                    if (n!=null)    // rare, but n==null if the node is deleted and being checked roughly at the same time
+                    if (n!=null) {    // rare, but n==null if the node is deleted and being checked roughly at the same time
                         kill(n);
+                    }
                 } catch (IOException e) {
                     LOGGER.log(Level.WARNING, "Failed to remove "+c.getDisplayName(),e);
                 }

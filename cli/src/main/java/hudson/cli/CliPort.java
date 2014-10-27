@@ -37,7 +37,9 @@ final class CliPort {
      * Gets the public part of the RSA key that represents the server identity.
      */
     public PublicKey getIdentity() throws GeneralSecurityException {
-        if (identity==null) return null;
+        if (identity==null) {
+            return null;
+        }
         byte[] image = Base64.decodeBase64(identity);
         return KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(image));
     }

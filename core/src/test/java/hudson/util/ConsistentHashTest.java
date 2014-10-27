@@ -80,8 +80,11 @@ public class ConsistentHashTest extends TestCase {
         int even=0,odd=0;
         for(int i=0; i<1000; i++) {
             String v = hash.lookup(r.nextInt());
-            if(v.equals("even"))    even++;
-            else                    odd++;
+            if(v.equals("even")) {
+                even++;
+            } else {
+                odd++;
+            }
         }
 
         // again, there's a small chance tha this test fails. 
@@ -94,8 +97,9 @@ public class ConsistentHashTest extends TestCase {
      */
     public void testRemoval() {
         ConsistentHash<Integer> hash = new ConsistentHash<Integer>();
-        for( int i=0; i<10; i++ )
+        for( int i=0; i<10; i++ ) {
             hash.add(i);
+        }
 
         // what was the mapping before the mutation?
         Map<Integer,Integer> before = new HashMap<Integer, Integer>();
@@ -127,8 +131,9 @@ public class ConsistentHashTest extends TestCase {
      */
     public void testSpeed() {
         Map<String,Integer> data = new Hash<String, Integer>();
-        for (int i = 0; i < 1000; i++)
+        for (int i = 0; i < 1000; i++) {
             data.put("node" + i,100);
+        }
         data.put("tail",100);
 
         long start = System.currentTimeMillis();

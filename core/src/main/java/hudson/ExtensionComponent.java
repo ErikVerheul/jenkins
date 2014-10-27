@@ -89,8 +89,12 @@ public class ExtensionComponent<T> implements Comparable<ExtensionComponent<T>> 
     public int compareTo(ExtensionComponent<T> that) {
         double a = this.ordinal();
         double b = that.ordinal();
-        if (a>b)    return -1;
-        if (a<b)    return 1;
+        if (a>b) {
+            return -1;
+        }
+        if (a<b) {
+            return 1;
+        }
 
         // make the order bit more deterministic among extensions of the same ordinal
         if (this.instance instanceof Descriptor && that.instance instanceof Descriptor) {

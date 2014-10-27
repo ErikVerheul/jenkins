@@ -234,10 +234,13 @@ public abstract class View extends AbstractModelObject implements AccessControll
      * Renames this view.
      */
     public void rename(String newName) throws Failure, FormException {
-        if(name.equals(newName))    return; // noop
+        if(name.equals(newName)) {
+            return; // noop
+        }
         checkGoodName(newName);
-        if(owner.getView(newName)!=null)
+        if(owner.getView(newName)!=null) {
             throw new FormException(Messages.Hudson_ViewAlreadyExists(newName),"name");
+        }
         String oldName = name;
         name = newName;
         owner.onViewRenamed(this,oldName,newName);
@@ -320,8 +323,9 @@ public abstract class View extends AbstractModelObject implements AccessControll
     public List<ViewPropertyDescriptor> getApplicablePropertyDescriptors() {
         List<ViewPropertyDescriptor> r = new ArrayList<ViewPropertyDescriptor>();
         for (ViewPropertyDescriptor pd : ViewProperty.all()) {
-            if (pd.isEnabledFor(this))
+            if (pd.isEnabledFor(this)) {
                 r.add(pd);
+            }
         }
         return r;
     }
@@ -438,7 +442,9 @@ public abstract class View extends AbstractModelObject implements AccessControll
         }
 
         for (Computer c : computers) {
-            if (isRelevant(labels, c)) result.add(c);
+            if (isRelevant(labels, c)) {
+                result.add(c);
+            }
         }
 
         return result;
@@ -446,12 +452,18 @@ public abstract class View extends AbstractModelObject implements AccessControll
 
     private boolean isRelevant(Collection<Label> labels, Computer computer) {
         Node node = computer.getNode();
-        if (node == null) return false;
-        if (labels.contains(null) && node.getMode() == Mode.NORMAL) return true;
+        if (node == null) {
+            return false;
+        }
+        if (labels.contains(null) && node.getMode() == Mode.NORMAL) {
+            return true;
+        }
 
-        for (Label l : labels)
-            if (l != null && l.contains(node))
+        for (Label l : labels) {
+            if (l != null && l.contains(node)) {
                 return true;
+            }
+        }
         return false;
     }
 
@@ -538,9 +550,12 @@ public abstract class View extends AbstractModelObject implements AccessControll
     public Object getDynamic(String token) {
         for (Action a : getActions()) {
             String url = a.getUrlName();
-            if (url==null)  continue;
-            if(a.getUrlName().equals(token))
+            if (url==null) {
+                continue;
+            }
+            if(a.getUrlName().equals(token)) {
                 return a;
+            }
         }
         return null;
     }
@@ -626,13 +641,17 @@ public abstract class View extends AbstractModelObject implements AccessControll
          * Returns a human-readable string representation of when this user was last active.
          */
         public String getLastChangeTimeString() {
-            if(lastChange==null)    return "N/A";
+            if(lastChange==null) {
+                return "N/A";
+            }
             long duration = new GregorianCalendar().getTimeInMillis()- ordinal();
             return Util.getTimeSpanString(duration);
         }
 
         public String getTimeSortKey() {
-            if(lastChange==null)    return "-";
+            if(lastChange==null) {
+                return "-";
+            }
             return Util.XS_DATETIME_FORMATTER.format(lastChange.getTime());
         }
 
@@ -640,8 +659,12 @@ public abstract class View extends AbstractModelObject implements AccessControll
         public int compareTo(UserInfo that) {
             long rhs = that.ordinal();
             long lhs = this.ordinal();
-            if(rhs>lhs) return 1;
-            if(rhs<lhs) return -1;
+            if(rhs>lhs) {
+                return 1;
+            }
+            if(rhs<lhs) {
+                return -1;
+            }
             return 0;
         }
         
@@ -668,7 +691,9 @@ public abstract class View extends AbstractModelObject implements AccessControll
 
 
         private long ordinal() {
-            if(lastChange==null)    return 0;
+            if(lastChange==null) {
+                return 0;
+            }
             return lastChange.getTimeInMillis();
         }
     }
@@ -708,9 +733,12 @@ public abstract class View extends AbstractModelObject implements AccessControll
             Map<User,UserInfo> users = getUserInfo(parent.getItems());
             User unknown = User.getUnknown();
             for (User u : User.getAll()) {
-                if(u==unknown)  continue;   // skip the special 'unknown' user
-                if(!users.containsKey(u))
+                if(u==unknown) {
+                    continue;   // skip the special 'unknown' user
+                }
+                if(!users.containsKey(u)) {
                     users.put(u,new UserInfo(u,null,null));
+                }
             }
             this.users = toList(users);
         }
@@ -731,9 +759,9 @@ public abstract class View extends AbstractModelObject implements AccessControll
                                 User user = entry.getAuthor();
 
                                 UserInfo info = users.get(user);
-                                if(info==null)
+                                if(info==null) {
                                     users.put(user,new UserInfo(user,p,build.getTimestamp()));
-                                else
+                                } else
                                 if(info.getLastChange().before(build.getTimestamp())) {
                                     info.project = p;
                                     info.lastChange = build.getTimestamp();
@@ -768,8 +796,9 @@ public abstract class View extends AbstractModelObject implements AccessControll
                         for (AbstractBuild<?,?> build : p.getBuilds()) {
                             for (Entry entry : build.getChangeSet()) {
                                 User user = entry.getAuthor();
-                                if(user!=null)
+                                if(user!=null) {
                                     return true;
+                                }
                             }
                         }
                     }
@@ -1043,7 +1072,9 @@ public abstract class View extends AbstractModelObject implements AccessControll
             if (item instanceof Job) {
                 Job job = (Job) item;
                 Run lb = job.getLastBuild();
-                if(lb!=null)    lastBuilds.add(lb);
+                if(lb!=null) {
+                    lastBuilds.add(lb);
+                }
             }
         }
         RSS.forwardToRss(getDisplayName()+" last builds only", getUrl(),
@@ -1126,8 +1157,9 @@ public abstract class View extends AbstractModelObject implements AccessControll
 
     public ContextMenu doChildrenContextMenu(StaplerRequest request, StaplerResponse response) throws Exception {
         ContextMenu m = new ContextMenu();
-        for (TopLevelItem i : getItems())
+        for (TopLevelItem i : getItems()) {
             m.add(i.getShortUrl(),i.getDisplayName());
+        }
         return m;
     }
 
@@ -1147,9 +1179,11 @@ public abstract class View extends AbstractModelObject implements AccessControll
 
     public static List<ViewDescriptor> allInstantiable() {
         List<ViewDescriptor> r = new ArrayList<ViewDescriptor>();
-        for (ViewDescriptor d : all())
-            if(d.isInstantiable())
+        for (ViewDescriptor d : all()) {
+            if(d.isInstantiable()) {
                 r.add(d);
+            }
+        }
         return r;
     }
 
@@ -1176,15 +1210,17 @@ public abstract class View extends AbstractModelObject implements AccessControll
     public static View create(StaplerRequest req, StaplerResponse rsp, ViewGroup owner)
             throws FormException, IOException, ServletException {
         String requestContentType = req.getContentType();
-        if(requestContentType==null)
+        if(requestContentType==null) {
             throw new Failure("No Content-Type header set");
+        }
 
         boolean isXmlSubmission = requestContentType.startsWith("application/xml") || requestContentType.startsWith("text/xml");
 
         String name = req.getParameter("name");
         checkGoodName(name);
-        if(owner.getView(name)!=null)
+        if(owner.getView(name)!=null) {
             throw new Failure(Messages.Hudson_ViewAlreadyExists(name));
+        }
 
         String mode = req.getParameter("mode");
         if (mode==null || mode.length()==0) {
@@ -1193,8 +1229,9 @@ public abstract class View extends AbstractModelObject implements AccessControll
                 v.owner = owner;
                 rsp.setStatus(HttpServletResponse.SC_OK);
                 return v;
-            } else
+            } else {
                 throw new Failure(Messages.View_MissingMode());
+            }
         }
 
         View v;
@@ -1223,10 +1260,11 @@ public abstract class View extends AbstractModelObject implements AccessControll
         View src = src = owner.getView(from);
 
         if(src==null) {
-            if(Util.fixEmpty(from)==null)
+            if(Util.fixEmpty(from)==null) {
                 throw new Failure("Specify which view to copy");
-            else
+            } else {
                 throw new Failure("No such view: "+from);
+            }
         }
         String xml = Jenkins.XSTREAM.toXML(src);
         v = createViewFromXML(name, new StringInputStream(xml));
@@ -1242,7 +1280,9 @@ public abstract class View extends AbstractModelObject implements AccessControll
         InputStream in = new BufferedInputStream(xml);
         try {
             View v = (View) Jenkins.XSTREAM.fromXML(in);
-            if (name != null) v.name = name;
+            if (name != null) {
+                v.name = name;
+            }
             checkGoodName(v.name);
             return v;
         } catch(StreamException e) {
@@ -1270,8 +1310,9 @@ public abstract class View extends AbstractModelObject implements AccessControll
 
         @Override
         protected void onModified() throws IOException {
-            for (ViewProperty p : this)
+            for (ViewProperty p : this) {
                 p.setView(getOwner());
+            }
         }
     }
 

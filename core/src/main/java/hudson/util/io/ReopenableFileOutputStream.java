@@ -49,12 +49,13 @@ public class ReopenableFileOutputStream extends OutputStream {
     }
 
     private synchronized OutputStream current() throws IOException {
-        if (current==null)
+        if (current==null) {
             try {
                 current = new FileOutputStream(out,appendOnNextOpen);
             } catch (FileNotFoundException e) {
                 throw new IOException("Failed to open "+out,e);
             }
+        }
         return current;
     }
 

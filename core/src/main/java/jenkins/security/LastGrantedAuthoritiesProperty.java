@@ -102,11 +102,13 @@ public class LastGrantedAuthoritiesProperty extends UserProperty {
             try {
                 User u = User.get(username);
                 LastGrantedAuthoritiesProperty o = u.getProperty(LastGrantedAuthoritiesProperty.class);
-                if (o==null)
+                if (o==null) {
                     u.addProperty(o=new LastGrantedAuthoritiesProperty());
+                }
                 Authentication a = Jenkins.getAuthentication();
-                if (a!=null && a.getName().equals(username))
+                if (a!=null && a.getName().equals(username)) {
                     o.update(a);    // just for defensive sanity checking
+                }
             } catch (IOException e) {
                 LOGGER.log(Level.WARNING, "Failed to record granted authorities",e);
             }

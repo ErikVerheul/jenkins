@@ -69,8 +69,12 @@ public class DownloadService extends PageDecorator {
         if (!DownloadSettings.get().isUseBrowser()) {
             return "";
         }
-    	if (neverUpdate) return "";
-        if (doesNotSupportPostMessage())  return "";
+    	if (neverUpdate) {
+            return "";
+        }
+        if (doesNotSupportPostMessage()) {
+            return "";
+        }
 
         StringBuilder buf = new StringBuilder();
         if(Jenkins.getInstance().hasPermission(Jenkins.READ)) {
@@ -100,10 +104,14 @@ public class DownloadService extends PageDecorator {
 
     private boolean doesNotSupportPostMessage() {
         StaplerRequest req = Stapler.getCurrentRequest();
-        if (req==null)      return false;
+        if (req==null) {
+            return false;
+        }
 
         String ua = req.getHeader("User-Agent");
-        if (ua==null)       return false;
+        if (ua==null) {
+            return false;
+        }
 
         // according to http://caniuse.com/#feat=x-doc-messaging, IE <=7 doesn't support pstMessage
         // see http://www.useragentstring.com/pages/Internet%20Explorer/ for user agents
@@ -126,8 +134,9 @@ public class DownloadService extends PageDecorator {
 
             We'll monitor the traffic to see if we can sustain this added traffic.
          */
-        if (url.startsWith("http://updates.jenkins-ci.org/") && Jenkins.getInstance().isRootUrlSecure())
+        if (url.startsWith("http://updates.jenkins-ci.org/") && Jenkins.getInstance().isRootUrlSecure()) {
             return "https"+url.substring(4);
+        }
         return url;
     }
 
@@ -136,9 +145,11 @@ public class DownloadService extends PageDecorator {
      * Used to bind them to URL.
      */
     public Downloadable getById(String id) {
-        for (Downloadable d : Downloadable.all())
-            if(d.getId().equals(id))
+        for (Downloadable d : Downloadable.all()) {
+            if(d.getId().equals(id)) {
                 return d;
+            }
+        }
         return null;
     }
 
@@ -255,11 +266,12 @@ public class DownloadService extends PageDecorator {
          * When shall we retrieve this file next time?
          */
         public long getDue() {
-            if(due==0)
+            if(due==0) {
                 // if the file doesn't exist, this code should result
                 // in a very small (but >0) due value, which should trigger
                 // the retrieval immediately.
                 due = getDataFile().file.lastModified()+interval;
+            }
             return due;
         }
 
@@ -269,13 +281,14 @@ public class DownloadService extends PageDecorator {
          */
         public JSONObject getData() throws IOException {
             TextFile df = getDataFile();
-            if(df.exists())
+            if(df.exists()) {
                 try {
                     return JSONObject.fromObject(df.read());
                 } catch (JSONException e) {
                     df.delete(); // if we keep this file, it will cause repeated failures
                     throw new IOException("Failed to parse "+df+" into JSON",e);
                 }
+            }
             return null;
         }
 
@@ -332,8 +345,9 @@ public class DownloadService extends PageDecorator {
          */
         public static Downloadable get(String id) {
             for (Downloadable d : all()) {
-                if(d.id.equals(id))
+                if(d.id.equals(id)) {
                     return d;
+                }
             }
             return null;
         }

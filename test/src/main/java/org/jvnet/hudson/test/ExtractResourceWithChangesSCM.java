@@ -51,16 +51,18 @@ public class ExtractResourceWithChangesSCM extends NullSCM {
     private final String moduleRoot;
     
     public ExtractResourceWithChangesSCM(URL firstZip, URL secondZip) {
-        if ((firstZip == null) || (secondZip == null))
+        if ((firstZip == null) || (secondZip == null)) {
             throw new IllegalArgumentException();
+        }
         this.firstZip = firstZip;
         this.secondZip = secondZip;
         this.moduleRoot = null;
     }
 
     public ExtractResourceWithChangesSCM(URL firstZip, URL secondZip, String moduleRoot) {
-        if ((firstZip == null) || (secondZip == null))
+        if ((firstZip == null) || (secondZip == null)) {
             throw new IllegalArgumentException();
+        }
         this.firstZip = firstZip;
         this.secondZip = secondZip;
         this.moduleRoot = moduleRoot;
@@ -92,8 +94,9 @@ public class ExtractResourceWithChangesSCM extends NullSCM {
 
         try {
             while ((e = zip.getNextEntry()) != null) {
-                if (!e.isDirectory())
+                if (!e.isDirectory()) {
                     changeLog.addFile(new ExtractChangeLogParser.FileInZip(e.getName()));
+                }
             }
         }
         finally {

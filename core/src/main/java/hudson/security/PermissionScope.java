@@ -77,10 +77,13 @@ public final class PermissionScope {
      * A scope always contains itself.
      */
     public boolean isContainedBy(PermissionScope s) {
-        if (this==s)    return true;
+        if (this==s) {
+            return true;
+        }
         for (PermissionScope c : containers) {
-            if (c.isContainedBy(s))
+            if (c.isContainedBy(s)) {
                 return true;
+            }
         }
         return false;
     }

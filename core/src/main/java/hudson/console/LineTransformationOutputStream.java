@@ -53,25 +53,29 @@ public abstract class LineTransformationOutputStream extends OutputStream {
 
     public void write(int b) throws IOException {
         buf.write(b);
-        if (b==LF) eol();
+        if (b==LF) {
+            eol();
+        }
     }
 
     private void eol() throws IOException {
         eol(buf.getBuffer(),buf.size());
 
         // reuse the buffer under normal circumstances, but don't let the line buffer grow unbounded
-        if (buf.size()>4096)
+        if (buf.size()>4096) {
             buf = new ByteArrayOutputStream2();
-        else
+        } else {
             buf.reset();
+        }
     }
 
     @Override
     public void write(byte[] b, int off, int len) throws IOException {
         int end = off+len;
 
-        for( int i=off; i<end; i++ )
+        for( int i=off; i<end; i++ ) {
             write(b[i]);
+        }
     }
 
     @Override

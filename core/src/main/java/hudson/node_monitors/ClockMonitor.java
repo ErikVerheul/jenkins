@@ -51,7 +51,9 @@ public class ClockMonitor extends NodeMonitor {
         @Override
         protected Callable<ClockDifference,IOException> createCallable(Computer c) {
             Node n = c.getNode();
-            if(n==null) return null;
+            if(n==null) {
+                return null;
+            }
             return n.getClockDifferenceCallable();
         }
 

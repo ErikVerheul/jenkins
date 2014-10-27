@@ -355,8 +355,9 @@ public class Fingerprinter extends Recorder implements Serializable, DependencyD
                 Run pb = build.getPreviousBuild();
                 if (pb!=null) {
                     FingerprintAction a = pb.getAction(FingerprintAction.class);
-                    if (a!=null)
+                    if (a!=null) {
                         compact(a);
+                    }
                 }
             }
         }
@@ -374,10 +375,14 @@ public class Fingerprinter extends Recorder implements Serializable, DependencyD
             Map<String,String> b = new HashMap<String, String>();
             for (Entry<String,String> e : record.entrySet()) {
                 String k = intern.get(e.getKey());
-                if (k==null)    k = e.getKey();
+                if (k==null) {
+                    k = e.getKey();
+                }
 
                 String v = intern.get(e.getValue());
-                if (v==null)    v = e.getValue();
+                if (v==null) {
+                    v = e.getValue();
+                }
 
                 b.put(k,v);
             }
@@ -391,8 +396,9 @@ public class Fingerprinter extends Recorder implements Serializable, DependencyD
         public synchronized Map<String,Fingerprint> getFingerprints() {
             if(ref!=null) {
                 Map<String,Fingerprint> m = ref.get();
-                if(m!=null)
+                if(m!=null) {
                     return m;
+                }
             }
 
             Jenkins h = Jenkins.getInstance();
@@ -401,8 +407,9 @@ public class Fingerprinter extends Recorder implements Serializable, DependencyD
             for (Entry<String, String> r : record.entrySet()) {
                 try {
                     Fingerprint fp = h._getFingerprint(r.getValue());
-                    if(fp!=null)
+                    if(fp!=null) {
                         m.put(r.getKey(), fp);
+                    }
                 } catch (IOException e) {
                     LOGGER.log(Level.WARNING,e.getMessage(),e);
                 }
@@ -432,25 +439,34 @@ public class Fingerprinter extends Recorder implements Serializable, DependencyD
 
             for (Fingerprint fp : getFingerprints().values()) {
                 BuildPtr bp = fp.getOriginal();
-                if(bp==null)    continue;       // outside Hudson
-                if(bp.is(build))    continue;   // we are the owner
+                if(bp==null) {
+                    continue;       // outside Hudson
+                }
+                if(bp.is(build)) {
+                    continue;   // we are the owner
+                }
 
                 try {
                     Job job = bp.getJob();
-                    if (job==null)  continue;   // project no longer exists
+                    if (job==null) {
+                        continue;   // project no longer exists
+                    }
                     if (!(job instanceof AbstractProject)) {
                         // Ignoring this for now. In the future we may want a dependency map function not limited to AbstractProject.
                         // (Could be used by getDependencyChanges if pulled up from AbstractBuild into Run, for example.)
                         continue;
                     }
-                    if (job.getParent()==build.getParent())
+                    if (job.getParent()==build.getParent()) {
                         continue;   // we are the parent of the build owner, that is almost like we are the owner
-                    if(!includeMissing && job.getBuildByNumber(bp.getNumber())==null)
+                    }
+                    if(!includeMissing && job.getBuildByNumber(bp.getNumber())==null) {
                         continue;               // build no longer exists
+                    }
 
                     Integer existing = r.get(job);
-                    if(existing!=null && existing>bp.getNumber())
+                    if(existing!=null && existing>bp.getNumber()) {
                         continue;   // the record in the map is already up to date
+                    }
                     r.put((AbstractProject) job, bp.getNumber());
                 } catch (AccessDeniedException e) {
                     // Need to log in to access this job, so ignore

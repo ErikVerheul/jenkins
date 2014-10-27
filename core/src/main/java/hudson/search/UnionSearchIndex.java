@@ -37,10 +37,11 @@ public class UnionSearchIndex implements SearchIndex {
             // allow some of the inputs to be null,
             // and also recognize EMPTY
             if (q != null && q != EMPTY) {
-                if (p == EMPTY)
+                if (p == EMPTY) {
                     p = q;
-                else
+                } else {
                     p = new UnionSearchIndex(p,q);
+                }
             }
         }
         return p;

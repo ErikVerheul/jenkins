@@ -44,7 +44,9 @@ public class DefaultUserCanonicalIdResolver extends User.CanonicalIdResolver {
     public String resolveCanonicalId(String idOrFullName, Map<String, ?> context) {
         String id = idOrFullName.replace('\\', '_').replace('/', '_').replace('<','_')
                 .replace('>', '_');  // 4 replace() still faster than regex
-        if (Functions.isWindows()) id = id.replace(':','_');
+        if (Functions.isWindows()) {
+            id = id.replace(':','_');
+        }
         return id;
     }
 

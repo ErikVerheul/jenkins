@@ -34,10 +34,11 @@ import jenkins.model.Jenkins;
 @Extension(ordinal=100)
 public class ManageJenkinsAction implements RootAction {
     public String getIconFileName() {
-        if (Jenkins.getInstance().hasPermission(Jenkins.ADMINISTER))
+        if (Jenkins.getInstance().hasPermission(Jenkins.ADMINISTER)) {
             return "setting.png";
-        else
+        } else {
             return null;
+        }
     }
 
     public String getDisplayName() {

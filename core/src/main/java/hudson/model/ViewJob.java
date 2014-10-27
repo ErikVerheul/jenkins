@@ -101,8 +101,9 @@ public abstract class ViewJob<JobT extends ViewJob<JobT,RunT>, RunT extends Run<
         if(notLoaded || runs==null) {
             // if none is loaded yet, do so immediately.
             synchronized(this) {
-                if(runs==null)
+                if(runs==null) {
                     runs = new RunMap<RunT>();
+                }
                 if(notLoaded) {
                     notLoaded = false;
                     _reload();   
@@ -184,10 +185,12 @@ public abstract class ViewJob<JobT extends ViewJob<JobT,RunT>, RunT extends Run<
             synchronized(reloadQueue) {
                 // reload operations might eat InterruptException,
                 // so check the status every so often
-                while(reloadQueue.isEmpty() && !terminating())
+                while(reloadQueue.isEmpty() && !terminating()) {
                     reloadQueue.wait(60*1000);
-                if(terminating())
+                }
+                if(terminating()) {
                     throw new InterruptedException();   // terminate now
+                }
                 ViewJob job = reloadQueue.iterator().next();
                 reloadQueue.remove(job);
                 return job;

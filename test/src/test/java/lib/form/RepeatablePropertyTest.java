@@ -74,8 +74,9 @@ public class RepeatablePropertyTest extends HudsonTestCase implements Describabl
         final HtmlForm form = getForm(viewName);
         final List<HtmlTextInput> inputs = toTextInputList(form.getElementsByAttribute("input", "type", "text"));
         assertEquals("size", expected.size(), inputs.size());
-        for (int i = 0; i < expected.size(); i++)
+        for (int i = 0; i < expected.size(); i++) {
             assertEquals(expected.get(i).greatProperty, inputs.get(i).getValueAttribute());
+        }
     }
     
     private List<HtmlTextInput> toTextInputList(final List<HtmlElement> inputs) {
@@ -128,11 +129,16 @@ public class RepeatablePropertyTest extends HudsonTestCase implements Describabl
         }
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            ExcitingObject that = (ExcitingObject) o;
-            if (greatProperty != null ? !greatProperty.equals(that.greatProperty) : that.greatProperty != null)
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
                 return false;
+            }
+            ExcitingObject that = (ExcitingObject) o;
+            if (greatProperty != null ? !greatProperty.equals(that.greatProperty) : that.greatProperty != null) {
+                return false;
+            }
             return true;
         }
         @Override

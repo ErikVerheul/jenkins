@@ -74,7 +74,9 @@ class SortedIntList extends AbstractList<Integer> {
 
     @Override
     public Integer get(int index) {
-        if (size<=index)    throw new IndexOutOfBoundsException();
+        if (size<=index) {
+            throw new IndexOutOfBoundsException();
+        }
         return data[index];
     }
 
@@ -144,7 +146,9 @@ class SortedIntList extends AbstractList<Integer> {
 
     public void removeValue(int n) {
         int idx = find(n);
-        if (idx<0)  return;
+        if (idx<0) {
+            return;
+        }
         System.arraycopy(data,idx+1,data,idx,size-(idx+1));
         size--;
     }
@@ -160,12 +164,14 @@ class SortedIntList extends AbstractList<Integer> {
             int pivot = (lo + hi)/2;
             int v = a[pivot];
 
-            if (v < key)        // needs to search upper half
+            if (v < key) {        // needs to search upper half
                 lo = pivot+1;
-            else if (v > key)   // needs to search lower half
+            } else if (v > key) {   // needs to search lower half
                 hi = pivot-1;
-            else    // eureka!
+            } else {
+                // eureka!
                 return pivot;
+            }
         }
         return -(lo + 1); // insertion point
     }

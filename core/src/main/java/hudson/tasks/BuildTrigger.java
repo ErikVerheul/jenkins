@@ -115,8 +115,9 @@ public class BuildTrigger extends Recorder implements DependencyDeclarer {
     }
 
     public BuildTrigger(String childProjects, Result threshold) {
-        if(childProjects==null)
+        if(childProjects==null) {
             throw new IllegalArgumentException();
+        }
         this.childProjects = childProjects;
         this.threshold = threshold;
     }
@@ -134,10 +135,11 @@ public class BuildTrigger extends Recorder implements DependencyDeclarer {
     }
 
     public Result getThreshold() {
-        if(threshold==null)
+        if(threshold==null) {
             return Result.SUCCESS;
-        else
+        } else {
             return threshold;
+        }
     }
 
     /**
@@ -266,11 +268,11 @@ public class BuildTrigger extends Recorder implements DependencyDeclarer {
     }
 
     public void buildDependencyGraph(AbstractProject owner, DependencyGraph graph) {
-        for (AbstractProject p : getChildProjects(owner))
+        for (AbstractProject p : getChildProjects(owner)) {
             graph.addDependency(new Dependency(owner, p) {
                 @Override
                 public boolean shouldTriggerBuild(AbstractBuild build, TaskListener listener,
-                                                  List<Action> actions) {
+                        List<Action> actions) {
                     AbstractProject downstream = getDownstreamProject();
                     if (Jenkins.getInstance().getItemByFullName(downstream.getFullName()) != downstream) { // this checks Item.READ also on parent folders
                         LOGGER.log(Level.WARNING, "Running as {0} cannot even see {1} for trigger from {2}", new Object[] {Jenkins.getAuthentication().getName(), downstream, getUpstreamProject()});
@@ -283,6 +285,7 @@ public class BuildTrigger extends Recorder implements DependencyDeclarer {
                     return build.getResult().isBetterOrEqualTo(threshold);
                 }
             });
+        }
     }
 
     @Override
@@ -294,8 +297,9 @@ public class BuildTrigger extends Recorder implements DependencyDeclarer {
     @Deprecated
     public boolean onJobRenamed(String oldName, String newName) {
         // quick test
-        if(!childProjects.contains(oldName))
+        if(!childProjects.contains(oldName)) {
             return false;
+        }
 
         boolean changed = false;
 
@@ -311,7 +315,9 @@ public class BuildTrigger extends Recorder implements DependencyDeclarer {
         if(changed) {
             StringBuilder b = new StringBuilder();
             for (String p : projects) {
-                if(b.length()>0)    b.append(',');
+                if(b.length()>0) {
+                    b.append(',');
+                }
                 b.append(p);
             }
             childProjects = b.toString();
@@ -324,8 +330,9 @@ public class BuildTrigger extends Recorder implements DependencyDeclarer {
      * Correct broken data gracefully (#1537)
      */
     private Object readResolve() {
-        if(childProjects==null)
+        if(childProjects==null) {
             return childProjects="";
+        }
         return this;
     }
 
@@ -366,7 +373,9 @@ public class BuildTrigger extends Recorder implements DependencyDeclarer {
          */
         public FormValidation doCheck(@AncestorInPath AbstractProject project, @QueryParameter String value) {
             // Require CONFIGURE permission on this project
-            if(!project.hasPermission(Item.CONFIGURE))      return FormValidation.ok();
+            if(!project.hasPermission(Item.CONFIGURE)) {
+                return FormValidation.ok();
+            }
 
             StringTokenizer tokens = new StringTokenizer(Util.fixNull(value),",");
             boolean hasProjects = false;
@@ -379,8 +388,9 @@ public class BuildTrigger extends Recorder implements DependencyDeclarer {
                         String alternative = nearest != null ? nearest.getRelativeNameFrom(project) : "?";
                         return FormValidation.error(Messages.BuildTrigger_NoSuchProject(projectName, alternative));
                     }
-                    if(!(item instanceof AbstractProject))
+                    if(!(item instanceof AbstractProject)) {
                         return FormValidation.error(Messages.BuildTrigger_NotBuildable(projectName));
+                    }
                     // check whether the supposed user is expected to be able to build
                     Authentication auth = Tasks.getAuthenticationOf(project);
                     if (auth.equals(ACL.SYSTEM) && !QueueItemAuthenticatorConfiguration.get().getAuthenticators().isEmpty()) {

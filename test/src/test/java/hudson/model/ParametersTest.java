@@ -73,8 +73,11 @@ public class ParametersTest extends HudsonTestCase {
 
         submit(form);
         Queue.Item q = jenkins.getQueue().getItem(project);
-        if (q != null) q.getFuture().get();
-        else Thread.sleep(1000);
+        if (q != null) {
+            q.getFuture().get();
+        } else {
+            Thread.sleep(1000);
+        }
 
         assertEquals("newValue", builder.getEnvVars().get("STRING"));
         assertEquals("true", builder.getEnvVars().get("BOOLEAN"));
@@ -106,8 +109,11 @@ public class ParametersTest extends HudsonTestCase {
 
         submit(form);
         Queue.Item q = jenkins.getQueue().getItem(project);
-        if (q != null) q.getFuture().get();
-        else Thread.sleep(1000);
+        if (q != null) {
+            q.getFuture().get();
+        } else {
+            Thread.sleep(1000);
+        }
 
         assertNotNull(builder.getEnvVars());
         assertEquals("Choice <2>", builder.getEnvVars().get("CHOICE"));
@@ -180,8 +186,11 @@ public class ParametersTest extends HudsonTestCase {
 
         submit(form);
         Queue.Item q = jenkins.getQueue().getItem(project);
-        if (q != null) q.getFuture().get();
-        else Thread.sleep(1000);
+        if (q != null) {
+            q.getFuture().get();
+        } else {
+            Thread.sleep(1000);
+        }
 
         assertFalse("file must not exist", project.getSomeWorkspace().child("filename").exists());
     }

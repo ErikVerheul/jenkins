@@ -55,9 +55,11 @@ public class AddJobToViewCommand extends CLICommand {
     protected int run() throws Exception {
         view.checkPermission(View.CONFIGURE);
 
-        if (!(view instanceof DirectlyModifiableView)) throw new CmdLineException(
-                null, "'" + view.getDisplayName() + "' view can not be modified directly"
-        );
+        if (!(view instanceof DirectlyModifiableView)) {
+            throw new CmdLineException(
+                    null, "'" + view.getDisplayName() + "' view can not be modified directly"
+            );
+        }
 
         for (TopLevelItem job: jobs) {
             ((DirectlyModifiableView) view).add(job);

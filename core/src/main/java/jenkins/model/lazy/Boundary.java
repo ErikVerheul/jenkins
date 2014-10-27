@@ -55,7 +55,9 @@ enum Boundary {
      */
     public int apply(int binarySearchOutput) {
         int r = binarySearchOutput;
-        if (r>=0)    return r+offsetOfExactMatch;   // if we had some x_i==p
+        if (r>=0) {
+            return r+offsetOfExactMatch;   // if we had some x_i==p
+        }
 
         int ip = -(r+1);
         return ip+offsetOfInsertionPoint;

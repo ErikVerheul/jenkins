@@ -68,10 +68,14 @@ public class DiskSpaceMonitor extends AbstractDiskSpaceMonitor {
         @Override
         protected Callable<DiskSpace, IOException> createCallable(Computer c) {
             Node node = c.getNode();
-            if (node == null) return null;
+            if (node == null) {
+                return null;
+            }
             
             FilePath p = node.getRootPath();
-            if(p==null) return null;
+            if(p==null) {
+                return null;
+            }
 
             return p.asCallableWith(new GetUsableSpace());
         }

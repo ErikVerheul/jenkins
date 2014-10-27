@@ -90,15 +90,19 @@ public abstract class PeepholePermalink extends Permalink implements Predicate<R
             String target = readSymlink(f);
             if (target!=null) {
                 int n = Integer.parseInt(Util.getFileName(target));
-                if (n==RESOLVES_TO_NONE)  return null;
+                if (n==RESOLVES_TO_NONE) {
+                    return null;
+                }
 
                 b = job.getBuildByNumber(n);
-                if (b!=null && apply(b))
+                if (b!=null && apply(b)) {
                     return b;   // found it (in the most efficient way possible)
+                }
 
                 // the cache is stale. start the search
-                if (b==null)
-                     b=job.getNearestOldBuild(n);
+                if (b==null) {
+                    b=job.getNearestOldBuild(n);
+                }
             }
         } catch (InterruptedException e) {
             LOGGER.log(Level.WARNING, "Failed to read permalink cache:" + f, e);
@@ -215,8 +219,9 @@ public abstract class PeepholePermalink extends Permalink implements Predicate<R
             for (PeepholePermalink pp : Util.filter(j.getPermalinks(), PeepholePermalink.class)) {
                 if (pp.resolve(j)==run) {
                     Run<?,?> r = pp.find(run.getPreviousBuild());
-                    if (LOGGER.isLoggable(Level.FINE))
+                    if (LOGGER.isLoggable(Level.FINE)) {
                         LOGGER.fine("Updating "+pp.getPermalinkFile(j).getName()+" permalink from deleted "+run.getNumber()+" to "+(r == null ? -1 : r.getNumber()));
+                    }
                     pp.updateCache(j,r);
                 }
             }
@@ -232,8 +237,9 @@ public abstract class PeepholePermalink extends Permalink implements Predicate<R
                 if (pp.apply(run)) {
                     Run<?, ?> cur = pp.resolve(j);
                     if (cur==null || cur.getNumber()<run.getNumber()) {
-                        if (LOGGER.isLoggable(Level.FINE))
+                        if (LOGGER.isLoggable(Level.FINE)) {
                             LOGGER.fine("Updating "+pp.getPermalinkFile(j).getName()+" permalink to completed "+run.getNumber());
+                        }
                         pp.updateCache(j,run);
                     }
                 }

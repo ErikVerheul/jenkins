@@ -75,10 +75,12 @@ public final class ProcessTreeKiller {
      */
     public void kill(Process proc, Map<String, String> modelEnvVars) throws InterruptedException {
         ProcessTree pt = ProcessTree.get();
-        if(proc!=null)
+        if(proc!=null) {
             pt.get(proc).killRecursively();
-        if(modelEnvVars!=null)
+        }
+        if(modelEnvVars!=null) {
             pt.killAll(modelEnvVars);
+        }
     }
 
     /**

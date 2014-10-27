@@ -39,8 +39,9 @@ public class UserDetailsServiceProxy implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException, DataAccessException {
         UserDetailsService uds = delegate;  // fix the reference for concurrency support
 
-        if(uds ==null)
+        if(uds ==null) {
             throw new UserMayOrMayNotExistException(Messages.UserDetailsServiceProxy_UnableToQuery(username));
+        }
         return uds.loadUserByUsername(username);
     }
 

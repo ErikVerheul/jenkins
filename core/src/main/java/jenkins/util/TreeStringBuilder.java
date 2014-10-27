@@ -126,7 +126,9 @@ public class TreeStringBuilder {
      * Interns a string.
      */
     public TreeString intern(final String s) {
-        if (s==null)    return null;
+        if (s==null) {
+            return null;
+        }
         return root.intern(s).node;
     }
 
@@ -134,7 +136,9 @@ public class TreeStringBuilder {
      * Interns a {@link TreeString} created elsewhere.
      */
     public TreeString intern(final TreeString s) {
-        if (s==null)    return null;
+        if (s==null) {
+            return null;
+        }
         return root.intern(s.toString()).node;
     }
 

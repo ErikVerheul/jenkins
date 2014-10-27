@@ -67,10 +67,11 @@ public class DirectoryBrowserSupportTest {
     public void doubleDots() throws Exception {
         // create a problematic file name in the workspace
         FreeStyleProject p = j.createFreeStyleProject();
-        if(Functions.isWindows())
+        if(Functions.isWindows()) {
             p.getBuildersList().add(new BatchFile("echo > abc..def"));
-        else
+        } else {
             p.getBuildersList().add(new Shell("touch abc..def"));
+        }
         p.scheduleBuild2(0).get();
 
         // can we see it?
@@ -94,7 +95,9 @@ public class DirectoryBrowserSupportTest {
     @Email("http://www.nabble.com/Status-Code-400-viewing-or-downloading-artifact-whose-filename-contains-two-consecutive-periods-tt21407604.html")
     @Test
     public void doubleDots2() throws Exception {
-        if(Functions.isWindows())  return; // can't test this on Windows
+        if(Functions.isWindows()) {
+            return; // can't test this on Windows
+        }
 
         // create a problematic file name in the workspace
         FreeStyleProject p = j.createFreeStyleProject();

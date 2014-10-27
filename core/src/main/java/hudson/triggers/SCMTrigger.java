@@ -236,8 +236,9 @@ public class SCMTrigger extends Trigger<Item> {
          // originally List<SCMedItem> but known to be used only for logging, in which case the instances are not actually cast to SCMedItem anyway
         public List<SCMTriggerItem> getItemsBeingPolled() {
             List<SCMTriggerItem> r = new ArrayList<SCMTriggerItem>();
-            for (Runner i : getRunners())
+            for (Runner i : getRunners()) {
                 r.add(i.getTarget());
+            }
             return r;
         }
 
@@ -261,8 +262,12 @@ public class SCMTrigger extends Trigger<Item> {
          */
         public void setPollingThreadCount(int n) {
             // fool proof
-            if(n<0)     n=0;
-            if(n>100)   n=100;
+            if(n<0) {
+                n=0;
+            }
+            if(n>100) {
+                n=100;
+            }
 
             maximumThreads = n;
 
@@ -290,10 +295,11 @@ public class SCMTrigger extends Trigger<Item> {
         @Override
         public boolean configure(StaplerRequest req, JSONObject json) throws FormException {
             String t = json.optString("pollingThreadCount",null);
-            if(t==null || t.length()==0)
+            if(t==null || t.length()==0) {
                 setPollingThreadCount(0);
-            else
+            } else {
                 setPollingThreadCount(Integer.parseInt(t));
+            }
 
             // Save configuration
             save();
@@ -302,8 +308,9 @@ public class SCMTrigger extends Trigger<Item> {
         }
 
         public FormValidation doCheckPollingThreadCount(@QueryParameter String value) {
-            if (value != null && "".equals(value.trim()))
+            if (value != null && "".equals(value.trim())) {
                 return FormValidation.ok();
+            }
             return FormValidation.validateNonNegativeInteger(value);
         }
     }
@@ -516,10 +523,11 @@ public class SCMTrigger extends Trigger<Item> {
                     logger.println("Started on "+ DateFormat.getDateTimeInstance().format(new Date()));
                     boolean result = job().poll(listener).hasChanges();
                     logger.println("Done. Took "+ Util.getTimeSpanString(System.currentTimeMillis()-start));
-                    if(result)
+                    if(result) {
                         logger.println("Changes found");
-                    else
+                    } else {
                         logger.println("No changes");
+                    }
                     return result;
                 } catch (RuntimeException e) {
                     e.printStackTrace(listener.error("Failed to record SCM polling for "+job)); //NOSONAR

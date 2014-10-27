@@ -46,8 +46,9 @@ public class MultipartFormDataParser {
 
     public MultipartFormDataParser(HttpServletRequest request) throws ServletException {
         try {
-            for( FileItem fi : (List<FileItem>)upload.parseRequest(request) )
+            for( FileItem fi : (List<FileItem>)upload.parseRequest(request) ) {
                 byName.put(fi.getFieldName(),fi);
+            }
         } catch (FileUploadException e) {
             throw new ServletException(e);
         }
@@ -55,7 +56,9 @@ public class MultipartFormDataParser {
 
     public String get(String key) {
         FileItem fi = byName.get(key);
-        if(fi==null)    return null;
+        if(fi==null) {
+            return null;
+        }
         return fi.getString();
     }
 
@@ -68,7 +71,8 @@ public class MultipartFormDataParser {
      * Even if this method is not called, the resource will be still cleaned up later by GC.
      */
     public void cleanUp() {
-        for (FileItem item : byName.values())
+        for (FileItem item : byName.values()) {
             item.delete();
+        }
     }
 }

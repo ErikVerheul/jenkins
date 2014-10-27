@@ -72,7 +72,9 @@ public abstract class RepositoryBrowser<E extends ChangeLogSet.Entry> extends Ab
      * If the given string starts with '/', return a string that removes it.
      */
     protected static String trimHeadSlash(String s) {
-        if(s.startsWith("/"))   return s.substring(1);
+        if(s.startsWith("/")) {
+            return s.substring(1);
+        }
         return s;
     }
 
@@ -82,8 +84,9 @@ public abstract class RepositoryBrowser<E extends ChangeLogSet.Entry> extends Ab
      * An attention is paid to preserve the query parameters in URL if any. 
      */
     protected static URL normalizeToEndWithSlash(URL url) {
-        if(url.getPath().endsWith("/"))
+        if(url.getPath().endsWith("/")) {
             return url;
+        }
 
         // normalize
         String q = url.getQuery();

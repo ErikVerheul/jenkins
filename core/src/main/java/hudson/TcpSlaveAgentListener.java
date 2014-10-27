@@ -152,10 +152,11 @@ public final class TcpSlaveAgentListener extends Thread {
                 if(s.startsWith("Protocol:")) {
                     String protocol = s.substring(9);
                     AgentProtocol p = AgentProtocol.of(protocol);
-                    if (p!=null)
+                    if (p!=null) {
                         p.handle(this.s);
-                    else
+                    } else {
                         error(out, "Unknown protocol:" + s);
+                    }
                 } else {
                     error(out, "Unrecognized protocol: "+s);
                 }

@@ -89,8 +89,9 @@ public class AutoCompletionCandidates implements HttpResponse {
      * @since 1.489
      */
     public static <T extends Item> AutoCompletionCandidates ofJobNames(final Class<T> type, final String value, @CheckForNull Item self, ItemGroup container) {
-        if (self==container)
+        if (self==container) {
             container = self.getParent();
+        }
         return ofJobNames(type, value, container);
     }
 
@@ -127,8 +128,9 @@ public class AutoCompletionCandidates implements HttpResponse {
                  && i.hasPermission(Item.READ)
                     // and read permission required
                 ) {
-                    if (type.isInstance(i) && n.startsWith(value))
+                    if (type.isInstance(i) && n.startsWith(value)) {
                         candidates.add(n);
+                    }
 
                     // recurse
                     String oldPrefix = prefix;
@@ -139,10 +141,11 @@ public class AutoCompletionCandidates implements HttpResponse {
             }
 
             private String contextualNameOf(Item i) {
-                if (prefix.endsWith("/") || prefix.length()==0)
+                if (prefix.endsWith("/") || prefix.length()==0) {
                     return prefix+i.getName();
-                else
+                } else {
                     return prefix+'/'+i.getName();
+                }
             }
         }
 
@@ -150,8 +153,9 @@ public class AutoCompletionCandidates implements HttpResponse {
             new Visitor("").onItemGroup(Jenkins.getInstance());
         } else {
             new Visitor("").onItemGroup(container);
-            if (value.startsWith("/"))
+            if (value.startsWith("/")) {
                 new Visitor("/").onItemGroup(Jenkins.getInstance());
+            }
 
             for ( String p="../"; value.startsWith(p); p+="../") {
                 container = ((Item)container).getParent();

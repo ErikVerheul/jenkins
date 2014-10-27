@@ -391,8 +391,9 @@ public class JenkinsTest extends HudsonTestCase implements UnprotectedRootAction
     @Bug(23551)
     public void testComputerListenerNotifiedOnRestart() {
         // Simulate restart calling listeners
-        for (RestartListener listener : RestartListener.all())
+        for (RestartListener listener : RestartListener.all()) {
             listener.onRestart();
+        }
 
         ArgumentCaptor<OfflineCause> captor = ArgumentCaptor.forClass(OfflineCause.class);
         Mockito.verify(listenerMock).onOffline(Mockito.eq(jenkins.toComputer()), captor.capture());

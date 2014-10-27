@@ -131,8 +131,9 @@ public abstract class DiskSpaceMonitorDescriptor extends AbstractAsyncNodeMonito
          */
         public static DiskSpace parse(String size) throws ParseException {
             size = size.toUpperCase(Locale.ENGLISH).trim();
-            if (size.endsWith("B"))    // cut off 'B' from KB, MB, etc.
+            if (size.endsWith("B")) {    // cut off 'B' from KB, MB, etc.
                 size = size.substring(0,size.length()-1);
+            }
 
             long multiplier=1;
 
@@ -142,8 +143,9 @@ public abstract class DiskSpaceMonitorDescriptor extends AbstractAsyncNodeMonito
             for (int i=0; i<suffix.length(); i++) {
                 if (size.endsWith(suffix.substring(i,i+1))) {
                     multiplier = 1;
-                    for (int j=0; j<=i; j++ )
+                    for (int j=0; j<=i; j++ ) {
                         multiplier*=1024;
+                    }
                     size = size.substring(0,size.length()-1);
                 }
             }
@@ -158,7 +160,9 @@ public abstract class DiskSpaceMonitorDescriptor extends AbstractAsyncNodeMonito
         public GetUsableSpace() {}
         public DiskSpace invoke(File f, VirtualChannel channel) throws IOException {
                 long s = f.getUsableSpace();
-                if(s<=0)    return null;
+                if(s<=0) {
+                    return null;
+                }
                 return new DiskSpace(f.getCanonicalPath(), s);
         }
         private static final long serialVersionUID = 1L;

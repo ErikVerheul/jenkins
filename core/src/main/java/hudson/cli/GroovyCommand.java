@@ -99,10 +99,12 @@ public class GroovyCommand extends CLICommand {
      * Loads the script from the argument.
      */
     private String loadScript() throws CmdLineException, IOException, InterruptedException {
-        if(script==null)
+        if(script==null) {
             throw new CmdLineException(null, "No script is specified");
-        if (script.equals("="))
+        }
+        if (script.equals("=")) {
             return IOUtils.toString(stdin);
+        }
 
         return checkChannel().call(new ScriptLoader(script));
     }

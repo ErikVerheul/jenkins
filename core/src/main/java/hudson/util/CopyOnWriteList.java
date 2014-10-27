@@ -181,8 +181,9 @@ public class CopyOnWriteList<E> implements Iterable<E> {
         }
 
         public void marshal(Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
-            for (Object o : (CopyOnWriteList) source)
+            for (Object o : (CopyOnWriteList) source) {
                 writeItem(o, context, writer);
+            }
         }
 
         @SuppressWarnings("unchecked")

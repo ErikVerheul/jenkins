@@ -131,9 +131,11 @@ public class ExtensionList<T> extends AbstractList<T> {
      * or return null.
      */
     public <U extends T> U get(Class<U> type) {
-        for (T ext : this)
-            if(ext.getClass()==type)
+        for (T ext : this) {
+            if(ext.getClass()==type) {
                 return type.cast(ext);
+            }
+        }
         return null;
     }
 
@@ -236,17 +238,21 @@ public class ExtensionList<T> extends AbstractList<T> {
      * @since 1.349
      */
     public T getDynamic(String className) {
-        for (T t : this)
-            if (t.getClass().getName().equals(className))
+        for (T t : this) {
+            if (t.getClass().getName().equals(className)) {
                 return t;
+            }
+        }
         return null;
     }
 
     private List<ExtensionComponent<T>> ensureLoaded() {
-        if(extensions!=null)
+        if(extensions!=null) {
             return extensions; // already loaded
-        if (jenkins.getInitLevel().compareTo(InitMilestone.PLUGINS_PREPARED)<0)
+        }
+        if (jenkins.getInitLevel().compareTo(InitMilestone.PLUGINS_PREPARED)<0) {
             return legacyInstances; // can't perform the auto discovery until all plugins are loaded, so just make the legacy instances visible
+        }
 
         synchronized (getLoadLock()) {
             if(extensions==null) {
@@ -271,8 +277,9 @@ public class ExtensionList<T> extends AbstractList<T> {
      */
     public void refresh(ExtensionComponentSet delta) {
         synchronized (getLoadLock()) {
-            if (extensions==null)
+            if (extensions==null) {
                 return;     // not yet loaded. when we load it, we'll load everything visible by then, so no work needed
+            }
 
             Collection<ExtensionComponent<T>> found = load(delta);
             if (!found.isEmpty()) {
@@ -294,8 +301,9 @@ public class ExtensionList<T> extends AbstractList<T> {
      * Loads all the extensions.
      */
     protected List<ExtensionComponent<T>> load() {
-        if (LOGGER.isLoggable(Level.FINE))
+        if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.log(Level.FINE,"Loading ExtensionList: "+extensionType, new Throwable());
+        }
 
         return jenkins.getPluginManager().getPluginStrategy().findComponents(extensionType, hudson);
     }
@@ -330,9 +338,9 @@ public class ExtensionList<T> extends AbstractList<T> {
     }
 
     public static <T> ExtensionList<T> create(Jenkins jenkins, Class<T> type) {
-        if(type.getAnnotation(LegacyInstancesAreScopedToHudson.class)!=null)
+        if(type.getAnnotation(LegacyInstancesAreScopedToHudson.class)!=null) {
             return new ExtensionList<T>(jenkins,type);
-        else {
+        } else {
             return new ExtensionList<T>(jenkins,type,staticLegacyInstances.get(type));
         }
     }

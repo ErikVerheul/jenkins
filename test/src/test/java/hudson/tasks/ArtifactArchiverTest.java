@@ -134,8 +134,9 @@ public class ArtifactArchiverTest {
             Thread.sleep(100);
             count ++;
         }
-        if(project.getBuildByNumber(buildNumber)==null)
+        if(project.getBuildByNumber(buildNumber)==null) {
             fail("Build " + buildNumber + " did not created.");
+        }
     }
     
     static class CreateArtifact extends TestBuilder {

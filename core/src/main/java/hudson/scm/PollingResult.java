@@ -78,7 +78,9 @@ public final class PollingResult implements Serializable {
     }
 
     public PollingResult(SCMRevisionState baseline, SCMRevisionState remote, Change change) {
-        if (change==null)   throw new IllegalArgumentException();
+        if (change==null) {
+            throw new IllegalArgumentException();
+        }
         this.baseline = baseline;
         this.remote = remote;
         this.change = change;

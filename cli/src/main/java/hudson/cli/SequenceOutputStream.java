@@ -50,7 +50,9 @@ abstract class SequenceOutputStream extends OutputStream {
     }
 
     private void swapIfNeeded() throws IOException {
-        if(block.capacity >0) return;
+        if(block.capacity >0) {
+            return;
+        }
         block.out.close();
         block=next(block);
     }

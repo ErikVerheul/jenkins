@@ -45,8 +45,9 @@ public class HelpLinkTest extends HudsonTestCase {
         assertTrue(helpLinks.size()>0);
         System.out.println("Clicking "+helpLinks.size()+" help links");
 
-        for (HtmlAnchor helpLink : (List<HtmlAnchor>)helpLinks)
+        for (HtmlAnchor helpLink : (List<HtmlAnchor>)helpLinks) {
             helpLink.click();
+        }
     }
 
     public static class HelpNotFoundBuilder extends Publisher {
@@ -85,8 +86,9 @@ public class HelpLinkTest extends HudsonTestCase {
         } catch(AssertionError e) {
             if(e.getMessage().contains(d.getHelpFile()))
                 ; // expected
-            else
+            else {
                 throw e;
+            }
         } finally {
             Publisher.all().remove(d);
         }

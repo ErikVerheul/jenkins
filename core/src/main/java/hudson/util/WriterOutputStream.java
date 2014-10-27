@@ -56,15 +56,17 @@ public class WriterOutputStream extends OutputStream {
     }
 
     public void write(int b) throws IOException {
-        if(buf.remaining()==0)
+        if(buf.remaining()==0) {
             decode(false);
+        }
         buf.put((byte)b);
     }
 
     public void write(byte b[], int off, int len) throws IOException {
         while(len>0) {
-            if(buf.remaining()==0)
+            if(buf.remaining()==0) {
                 decode(false);
+            }
             int sz = Math.min(buf.remaining(),len);
             buf.put(b,off,sz);
             off += sz;

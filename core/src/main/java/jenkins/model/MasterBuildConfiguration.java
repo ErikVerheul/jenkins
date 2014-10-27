@@ -51,10 +51,11 @@ public class MasterBuildConfiguration extends GlobalConfiguration {
         try {
             // for compatibility reasons, this value is stored in Jenkins
             j.setNumExecutors(json.getInt("numExecutors"));
-            if (req.hasParameter("master.mode"))
+            if (req.hasParameter("master.mode")) {
                 j.setMode(Mode.valueOf(req.getParameter("master.mode")));
-            else
+            } else {
                 j.setMode(Mode.NORMAL);
+            }
 
             j.setLabelString(json.optString("labelString", ""));
 

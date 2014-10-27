@@ -49,24 +49,27 @@ public class SwapSpaceMonitor extends NodeMonitor {
      * Returns the HTML representation of the space.
      */
     public String toHtml(MemoryUsage usage) {
-        if(usage.availableSwapSpace==-1)
+        if(usage.availableSwapSpace==-1) {
             return "N/A";
+        }
 
        String humanReadableSpace = Functions.humanReadableByteSize(usage.availableSwapSpace);
        
         long free = usage.availableSwapSpace;
         free/=1024L;   // convert to KB
         free/=1024L;   // convert to MB
-        if(free>256 || usage.totalSwapSpace<usage.availableSwapSpace*5)
+        if(free>256 || usage.totalSwapSpace<usage.availableSwapSpace*5) {
             return humanReadableSpace; // if we have more than 256MB free or less than 80% filled up, it's OK
+        }
 
         // Otherwise considered dangerously low.
         return Util.wrapToErrorSpan(humanReadableSpace);
     }
 
     public long toMB(MemoryUsage usage) {
-        if(usage.availableSwapSpace==-1)
+        if(usage.availableSwapSpace==-1) {
             return -1;
+        }
 
         long free = usage.availableSwapSpace;
         free/=1024L;   // convert to KB

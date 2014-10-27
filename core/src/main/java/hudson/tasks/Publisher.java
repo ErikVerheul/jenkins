@@ -142,7 +142,9 @@ public abstract class Publisher extends BuildStepCompatibilityLayer implements D
 
         public int compare(ExtensionComponent<Descriptor<Publisher>> lhs, ExtensionComponent<Descriptor<Publisher>> rhs) {
             int r = classify(lhs.getInstance())-classify(rhs.getInstance());
-            if (r!=0)   return r;
+            if (r!=0) {
+                return r;
+            }
             return lhs.compareTo(rhs);
         }
 
@@ -151,13 +153,21 @@ public abstract class Publisher extends BuildStepCompatibilityLayer implements D
          * This is used as a sort key.
          */
         private int classify(Descriptor<Publisher> d) {
-            if(d.isSubTypeOf(Recorder.class))    return 0;
-            if(d.isSubTypeOf(Notifier.class))    return 2;
+            if(d.isSubTypeOf(Recorder.class)) {
+                return 0;
+            }
+            if(d.isSubTypeOf(Notifier.class)) {
+                return 2;
+            }
 
             // for compatibility, if the descriptor is manually registered in a specific way, detect that.
             Class<? extends Publisher> kind = PublisherList.KIND.get(d);
-            if(kind==Recorder.class)    return 0;
-            if(kind==Notifier.class)    return 2;
+            if(kind==Recorder.class) {
+                return 0;
+            }
+            if(kind==Notifier.class) {
+                return 2;
+            }
 
             return 1;
         }

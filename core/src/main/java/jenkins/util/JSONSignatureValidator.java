@@ -81,7 +81,9 @@ public class JSONSignatureValidator {
                         continue;       // skip directories also any text files that are meant to be documentation
                     }
                     InputStream in = j.servletContext.getResourceAsStream(cert);
-                    if (in == null) continue; // our test for paths ending in / should prevent this from happening
+                    if (in == null) {
+                        continue; // our test for paths ending in / should prevent this from happening
+                    }
                     Certificate certificate;
                     try {
                         certificate = cf.generateCertificate(in);
@@ -184,7 +186,9 @@ public class JSONSignatureValidator {
                 return FormValidation.error("Signature in the update center doesn't match with the certificate in "+name);
             }
 
-            if (warning!=null)  return warning;
+            if (warning!=null) {
+                return warning;
+            }
             return FormValidation.ok();
         } catch (GeneralSecurityException e) {
             return FormValidation.error(e,"Signature verification failed in "+name);

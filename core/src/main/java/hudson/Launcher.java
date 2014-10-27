@@ -133,9 +133,11 @@ public abstract class Launcher {
      *      {@link Computer#currentComputer()}  
      */
     public Computer getComputer() {
-        for( Computer c : Jenkins.getInstance().getComputers() )
-            if(c.getChannel()==channel)
+        for( Computer c : Jenkins.getInstance().getComputers() ) {
+            if(c.getChannel()==channel) {
                 return c;
+            }
+        }
         return null;
     }
 
@@ -622,22 +624,25 @@ public abstract class Launcher {
         StringBuilder buf = new StringBuilder();
         if (workDir != null) {
             buf.append('[');
-            if(showFullPath)
+            if(showFullPath) {
                 buf.append(workDir.getRemote());
-            else
+            } else {
                 buf.append(workDir.getRemote().replaceFirst("^.+[/\\\\]", ""));
+            }
             buf.append("] ");
         }
         buf.append('$');
         for (String c : cmd) {
             buf.append(' ');
             if(c.indexOf(' ')>=0) {
-                if(c.indexOf('"')>=0)
+                if(c.indexOf('"')>=0) {
                     buf.append('\'').append(c).append('\'');
-                else
+                } else {
                     buf.append('"').append(c).append('"');
-            } else
+                }
+            } else {
                 buf.append(c);
+            }
         }
         listener.getLogger().println(buf.toString());
     }
@@ -677,8 +682,9 @@ public abstract class Launcher {
      */
     public final Launcher decorateFor(Node node) {
         Launcher l = this;
-        for (LauncherDecorator d : LauncherDecorator.all())
+        for (LauncherDecorator d : LauncherDecorator.all()) {
             l = d.decorate(l,node);
+        }
         return l;
     }
 
@@ -796,8 +802,9 @@ public abstract class Launcher {
 
             // replace variables in command line
             String[] jobCmd = new String[ps.commands.size()];
-            for ( int idx = 0 ; idx < jobCmd.length; idx++ )
-            	jobCmd[idx] = jobEnv.expand(ps.commands.get(idx));
+            for ( int idx = 0 ; idx < jobCmd.length; idx++ ) {
+                jobCmd[idx] = jobEnv.expand(ps.commands.get(idx));
+            }
 
             return new LocalProc(jobCmd, Util.mapToEnv(jobEnv),
                     ps.reverseStdin ?LocalProc.SELFPUMP_INPUT:ps.stdin,
@@ -815,7 +822,9 @@ public abstract class Launcher {
 
             ProcessBuilder pb = new ProcessBuilder(cmd);
             pb.directory(toFile(workDir));
-            if (envVars!=null) pb.environment().putAll(envVars);
+            if (envVars!=null) {
+                pb.environment().putAll(envVars);
+            }
 
             return launchChannel(out, pb);
         }
@@ -1128,10 +1137,18 @@ public abstract class Launcher {
         public RemoteProcess call() throws IOException {
             Launcher.ProcStarter ps = new LocalLauncher(listener).launch();
             ps.cmds(cmd).masks(masks).envs(env).stdin(in).stdout(out).stderr(err).quiet(quiet);
-            if(workDir!=null)   ps.pwd(workDir);
-            if (reverseStdin)   ps.writeStdin();
-            if (reverseStdout)  ps.readStdout();
-            if (reverseStderr)  ps.readStderr();
+            if(workDir!=null) {
+                ps.pwd(workDir);
+            }
+            if (reverseStdin) {
+                ps.writeStdin();
+            }
+            if (reverseStdout) {
+                ps.readStdout();
+            }
+            if (reverseStderr) {
+                ps.readStderr();
+            }
 
             final Proc p = ps.start();
 
@@ -1159,9 +1176,15 @@ public abstract class Launcher {
 
                 public IOTriplet getIOtriplet() {
                     IOTriplet r = new IOTriplet();
-                    if (reverseStdout)  r.stdout = new RemoteInputStream(p.getStdout());
-                    if (reverseStderr)  r.stderr = new RemoteInputStream(p.getStderr());
-                    if (reverseStdin)   r.stdin  = new RemoteOutputStream(p.getStdin());
+                    if (reverseStdout) {
+                        r.stdout = new RemoteInputStream(p.getStdout());
+                    }
+                    if (reverseStderr) {
+                        r.stderr = new RemoteInputStream(p.getStderr());
+                    }
+                    if (reverseStdin) {
+                        r.stdin  = new RemoteOutputStream(p.getStdin());
+                    }
                     return r;
                 }
             });

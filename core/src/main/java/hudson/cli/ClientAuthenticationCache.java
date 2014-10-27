@@ -62,7 +62,9 @@ public class ClientAuthenticationCache implements Serializable {
     public Authentication get() {
         Jenkins h = Jenkins.getInstance();
         Secret userName = Secret.decrypt(props.getProperty(getPropertyKey()));
-        if (userName==null) return Jenkins.ANONYMOUS; // failed to decrypt
+        if (userName==null) {
+            return Jenkins.ANONYMOUS; // failed to decrypt
+        }
         try {
             UserDetails u = h.getSecurityRealm().loadUserByUsername(userName.getPlainText());
             return new UsernamePasswordAuthenticationToken(u.getUsername(), "", u.getAuthorities());
@@ -78,7 +80,9 @@ public class ClientAuthenticationCache implements Serializable {
      */
     private String getPropertyKey() {
         String url = Jenkins.getInstance().getRootUrl();
-        if (url!=null)  return url;
+        if (url!=null) {
+            return url;
+        }
         return Secret.fromString("key").toString();
     }
 
@@ -100,8 +104,9 @@ public class ClientAuthenticationCache implements Serializable {
      * Removes the persisted credential, if there's one.
      */
     public void remove() throws IOException, InterruptedException {
-        if (props.remove(getPropertyKey())!=null)
+        if (props.remove(getPropertyKey())!=null) {
             save();
+        }
     }
 
     private void save() throws IOException, InterruptedException {

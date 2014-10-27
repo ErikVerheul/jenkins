@@ -65,8 +65,9 @@ import java.util.TreeMap;
  */
 public final class RemotingDiagnostics {
     public static Map<Object,Object> getSystemProperties(VirtualChannel channel) throws IOException, InterruptedException {
-        if(channel==null)
+        if(channel==null) {
             return Collections.<Object,Object>singletonMap("N/A","N/A");
+        }
         return channel.call(new GetSystemProperties());
     }
 
@@ -78,14 +79,16 @@ public final class RemotingDiagnostics {
     }
 
     public static Map<String,String> getThreadDump(VirtualChannel channel) throws IOException, InterruptedException {
-        if(channel==null)
+        if(channel==null) {
             return Collections.singletonMap("N/A","N/A");
+        }
         return channel.call(new GetThreadDump());
     }
 
     public static Future<Map<String,String>> getThreadDumpAsync(VirtualChannel channel) throws IOException, InterruptedException {
-        if(channel==null)
+        if(channel==null) {
             return new AsyncFutureImpl<Map<String, String>>(Collections.singletonMap("N/A","offline"));
+        }
         return channel.callAsync(new GetThreadDump());
     }
 
@@ -94,8 +97,9 @@ public final class RemotingDiagnostics {
             Map<String,String> r = new LinkedHashMap<String,String>();
                 ThreadInfo[] data = Functions.getThreadInfos();
                 Functions.ThreadGroupMap map = Functions.sortThreadsAndGetGroupMap(data);
-                for (ThreadInfo ti : data)
+                for (ThreadInfo ti : data) {
                     r.put(ti.getThreadName(),Functions.dumpThreadInfo(ti,map));
+            }
             return r;
         }
         private static final long serialVersionUID = 1L;
@@ -123,7 +127,9 @@ public final class RemotingDiagnostics {
 
         public String call() throws RuntimeException {
             // if we run locally, cl!=null. Otherwise the delegating classloader will be available as context classloader.
-            if (cl==null)       cl = Thread.currentThread().getContextClassLoader();
+            if (cl==null) {
+                cl = Thread.currentThread().getContextClassLoader();
+            }
             CompilerConfiguration cc = new CompilerConfiguration();
             cc.addCompilationCustomizers(new ImportCustomizer().addStarImports(
                     "jenkins",
@@ -137,8 +143,9 @@ public final class RemotingDiagnostics {
             shell.setVariable("out", pw);
             try {
                 Object output = shell.evaluate(script);
-                if(output!=null)
-                pw.println("Result: "+output);
+                if(output!=null) {
+                    pw.println("Result: "+output);
+                }
             } catch (Exception t) {
                 t.printStackTrace(pw); //NOSONAR
             }

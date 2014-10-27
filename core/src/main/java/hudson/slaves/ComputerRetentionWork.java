@@ -58,8 +58,9 @@ public class ComputerRetentionWork extends PeriodicWork {
         final long startRun = System.currentTimeMillis();
         for (Computer c : Jenkins.getInstance().getComputers()) {
             Node n = c.getNode();
-            if (n!=null && n.isHoldOffLaunchUntilSave())
+            if (n!=null && n.isHoldOffLaunchUntilSave()) {
                 continue;
+            }
             if (!nextCheck.containsKey(c) || startRun > nextCheck.get(c)) {
                 // at the moment I don't trust strategies to wait more than 60 minutes
                 // strategies need to wait at least one minute

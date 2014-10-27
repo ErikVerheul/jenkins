@@ -131,7 +131,9 @@ public class ParametersDefinitionProperty extends JobProperty<Job<?, ?>>
      * This method is supposed to be invoked from {@link ParameterizedJobMixIn#doBuild(StaplerRequest, StaplerResponse, TimeDuration)}.
      */
     public void _doBuild(StaplerRequest req, StaplerResponse rsp, @QueryParameter TimeDuration delay) throws IOException, ServletException {
-        if (delay==null)    delay=new TimeDuration(getJob().getQuietPeriod());
+        if (delay==null) {
+            delay=new TimeDuration(getJob().getQuietPeriod());
+        }
 
 
         List<ParameterValue> values = new ArrayList<ParameterValue>();
@@ -144,8 +146,9 @@ public class ParametersDefinitionProperty extends JobProperty<Job<?, ?>>
             String name = jo.getString("name");
 
             ParameterDefinition d = getParameterDefinition(name);
-            if(d==null)
+            if(d==null) {
                 throw new IllegalArgumentException("No such parameter definition: " + name);
+            }
             ParameterValue parameterValue = d.createValue(req, jo);
             if (parameterValue != null) {
                 values.add(parameterValue);
@@ -158,12 +161,14 @@ public class ParametersDefinitionProperty extends JobProperty<Job<?, ?>>
                 getJob(), delay.getTime(), new ParametersAction(values), new CauseAction(new Cause.UserIdCause()));
         if (item!=null) {
             String url = formData.optString("redirectTo");
-            if (url==null || Util.isAbsoluteUri(url))   // avoid open redirect
+            if (url==null || Util.isAbsoluteUri(url)) {   // avoid open redirect
                 url = req.getContextPath()+'/'+item.getUrl();
+            }
             rsp.sendRedirect(formData.optInt("statusCode",SC_CREATED), url);
-        } else
+        } else {
             // send the user back to the job top page.
             rsp.sendRedirect(".");
+        }
     }
 
     /** @deprecated use {@link #buildWithParameters(StaplerRequest, StaplerResponse, TimeDuration)} */
@@ -180,7 +185,9 @@ public class ParametersDefinitionProperty extends JobProperty<Job<?, ?>>
         		values.add(value);
         	}
         }
-        if (delay==null)    delay=new TimeDuration(getJob().getQuietPeriod());
+        if (delay==null) {
+            delay=new TimeDuration(getJob().getQuietPeriod());
+        }
 
         Queue.Item item = Jenkins.getInstance().getQueue().schedule2(
                 getJob(), delay.getTime(), new ParametersAction(values), ParameterizedJobMixIn.getBuildCause(getJob(), req)).getItem();
@@ -196,9 +203,11 @@ public class ParametersDefinitionProperty extends JobProperty<Job<?, ?>>
      * Gets the {@link ParameterDefinition} of the given name, if any.
      */
     public ParameterDefinition getParameterDefinition(String name) {
-        for (ParameterDefinition pd : parameterDefinitions)
-            if (pd.getName().equals(name))
+        for (ParameterDefinition pd : parameterDefinitions) {
+            if (pd.getName().equals(name)) {
                 return pd;
+            }
+        }
         return null;
     }
 
@@ -224,8 +233,9 @@ public class ParametersDefinitionProperty extends JobProperty<Job<?, ?>>
             
             List<ParameterDefinition> parameterDefinitions = Descriptor.newInstancesFromHeteroList(
                     req, parameterized, "parameter", ParameterDefinition.all());
-            if(parameterDefinitions.isEmpty())
+            if(parameterDefinitions.isEmpty()) {
                 return null;
+            }
 
             return new ParametersDefinitionProperty(parameterDefinitions);
         }

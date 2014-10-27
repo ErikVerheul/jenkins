@@ -46,7 +46,9 @@ final class WarExploder {
         // rethrow an exception every time someone tries to do this, so that when explode()
         // fails, you can see the cause no matter which test case you look at.
         // see http://www.nabble.com/Failing-tests-in-test-harness-module-on-hudson.ramfelt.se-td19258722.html
-        if(FAILURE !=null)   throw new Exception("Failed to initialize exploded war", FAILURE);
+        if(FAILURE !=null) {
+            throw new Exception("Failed to initialize exploded war", FAILURE);
+        }
         return EXPLODE_DIR;
     }
 
@@ -82,9 +84,10 @@ final class WarExploder {
 
         // locate jenkins.war
         URL winstone = WarExploder.class.getResource("/winstone.jar");
-        if(winstone==null)
+        if(winstone==null) {
             // impossible, since the test harness pulls in jenkins.war
             throw new AssertionError("jenkins.war is not in the classpath. If you are running this from the core workspace, run 'mvn install' to create the war image in war/target/jenkins");
+        }
         File war = Which.jarFile(Class.forName("executable.Executable"));
 
         // TODO this assumes that the CWD of the Maven process is the plugin ${basedir}, which may not be the case
@@ -99,8 +102,9 @@ final class WarExploder {
             new FileOutputStream(explodeDir + ".exploding").close();
             new FilePath(explodeDir).deleteRecursive();
             new FilePath(war).unzip(new FilePath(explodeDir));
-            if(!explodeDir.exists())    // this is supposed to be impossible, but I'm investigating HUDSON-2605
+            if(!explodeDir.exists()) {    // this is supposed to be impossible, but I'm investigating HUDSON-2605
                 throw new IOException("Failed to explode "+war);
+            }
             new FileOutputStream(timestamp).close();
             timestamp.setLastModified(war.lastModified());
             new File(explodeDir + ".exploding").delete();

@@ -55,15 +55,18 @@ public class QueryParameterMap {
      *      String that looks like "abc=def&ghi=jkl"
      */
     public QueryParameterMap(String queryString) {
-        if (queryString==null || queryString.length()==0)   return;
+        if (queryString==null || queryString.length()==0) {
+            return;
+        }
         try {
             for (String param : queryString.split("&")) {
                 String[] kv = param.split("=");
                 String key = URLDecoder.decode(kv[0], "UTF-8");
                 String value = URLDecoder.decode(kv[1], "UTF-8");
                 List<String> values = store.get(key);
-                if (values == null)
+                if (values == null) {
                     store.put(key, values = new ArrayList<String>());
+                }
                 values.add(value);
             }
         } catch (UnsupportedEncodingException e) {

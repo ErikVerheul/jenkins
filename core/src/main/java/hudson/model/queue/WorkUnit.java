@@ -97,9 +97,10 @@ public final class WorkUnit {
 
     @Override
     public String toString() {
-        if (work==context.task)
+        if (work==context.task) {
             return super.toString()+"[work="+context.task.getFullDisplayName()+"]";
-        else
+        } else {
             return super.toString()+"[work="+work+",context.task="+context.task.getFullDisplayName()+"]";
+        }
     }
 }

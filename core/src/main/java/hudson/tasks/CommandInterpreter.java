@@ -91,8 +91,9 @@ public abstract class CommandInterpreter extends Builder {
                 // on Windows environment variables are converted to all upper case,
                 // but no such conversions are done on Unix, so to make this cross-platform,
                 // convert variables to all upper cases.
-                for(Map.Entry<String,String> e : build.getBuildVariables().entrySet())
+                for(Map.Entry<String,String> e : build.getBuildVariables().entrySet()) {
                     envVars.put(e.getKey(),e.getValue());
+                }
 
                 r = join(launcher.launch().cmds(buildCommandLine(script)).envs(envVars).stdout(listener).pwd(ws).start());
             } catch (IOException e) {
@@ -102,8 +103,9 @@ public abstract class CommandInterpreter extends Builder {
             return r==0;
         } finally {
             try {
-                if(script!=null)
+                if(script!=null) {
                     script.delete();
+                }
             } catch (IOException e) {
                 if (r==-1 && e.getCause() instanceof ChannelClosedException) {
                     // JENKINS-5073

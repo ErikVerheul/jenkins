@@ -30,8 +30,9 @@ public class LoginCommand extends CLICommand {
     @Override
     protected int run() throws Exception {
         Authentication a = Jenkins.getAuthentication();
-        if (a== Jenkins.ANONYMOUS)
+        if (a== Jenkins.ANONYMOUS) {
             throw new CmdLineException("No credentials specified."); // this causes CLI to show the command line options.
+        }
 
         ClientAuthenticationCache store = new ClientAuthenticationCache(checkChannel());
         store.set(a);

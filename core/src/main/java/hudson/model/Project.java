@@ -190,8 +190,9 @@ public abstract class Project<P extends Project<P,B>,B extends Build<P,B>>
 
     public Publisher getPublisher(Descriptor<Publisher> descriptor) {
         for (Publisher p : getPublishersList()) {
-            if(p.getDescriptor()==descriptor)
+            if(p.getDescriptor()==descriptor) {
                 return p;
+            }
         }
         return null;
     }
@@ -210,7 +211,9 @@ public abstract class Project<P extends Project<P,B>,B extends Build<P,B>>
 
     public MavenInstallation inferMavenInstallation() {
         Maven m = getBuildersList().get(Maven.class);
-        if (m!=null)    return m.getMaven();
+        if (m!=null) {
+            return m.getMaven();
+        }
         return null;
     }
 
@@ -234,14 +237,18 @@ public abstract class Project<P extends Project<P,B>,B extends Build<P,B>>
     protected List<Action> createTransientActions() {
         List<Action> r = super.createTransientActions();
 
-        for (BuildStep step : getBuildersList())
+        for (BuildStep step : getBuildersList()) {
             r.addAll(step.getProjectActions(this));
-        for (BuildStep step : getPublishersList())
+        }
+        for (BuildStep step : getPublishersList()) {
             r.addAll(step.getProjectActions(this));
-        for (BuildWrapper step : getBuildWrappers().values())
+        }
+        for (BuildWrapper step : getBuildWrappers().values()) {
             r.addAll(step.getProjectActions(this));
-        for (Trigger trigger : triggers())
+        }
+        for (Trigger trigger : triggers()) {
             r.addAll(trigger.getProjectActions());
+        }
 
         return r;
     }

@@ -149,9 +149,9 @@ public class ResponseTimeMonitor extends NodeMonitor {
         private final long[] past5;
 
         private Data(Data old, long newDataPoint) {
-            if(old==null)
+            if(old==null) {
                 past5 = new long[] {newDataPoint};
-            else {
+            } else {
                 past5 = new long[Math.min(5,old.past5.length+1)];
                 int copyLen = past5.length - 1;
                 System.arraycopy(old.past5, old.past5.length-copyLen, this.past5, 0, copyLen);
@@ -176,8 +176,11 @@ public class ResponseTimeMonitor extends NodeMonitor {
         public long getAverage() {
             long total=0;
             for (long l : past5) {
-                if(l<0)     total += TIMEOUT;
-                else        total += l;
+                if(l<0) {
+                    total += TIMEOUT;
+                } else {
+                    total += l;
+                }
             }
             return total/past5.length;
         }
@@ -198,8 +201,9 @@ public class ResponseTimeMonitor extends NodeMonitor {
 //            }
 //            return buf.toString();
             int fc = failureCount();
-            if(fc>0)
+            if(fc>0) {
                 return Util.wrapToErrorSpan(Messages.ResponseTimeMonitor_TimeOut(fc));
+            }
             return getAverage()+"ms";
         }
 

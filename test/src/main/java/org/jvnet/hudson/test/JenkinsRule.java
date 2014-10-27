@@ -407,8 +407,9 @@ public class JenkinsRule implements TestRule, MethodRule, RootAction {
     public void after() throws Exception {
         try {
             if (jenkins!=null) {
-                for (EndOfTestListener tl : jenkins.getExtensionList(EndOfTestListener.class))
+                for (EndOfTestListener tl : jenkins.getExtensionList(EndOfTestListener.class)) {
                     tl.onTearDown();
+                }
             }
 
             if (timeoutTimer!=null) {
@@ -434,12 +435,13 @@ public class JenkinsRule implements TestRule, MethodRule, RootAction {
             } catch (Exception e) {
                 // ignore
             }
-            for (LenientRunnable r : tearDowns)
+            for (LenientRunnable r : tearDowns) {
                 try {
                     r.run();
                 } catch (Exception e) {
                     // ignore
                 }
+            }
 
             if (jenkins!=null)
                 jenkins.cleanUp();
@@ -533,8 +535,9 @@ public class JenkinsRule implements TestRule, MethodRule, RootAction {
     protected Hudson newHudson() throws Exception {
         ServletContext webServer = createWebServer();
         File home = homeLoader.allocate();
-        for (JenkinsRecipe.Runner r : recipes)
+        for (JenkinsRecipe.Runner r : recipes) {
             r.decorateHome(this,home);
+        }
         try {
             return new Hudson(home, webServer, getPluginManager());
         } catch (InterruptedException x) {
@@ -1348,8 +1351,9 @@ public class JenkinsRule implements TestRule, MethodRule, RootAction {
                 int m = Array.getLength(lp);
                 int n = Array.getLength(rp);
                 assertThat("Array length is different for property " + p, n, is(m));
-                for (int i=0; i<m; i++)
+                for (int i=0; i<m; i++) {
                     assertThat(p + "[" + i + "] is different", Array.get(rp, i), is(Array.get(lp,i)));
+                }
                 return;
             }
 
@@ -1418,8 +1422,9 @@ public class JenkinsRule implements TestRule, MethodRule, RootAction {
      */
     public void assertEqualDataBoundBeans(List<?> lhs, List<?> rhs) throws Exception {
         assertThat(rhs.size(), is(lhs.size()));
-        for (int i=0; i<lhs.size(); i++)
+        for (int i=0; i<lhs.size(); i++) {
             assertEqualDataBoundBeans(lhs.get(i),rhs.get(i));
+        }
     }
 
     public Constructor<?> findDataBoundConstructor(Class<?> c) {
@@ -1444,9 +1449,10 @@ public class JenkinsRule implements TestRule, MethodRule, RootAction {
     public boolean isSomethingHappening() {
         if (!jenkins.getQueue().isEmpty())
             return true;
-        for (Computer n : jenkins.getComputers())
+        for (Computer n : jenkins.getComputers()) {
             if (!n.isIdle())
                 return true;
+        }
         return false;
     }
 

@@ -148,8 +148,9 @@ public final class Permission {
     public Permission(@Nonnull PermissionGroup group, @Nonnull String name, 
             @CheckForNull Localizable description, @CheckForNull Permission impliedBy, boolean enable, 
             @Nonnull PermissionScope[] scopes) {
-        if(!JSONUtils.isJavaIdentifier(name))
+        if(!JSONUtils.isJavaIdentifier(name)) {
             throw new IllegalArgumentException(name+" is not a Java identifier");
+        }
         this.owner = group.owner;
         this.group = group;
         this.name = name;
@@ -201,8 +202,9 @@ public final class Permission {
      */
     public boolean isContainedBy(@Nonnull PermissionScope s) {
         for (PermissionScope c : scopes) {
-            if (c.isContainedBy(s))
+            if (c.isContainedBy(s)) {
                 return true;
+            }
         }
         return false;
     }
@@ -230,13 +232,17 @@ public final class Permission {
      */
     public static @CheckForNull Permission fromId(@Nonnull String id) {
         int idx = id.lastIndexOf('.');
-        if(idx<0)   return null;
+        if(idx<0) {
+            return null;
+        }
 
         try {
             // force the initialization so that it will put all its permissions into the list.
             Class cl = Class.forName(id.substring(0,idx),true, Jenkins.getInstance().getPluginManager().uberClassLoader);
             PermissionGroup g = PermissionGroup.get(cl);
-            if(g ==null)  return null;
+            if(g ==null) {
+                return null;
+            }
             return g.find(id.substring(idx+1));
         } catch (ClassNotFoundException e) {
             return null;

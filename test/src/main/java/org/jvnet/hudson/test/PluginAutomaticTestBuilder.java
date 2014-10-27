@@ -61,8 +61,12 @@ public class PluginAutomaticTestBuilder {
     }
 
     private static boolean toBoolean(Object requirePI) {
-        if (requirePI==null)    return false;
-        if (requirePI instanceof Boolean)   return (Boolean)requirePI;
+        if (requirePI==null) {
+            return false;
+        }
+        if (requirePI instanceof Boolean) {
+            return (Boolean)requirePI;
+        }
         return Boolean.parseBoolean(requirePI.toString());
     }
 

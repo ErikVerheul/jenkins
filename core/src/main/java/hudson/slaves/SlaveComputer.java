@@ -194,8 +194,9 @@ public class SlaveComputer extends Computer {
     @Override
     public String getIcon() {
         Future<?> l = lastConnectActivity;
-        if(l!=null && !l.isDone())
+        if(l!=null && !l.isDone()) {
             return "computer-flash.gif";
+        }
         return super.getIcon();
     }
 
@@ -217,11 +218,15 @@ public class SlaveComputer extends Computer {
     }
 
     protected Future<?> _connect(boolean forceReconnect) {
-        if(channel!=null)   return Futures.precomputed(null);
-        if(!forceReconnect && isConnecting())
+        if(channel!=null) {
+            return Futures.precomputed(null);
+        }
+        if(!forceReconnect && isConnecting()) {
             return lastConnectActivity;
-        if(forceReconnect && isConnecting())
+        }
+        if(forceReconnect && isConnecting()) {
             logger.fine("Forcing a reconnect on "+getName());
+        }
 
         closeChannel();
         return lastConnectActivity = Computer.threadPoolForRemoting.submit(new java.util.concurrent.Callable<Object>() {
@@ -234,8 +239,9 @@ public class SlaveComputer extends Computer {
                 try {
                     log.rewind();
                     try {
-                        for (ComputerListener cl : ComputerListener.all())
+                        for (ComputerListener cl : ComputerListener.all()) {
                             cl.preLaunch(SlaveComputer.this, taskListener);
+                        }
 
                         launcher.launch(SlaveComputer.this, taskListener);
                     } catch (AbortException e) {
@@ -252,13 +258,15 @@ public class SlaveComputer extends Computer {
                 } finally {
                     if (channel==null) {
                         offlineCause = new OfflineCause.LaunchFailed();
-                        for (ComputerListener cl : ComputerListener.all())
+                        for (ComputerListener cl : ComputerListener.all()) {
                             cl.onLaunchFailure(SlaveComputer.this, taskListener);
+                        }
                     }
                 }
 
-                if (channel==null)
+                if (channel==null) {
                     throw new IOException("Slave failed to connect, even though the launcher didn't report it. See the log output for details.");
+                }
                 return null;
             }
         });
@@ -435,8 +443,9 @@ public class SlaveComputer extends Computer {
      * @since 1.444
      */
     public void setChannel(Channel channel, OutputStream launchLog, Channel.Listener listener) throws IOException, InterruptedException {
-        if(this.channel!=null)
+        if(this.channel!=null) {
             throw new IllegalStateException("Already connected");
+        }
 
         final TaskListener taskListenerLocal = new StreamTaskListener(launchLog);
         PrintStream logLocal = taskListenerLocal.getLogger();
@@ -455,8 +464,9 @@ public class SlaveComputer extends Computer {
                 launcher.afterDisconnect(SlaveComputer.this, taskListenerLocal);
             }
         });
-        if(listener!=null)
+        if(listener!=null) {
             channel.addListener(listener);
+        }
 
         String slaveVersion = channel.call(new SlaveVersion());
         logLocal.println("Slave.jar version: " + slaveVersion);
@@ -472,8 +482,9 @@ public class SlaveComputer extends Computer {
         }
         
         String remoteFs = node.getRemoteFS();
-        if(_isUnix && !remoteFs.contains("/") && remoteFs.contains("\\"))
+        if(_isUnix && !remoteFs.contains("/") && remoteFs.contains("\\")) {
             logLocal.println("WARNING: "+remoteFs+" looks suspiciously like Windows path. Maybe you meant "+remoteFs.replace('\\','/')+"?");
+        }
         FilePath root = new FilePath(channel,remoteFs);
 
         // reference counting problem is known to happen, such as JENKINS-9017, and so as a preventive measure
@@ -536,10 +547,11 @@ public class SlaveComputer extends Computer {
     }
 
     public List<LogRecord> getLogRecords() throws IOException, InterruptedException {
-        if(channel==null)
+        if(channel==null) {
             return Collections.emptyList();
-        else
+        } else {
             return channel.call(new SlaveLogFetcher());
+        }
     }
 
     @RequirePOST
@@ -632,8 +644,9 @@ public class SlaveComputer extends Computer {
             } catch (IOException e) {
                 logger.log(Level.SEVERE, "Failed to terminate channel to " + getDisplayName(), e);
             }
-            for (ComputerListener cl : ComputerListener.all())
+            for (ComputerListener cl : ComputerListener.all()) {
                 cl.onOffline(this, offlineCause);
+            }
         }
     }
 
@@ -646,10 +659,11 @@ public class SlaveComputer extends Computer {
         // "constructed==null" test is an ugly hack to avoid launching before the object is fully
         // constructed.
         if(constructed!=null) {
-            if (node instanceof Slave)
+            if (node instanceof Slave) {
                 ((Slave)node).getRetentionStrategy().check(this);
-            else
+            } else {
                 connect(false);
+            }
         }
     }
 
@@ -720,8 +734,9 @@ public class SlaveComputer extends Computer {
             // and each connection gets a different RemoteClassLoader, so we need to evict them by class name,
             // not by their identity.
             for (Handler h : LOGGER.getHandlers()) {
-                if (h.getClass().getName().equals(SLAVE_LOG_HANDLER.getClass().getName()))
+                if (h.getClass().getName().equals(SLAVE_LOG_HANDLER.getClass().getName())) {
                     LOGGER.removeHandler(h);
+                }
             }
             LOGGER.addHandler(SLAVE_LOG_HANDLER);
 
@@ -750,13 +765,15 @@ public class SlaveComputer extends Computer {
      * @since 1.362
      */
     public static VirtualChannel getChannelToMaster() {
-        if (Jenkins.getInstance()!=null)
+        if (Jenkins.getInstance()!=null) {
             return FilePath.localChannel;
+        }
 
         // if this method is called from within the slave computation thread, this should work
         Channel c = Channel.current();
-        if (c!=null && Boolean.TRUE.equals(c.getProperty("slave")))
+        if (c!=null && Boolean.TRUE.equals(c.getProperty("slave"))) {
             return c;
+        }
 
         return null;
     }

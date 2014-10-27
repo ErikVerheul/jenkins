@@ -58,8 +58,9 @@ public class RekeySecretAdminMonitor extends AsynchronousAdministrativeMonitor i
         // actually rewritten XML files.
         Jenkins j = Jenkins.getInstance();
         if (j.isUpgradedFromBefore(new VersionNumber("1.496.*"))
-        &&  new FileBoolean(new File(j.getRootDir(),"secret.key.not-so-secret")).isOff())
+        &&  new FileBoolean(new File(j.getRootDir(),"secret.key.not-so-secret")).isOff()) {
             needed.on();
+        }
     }
 
     /**
@@ -100,8 +101,9 @@ public class RekeySecretAdminMonitor extends AsynchronousAdministrativeMonitor i
         } else
         if(req.hasParameter("dismiss")) {
             disable(true);
-        } else
+        } else {
             throw HttpResponses.error(400,"Invalid request submission: " + req.getParameterMap());
+        }
 
         return HttpResponses.redirectViaContextPath("/manage");
     }

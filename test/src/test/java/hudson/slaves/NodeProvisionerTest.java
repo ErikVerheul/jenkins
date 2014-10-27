@@ -171,13 +171,15 @@ public class NodeProvisionerTest extends HudsonTestCase {
 
             // red jobs
             List<FreeStyleProject> redJobs = create5SlowJobs(new Latch(5));
-            for (FreeStyleProject p : redJobs)
+            for (FreeStyleProject p : redJobs) {
                 p.setAssignedLabel(red);
+            }
 
             // blue jobs
             List<FreeStyleProject> blueJobs = create5SlowJobs(new Latch(5));
-            for (FreeStyleProject p : blueJobs)
+            for (FreeStyleProject p : blueJobs) {
                 p.setAssignedLabel(blue);
+            }
 
             // build all
             List<Future<FreeStyleBuild>> blueBuilds = buildAll(blueJobs);
@@ -187,8 +189,9 @@ public class NodeProvisionerTest extends HudsonTestCase {
             assertEquals(5,cloud.numProvisioned);
 
             // and all blue jobs should be still stuck in the queue
-            for (Future<FreeStyleBuild> bb : blueBuilds)
+            for (Future<FreeStyleBuild> bb : blueBuilds) {
                 assertFalse(bb.isDone());
+            }
         } finally {
             bc.abort();
         }
@@ -215,10 +218,11 @@ public class NodeProvisionerTest extends HudsonTestCase {
 
     private List<FreeStyleProject> create5SlowJobs(Latch l) throws IOException {
         List<FreeStyleProject> jobs = new ArrayList<FreeStyleProject>();
-        for( int i=0; i<l.init; i++)
+        for( int i=0; i<l.init; i++) {
             //set a large delay, to simulate the situation where we need to provision more slaves
             // to keep up with the load
             jobs.add(createJob(l.createBuilder()));
+        }
         return jobs;
     }
 
@@ -228,8 +232,9 @@ public class NodeProvisionerTest extends HudsonTestCase {
     private List<Future<FreeStyleBuild>> buildAll(List<FreeStyleProject> jobs) {
         System.out.println("Scheduling builds for "+jobs.size()+" jobs");
         List<Future<FreeStyleBuild>> builds = new ArrayList<Future<FreeStyleBuild>>();
-        for (FreeStyleProject job : jobs)
+        for (FreeStyleProject job : jobs) {
             builds.add(job.scheduleBuild2(0));
+        }
         return builds;
     }
 

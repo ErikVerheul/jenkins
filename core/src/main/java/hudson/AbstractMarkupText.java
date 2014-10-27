@@ -119,8 +119,9 @@ public abstract class AbstractMarkupText {
         String text = getText();
         Matcher m = pattern.matcher(text);
 
-        if(m.find())
+        if(m.find()) {
             return createSubText(m);
+        }
 
         return null;
     }
@@ -147,14 +148,16 @@ public abstract class AbstractMarkupText {
             int idx = m.start();
             if(idx>0) {
                 char ch = text.charAt(idx-1);
-                if(Character.isLetter(ch) || Character.isDigit(ch))
+                if(Character.isLetter(ch) || Character.isDigit(ch)) {
                     continue;   // not at a word boundary
+                }
             }
             idx = m.end();
             if(idx<text.length()) {
                 char ch = text.charAt(idx);
-                if(Character.isLetter(ch) || Character.isDigit(ch))
+                if(Character.isLetter(ch) || Character.isDigit(ch)) {
                     continue;   // not at a word boundary
+                }
             }
             r.add(createSubText(m));
         }

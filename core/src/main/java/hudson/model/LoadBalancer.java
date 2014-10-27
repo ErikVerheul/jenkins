@@ -84,8 +84,9 @@ public abstract class LoadBalancer implements ExtensionPoint {
                         return node.getName();
                     }
                 });
-                for (ExecutorChunk ec : ws.works(i).applicableExecutorChunks())
+                for (ExecutorChunk ec : ws.works(i).applicableExecutorChunks()) {
                     hash.add(ec,ec.size()*100);
+                }
 
                 hashes.add(hash);
             }
@@ -97,12 +98,15 @@ public abstract class LoadBalancer implements ExtensionPoint {
             if (assignGreedily(m,task,hashes,0)) {
                 assert m.isCompletelyValid();
                 return m;
-            } else
+            } else {
                 return null;
+            }
         }
 
         private boolean assignGreedily(Mapping m, Task task, List<ConsistentHash<ExecutorChunk>> hashes, int i) {
-            if (i==hashes.size())   return true;    // fully assigned
+            if (i==hashes.size()) {
+                return true;    // fully assigned
+            }
 
             String key = task.getFullDisplayName() + (i>0 ? String.valueOf(i) : "");
 
@@ -110,10 +114,11 @@ public abstract class LoadBalancer implements ExtensionPoint {
                 // let's attempt this assignment
                 m.assign(i,ec);
 
-                if (m.isPartiallyValid() && assignGreedily(m,task,hashes,i+1))
+                if (m.isPartiallyValid() && assignGreedily(m,task,hashes,i+1)) {
                     return true;    // successful greedily allocation
-
-                // otherwise 'ec' wasn't a good fit for us. try next.
+                    
+                    // otherwise 'ec' wasn't a good fit for us. try next.
+                }
             }
 
             // every attempt failed

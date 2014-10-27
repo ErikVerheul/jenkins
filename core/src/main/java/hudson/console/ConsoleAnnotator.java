@@ -110,8 +110,11 @@ public abstract class ConsoleAnnotator<T> implements Serializable {
                     ConsoleAnnotator a =  itr.next();
                     ConsoleAnnotator b = a.annotate(context,text);
                     if (a!=b) {
-                        if (b==null)    itr.remove();
-                        else            itr.set(b);
+                        if (b==null) {
+                            itr.remove();
+                        } else {
+                            itr.set(b);
+                        }
                     }
                 }
 
@@ -141,8 +144,9 @@ public abstract class ConsoleAnnotator<T> implements Serializable {
         for (ConsoleAnnotatorFactory f : ConsoleAnnotatorFactory.all()) {
             if (f.type().isInstance(context)) {
                 ConsoleAnnotator ca = f.newInstance(context);
-                if (ca!=null)
+                if (ca!=null) {
                     r.add(ca);
+                }
             }
         }
         return r;

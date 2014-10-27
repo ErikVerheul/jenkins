@@ -69,7 +69,9 @@ public abstract class OfflineCause {
     }
 
     public static OfflineCause create(Localizable d) {
-        if (d==null)    return null;
+        if (d==null) {
+            return null;
+        }
         return new SimpleOfflineCause(d);
     }
 

@@ -130,8 +130,9 @@ public class WindowsInstallerLink extends ManagementLink {
             copy(req, rsp, dir, getClass().getResource("/windows-service/jenkins.exe"),         "jenkins.exe");
             copy(req, rsp, dir, getClass().getResource("/windows-service/jenkins.exe.config"),  "jenkins.exe.config");
             copy(req, rsp, dir, getClass().getResource("/windows-service/jenkins.xml"),         "jenkins.xml");
-            if(!hudsonWar.getCanonicalFile().equals(new File(dir,"jenkins.war").getCanonicalFile()))
+            if(!hudsonWar.getCanonicalFile().equals(new File(dir,"jenkins.war").getCanonicalFile())) {
                 copy(req, rsp, dir, hudsonWar.toURI().toURL(), "jenkins.war");
+            }
 
             // install as a service
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -252,11 +253,13 @@ public class WindowsInstallerLink extends ManagementLink {
      */
     @Extension
     public static WindowsInstallerLink registerIfApplicable() {
-        if(!Functions.isWindows())
+        if(!Functions.isWindows()) {
             return null; // this is a Windows only feature
+        }
 
-        if(Lifecycle.get() instanceof WindowsServiceLifecycle)
+        if(Lifecycle.get() instanceof WindowsServiceLifecycle) {
             return null; // already installed as Windows service
+        }
 
         // this system property is set by the launcher when we run "java -jar jenkins.war"
         // and this is how we know where is jenkins.war.
@@ -267,8 +270,9 @@ public class WindowsInstallerLink extends ManagementLink {
             // in certain situations where we know the user is just trying Jenkins (like when Jenkins is launched
             // from JNLP), also put this link on the navigation bar to increase
             // visibility
-            if(System.getProperty(WindowsInstallerLink.class.getName()+".prominent")!=null)
+            if(System.getProperty(WindowsInstallerLink.class.getName()+".prominent")!=null) {
                 Jenkins.getInstance().getActions().add(link);
+            }
 
             return link;
         }
@@ -302,8 +306,9 @@ public class WindowsInstallerLink extends ManagementLink {
         sei.lpParameters = "/redirect redirect.log "+command;
         sei.lpDirectory = pwd.getAbsolutePath();
         sei.nShow = SW_HIDE;
-        if (!Shell32.INSTANCE.ShellExecuteEx(sei))
+        if (!Shell32.INSTANCE.ShellExecuteEx(sei)) {
             throw new IOException("Failed to shellExecute: "+ Native.getLastError());
+        }
 
         try {
             return Kernel32Utils.waitForExitProcess(sei.hProcess);

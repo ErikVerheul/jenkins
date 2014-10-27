@@ -42,9 +42,10 @@ public class ImpersonatingUserDetailsService implements UserDetailsService {
         User u = User.get(username, false, emptyMap());
         if (u!=null) {
             LastGrantedAuthoritiesProperty p = u.getProperty(LastGrantedAuthoritiesProperty.class);
-            if (p!=null)
+            if (p!=null) {
                 return new org.acegisecurity.userdetails.User(username,"",true,true,true,true,
                         p.getAuthorities());
+            }
         }
 
         throw e;

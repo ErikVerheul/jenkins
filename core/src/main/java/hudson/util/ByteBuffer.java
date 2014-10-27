@@ -61,8 +61,9 @@ public class ByteBuffer extends OutputStream {
     }
 
     private void ensureCapacity(int len) {
-        if(buf.length-size>len)
+        if(buf.length-size>len) {
             return;
+        }
 
         byte[] n = new byte[Math.max(buf.length*2, size+len)];
         System.arraycopy(buf,0,n,0,size);
@@ -88,15 +89,18 @@ public class ByteBuffer extends OutputStream {
             private int pos = 0;
             public int read() throws IOException {
                 synchronized(ByteBuffer.this) {
-                    if(pos>=size)   return -1;
+                    if(pos>=size) {
+                        return -1;
+                    }
                     return buf[pos++];
                 }
             }
 
             public int read(byte b[], int off, int len) throws IOException {
                 synchronized(ByteBuffer.this) {
-                    if(size==pos)
+                    if(size==pos) {
                         return -1;
+                    }
 
                     int sz = Math.min(len,size-pos);
                     System.arraycopy(buf,pos,b,off,sz);

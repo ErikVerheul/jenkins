@@ -35,11 +35,12 @@ public class InitReactorRunner {
          reactor.addAll(InitMilestone.ordering().discoverTasks(reactor));
 
         ExecutorService es;
-        if (Jenkins.PARALLEL_LOAD)
+        if (Jenkins.PARALLEL_LOAD) {
             es = new ThreadPoolExecutor(
-                TWICE_CPU_NUM, TWICE_CPU_NUM, 5L, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(), new DaemonThreadFactory());
-        else
+                    TWICE_CPU_NUM, TWICE_CPU_NUM, 5L, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(), new DaemonThreadFactory());
+         } else {
             es = Executors.newSingleThreadExecutor(new NamingThreadFactory(new DaemonThreadFactory(), "InitReactorRunner"));
+         }
         try {
             reactor.execute(es,buildReactorListener());
         } finally {

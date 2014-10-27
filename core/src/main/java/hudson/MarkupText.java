@@ -169,7 +169,9 @@ public class MarkupText extends AbstractMarkupText {
          *      groups captured by '(...)' in the regexp.
          */
         public int start(int groupIndex) {
-            if(groupIndex==0)    return start;
+            if(groupIndex==0) {
+                return start;
+            }
             return groups[groupIndex*2-2];
         }
 
@@ -184,7 +186,9 @@ public class MarkupText extends AbstractMarkupText {
          * Gets the end index of the captured group within {@link MarkupText#getText()}.
          */
         public int end(int groupIndex) {
-            if(groupIndex==0)    return end;
+            if(groupIndex==0) {
+                return end;
+            }
             return groups[groupIndex*2-1];
         }
 
@@ -199,8 +203,9 @@ public class MarkupText extends AbstractMarkupText {
          * Gets the text that represents the captured group.
          */
         public String group(int groupIndex) {
-            if(start(groupIndex)==-1)
+            if(start(groupIndex)==-1) {
                 return null;
+            }
             return text.substring(start(groupIndex),end(groupIndex));
         }
 
@@ -234,8 +239,9 @@ public class MarkupText extends AbstractMarkupText {
                     } else {
                     	// add the group text
                     	String group = group(groupId);
-                    	if (group != null) 
-                    		buf.append(group);
+                    	if (group != null) {
+                            buf.append(group);
+                            }
                     }
 
                 } else {
@@ -281,7 +287,9 @@ public class MarkupText extends AbstractMarkupText {
     public void addMarkup( int startPos, int endPos, String startTag, String endTag ) {
         rangeCheck(startPos);
         rangeCheck(endPos);
-        if(startPos>endPos) throw new IndexOutOfBoundsException();
+        if(startPos>endPos) {
+            throw new IndexOutOfBoundsException();
+        }
 
         // when multiple tags are added to the same range, we want them to show up like
         // <b><i>abc</i></b>, not <b><i>abc</b></i>. Also, we'd like <b>abc</b><i>def</i>,
@@ -296,8 +304,9 @@ public class MarkupText extends AbstractMarkupText {
     }
 
     private void rangeCheck(int pos) {
-        if(pos<0 || pos>text.length())
+        if(pos<0 || pos>text.length()) {
             throw new IndexOutOfBoundsException();
+        }
     }
 
     /**
@@ -319,8 +328,9 @@ public class MarkupText extends AbstractMarkupText {
      *      If false, the escape is for the normal HTML, thus SP becomes &amp;nbsp; and CR/LF becomes &lt;BR>
      */
     public String toString(boolean preEscape) {
-        if(tags.isEmpty())
+        if(tags.isEmpty()) {
             return preEscape? Util.xmlEscape(text) : Util.escape(text);  // the most common case
+        }
 
         Collections.sort(tags);
 

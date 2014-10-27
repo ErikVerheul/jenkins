@@ -27,10 +27,11 @@ public abstract class TransientBuildActionFactory implements ExtensionPoint {
      * @return Can be empty but must not be null.
      */
     public Collection<? extends Action> createFor(Run target) {
-        if (target instanceof AbstractBuild)
+        if (target instanceof AbstractBuild) {
             return createFor((AbstractBuild)target);
-        else
+        } else {
             return Collections.emptyList();
+        }
     }
 
     /**

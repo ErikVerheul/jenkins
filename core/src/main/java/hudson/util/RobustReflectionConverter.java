@@ -149,8 +149,12 @@ public class RobustReflectionConverter implements Converter {
          reflectionProvider.visitSerializableFields(source, new ReflectionProvider.Visitor() {
             public void visit(String fieldName, Class type, Class definedIn, Object value) {
                 SingleValueConverter converter = mapper.getConverterFromItemType(fieldName, type, definedIn);
-                if (converter == null) converter = mapper.getConverterFromItemType(fieldName, type);
-                if (converter == null) converter = mapper.getConverterFromItemType(type);
+                if (converter == null) {
+                    converter = mapper.getConverterFromItemType(fieldName, type);
+                }
+                if (converter == null) {
+                    converter = mapper.getConverterFromItemType(type);
+                }
                 if (converter != null) {
                     if (value != null) {
                         final String str = converter.toString(value);
@@ -233,8 +237,9 @@ public class RobustReflectionConverter implements Converter {
         final SeenFields seenFields = new SeenFields();
         Iterator it = reader.getAttributeNames();
         // Remember outermost Saveable encountered, for reporting below
-        if (result instanceof Saveable && context.get("Saveable") == null)
+        if (result instanceof Saveable && context.get("Saveable") == null) {
             context.put("Saveable", result);
+        }
 
         // Process attributes before recursing into child elements.
         while (it.hasNext()) {
@@ -333,8 +338,9 @@ public class RobustReflectionConverter implements Converter {
     public static void addErrorInContext(UnmarshallingContext context, Throwable e) {
         LOGGER.log(FINE, "Failed to load", e);
         ArrayList<Throwable> list = (ArrayList<Throwable>)context.get("ReadError");
-        if (list == null)
+        if (list == null) {
             context.put("ReadError", list = new ArrayList<Throwable>());
+        }
         list.add(e);
     }
 
@@ -386,8 +392,9 @@ public class RobustReflectionConverter implements Converter {
 
         Object currentObject = context.currentObject();
         if (currentObject != null) {
-            if (type.isInstance(currentObject))
+            if (type.isInstance(currentObject)) {
                 return currentObject;
+            }
         }
         return reflectionProvider.newInstance(type);
     }
@@ -415,10 +422,11 @@ public class RobustReflectionConverter implements Converter {
         Class fieldType = reflectionProvider.getFieldType(result, fieldName, definedInCls);
         if (classAttribute != null) {
             Class specifiedType = mapper.realClass(classAttribute);
-            if(fieldType.isAssignableFrom(specifiedType))
+            if(fieldType.isAssignableFrom(specifiedType)) {
                 // make sure that the specified type in XML is compatible with the field type.
                 // this allows the code to evolve in more flexible way.
                 return specifiedType;
+            }
         }
         if (!validField) {
             Class itemType = mapper.getItemTypeForItemFieldName(result.getClass(), fieldName);

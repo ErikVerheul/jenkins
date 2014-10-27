@@ -113,7 +113,9 @@ public class XStream2 extends XStream {
         Object o = super.unmarshal(reader,root,dataHolder);
         if (oldData.get()!=null) {
             oldData.remove();
-            if (o instanceof Saveable) OldDataMonitor.report((Saveable)o, "1.106");
+            if (o instanceof Saveable) {
+                OldDataMonitor.report((Saveable)o, "1.106");
+            }
         }
         return o;
     }
@@ -174,12 +176,13 @@ public class XStream2 extends XStream {
         Mapper m = new CompatibilityMapper(new MapperWrapper(next) {
             @Override
             public String serializedClass(Class type) {
-                if (type != null && ImmutableMap.class.isAssignableFrom(type))
+                if (type != null && ImmutableMap.class.isAssignableFrom(type)) {
                     return super.serializedClass(ImmutableMap.class);
-                else if (type != null && ImmutableList.class.isAssignableFrom(type))
+                } else if (type != null && ImmutableList.class.isAssignableFrom(type)) {
                     return super.serializedClass(ImmutableList.class);
-                else
+                } else {
                     return super.serializedClass(type);
+                }
             }
         });
         AnnotationMapper a = new AnnotationMapper(m, getConverterRegistry(), getConverterLookup(), getClassLoader(), getReflectionProvider(), getJvm());
@@ -274,17 +277,21 @@ public class XStream2 extends XStream {
         @Override
         public Class realClass(String elementName) {
             Class s = compatibilityAliases.get(elementName);
-            if (s!=null)    return s;
+            if (s!=null) {
+                return s;
+            }
 
             try {
                 return super.realClass(elementName);
             } catch (CannotResolveClassException e) {
                 // If a "-" is found, retry with mapping this to "$"
-                if (elementName.indexOf('-') >= 0) try {
-                    Class c = super.realClass(elementName.replace('-', '$'));
-                    oldData.set(Boolean.TRUE);
-                    return c;
-                } catch (CannotResolveClassException e2) { }
+                if (elementName.indexOf('-') >= 0) {
+                    try {
+                        Class c = super.realClass(elementName.replace('-', '$'));
+                        oldData.set(Boolean.TRUE);
+                        return c;
+                    } catch (CannotResolveClassException e2) { }
+                }
                 // Throw original exception
                 throw e;
             }
@@ -306,24 +313,27 @@ public class XStream2 extends XStream {
 
         private Converter findConverter(Class<?> t) {
             Converter result = cache.get(t);
-            if (result != null)
+            if (result != null) {
                 // ConcurrentHashMap does not allow null, so use this object to represent null
                 return result == this ? null : result;
+            }
             try {
-                if(t==null || t.getClassLoader()==null)
+                if(t==null || t.getClassLoader()==null) {
                     return null;
+                }
                 Class<?> cl = t.getClassLoader().loadClass(t.getName() + "$ConverterImpl");
                 Constructor<?> c = cl.getConstructors()[0];
 
                 Class<?>[] p = c.getParameterTypes();
                 Object[] args = new Object[p.length];
                 for (int i = 0; i < p.length; i++) {
-                    if(p[i]==XStream.class || p[i]==XStream2.class)
+                    if(p[i]==XStream.class || p[i]==XStream2.class) {
                         args[i] = xstream;
-                    else if(p[i]== Mapper.class)
+                    } else if(p[i]== Mapper.class) {
                         args[i] = xstream.getMapper();
-                    else
+                    } else {
                         throw new InstantiationError("Unrecognized constructor parameter: "+p[i]);
+                    }
 
                 }
                 ConverterMatcher cm = (ConverterMatcher)c.newInstance(args);

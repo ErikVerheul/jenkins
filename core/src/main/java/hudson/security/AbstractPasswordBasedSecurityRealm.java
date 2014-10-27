@@ -63,20 +63,24 @@ public abstract class AbstractPasswordBasedSecurityRealm extends SecurityRealm i
             public String passwordFile;
 
             public Authentication authenticate() throws AuthenticationException, IOException, InterruptedException {
-                if (userName==null)
+                if (userName==null) {
                     return command.getTransportAuthentication();    // no authentication parameter. fallback to the transport
+                }
 
-                if (passwordFile!=null)
+                if (passwordFile!=null) {
                     try {
                         password = new FilePath(command.channel,passwordFile).readToString().trim();
                     } catch (IOException e) {
                         throw new BadCredentialsException("Failed to read "+passwordFile,e);
                     }
-                if (password==null)
+                }
+                if (password==null) {
                     password = command.channel.call(new InteractivelyAskForPassword());
+                }
 
-                if (password==null)
+                if (password==null) {
                     throw new BadCredentialsException("No password specified");
+                }
 
                 UserDetails d = doAuthenticate(userName, password);
                 return new UsernamePasswordAuthenticationToken(d, password, d.getAuthorities());
@@ -155,10 +159,14 @@ public abstract class AbstractPasswordBasedSecurityRealm extends SecurityRealm i
     private static class InteractivelyAskForPassword implements Callable<String,IOException> {
         public String call() throws IOException {
             Console console = System.console();
-            if (console == null)    return null;    // no terminal
+            if (console == null) {
+                return null;    // no terminal
+            }
 
             char[] w = console.readPassword("Password:");
-            if (w==null)    return null;
+            if (w==null) {
+                return null;
+            }
             return new String(w);
         }
 

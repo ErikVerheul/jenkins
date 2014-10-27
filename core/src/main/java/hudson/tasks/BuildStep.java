@@ -304,7 +304,9 @@ public interface BuildStep {
 
         @Override
         public void add(int index, Descriptor<Publisher> d) {
-            if(!contains(d)) core.add(d);
+            if(!contains(d)) {
+                core.add(d);
+            }
         }
 
         public Descriptor<Publisher> get(int index) {

@@ -66,7 +66,9 @@ public abstract class JobPropertyDescriptor extends Descriptor<JobProperty<?>> {
     public JobProperty<?> newInstance(StaplerRequest req, JSONObject formData) throws FormException {
         // JobPropertyDescriptors are bit different in that we allow them even without any user-visible configuration parameter,
         // so replace the lack of form data by an empty one. 
-        if(formData.isNullObject()) formData=new JSONObject();
+        if(formData.isNullObject()) {
+            formData=new JSONObject();
+        }
 
         return super.newInstance(req, formData);
     }
@@ -99,9 +101,11 @@ public abstract class JobPropertyDescriptor extends Descriptor<JobProperty<?>> {
      */
     public static List<JobPropertyDescriptor> getPropertyDescriptors(Class<? extends Job> clazz) {
         List<JobPropertyDescriptor> r = new ArrayList<JobPropertyDescriptor>();
-        for (JobPropertyDescriptor p : all())
-            if(p.isApplicable(clazz))
+        for (JobPropertyDescriptor p : all()) {
+            if(p.isApplicable(clazz)) {
                 r.add(p);
+            }
+        }
         return r;
     }
 

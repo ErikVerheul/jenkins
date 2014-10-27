@@ -49,9 +49,11 @@ public abstract class DownloadFromUrlInstaller extends ToolInstaller {
      * @return null if no such ID is found.
      */
     public Installable getInstallable() throws IOException {
-        for (Installable i : ((DescriptorImpl<?>)getDescriptor()).getInstallables())
-            if(id.equals(i.id))
+        for (Installable i : ((DescriptorImpl<?>)getDescriptor()).getInstallables()) {
+            if(id.equals(i.id)) {
                 return i;
+            }
+        }
         return null;
     }
 
@@ -64,14 +66,16 @@ public abstract class DownloadFromUrlInstaller extends ToolInstaller {
             return expected;
         }
 
-        if(isUpToDate(expected,inst))
+        if(isUpToDate(expected,inst)) {
             return expected;
+        }
 
         if(expected.installIfNecessaryFrom(new URL(inst.url), log, "Unpacking " + inst.url + " to " + expected + " on " + node.getDisplayName())) {
             expected.child(".timestamp").delete(); // we don't use the timestamp
             FilePath base = findPullUpDirectory(expected);
-            if(base!=null && base!=expected)
+            if(base!=null && base!=expected) {
                 base.moveAllChildrenTo(expected);
+            }
             // leave a record for the next up-to-date check
             expected.child(".installedFrom").write(inst.url,"UTF-8");
             expected.act(new ZipExtractionInstaller.ChmodRecAPlusX());
@@ -108,9 +112,12 @@ public abstract class DownloadFromUrlInstaller extends ToolInstaller {
         // if the directory just contains one directory and that alone, assume that's the pull up subject
         // otherwise leave it as is.
         List<FilePath> children = root.list();
-        if(children.size()!=1)    return null;
-        if(children.get(0).isDirectory())
+        if(children.size()!=1) {
+            return null;
+        }
+        if(children.get(0).isDirectory()) {
             return children.get(0);
+        }
         return null;
     }
 
@@ -145,7 +152,9 @@ public abstract class DownloadFromUrlInstaller extends ToolInstaller {
          */
         public List<? extends Installable> getInstallables() throws IOException {
             JSONObject d = Downloadable.get(getId()).getData();
-            if(d==null)     return Collections.emptyList();
+            if(d==null) {
+                return Collections.emptyList();
+            }
             return Arrays.asList(((InstallableList)JSONObject.toBean(d,InstallableList.class)).list);
         }
     }

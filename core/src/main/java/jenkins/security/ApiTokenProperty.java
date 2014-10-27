@@ -82,8 +82,9 @@ public class ApiTokenProperty extends UserProperty {
 
     public void changeApiToken() throws IOException {
         _changeApiToken();
-        if (user!=null)
+        if (user!=null) {
             user.save();
+        }
     }
 
     private void _changeApiToken() {

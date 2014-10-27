@@ -39,7 +39,9 @@ public abstract class Indenter<J extends Job> {
 
     public final String getRelativeShift(J job) {
         int i = getNestLevel(job);
-        if(i==0)    return null;
+        if(i==0) {
+            return null;
+        }
         return "position:relative; left: "+ i *2+"em";
     }
 }

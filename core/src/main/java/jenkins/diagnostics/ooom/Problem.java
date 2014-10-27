@@ -52,7 +52,9 @@ public final class Problem {
      */
     public static Problem find(Job j) {
         Problem p = new Problem(j);
-        if (p.countInconsistencies()==0)   return null;
+        if (p.countInconsistencies()==0) {
+            return null;
+        }
         return p;
     }
 
@@ -78,8 +80,12 @@ public final class Problem {
      */
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         Problem problem = (Problem) o;
 
@@ -154,8 +160,9 @@ public final class Problem {
 
             while (true) {
                 BuildPtr b = pick();
-                if (b==null)
+                if (b==null) {
                     break;
+                }
                 offenders.add(b);
             }
         }
@@ -173,8 +180,9 @@ public final class Problem {
             int worstScore=0;
 
             for (BuildPtr b : byN) {
-                if (offenders.contains(b))
+                if (offenders.contains(b)) {
                     continue;
+                }
 
                 int score = score(b);
                 if (score>worstScore) {
@@ -194,10 +202,12 @@ public final class Problem {
         private int score(BuildPtr b) {
             int i=0;
             for (BuildPtr a : byN) {
-                if (offenders.contains(a))
+                if (offenders.contains(a)) {
                     continue;
-                if (a.isInconsistentWith(b))
+                }
+                if (a.isInconsistentWith(b)) {
                     i++;
+                }
             }
             return i;
         }
@@ -211,7 +221,9 @@ public final class Problem {
             SortedMap<Integer,BuildPtr> builds = new TreeMap<Integer,BuildPtr>();
 
             File[] files = job.getBuildDir().listFiles();
-            if (files==null)    return builds;
+            if (files==null) {
+                return builds;
+            }
 
             for (File build : files) {
                 try {
@@ -291,8 +303,9 @@ public final class Problem {
 
         private String loadBuildNumberFromBuildXml(File dir) throws XPathExpressionException, IOException {
             File buildXml = new File(dir, "build.xml");
-            if (!buildXml.exists())
+            if (!buildXml.exists()) {
                 throw new AbortException(buildXml+" doesn't exist");
+            }
             String systemId = buildXml.toURI().toURL().toExternalForm();
             return (String)xpath.evaluate(new InputSource(systemId), XPathConstants.STRING);
         }

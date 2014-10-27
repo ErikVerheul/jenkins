@@ -71,8 +71,9 @@ public class ListChangesCommand extends AbstractBuildRangeCommand {
                 ChangeLogSet<?> cs = build.getChangeSet();
                 for (Entry e : cs) {
                     stdout.printf("%s\t%s%n",e.getAuthor(),e.getMsg());
-                    for (String p : e.getAffectedPaths())
+                    for (String p : e.getAffectedPaths()) {
                         stdout.println("  "+p);
+                    }
                 }
             }
             break;

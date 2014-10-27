@@ -153,8 +153,9 @@ public abstract class RetentionStrategy<T extends Computer> extends AbstractDesc
         }
 
         public long check(SlaveComputer c) {
-            if (c.isOffline() && !c.isConnecting() && c.isLaunchSupported())
+            if (c.isOffline() && !c.isConnecting() && c.isLaunchSupported()) {
                 c.tryReconnect();
+            }
             return 1;
         }
 
@@ -214,8 +215,9 @@ public abstract class RetentionStrategy<T extends Computer> extends AbstractDesc
                 for (Computer o : Jenkins.getInstance().getComputers()) {
                     if ((o.isOnline() || o.isConnecting()) && o.isPartiallyIdle()) {
                         final int idleExecutors = o.countIdle();
-                        if (idleExecutors>0)
+                        if (idleExecutors>0) {
                             availableComputers.put(o, idleExecutors);
+                        }
                     }
                 }
 

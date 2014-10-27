@@ -80,7 +80,9 @@ public final class RSS {
         req.setAttribute("rootURL", Jenkins.getInstance().getRootUrl());
 
         String flavor = req.getParameter("flavor");
-        if(flavor==null)    flavor="atom";
+        if(flavor==null) {
+            flavor="atom";
+        }
         flavor = flavor.replace('/', '_'); // Don't allow path to any jelly
 
         req.getView(Jenkins.getInstance(),"/hudson/"+flavor+".jelly").forward(req,rsp);

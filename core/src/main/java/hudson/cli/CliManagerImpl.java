@@ -57,8 +57,9 @@ public class CliManagerImpl implements CliEntryPoint, Serializable {
         public <V> V call(Callable<V> callable) throws Exception {
             SecurityContext context = SecurityContextHolder.getContext();
             Authentication old = context.getAuthentication();
-            if (transportAuth!=null)
+            if (transportAuth!=null) {
                 context.setAuthentication(transportAuth);
+            }
             try {
                 return callable.call();
             } finally {

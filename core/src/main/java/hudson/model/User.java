@@ -184,16 +184,18 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
 
         XmlFile config = getConfigFile();
         try {
-            if(config.exists())
+            if(config.exists()) {
                 config.unmarshal(this);
+            }
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Failed to load "+config,e);
         }
 
         // remove nulls that have failed to load
         for (Iterator<UserProperty> itr = properties.iterator(); itr.hasNext();) {
-            if(itr.next()==null)
-                itr.remove();            
+            if(itr.next()==null) {
+                itr.remove();
+            }            
         }
 
         // allocate default instances if needed.
@@ -201,13 +203,15 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
         for (UserPropertyDescriptor d : UserProperty.all()) {
             if(getProperty(d.clazz)==null) {
                 UserProperty up = d.newInstance(this);
-                if(up!=null)
+                if(up!=null) {
                     properties.add(up);
+                }
             }
         }
 
-        for (UserProperty p : properties)
+        for (UserProperty p : properties) {
             p.setUser(this);
+        }
     }
 
     @Exported
@@ -245,7 +249,9 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
      * If the input parameter is empty, the user's ID will be set.
      */
     public void setFullName(String name) {
-        if(Util.fixEmptyAndTrim(name)==null)    name=id;
+        if(Util.fixEmptyAndTrim(name)==null) {
+            name=id;
+        }
         this.fullName = name;
     }
 
@@ -267,8 +273,9 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
     public synchronized void addProperty(@Nonnull UserProperty p) throws IOException {
         UserProperty old = getProperty(p.getClass());
         List<UserProperty> ps = new ArrayList<UserProperty>(properties);
-        if(old!=null)
+        if(old!=null) {
             ps.remove(old);
+        }
         ps.add(p);
         p.setUser(this);
         properties = ps;
@@ -288,8 +295,9 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
      */
     public <T extends UserProperty> T getProperty(Class<T> clazz) {
         for (UserProperty p : properties) {
-            if(clazz.isInstance(p))
+            if(clazz.isInstance(p)) {
                 return clazz.cast(p);
+            }
         }
         return null;
     }
@@ -381,8 +389,9 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
      */
     public static @Nullable User get(String idOrFullName, boolean create, Map context) {
 
-        if(idOrFullName==null)
+        if(idOrFullName==null) {
             return null;
+        }
 
         // sort resolvers by priority
         List<CanonicalIdResolver> resolvers = new ArrayList<CanonicalIdResolver>(ExtensionList.lookup(CanonicalIdResolver.class));
@@ -488,8 +497,9 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
      */
     public static @CheckForNull User current() {
         Authentication a = Jenkins.getAuthentication();
-        if(a instanceof AnonymousAuthenticationToken)
+        if(a instanceof AnonymousAuthenticationToken) {
             return null;
+        }
 
         // Since we already know this is a name, we can just call getOrCreate with the name directly.
         String id = a.getName();
@@ -511,13 +521,16 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
             lastScanned = System.currentTimeMillis();
 
             File[] subdirs = getRootDir().listFiles((FileFilter)DirectoryFileFilter.INSTANCE);
-            if(subdirs==null)       return Collections.emptyList(); // shall never happen
+            if(subdirs==null) {
+                return Collections.emptyList(); // shall never happen
+            }
 
-            for (File subdir : subdirs)
+            for (File subdir : subdirs) {
                 if(new File(subdir,"config.xml").exists()) {
                     String name = strategy.idFromFilename(subdir.getName());
                     User.getOrCreate(name, name, true);
                 }
+            }
 
             lastScanned = System.currentTimeMillis();
         }
@@ -627,9 +640,11 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
      */
     public @Nonnull Set<AbstractProject<?,?>> getProjects() {
         Set<AbstractProject<?,?>> r = new HashSet<AbstractProject<?,?>>();
-        for (AbstractProject<?,?> p : Jenkins.getInstance().getAllItems(AbstractProject.class))
-            if(p.hasParticipant(this))
+        for (AbstractProject<?,?> p : Jenkins.getInstance().getAllItems(AbstractProject.class)) {
+            if(p.hasParticipant(this)) {
                 r.add(p);
+            }
+        }
         return r;
     }
 
@@ -669,7 +684,9 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
      * Save the settings to a file.
      */
     public synchronized void save() throws IOException {
-        if(BulkChange.contains(this))   return;
+        if(BulkChange.contains(this)) {
+            return;
+        }
         getConfigFile().write(this);
         SaveableListener.fireOnChange(this, getConfigFile());
     }
@@ -725,8 +742,9 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
                 p.setUser(this);
             }
 
-            if (p!=null)
+            if (p!=null) {
                 props.add(p);
+            }
         }
         this.properties = props;
 
@@ -871,12 +889,14 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
     
     public Object getDynamic(String token) {
         for(Action action: getTransientActions()){
-            if(action.getUrlName().equals(token))
+            if(action.getUrlName().equals(token)) {
                 return action;
+            }
         }
         for(Action action: getPropertyActions()){
-            if(action.getUrlName().equals(token))
+            if(action.getUrlName().equals(token)) {
                 return action;
+            }
         }
         return null;
     }
@@ -973,7 +993,9 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
         @Override
         public String resolveCanonicalId(String idOrFullName, Map<String, ?> context) {
             for (User user : getAll()) {
-                if (idOrFullName.equals(user.getFullName())) return user.getId();
+                if (idOrFullName.equals(user.getFullName())) {
+                    return user.getId();
+                }
             }
             return null;
         }

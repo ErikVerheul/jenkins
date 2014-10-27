@@ -67,11 +67,13 @@ public class StreamBuildListener extends StreamTaskListener implements BuildList
 
     public void started(List<Cause> causes) {
         PrintStream l = getLogger();
-        if (causes==null || causes.isEmpty())
+        if (causes==null || causes.isEmpty()) {
             l.println("Started");
-        else for (Cause cause : causes) {
-            // TODO elide duplicates as per CauseAction.getCauseCounts (used in summary.jelly)
-            cause.print(this);
+        } else {
+            for (Cause cause : causes) {
+                // TODO elide duplicates as per CauseAction.getCauseCounts (used in summary.jelly)
+                cause.print(this);
+            }
         }
     }
 

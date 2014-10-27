@@ -117,8 +117,9 @@ public class Api extends AbstractModelObject {
                     List<org.dom4j.Node> list = (List<org.dom4j.Node>)dom.selectNodes(exclude);
                     for (org.dom4j.Node n : list) {
                         Element parent = n.getParent();
-                        if(parent!=null)
+                        if(parent!=null) {
                             parent.remove(n);
+                        }
                     }
                 }
             }

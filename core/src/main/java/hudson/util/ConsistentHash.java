@@ -150,7 +150,9 @@ public class ConsistentHash<T> {
 
         T lookup(int queryPoint) {
             int i = index(queryPoint);
-            if(i<0) return null;
+            if(i<0) {
+                return null;
+            }
             return (T)owner[i];
         }
 
@@ -170,7 +172,9 @@ public class ConsistentHash<T> {
                 }
 
                 public T next() {
-                    if(!hasNext())  throw new NoSuchElementException();
+                    if(!hasNext()) {
+                        throw new NoSuchElementException();
+                    }
                     return (T)owner[(start+(pos++))%owner.length];
                 }
 
@@ -184,7 +188,9 @@ public class ConsistentHash<T> {
             int idx = Arrays.binarySearch(hash, queryPoint);
             if(idx<0) {
                 idx = -idx-1; // idx is now 'insertion point'
-                if(hash.length==0)  return -1;
+                if(hash.length==0) {
+                    return -1;
+                }
                 idx %= hash.length; // make it a circle
             }
             return idx;
@@ -241,8 +247,9 @@ public class ConsistentHash<T> {
 
     public int countAllPoints() {
         int r=0;
-        for (Point[] v : items.values())
+        for (Point[] v : items.values()) {
             r+=v.length;
+        }
         return r;
     }
 
@@ -257,8 +264,9 @@ public class ConsistentHash<T> {
      * Calls {@link #add(Object)} with all the arguments.
      */
     public void addAll(T... nodes) {
-        for (T node : nodes)
+        for (T node : nodes) {
             addInternal(node,defaultReplication);
+        }
         refreshTable();
     }
 
@@ -266,8 +274,9 @@ public class ConsistentHash<T> {
      * Calls {@link #add(Object)} with all the arguments.
      */
     public void addAll(Collection<? extends T> nodes) {
-        for (T node : nodes)
+        for (T node : nodes) {
             addInternal(node,defaultReplication);
+        }
         refreshTable();
     }
 
@@ -275,8 +284,9 @@ public class ConsistentHash<T> {
      * Calls {@link #add(Object,int)} with all the arguments.
      */
     public void addAll(Map<? extends T,Integer> nodes) {
-        for (Map.Entry<? extends T,Integer> node : nodes.entrySet())
+        for (Map.Entry<? extends T,Integer> node : nodes.entrySet()) {
             addInternal(node.getKey(),node.getValue());
+        }
         refreshTable();
     }
 
@@ -304,8 +314,9 @@ public class ConsistentHash<T> {
         } else {
             Point[] points = new Point[replica];
             String seed = hash.hash(node);
-            for (int i=0; i<replica; i++)
+            for (int i=0; i<replica; i++) {
                 points[i] = new Point(md5(seed+':'+i),node);
+            }
             items.put(node,points);
         }
     }
@@ -325,8 +336,9 @@ public class ConsistentHash<T> {
         md5.digest(digest);
 
         // 16 bytes -> 4 bytes
-        for (int i=0; i<4; i++)
+        for (int i=0; i<4; i++) {
             digest[i] ^= digest[i+4]+digest[i+8]+digest[i+12];
+        }
         return (b2i(digest[0])<< 24)|(b2i(digest[1])<<16)|(b2i(digest[2])<< 8)|b2i(digest[3]);
     }
 

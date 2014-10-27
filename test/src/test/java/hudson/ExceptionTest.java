@@ -15,8 +15,9 @@ public class ExceptionTest extends HudsonTestCase {
             createWebClient().goTo("/self/ajaxError");
             fail("should have resulted in a ScriptException");
         } catch (ScriptException e) {
-            if (e.getMessage().contains("simulated error"))
+            if (e.getMessage().contains("simulated error")) {
                 return; // as expected
+            }
             throw e;
 
         }

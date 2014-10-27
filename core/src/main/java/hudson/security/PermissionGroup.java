@@ -82,9 +82,11 @@ public final class PermissionGroup implements Iterable<Permission>, Comparable<P
     }
 
     public boolean hasPermissionContainedBy(PermissionScope scope) {
-        for (Permission p : permisisons)
-            if (p.isContainedBy(scope))
+        for (Permission p : permisisons) {
+            if (p.isContainedBy(scope)) {
                 return true;
+            }
+        }
         return false;
     }
 
@@ -93,8 +95,9 @@ public final class PermissionGroup implements Iterable<Permission>, Comparable<P
      */
     public Permission find(String name) {
         for (Permission p : permisisons) {
-            if(p.name.equals(name))
+            if(p.name.equals(name)) {
                 return p;
+            }
         }
         return null;
     }
@@ -104,7 +107,9 @@ public final class PermissionGroup implements Iterable<Permission>, Comparable<P
         // first, sort by the 'compare order' number. This is so that
         // we can put Hudson.PERMISSIONS first.
         int r= this.compareOrder()-that.compareOrder();
-        if(r!=0)    return r;
+        if(r!=0) {
+            return r;
+        }
 
         // among the permissions of the same group, just sort by their names
         // so that the sort order is consistent regardless of classloading order.
@@ -138,7 +143,9 @@ public final class PermissionGroup implements Iterable<Permission>, Comparable<P
     }
 
     private int compareOrder() {
-        if(owner==Hudson.class)    return 0;
+        if(owner==Hudson.class) {
+            return 0;
+        }
         return 1;
     }
 

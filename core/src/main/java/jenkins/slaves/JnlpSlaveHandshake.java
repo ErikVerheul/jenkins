@@ -107,10 +107,11 @@ public class JnlpSlaveHandshake {
     }
 
     public ChannelBuilder createChannelBuilder(String nodeName) {
-        if (hub==null)
+        if (hub==null) {
             return new ChannelBuilder(nodeName, Computer.threadPoolForRemoting);
-        else
+        } else {
             return hub.newChannelBuilder(nodeName, Computer.threadPoolForRemoting);
+        }
     }
 
 

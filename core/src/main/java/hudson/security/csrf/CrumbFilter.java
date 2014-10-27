@@ -35,7 +35,9 @@ public class CrumbFilter implements Filter {
      */
     public CrumbIssuer getCrumbIssuer() {
         Jenkins h = Jenkins.getInstance();
-        if(h==null)     return null;    // before Jenkins is initialized?
+        if(h==null) {
+            return null;    // before Jenkins is initialized?
+        }
         return h.getCrumbIssuer();
     }
 
@@ -54,8 +56,9 @@ public class CrumbFilter implements Filter {
 
         if ("POST".equals(httpRequest.getMethod())) {
             for (CrumbExclusion e : CrumbExclusion.all()) {
-                if (e.process(httpRequest,httpResponse,chain))
+                if (e.process(httpRequest,httpResponse,chain)) {
                     return;
+                }
             }
 
             String crumbFieldName = crumbIssuer.getDescriptor().getCrumbRequestField();

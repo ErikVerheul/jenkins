@@ -52,8 +52,12 @@ public class Executables {
                 throw (Error)new NoSuchMethodError().initCause(x);
             } catch (InvocationTargetException x) {
                 Throwable y = x.getTargetException();
-                if (y instanceof Error)     throw (Error)y;
-                if (y instanceof RuntimeException)     throw (RuntimeException)y;
+                if (y instanceof Error) {
+                    throw (Error)y;
+                }
+                if (y instanceof RuntimeException) {
+                    throw (RuntimeException)y;
+                }
                 throw new Error(x);
             }
         }

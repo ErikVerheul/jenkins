@@ -133,10 +133,11 @@ public abstract class AbstractNodeMonitorDescriptor<T> extends Descriptor<NodeMo
             try {
                 Thread.currentThread().setName("Monitoring "+c.getDisplayName()+" for "+getDisplayName());
 
-                if(c.getChannel()==null)
+                if(c.getChannel()==null) {
                     data.put(c,null);
-                else
+                } else {
                     data.put(c,monitor(c));
+                }
             } catch (RuntimeException e) {
                 LOGGER.log(Level.WARNING, "Failed to monitor "+c.getDisplayName()+" for "+getDisplayName(), e);
             } catch (IOException e) {
@@ -159,8 +160,9 @@ public abstract class AbstractNodeMonitorDescriptor<T> extends Descriptor<NodeMo
             // if we don't have the data, schedule the check now
             if(!isInProgress()) {
                 synchronized(this) {
-                    if(!isInProgress())
+                    if(!isInProgress()) {
                         new Record().start();
+                    }
                 }
             }
             return null;
@@ -184,8 +186,9 @@ public abstract class AbstractNodeMonitorDescriptor<T> extends Descriptor<NodeMo
     }
 
     public String getTimestampString() {
-        if (record==null)
+        if (record==null) {
             return Messages.AbstractNodeMonitorDescriptor_NoDataYet();
+        }
 //        return Messages.AbstractNodeMonitorDescriptor_DataObtainedSometimeAgo(
 //                Util.getTimeSpanString(System.currentTimeMillis()-record.timestamp));
         return Util.getPastTimeString(System.currentTimeMillis()-record.timestamp);
@@ -207,7 +210,9 @@ public abstract class AbstractNodeMonitorDescriptor<T> extends Descriptor<NodeMo
      *      or the computer was already online.)
      */
     protected boolean markOnline(Computer c) {
-        if(isIgnored() || c.isOnline()) return false; // noop
+        if(isIgnored() || c.isOnline()) {
+            return false; // noop
+        }
         c.setTemporarilyOffline(false,null);
         return true;
     }
@@ -220,14 +225,17 @@ public abstract class AbstractNodeMonitorDescriptor<T> extends Descriptor<NodeMo
      *      or the computer already marked offline.)
      */
     protected boolean markOffline(Computer c, OfflineCause oc) {
-        if(isIgnored() || c.isTemporarilyOffline()) return false; // noop
+        if(isIgnored() || c.isTemporarilyOffline()) {
+            return false; // noop
+        }
 
         c.setTemporarilyOffline(true, oc);
 
         // notify the admin
         MonitorMarkedNodeOffline no = AdministrativeMonitor.all().get(MonitorMarkedNodeOffline.class);
-        if(no!=null)
+        if(no!=null) {
             no.active = true;
+        }
         return true;
     }
 
@@ -290,8 +298,9 @@ public abstract class AbstractNodeMonitorDescriptor<T> extends Descriptor<NodeMo
                 LOGGER.log(Level.WARNING, "Unexpected node monitoring termination: "+getDisplayName(),t);
             } finally {
                 synchronized(AbstractNodeMonitorDescriptor.this) {
-                    if (inProgress==this)
+                    if (inProgress==this) {
                         inProgress = null;
+                    }
                 }
             }
         }

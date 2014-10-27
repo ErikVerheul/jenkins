@@ -290,8 +290,9 @@ public abstract class SecurityRealm extends AbstractDescribableImpl<SecurityReal
      */
     public void doLogout(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException {
         HttpSession session = req.getSession(false);
-        if(session!=null)
+        if(session!=null) {
             session.invalidate();
+        }
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         SecurityContextHolder.clearContext();
 

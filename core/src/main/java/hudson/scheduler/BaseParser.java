@@ -62,17 +62,21 @@ abstract class BaseParser extends LLkParser {
     }
 
     public void setHash(Hash hash) {
-        if (hash==null)     hash = Hash.zero();
+        if (hash==null) {
+            hash = Hash.zero();
+        }
         this.hash = hash;
     }
 
     protected long doRange(int start, int end, int step, int field) throws ANTLRException {
         rangeCheck(start, field);
         rangeCheck(end, field);
-        if (step <= 0)
+        if (step <= 0) {
             error(Messages.BaseParser_MustBePositive(step));
-        if (start>end)
+        }
+        if (start>end) {
             error(Messages.BaseParser_StartEndReversed(end,start));
+        }
 
         long bits = 0;
         for (int i = start; i <= end; i += step) {
@@ -94,8 +98,12 @@ abstract class BaseParser extends LLkParser {
      */
     protected long doHash(int step, int field) throws ANTLRException {
         int u = UPPER_BOUNDS[field];
-        if (field==2) u = 28;   // day of month can vary depending on month, so to make life simpler, just use [1,28] that's always safe
-        if (field==4) u = 6;   // Both 0 and 7 of day of week are Sunday. For better distribution, limit upper bound to 6
+        if (field==2) {
+            u = 28;   // day of month can vary depending on month, so to make life simpler, just use [1,28] that's always safe
+        }
+        if (field==4) {
+            u = 6;   // Both 0 and 7 of day of week are Sunday. For better distribution, limit upper bound to 6
+        }
         return doHash(LOWER_BOUNDS[field], u, step);
     }
 

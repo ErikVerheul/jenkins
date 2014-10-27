@@ -121,8 +121,9 @@ public class JnlpSlaveAgentProtocol extends AgentProtocol {
                     new Listener() {
                         @Override
                         public void onClosed(Channel channel, IOException cause) {
-                            if(cause!=null)
+                            if(cause!=null) {
                                 LOGGER.log(Level.WARNING, Thread.currentThread().getName()+" for + " + nodeName + " terminated",cause);
+                            }
                             try {
                                 socket.close();
                             } catch (IOException e) {

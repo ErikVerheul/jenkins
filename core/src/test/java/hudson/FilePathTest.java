@@ -116,8 +116,9 @@ public class FilePathTest extends ChannelTestCase {
             List<Future<Integer>> results = whenFileIsCopied100TimesConcurrently(tmp);
 
             // THEN copied count was always equal the expected size
-            for (Future<Integer> f : results)
+            for (Future<Integer> f : results) {
                 assertEquals(fileSize,f.get().intValue());
+           }
         } finally {
             tmp.delete();
         }
@@ -126,8 +127,9 @@ public class FilePathTest extends ChannelTestCase {
     private void givenSomeContentInFile(File file, int size) throws IOException {
         FileOutputStream os = new FileOutputStream(file);
         byte[] buf = new byte[size];
-        for (int i=0; i<buf.length; i++)
+        for (int i=0; i<buf.length; i++) {
             buf[i] = (byte)(i%256);
+        }
         os.write(buf);
         os.close();
     }
@@ -142,8 +144,9 @@ public class FilePathTest extends ChannelTestCase {
                         private volatile int count;
 
                         private void checkNotClosed() throws IOException {
-                            if (closed != null)
+                            if (closed != null) {
                                 throw new IOException(closed);
+                            }
                         }
 
                         @Override
@@ -441,7 +444,9 @@ public class FilePathTest extends ChannelTestCase {
     }
 
     public void testSymlinkInTar() throws Exception {
-        if (Functions.isWindows())  return; // can't test on Windows
+        if (Functions.isWindows()) {
+            return; // can't test on Windows
+        }
 
         FilePath tmp = new FilePath(Util.createTempDir());
         try {

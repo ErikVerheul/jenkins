@@ -59,8 +59,9 @@ public class RepeatableTest extends HudsonTestCase {
 
     public void doSubmitTest(StaplerRequest req) throws Exception {
         formData = req.getSubmittedForm();
-        if (bindClass != null)
+        if (bindClass != null) {
             bindResult = req.bindJSONToList(bindClass, formData.get("items"));
+        }
     }
 
     // ========================================================================
@@ -332,7 +333,9 @@ public class RepeatableTest extends HudsonTestCase {
         @Override public String toString() {
             StringBuilder buf = new StringBuilder("FooList:" + title + ":[");
             for (int i = 0; i < list.length; i++) {
-                if (i > 0) buf.append(',');
+                if (i > 0) {
+                    buf.append(',');
+                }
                 buf.append(list[i].toString());
             }
             buf.append(']');

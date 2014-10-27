@@ -67,14 +67,17 @@ public class UnixLifecycle extends Lifecycle {
     @Override
     public void restart() throws IOException, InterruptedException {
         Jenkins h = Jenkins.getInstance();
-        if (h != null)
+        if (h != null) {
             h.cleanUp();
+        }
 
         // close all files upon exec, except stdin, stdout, and stderr
         int sz = LIBC.getdtablesize();
         for(int i=3; i<sz; i++) {
             int flags = LIBC.fcntl(i, F_GETFD);
-            if(flags<0) continue;
+            if(flags<0) {
+                continue;
+            }
             LIBC.fcntl(i, F_SETFD,flags| FD_CLOEXEC);
         }
 
@@ -92,9 +95,11 @@ public class UnixLifecycle extends Lifecycle {
         // the one described in http://www.nabble.com/Restarting-hudson-not-working-on-MacOS--to24641779.html
         //
         // according to http://www.mail-archive.com/wine-devel@winehq.org/msg66797.html this now works on Snow Leopard
-        if (Platform.isDarwin() && !Platform.isSnowLeopardOrLater())
+        if (Platform.isDarwin() && !Platform.isSnowLeopardOrLater()) {
             throw new RestartNotSupportedException("Restart is not supported on Mac OS X");
-        if (args==null)
+        }
+        if (args==null) {
             throw new RestartNotSupportedException("Failed to obtain the command line arguments of the process",failedToObtainArgs);
+        }
     }
 }

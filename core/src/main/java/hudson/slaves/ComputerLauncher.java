@@ -147,8 +147,9 @@ public abstract class ComputerLauncher extends AbstractDescribableImpl<ComputerL
     }
 
     private StreamTaskListener cast(TaskListener listener) {
-        if (listener instanceof StreamTaskListener)
+        if (listener instanceof StreamTaskListener) {
             return (StreamTaskListener) listener;
+        }
         return new StreamTaskListener(listener.getLogger());
     }
 

@@ -32,8 +32,9 @@ public class ProcTest extends HudsonTestCase {
 
         // keep the pipe fairly busy
         final Pipe p = Pipe.createRemoteToLocal();
-        for (int i=0; i<10; i++)
+        for (int i=0; i<10; i++) {
             ch.callAsync(new ChannelFiller(p.getOut()));
+        }
         new Thread() {
             @Override
             public void run() {
@@ -47,8 +48,9 @@ public class ProcTest extends HudsonTestCase {
         RemoteLauncher launcher = new RemoteLauncher(StreamTaskListener.NULL, ch, true);
 
         String str="";
-        for (int i=0; i<256; i++)
+        for (int i=0; i<256; i++) {
             str += "oxox";
+        }
 
         for (int i=0; i<1000; i++) {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();

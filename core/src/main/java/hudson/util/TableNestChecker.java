@@ -75,11 +75,14 @@ public class TableNestChecker extends XMLFilterImpl {
         String tagName = localName.toUpperCase(Locale.ENGLISH);
 
         // make sure that this tag occurs in the proper context
-        if(!elements.peek().isAllowed(tagName))
+        if(!elements.peek().isAllowed(tagName)) {
             throw new SAXException(tagName+" is not allowed inside "+tagNames.peek());
+        }
 
         Checker next = CHECKERS.get(tagName);
-        if(next==null)  next = ALL_ALLOWED;
+        if(next==null) {
+            next = ALL_ALLOWED;
+        }
         elements.push(next);
         tagNames.push(tagName);
 

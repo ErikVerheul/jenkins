@@ -89,9 +89,12 @@ public class JavaNetReverseProxy extends HttpServlet {
 
     private String getMimeType(String path) {
         int idx = path.indexOf('?');
-        if(idx>=0)
+        if(idx>=0) {
             path = path.substring(0,idx);
-        if(path.endsWith(".json"))  return "text/javascript";
+        }
+        if(path.endsWith(".json")) {
+            return "text/javascript";
+        }
         return getServletContext().getMimeType(path);
     }
 
@@ -101,9 +104,10 @@ public class JavaNetReverseProxy extends HttpServlet {
      * Gets the default instance.
      */
     public static synchronized JavaNetReverseProxy getInstance() throws Exception {
-        if(INSTANCE==null)
+        if(INSTANCE==null) {
             // TODO: think of a better location --- ideally inside the target/ dir so that clean would wipe them out
             INSTANCE = new JavaNetReverseProxy(new File(new File(System.getProperty("java.io.tmpdir")),"jenkins-ci.org-cache2"));
+        }
         return INSTANCE;
     }
 }

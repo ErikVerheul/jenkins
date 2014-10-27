@@ -97,23 +97,27 @@ class DefaultBeanConfiguration extends GroovyObjectSupport implements BeanConfig
             }
             // destroyMethod
             else if(DESTROY_METHOD.equals(property)) {
-                if(newValue != null)
+                if(newValue != null) {
                     bd.setDestroyMethodName(newValue.toString());
+                }
             }
             // factoryBean
             else if(FACTORY_BEAN.equals(property)) {
-                if(newValue != null)
+                if(newValue != null) {
                     bd.setFactoryBeanName(newValue.toString());
+                }
             }
             // factoryMethod
             else if(FACTORY_METHOD.equals(property)) {
-                if(newValue != null)
+                if(newValue != null) {
                     bd.setFactoryMethodName(newValue.toString());
+                }
             }
             // initMethod
             else if(INIT_METHOD.equals(property)) {
-                if(newValue != null)
+                if(newValue != null) {
                     bd.setInitMethodName(newValue.toString());
+                }
             }
             else if(wrapper.isWritableProperty(property)) {
 
@@ -176,8 +180,9 @@ class DefaultBeanConfiguration extends GroovyObjectSupport implements BeanConfig
 	}
 
 	public AbstractBeanDefinition getBeanDefinition() {
-		if (definition == null)
-			definition = createBeanDefinition();
+		if (definition == null) {
+                    definition = createBeanDefinition();
+                }
 		return definition;
 	}
 
@@ -277,10 +282,12 @@ class DefaultBeanConfiguration extends GroovyObjectSupport implements BeanConfig
     }
 
     public void setParent(Object obj) {
-        if(obj == null) throw new IllegalArgumentException("Parent bean cannot be set to a null runtime bean reference!");
-        if(obj instanceof String)
+        if(obj == null) {
+            throw new IllegalArgumentException("Parent bean cannot be set to a null runtime bean reference!");
+        }
+        if(obj instanceof String) {
             this.parentName = (String)obj;
-        else if(obj instanceof RuntimeBeanReference) {
+        } else if(obj instanceof RuntimeBeanReference) {
             this.parentName = ((RuntimeBeanReference)obj).getBeanName();
         }
         else if(obj instanceof BeanConfiguration) {

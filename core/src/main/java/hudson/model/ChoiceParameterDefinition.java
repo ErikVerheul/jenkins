@@ -71,8 +71,9 @@ public class ChoiceParameterDefinition extends SimpleParameterDefinition {
     }
 
     private StringParameterValue checkValue(StringParameterValue value) {
-        if (!choices.contains(value.value))
+        if (!choices.contains(value.value)) {
             throw new IllegalArgumentException("Illegal choice: " + value.value);
+        }
         return value;
     }
 

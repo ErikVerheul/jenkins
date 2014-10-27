@@ -118,7 +118,9 @@ public abstract class Actionable extends AbstractModelObject implements ModelObj
      * The default implementation calls {@code getActions().add(a)}.
      */
     public void addAction(Action a) {
-        if(a==null) throw new IllegalArgumentException();
+        if(a==null) {
+            throw new IllegalArgumentException();
+        }
         getActions().add(a);
     }
 
@@ -143,7 +145,9 @@ public abstract class Actionable extends AbstractModelObject implements ModelObj
     /** @deprecated No clear purpose, since subclasses may have overridden {@link #getActions}, and does not consider {@link TransientActionFactory}. */
     @Deprecated
     public Action getAction(int index) {
-        if(actions==null)   return null;
+        if(actions==null) {
+            return null;
+        }
         return actions.get(index);
     }
 
@@ -155,21 +159,26 @@ public abstract class Actionable extends AbstractModelObject implements ModelObj
      * @see #getActions(Class)
      */
     public <T extends Action> T getAction(Class<T> type) {
-        for (Action a : getAllActions())
-            if (type.isInstance(a))
+        for (Action a : getAllActions()) {
+            if (type.isInstance(a)) {
                 return type.cast(a);
+            }
+        }
         return null;
     }
 
     public Object getDynamic(String token, StaplerRequest req, StaplerResponse rsp) {
         for (Action a : getAllActions()) {
-            if(a==null)
+            if(a==null) {
                 continue;   // be defensive
+            }
             String urlName = a.getUrlName();
-            if(urlName==null)
+            if(urlName==null) {
                 continue;
-            if(urlName.equals(token))
+            }
+            if(urlName.equals(token)) {
                 return a;
+            }
         }
         return null;
     }

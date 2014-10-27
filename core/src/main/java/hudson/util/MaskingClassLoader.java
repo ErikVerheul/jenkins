@@ -55,8 +55,9 @@ public class MaskingClassLoader extends ClassLoader {
     @Override
     protected synchronized Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
         for (String mask : masks) {
-            if(name.startsWith(mask))
+            if(name.startsWith(mask)) {
                 throw new ClassNotFoundException();
+            }
         }
 
         return super.loadClass(name, resolve);

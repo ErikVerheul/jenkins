@@ -86,14 +86,18 @@ class MethodBinder {
             }
             Argument arg = p.annotation(Argument.class);
             if (arg!=null) {
-                if (bias>0) arg = new ArgumentImpl(arg,bias);
+                if (bias>0) {
+                    arg = new ArgumentImpl(arg,bias);
+                }
                 parser.addArgument(setter,arg);
             }
-            if (p.type()==CLICommand.class)
+            if (p.type()==CLICommand.class) {
                 arguments[index] = command;
+            }
 
-            if (p.type().isPrimitive())
+            if (p.type().isPrimitive()) {
                 arguments[index] = ReflectionUtils.getVmDefaultValueForPrimitiveType(p.type());
+            }
         }
     }
 
@@ -102,8 +106,9 @@ class MethodBinder {
             return method.invoke(instance,arguments);
         } catch (InvocationTargetException e) {
             Throwable t = e.getTargetException();
-            if (t instanceof Exception)
+            if (t instanceof Exception) {
                 throw (Exception) t;
+            }
             throw e;
         }
     }

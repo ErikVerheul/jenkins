@@ -66,8 +66,9 @@ public final class MemoryUsageMonitor extends PeriodicWork {
 
         private MemoryGroup(List<MemoryPoolMXBean> pools, MemoryType type) {
             for (MemoryPoolMXBean pool : pools) {
-                if (pool.getType() == type)
+                if (pool.getType() == type) {
                     this.pools.add(pool);
+                }
             }
         }
 
@@ -77,7 +78,9 @@ public final class MemoryUsageMonitor extends PeriodicWork {
 //            long cur = 0;
             for (MemoryPoolMXBean pool : pools) {
                 MemoryUsage usage = pool.getCollectionUsage();
-                if(usage==null) continue;   // not available
+                if(usage==null) {
+                    continue;   // not available
+                }
                 used += usage.getUsed();
                 max  += usage.getMax();
 

@@ -215,8 +215,12 @@ public class Connection {
     }
 
     private String detectKeyAlgorithm(PublicKey kp) {
-        if (kp instanceof RSAPublicKey)     return "RSA";
-        if (kp instanceof DSAPublicKey)     return "DSA";
+        if (kp instanceof RSAPublicKey) {
+            return "RSA";
+        }
+        if (kp instanceof DSAPublicKey) {
+            return "DSA";
+        }
         throw new IllegalArgumentException("Unknown public key type: "+kp);
     }
 
