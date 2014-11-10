@@ -753,7 +753,8 @@ THE SOFTWARE.
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <forkCount>0.5C</forkCount>
-          <reuseForks>true</reuseForks>
+          <!-- changed to false to please Sonar -->
+          <reuseForks>false</reuseForks> 
           <!--<argLine>-XX:MaxPermSize=128m</argLine> moved to properties to please Sonar -->
         </configuration>
       </plugin>
