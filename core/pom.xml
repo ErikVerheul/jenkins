@@ -45,6 +45,7 @@ THE SOFTWARE.
     <stapler.version>1.231</stapler.version>
     <spring.version>2.5.6.SEC03</spring.version>
     <groovy.version>1.8.9</groovy.version>
+    <argLine>-XX:MaxPermSize=128m</argLine>
   </properties>
 
   <dependencies>
@@ -753,7 +754,7 @@ THE SOFTWARE.
         <configuration>
           <forkCount>0.5C</forkCount>
           <reuseForks>true</reuseForks>
-          <argLine>-XX:MaxPermSize=128m</argLine>
+          <!--<argLine>-XX:MaxPermSize=128m</argLine> moved to properties to please Sonar -->
         </configuration>
       </plugin>
       <plugin><!-- set main class -->
