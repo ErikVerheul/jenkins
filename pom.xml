@@ -883,8 +883,10 @@ THE SOFTWARE.
                         <argLine>${argLine} -XX:-UseSplitVerifier</argLine>
                         <includes>
                             <include>**/*Test.java</include>
-                            <include>**/*Tests.java</include>
                         </includes>
+                        <excludes>
+                            <exclude>**/core/*Test.java</exclude>
+                        </excludes>
                         <!-- new configuration needed for coverage per test -->
                         <properties>
                             <property>
