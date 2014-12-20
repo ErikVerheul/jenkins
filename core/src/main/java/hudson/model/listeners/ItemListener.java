@@ -31,8 +31,10 @@ import hudson.model.Item;
 import hudson.model.ItemGroup;
 import hudson.model.Items;
 import hudson.security.ACL;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import jenkins.security.NotReallyRoleSensitiveCallable;
 
 /**
  * Receives notifications about CRUD operations of {@link Item}.
@@ -158,23 +160,13 @@ public class ItemListener implements ExtensionPoint {
     }
 
     // TODO JENKINS-21224 generalize this to a method perhaps in ExtensionList and use consistently from all listeners
-    private static void forAll(final /* java.util.function.Consumer<ItemListener> */Function<ItemListener,Void> consumer, boolean asSystem) {
-        Runnable r = new Runnable() {
-            @Override public void run() {
-                for (ItemListener l : all()) {
-                    try {
-                        consumer.apply(l);
-                    } catch (RuntimeException x) {
-                        LOGGER.log(Level.WARNING, "failed to send event to listener of " + l.getClass(), x);
-                    }
-                }
+    private static void forAll(final /* java.util.function.Consumer<ItemListener> */Function<ItemListener,Void> consumer) {
+        for (ItemListener l : all()) {
+            try {
+                consumer.apply(l);
+            } catch (RuntimeException x) {
+                LOGGER.log(Level.WARNING, "failed to send event to listener of " + l.getClass(), x);
             }
-        };
-        if (asSystem) {
-            ACL.impersonate(ACL.SYSTEM, r);
-        } else {
-            // False positive for squid:S1217 "Thread.run() and Runnable.run() should not be called directly".
-            r.run(); //NOSONAR
         }
     }
 
@@ -184,7 +176,7 @@ public class ItemListener implements ExtensionPoint {
                 l.onCopied(src, result);
                 return null;
             }
-        }, true);
+        });
     }
 
     public static void fireOnCreated(final Item item) {
@@ -193,7 +185,7 @@ public class ItemListener implements ExtensionPoint {
                 l.onCreated(item);
                 return null;
             }
-        }, true);
+        });
     }
 
     public static void fireOnUpdated(final Item item) {
@@ -202,7 +194,7 @@ public class ItemListener implements ExtensionPoint {
                 l.onUpdated(item);
                 return null;
             }
-        }, true);
+        });
     }
 
     /** @since 1.548 */
@@ -212,7 +204,7 @@ public class ItemListener implements ExtensionPoint {
                 l.onDeleted(item);
                 return null;
             }
-        }, true);
+        });
     }
 
     /**
@@ -222,13 +214,6 @@ public class ItemListener implements ExtensionPoint {
      * @since 1.548
      */
     public static void fireLocationChange(final Item rootItem, final String oldFullName) {
-        ACL.impersonate(ACL.SYSTEM, new Runnable() {
-            @Override public void run() {
-                doFireLocationChange(rootItem, oldFullName);
-            }
-        });
-    }
-    private static void doFireLocationChange(final Item rootItem, final String oldFullName) {
         String prefix = rootItem.getParent().getFullName();
         if (!prefix.isEmpty()) {
             prefix += '/';
@@ -245,16 +230,20 @@ public class ItemListener implements ExtensionPoint {
                     l.onRenamed(rootItem, oldName, newName);
                     return null;
                 }
-            }, false);
+            });
         }
         forAll(new Function<ItemListener, Void>() {
             @Override public Void apply(ItemListener l) {
                 l.onLocationChanged(rootItem, oldFullName, newFullName);
                 return null;
             }
-        }, false);
+        });
         if (rootItem instanceof ItemGroup) {
-            for (final Item child : Items.getAllItems((ItemGroup) rootItem, Item.class)) {
+            for (final Item child : ACL.impersonate(ACL.SYSTEM, new NotReallyRoleSensitiveCallable<List<Item>,RuntimeException>() {
+                @Override public List<Item> call() {
+                    return Items.getAllItems((ItemGroup) rootItem, Item.class);
+                }
+            })) {
                 final String childNew = child.getFullName();
                 assert childNew.startsWith(newFullName);
                 assert childNew.charAt(newFullName.length()) == '/';
@@ -264,7 +253,7 @@ public class ItemListener implements ExtensionPoint {
                         l.onLocationChanged(child, childOld, childNew);
                         return null;
                     }
-                }, false);
+                });
             }
         }
     }

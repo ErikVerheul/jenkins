@@ -29,7 +29,7 @@ THE SOFTWARE.
   <parent>
     <groupId>org.jenkins-ci.main</groupId>
     <artifactId>pom</artifactId>
-    <version>1.587-SNAPSHOT</version>
+    <version>1.596-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
@@ -42,7 +42,7 @@ THE SOFTWARE.
 
   <properties>
     <staplerFork>true</staplerFork>
-    <stapler.version>1.231</stapler.version>
+    <stapler.version>1.234</stapler.version>
     <spring.version>2.5.6.SEC03</spring.version>
     <groovy.version>1.8.9</groovy.version>
     <argLine>-XX:MaxPermSize=128m</argLine>
@@ -52,7 +52,7 @@ THE SOFTWARE.
     <dependency>
       <groupId>org.jenkins-ci.plugins.icon-shim</groupId>
       <artifactId>icon-set</artifactId>
-      <version>1.0.3</version>
+      <version>1.0.5</version>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -103,7 +103,7 @@ THE SOFTWARE.
     <dependency> <!-- for compatibility only; all new code should use JNR -->
       <groupId>org.jruby.ext.posix</groupId>
       <artifactId>jna-posix</artifactId>
-      <version>1.0.3</version>
+      <version>1.0.3-jenkins-1</version>
     </dependency>
     <dependency>
       <groupId>com.github.jnr</groupId>
@@ -118,7 +118,7 @@ THE SOFTWARE.
     <dependency>
       <groupId>org.jenkins-ci</groupId>
       <artifactId>trilead-ssh2</artifactId>
-      <version>build217-jenkins-7</version>
+      <version>build217-jenkins-8</version>
     </dependency>
     <dependency>
       <groupId>org.kohsuke.stapler</groupId>
@@ -192,7 +192,7 @@ THE SOFTWARE.
       <groupId>commons-httpclient</groupId>
       <artifactId>commons-httpclient</artifactId>
     </dependency>
-    <dependency>
+    <dependency><!-- JENKINS-21160: remoting also depends on args4j, please update accordingly -->
       <groupId>args4j</groupId>
       <artifactId>args4j</artifactId>
       <version>2.0.23</version>
