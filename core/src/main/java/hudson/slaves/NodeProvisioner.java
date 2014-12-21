@@ -575,7 +575,7 @@ public class NodeProvisioner {
 
                         for (CloudProvisioningListener cl : CloudProvisioningListener.all()) {
                             // consider displaying reasons in a future cloud ux
-                            if (cl.canProvision(c,label,workloadToProvision) != null) {
+                            if (cl.canProvision(c,state.getLabel(),workloadToProvision) != null) {
                                 break CLOUD;
                             }
                         }

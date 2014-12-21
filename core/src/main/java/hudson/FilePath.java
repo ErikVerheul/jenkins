@@ -1612,10 +1612,13 @@ public final class FilePath implements Serializable {
      * @see #mode()
      */
     public void chmod(final int mask) throws IOException, InterruptedException {
-        if(!isUnix() || mask==-1) {
-          act(new SecureFileCallable<Void>() {
+        if (!isUnix() || mask == -1) {
+            return;
         }
+        act(new SecureFileCallable<Void>() {
             private static final long serialVersionUID = 1L;
+
+            @Override
             public Void invoke(File f, VirtualChannel channel) throws IOException {
                 _chmod(writing(f), mask);
 
@@ -1654,6 +1657,11 @@ public final class FilePath implements Serializable {
             public Integer invoke(File f, VirtualChannel channel) throws IOException {
                 return IOUtils.mode(stating(f));
             }
+
+            @Override
+            public void checkRoles(RoleChecker rc) throws SecurityException {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
         });
     }
 
@@ -1677,6 +1685,7 @@ public final class FilePath implements Serializable {
     }
 
     private static final class DirectoryFilter implements FileFilter, Serializable {
+        @Override
         public boolean accept(File f) {
             return f.isDirectory();
         }

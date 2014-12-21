@@ -115,32 +115,6 @@ public final class PermissionGroup implements Iterable<Permission>, Comparable<P
         return id().compareTo(that.id());
     }
     
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (obj == this) {
-            return true;
-        }
-        if (!(obj instanceof PermissionGroup)) {
-            return false;
-        }
-        PermissionGroup o = (PermissionGroup) obj;
-        if (this.compareOrder() != o.compareOrder()) {
-            return false;
-        }      
-        return this.owner.getName().compareTo(o.owner.getName()) == 0;    
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 5;
-        hash = 83 * hash + (this.permisisons != null ? this.permisisons.hashCode() : 0);
-        hash = 83 * hash + (this.owner != null ? this.owner.hashCode() : 0);
-        return hash;
-    }
-
     private int compareOrder() {
         if(owner==Hudson.class) {
             return 0;
