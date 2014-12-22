@@ -1037,7 +1037,8 @@ public class Queue extends ResourceController implements Saveable {
         final Jenkins jenkins = Jenkins.getInstance();
         final Queue queue = jenkins == null ? null : jenkins.getQueue();
         if (queue == null) {
-            runnable.run();
+            // False positive for squid:S1217 "Thread.run() and Runnable.run() should not be called directly".
+            runnable.run(); //NOSONAR
         } else {
             queue._withLock(runnable);
         }
@@ -1091,7 +1092,8 @@ public class Queue extends ResourceController implements Saveable {
      * @since 1.592
      */
     protected synchronized void _withLock(Runnable runnable) {
-        runnable.run();
+        // False positive for squid:S1217 "Thread.run() and Runnable.run() should not be called directly".
+        runnable.run(); //NOSONAR
     }
 
     /**

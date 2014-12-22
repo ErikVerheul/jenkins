@@ -21,6 +21,7 @@ class FilePathFilterAggregator extends FilePathFilter {
     private final CopyOnWriteArrayList<Entry> all = new CopyOnWriteArrayList<Entry>();
 
     private class Entry implements Comparable<Entry> {
+
         final FilePathFilter filter;
         final double ordinal;
 
@@ -32,12 +33,35 @@ class FilePathFilterAggregator extends FilePathFilter {
         @Override
         public int compareTo(Entry that) {
             double d = this.ordinal - that.ordinal;
-            if (d<0)    return -1;
-            if (d>0)    return 1;
+            if (d < 0) {
+                return -1;
+            }
+            if (d > 0) {
+                return 1;
+            }
 
             // to create predictable order that doesn't depend on the insertion order, use class name
             // to break a tie
             return this.filter.getClass().getName().compareTo(that.filter.getClass().getName());
+        }
+
+        @Override
+        public int hashCode() {
+            int hash = 3;
+            hash = 79 * hash + (int) (Double.doubleToLongBits(this.ordinal) ^ (Double.doubleToLongBits(this.ordinal) >>> 32));
+            return hash;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            final Entry other = (Entry) obj;
+            return Double.doubleToLongBits(this.ordinal) == Double.doubleToLongBits(other.ordinal);
         }
     }
 

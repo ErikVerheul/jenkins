@@ -4398,9 +4398,10 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
             // see http://bugs.java.com/bugdatabase/view_bug.do?bug_id=8051847
             // As we don't know where the first exception will go, let's also send this to logging so that
             // we have a known place to look at.
+            // Allow catching Error as it is retrown anyway.
             LOGGER.log(SEVERE, "Failed to load Jenkins.class", e);
             throw e;
-        } catch (Error e) {
+        } catch (Error e) { //NOSONAR
             LOGGER.log(SEVERE, "Failed to load Jenkins.class", e);
             throw e;
         }
