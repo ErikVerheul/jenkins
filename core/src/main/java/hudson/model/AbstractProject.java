@@ -782,7 +782,11 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
         }
 
         for (TransientProjectActionFactory tpaf : TransientProjectActionFactory.all()) {
-            ta.addAll(Util.fixNull(tpaf.createFor(this))); // be defensive against null
+            try {
+                ta.addAll(Util.fixNull(tpaf.createFor(this))); // be defensive against null
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, "Could not load actions from " + tpaf + " for " + this, e);
+            }
         }
         return ta;
     }
@@ -1501,9 +1505,9 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
         // OTOH, if a concurrent build is chosen, the user is willing to create a multiple workspace,
         // so better throughput is achieved over time (modulo the initial cost of creating that many workspaces)
         // by having multiple workspaces
-        WorkspaceList.Lease lease = l.acquire(ws, !concurrentBuild);
         Node node = lb.getBuiltOn();
         Launcher launcher = ws.createLauncher(listener).decorateByEnv(getEnvironment(node,listener));
+        WorkspaceList.Lease lease = l.acquire(ws, !concurrentBuild);
         try {
             listener.getLogger().println("Polling SCM changes on " + node.getSelfLabel().getName());
             LOGGER.fine("Polling SCM changes of " + getName());

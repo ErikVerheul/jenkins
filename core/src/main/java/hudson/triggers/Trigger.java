@@ -214,9 +214,9 @@ public abstract class Trigger<J extends Item> implements Describable<Trigger<?>>
                 LOGGER.log(Level.FINE, "cron checking {0}", cal.getTime());
                 try {
                     checkTriggers(cal);
-                } catch (Exception e) {
-                    // bug in the code. Don't let the thread die.
-                    LOGGER.log(Level.WARNING,"Cron thread throw an exception",e);                  
+                } catch (Throwable e) {
+                    LOGGER.log(Level.WARNING,"Cron thread throw an exception",e);
+                    // SafeTimerTask.run would also catch this, but be sure to increment cal too.
                 }
 
                 cal.add(Calendar.MINUTE,1);

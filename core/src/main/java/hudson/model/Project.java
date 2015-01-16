@@ -52,6 +52,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import jenkins.triggers.SCMTriggerItem;
 
 /**
@@ -238,18 +241,36 @@ public abstract class Project<P extends Project<P,B>,B extends Build<P,B>>
         List<Action> r = super.createTransientActions();
 
         for (BuildStep step : getBuildersList()) {
-            r.addAll(step.getProjectActions(this));
+            try {
+                r.addAll(step.getProjectActions(this));
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, "Error loading build step.", e);
+            }
         }
         for (BuildStep step : getPublishersList()) {
-            r.addAll(step.getProjectActions(this));
+            try {
+                r.addAll(step.getProjectActions(this));
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, "Error loading publisher.", e);
+            }
         }
         for (BuildWrapper step : getBuildWrappers().values()) {
-            r.addAll(step.getProjectActions(this));
+            try {
+                r.addAll(step.getProjectActions(this));
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, "Error loading build wrapper.", e);
+            }
         }
         for (Trigger trigger : triggers()) {
-            r.addAll(trigger.getProjectActions());
+            try {
+                r.addAll(trigger.getProjectActions());
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, "Error loading trigger.", e);
+            }
         }
 
         return r;
     }
+
+    private static final Logger LOGGER = Logger.getLogger(Project.class.getName());
 }
