@@ -23,10 +23,6 @@
  */
 package jenkins.model;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.HttpMethod;
@@ -80,9 +76,9 @@ public class JenkinsTest extends HudsonTestCase implements UnprotectedRootAction
         FreeStyleProject p = createFreeStyleProject(jobName);
         p.setDisplayName("displayName");
         
-        Jenkins jenkins = Jenkins.getInstance();
-        assertTrue(jenkins.isDisplayNameUnique("displayName1", curJobName));
-        assertTrue(jenkins.isDisplayNameUnique(jobName, curJobName));
+        Jenkins jenkinsLocal = Jenkins.getInstance();
+        assertTrue(jenkinsLocal.isDisplayNameUnique("displayName1", curJobName));
+        assertTrue(jenkinsLocal.isDisplayNameUnique(jobName, curJobName));
     }
 
     @Test
@@ -97,8 +93,8 @@ public class JenkinsTest extends HudsonTestCase implements UnprotectedRootAction
         FreeStyleProject p = createFreeStyleProject(jobName);
         p.setDisplayName(displayName);
         
-        Jenkins jenkins = Jenkins.getInstance();
-        assertFalse(jenkins.isDisplayNameUnique(displayName, curJobName));
+        Jenkins jenkinsLocal = Jenkins.getInstance();
+        assertFalse(jenkinsLocal.isDisplayNameUnique(displayName, curJobName));
     }
     
     @Test
@@ -109,9 +105,9 @@ public class JenkinsTest extends HudsonTestCase implements UnprotectedRootAction
         FreeStyleProject curProject = createFreeStyleProject(curJobName);
         curProject.setDisplayName(displayName);
         
-        Jenkins jenkins = Jenkins.getInstance();
+        Jenkins jenkinsLocal = Jenkins.getInstance();
         // should be true as we don't test against the current job
-        assertTrue(jenkins.isDisplayNameUnique(displayName, curJobName));
+        assertTrue(jenkinsLocal.isDisplayNameUnique(displayName, curJobName));
         
     }
     
@@ -122,8 +118,8 @@ public class JenkinsTest extends HudsonTestCase implements UnprotectedRootAction
         createFreeStyleProject(curJobName);        
         createFreeStyleProject(jobName);
         
-        Jenkins jenkins = Jenkins.getInstance();
-        assertTrue(jenkins.isNameUnique("jobName1", curJobName));
+        Jenkins jenkinsLocal = Jenkins.getInstance();
+        assertTrue(jenkinsLocal.isNameUnique("jobName1", curJobName));
     }
 
     @Test
@@ -133,8 +129,8 @@ public class JenkinsTest extends HudsonTestCase implements UnprotectedRootAction
         createFreeStyleProject(curJobName);        
         createFreeStyleProject(jobName);
         
-        Jenkins jenkins = Jenkins.getInstance();
-        assertFalse(jenkins.isNameUnique(jobName, curJobName));
+        Jenkins jenkinsLocal = Jenkins.getInstance();
+        assertFalse(jenkinsLocal.isNameUnique(jobName, curJobName));
     }
 
     @Test
@@ -144,9 +140,9 @@ public class JenkinsTest extends HudsonTestCase implements UnprotectedRootAction
         createFreeStyleProject(curJobName);        
         createFreeStyleProject(jobName);
         
-        Jenkins jenkins = Jenkins.getInstance();
+        Jenkins jenkinsLocal = Jenkins.getInstance();
         // true because we don't test against the current job
-        assertTrue(jenkins.isNameUnique(curJobName, curJobName));
+        assertTrue(jenkinsLocal.isNameUnique(curJobName, curJobName));
     }
     
     @Test
@@ -159,8 +155,8 @@ public class JenkinsTest extends HudsonTestCase implements UnprotectedRootAction
         FreeStyleProject p = createFreeStyleProject(jobName);
         p.setDisplayName("displayName");
         
-        Jenkins jenkins = Jenkins.getInstance();
-        FormValidation v = jenkins.doCheckDisplayName("1displayName", curJobName);
+        Jenkins jenkinsLocal = Jenkins.getInstance();
+        FormValidation v = jenkinsLocal.doCheckDisplayName("1displayName", curJobName);
         assertEquals(FormValidation.ok(), v);
     }
 
@@ -175,8 +171,8 @@ public class JenkinsTest extends HudsonTestCase implements UnprotectedRootAction
         FreeStyleProject p = createFreeStyleProject(jobName);
         p.setDisplayName(displayName);
         
-        Jenkins jenkins = Jenkins.getInstance();
-        FormValidation v = jenkins.doCheckDisplayName(displayName, curJobName);
+        Jenkins jenkinsLocal = Jenkins.getInstance();
+        FormValidation v = jenkinsLocal.doCheckDisplayName(displayName, curJobName);
         assertEquals(FormValidation.Kind.WARNING, v.kind);
     }
 
@@ -191,8 +187,8 @@ public class JenkinsTest extends HudsonTestCase implements UnprotectedRootAction
         FreeStyleProject p = createFreeStyleProject(jobName);
         p.setDisplayName(displayName);
         
-        Jenkins jenkins = Jenkins.getInstance();
-        FormValidation v = jenkins.doCheckDisplayName(jobName, curJobName);
+        Jenkins jenkinsLocal = Jenkins.getInstance();
+        FormValidation v = jenkinsLocal.doCheckDisplayName(jobName, curJobName);
         assertEquals(FormValidation.Kind.WARNING, v.kind);
     }
 
@@ -202,9 +198,9 @@ public class JenkinsTest extends HudsonTestCase implements UnprotectedRootAction
             "", "Jenkins"    
         };
         
-        Jenkins jenkins = Jenkins.getInstance();
+        Jenkins jenkinsLocal = Jenkins.getInstance();
         for (String viewName : viewNames) {
-            FormValidation v = jenkins.doCheckViewName(viewName);
+            FormValidation v = jenkinsLocal.doCheckViewName(viewName);
             assertEquals(FormValidation.Kind.OK, v.kind);
         }
     }
@@ -216,10 +212,10 @@ public class JenkinsTest extends HudsonTestCase implements UnprotectedRootAction
             "Jenkins!", "Jenkins[]", "Jenkin<>s", "^Jenkins", ".."    
         };
         
-        Jenkins jenkins = Jenkins.getInstance();
+        Jenkins jenkinsLocal = Jenkins.getInstance();
         
         for (String viewName : viewNames) {
-            FormValidation v = jenkins.doCheckViewName(viewName);
+            FormValidation v = jenkinsLocal.doCheckViewName(viewName);
             assertEquals(FormValidation.Kind.ERROR, v.kind);
         }
     }
@@ -330,20 +326,23 @@ public class JenkinsTest extends HudsonTestCase implements UnprotectedRootAction
     public static class RootActionImpl implements UnprotectedRootAction {
         private int count;
 
+        @Override
         public String getIconFileName() {
             return null;
         }
 
+        @Override
         public String getDisplayName() {
             return null;
         }
 
+        @Override
         public String getUrlName() {
             return "foobar";
         }
 
         public HttpResponse doDynamic() {
-            assertTrue(Jenkins.getInstance().getAuthentication().getName().equals("anonymous"));
+            assertTrue(Jenkins.getAuthentication().getName().equals("anonymous"));
             count++;
             return HttpResponses.html("OK");
         }
@@ -351,14 +350,17 @@ public class JenkinsTest extends HudsonTestCase implements UnprotectedRootAction
 
     @TestExtension("testUnprotectedRootAction")
     public static class ProtectedRootActionImpl implements RootAction {
+        @Override
         public String getIconFileName() {
             return null;
         }
 
+        @Override
         public String getDisplayName() {
             return null;
         }
 
+        @Override
         public String getUrlName() {
             return "foobar-zot";
         }

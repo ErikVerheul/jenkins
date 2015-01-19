@@ -20,7 +20,6 @@ import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.TestBuilder;
 
 import java.io.IOException;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 /**
@@ -48,7 +47,7 @@ public class ExecutorTest {
         // test the UI
         HtmlPage p = j.createWebClient().goTo("");
         p = p.getAnchorByText("Dead (!)").click();
-        assertTrue(p.getWebResponse().getContentAsString().contains(ThreadDeath.class.getName()));
+        assertTrue(p.getWebResponse().getContentAsString().contains(RuntimeException.class.getName()));
         j.submit(p.getFormByName("yank"));
 
         assertFalse(c.getExecutors().contains(e));
