@@ -36,7 +36,7 @@ import org.jvnet.hudson.test.RandomlyFails;
  *
  * @author Kohsuke Kawaguchi
  */
-public class UpdateCenter2Test {
+public class UpdateCenterTwoTest {
 
     @Rule public JenkinsRule j = new JenkinsRule();
 
