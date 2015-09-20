@@ -193,15 +193,13 @@ public abstract class FormValidation extends IOException implements HttpResponse
     }
 
     private static FormValidation _error(Kind kind, Throwable e, String message) {
-        if (e==null) {
-            return _errorWithMarkup(Util.escape(message),kind);
-        }
+        if (e==null)    return _errorWithMarkup(Util.escape(message),kind);
 
         return _errorWithMarkup(Util.escape(message)+
             " <a href='#' class='showDetails'>"
             + Messages.FormValidation_Error_Details()
             + "</a><pre style='display:none'>"
-            + Functions.printThrowable(e) +
+            + Util.escape(Functions.printThrowable(e)) +
             "</pre>",kind
         );
     }
@@ -218,7 +216,7 @@ public abstract class FormValidation extends IOException implements HttpResponse
      * Aggregate multiple validations into one.
      *
      * @return Validation of the least successful kind aggregating all child messages.
-     * @since TODO
+     * @since 1.590
      */
     public static @Nonnull FormValidation aggregate(@Nonnull Collection<FormValidation> validations) {
         if (validations == null || validations.isEmpty()) return FormValidation.ok();
@@ -263,9 +261,8 @@ public abstract class FormValidation extends IOException implements HttpResponse
     }
 
     private static FormValidation _errorWithMarkup(final String message, final Kind kind) {
-        if(message==null) {
+        if(message==null)
             return ok();
-        }
         return new FormValidation(kind, message) {
             public String renderHtml() {
                 StaplerRequest req = Stapler.getCurrentRequest();
@@ -333,26 +330,19 @@ public abstract class FormValidation extends IOException implements HttpResponse
      */
     public static FormValidation validateExecutable(String exe, FileValidator exeValidator) {
         // insufficient permission to perform validation?
-        if(!Jenkins.getInstance().hasPermission(Jenkins.ADMINISTER)) {
-            return ok();
-        }
+        if(!Jenkins.getInstance().hasPermission(Jenkins.ADMINISTER)) return ok();
 
         exe = fixEmpty(exe);
-        if(exe==null) {
+        if(exe==null)
             return ok();
-        }
 
         if(exe.indexOf(File.separatorChar)>=0) {
             // this is full path
             File f = new File(exe);
-            if(f.exists()) {
-                return exeValidator.validate(f);
-            }
+            if(f.exists())  return exeValidator.validate(f);
 
             File fexe = new File(exe+".exe");
-            if(fexe.exists()) {
-                return exeValidator.validate(fexe);
-            }
+            if(fexe.exists())   return exeValidator.validate(fexe);
 
             return error("There's no such file: "+exe);
         }
@@ -375,14 +365,10 @@ public abstract class FormValidation extends IOException implements HttpResponse
                 File dir = new File(_dir);
 
                 File f = new File(dir,exe);
-                if(f.exists()) {
-                    return exeValidator.validate(f);
-                }
+                if(f.exists())  return exeValidator.validate(f);
 
                 File fexe = new File(dir,exe+".exe");
-                if(fexe.exists()) {
-                    return exeValidator.validate(fexe);
-                }
+                if(fexe.exists())   return exeValidator.validate(fexe);
             }
 
             tokenizedPath += ".";
@@ -399,9 +385,8 @@ public abstract class FormValidation extends IOException implements HttpResponse
      */
     public static FormValidation validateNonNegativeInteger(String value) {
         try {
-            if(Integer.parseInt(value)<0) {
+            if(Integer.parseInt(value)<0)
                 return error(hudson.model.Messages.Hudson_NotANonNegativeNumber());
-            }
             return ok();
         } catch (NumberFormatException e) {
             return error(hudson.model.Messages.Hudson_NotANumber());
@@ -413,9 +398,8 @@ public abstract class FormValidation extends IOException implements HttpResponse
      */
     public static FormValidation validatePositiveInteger(String value) {
         try {
-            if(Integer.parseInt(value)<=0) {
+            if(Integer.parseInt(value)<=0)
                 return error(hudson.model.Messages.Hudson_NotAPositiveNumber());
-            }
             return ok();
         } catch (NumberFormatException e) {
             return error(hudson.model.Messages.Hudson_NotANumber());
@@ -426,9 +410,8 @@ public abstract class FormValidation extends IOException implements HttpResponse
      * Makes sure that the given string is not null or empty.
      */
     public static FormValidation validateRequired(String value) {
-        if (Util.fixEmptyAndTrim(value) == null) {
+        if (Util.fixEmptyAndTrim(value) == null)
             return error(Messages.FormValidation_ValidateRequired());
-        }
         return ok();
     }
 
@@ -447,14 +430,12 @@ public abstract class FormValidation extends IOException implements HttpResponse
         try {
             String v = value;
             if(!allowWhitespace) {
-                if(v.indexOf(' ')>=0 || v.indexOf('\n')>=0) {
+                if(v.indexOf(' ')>=0 || v.indexOf('\n')>=0)
                     return error(errorMessage);
-                }
             }
             v=v.trim();
-            if(!allowEmpty && v.length()==0) {
+            if(!allowEmpty && v.length()==0)
                 return error(errorMessage);
-            }
 
             com.trilead.ssh2.crypto.Base64.decode(v.toCharArray());
             return ok();
@@ -491,11 +472,9 @@ public abstract class FormValidation extends IOException implements HttpResponse
          */
         protected boolean findText(BufferedReader in, String literal) throws IOException {
             String line;
-            while((line=in.readLine())!=null) {
-                if(line.indexOf(literal)!=-1) {
+            while((line=in.readLine())!=null)
+                if(line.indexOf(literal)!=-1)
                     return true;
-                }
-            }
             return false;
         }
 
@@ -508,12 +487,11 @@ public abstract class FormValidation extends IOException implements HttpResponse
          */
         protected FormValidation handleIOException(String url, IOException e) throws IOException, ServletException {
             // any invalid URL comes here
-            if(e.getMessage().equals(url)) {
+            if(e.getMessage().equals(url))
                 // Sun JRE (and probably others too) often return just the URL in the error.
                 return error("Unable to connect "+url);
-            } else {
+            else
                 return error(e.getMessage());
-            }
         }
 
         /**
@@ -522,9 +500,8 @@ public abstract class FormValidation extends IOException implements HttpResponse
         private String getCharset(URLConnection con) {
             for( String t : con.getContentType().split(";") ) {
                 t = t.trim().toLowerCase(Locale.ENGLISH);
-                if(t.startsWith("charset=")) {
+                if(t.startsWith("charset="))
                     return t.substring(8);
-                }
             }
             // couldn't find it. HTML spec says default is US-ASCII,
             // but UTF-8 is a better choice since
@@ -608,29 +585,22 @@ public abstract class FormValidation extends IOException implements HttpResponse
                 QueryParameter qp = p.annotation(QueryParameter.class);
                 if (qp!=null) {
                     String name = qp.value();
-                    if (name.length()==0) {
-                        name = p.name();
-                    }
-                    if (name==null || name.length()==0) {
+                    if (name.length()==0) name = p.name();
+                    if (name==null || name.length()==0)
                         continue;   // unknown parameter name. we'll report the error when the form is submitted.
-                    }
-                    if (name.equals("value")) {
+                    if (name.equals("value"))
                         continue;   // 'value' parameter is implicit
-                    }
 
                     RelativePath rp = p.annotation(RelativePath.class);
-                    if (rp!=null) {
+                    if (rp!=null)
                         name = rp.value()+'/'+name;
-                    }
 
                     names.add(name);
                     continue;
                 }
 
                 Method m = ReflectionUtils.getPublicMethodNamed(p.type(), "fromStapler");
-                if (m!=null) {
-                    findParameters(m);
-                }
+                if (m!=null)    findParameters(m);
             }
         }
 
@@ -642,9 +612,7 @@ public abstract class FormValidation extends IOException implements HttpResponse
          * A modern version depends on {@link #toStemUrl()} and {@link #getDependsOn()}
          */
         public String toCheckUrl() {
-            if (names==null) {
-                return null;
-            }
+            if (names==null)    return null;
 
             if (checkUrl==null) {
                 StringBuilder buf = new StringBuilder(singleQuote(relativePath()));
@@ -669,20 +637,15 @@ public abstract class FormValidation extends IOException implements HttpResponse
          * the query string portion (which is built on the client side.)
          */
         public String toStemUrl() {
-            if (names==null) {
-                return null;
-            }
+            if (names==null)    return null;
             return jsStringEscape(Descriptor.getCurrentDescriptorByNameUrl()) + '/' + relativePath();
         }
 
         public String getDependsOn() {
-            if (names==null) {
-                return null;
-            }
+            if (names==null)    return null;
 
-            if (dependsOn==null) {
+            if (dependsOn==null)
                 dependsOn = join(names," ");
-            }
             return dependsOn;
         }
 

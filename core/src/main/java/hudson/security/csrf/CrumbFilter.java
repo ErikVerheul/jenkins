@@ -5,6 +5,7 @@
  */
 package hudson.security.csrf;
 
+import hudson.util.MultipartFormDataParser;
 import jenkins.model.Jenkins;
 
 import java.io.IOException;
@@ -35,9 +36,7 @@ public class CrumbFilter implements Filter {
      */
     public CrumbIssuer getCrumbIssuer() {
         Jenkins h = Jenkins.getInstance();
-        if(h==null) {
-            return null;    // before Jenkins is initialized?
-        }
+        if(h==null)     return null;    // before Jenkins is initialized?
         return h.getCrumbIssuer();
     }
 
@@ -56,9 +55,8 @@ public class CrumbFilter implements Filter {
 
         if ("POST".equals(httpRequest.getMethod())) {
             for (CrumbExclusion e : CrumbExclusion.all()) {
-                if (e.process(httpRequest,httpResponse,chain)) {
+                if (e.process(httpRequest,httpResponse,chain))
                     return;
-                }
             }
 
             String crumbFieldName = crumbIssuer.getDescriptor().getCrumbRequestField();
@@ -100,23 +98,7 @@ public class CrumbFilter implements Filter {
             return false;
         }
 
-        String contentType = request.getContentType();
-        if (contentType == null) {
-            return false;
-        }
-
-        String[] parts = contentType.split(";");
-        if (parts.length == 0) {
-            return false;
-        }
-
-        for (int i = 0; i < parts.length; i++) {
-            if ("multipart/form-data".equals(parts[i])) {
-                return true;
-            }
-        }
-
-        return false;
+        return MultipartFormDataParser.isMultiPartForm(request.getContentType());
     }
 
     /**

@@ -61,6 +61,7 @@ import org.kohsuke.stapler.Stapler;
  * @deprecated as of 1.294
  *      Use {@link FormValidation} as a return value in your check method.
  */
+@Deprecated
 public abstract class FormFieldValidator {
     public static final Permission CHECK = Jenkins.ADMINISTER;
 
@@ -92,6 +93,7 @@ public abstract class FormFieldValidator {
      *      Use {@link #FormFieldValidator(Permission)} and remove {@link StaplerRequest} and {@link StaplerResponse}
      *      from your "doCheck..." method parameter
      */
+    @Deprecated
     protected FormFieldValidator(StaplerRequest request, StaplerResponse response, Permission permission) {
         this(request,response, Jenkins.getInstance(),permission);
     }
@@ -109,6 +111,7 @@ public abstract class FormFieldValidator {
      *      Use {@link #FormFieldValidator(AccessControlled,Permission)} and remove {@link StaplerRequest} and {@link StaplerResponse}
      *      from your "doCheck..." method parameter
      */
+    @Deprecated
     protected FormFieldValidator(StaplerRequest request, StaplerResponse response, AccessControlled subject, Permission permission) {
         this.request = request;
         this.response = response;
@@ -124,18 +127,17 @@ public abstract class FormFieldValidator {
      * Runs the validation code.
      */
     public final void process() throws IOException, ServletException {
-        if(permission!=null) {
+        if(permission!=null)
             try {
-                if (subject==null) {
+                if(subject==null)
                     throw new AccessDeniedException("No subject");
-                }
                 subject.checkPermission(permission);
             } catch (AccessDeniedException e) {
-                if (!Jenkins.getInstance().hasPermission(Jenkins.ADMINISTER)) {
+                // if the user has hudson-wisde admin permission, all checks are allowed
+                // this is to protect Hudson administrator from broken ACL/SecurityRealm implementation/configuration.
+                if(!Jenkins.getInstance().hasPermission(Jenkins.ADMINISTER))
                     throw e;
-                }
             }
-        }
 
         check();
     }
@@ -240,6 +242,7 @@ public abstract class FormFieldValidator {
      * @deprecated as of 1.294
      *      Use {@link FormValidation.URLCheck}
      */
+    @Deprecated
     public static abstract class URLCheck extends FormFieldValidator {
 
         public URLCheck(StaplerRequest request, StaplerResponse response) {
@@ -269,11 +272,9 @@ public abstract class FormFieldValidator {
          */
         protected boolean findText(BufferedReader in, String literal) throws IOException {
             String line;
-            while((line=in.readLine())!=null) {
-                if(line.indexOf(literal)!=-1) {
+            while((line=in.readLine())!=null)
+                if(line.indexOf(literal)!=-1)
                     return true;
-                }
-            }
             return false;
         }
 
@@ -286,12 +287,11 @@ public abstract class FormFieldValidator {
          */
         protected void handleIOException(String url, IOException e) throws IOException, ServletException {
             // any invalid URL comes here
-            if(e.getMessage().equals(url)) {
+            if(e.getMessage().equals(url))
                 // Sun JRE (and probably others too) often return just the URL in the error.
                 error("Unable to connect "+url);
-            } else {
+            else
                 error(e.getMessage());
-            }
         }
 
         /**
@@ -300,9 +300,8 @@ public abstract class FormFieldValidator {
         private String getCharset(URLConnection con) {
             for( String t : con.getContentType().split(";") ) {
                 t = t.trim().toLowerCase(Locale.ENGLISH);
-                if(t.startsWith("charset=")) {
+                if(t.startsWith("charset="))
                     return t.substring(8);
-                }
             }
             // couldn't find it. HTML spec says default is US-ASCII,
             // but UTF-8 is a better choice since
@@ -328,9 +327,7 @@ public abstract class FormFieldValidator {
                 return;
             }
 
-            if(!value.endsWith("/")) {
-                value+='/';
-            }
+            if(!value.endsWith("/")) value+='/';
 
             try {
                 URL url = new URL(value);
@@ -355,6 +352,7 @@ public abstract class FormFieldValidator {
      * @since 1.90.
      * @deprecated as of 1.294. Use {@link FilePath#validateFileMask(String, boolean)} 
      */
+    @Deprecated
     public static class WorkspaceFileMask extends FormFieldValidator {
         private final boolean errorIfNotExist;
 
@@ -386,11 +384,8 @@ public abstract class FormFieldValidator {
                 }
 
                 String msg = ws.validateAntFileMask(value, FilePath.VALIDATE_ANT_FILE_MASK_BOUND);
-                if(errorIfNotExist) {
-                    error(msg);
-                } else {
-                    warning(msg);
-                }
+                if(errorIfNotExist)     error(msg);
+                else                    warning(msg);
             } catch (InterruptedException e) {
                 ok(Messages.FormFieldValidator_did_not_manage_to_validate_may_be_too_sl(value));
             }
@@ -411,6 +406,7 @@ public abstract class FormFieldValidator {
      * @deprecated as of 1.294. Use {@link FilePath#validateRelativeDirectory(String, boolean)}
      *      (see javadoc plugin for the example)
      */
+    @Deprecated
     public static class WorkspaceDirectory extends WorkspaceFilePath {
         public WorkspaceDirectory(StaplerRequest request, StaplerResponse response, boolean errorIfNotExist) {
             super(request, response, errorIfNotExist, false);
@@ -427,6 +423,7 @@ public abstract class FormFieldValidator {
      * @since 1.160
      * @deprecated as of 1.294. Use {@link FilePath#validateRelativePath(String, boolean, boolean)}
      */
+    @Deprecated
     public static class WorkspaceFilePath extends FormFieldValidator {
         private final boolean errorIfNotExist;
         private final boolean expectingFile;
@@ -468,25 +465,20 @@ public abstract class FormFieldValidator {
 
                 if(ws.child(value).exists()) {
                     if (expectingFile) {
-                        if(!ws.child(value).isDirectory()) {
+                        if(!ws.child(value).isDirectory())
                             ok();
-                        } else {
+                        else
                             error(value+" is not a file");
-                        }
                     } else {
-                        if(ws.child(value).isDirectory()) {
+                        if(ws.child(value).isDirectory())
                             ok();
-                        } else {
+                        else
                             error(value+" is not a directory");
-                        }
                     }
                 } else {
                     String msg = "No such "+(expectingFile?"file":"directory")+": " + value;
-                    if(errorIfNotExist) {
-                        error(msg);
-                    } else {
-                        warning(msg);
-                    }
+                    if(errorIfNotExist)     error(msg);
+                    else                    warning(msg);
                 }
             } catch (InterruptedException e) {
                 ok(); // coundn't check
@@ -515,6 +507,7 @@ public abstract class FormFieldValidator {
      * @since 1.124
      * @deprecated as of 1.294. Use {@link FormValidation#validateExecutable(String)}
      */
+    @Deprecated
     public static class Executable extends FormFieldValidator {
 
         public Executable(StaplerRequest request, StaplerResponse response) {
@@ -601,6 +594,7 @@ public abstract class FormFieldValidator {
      * @deprecated as of 1.305
      *      Use {@link FormValidation#validateBase64(String, boolean, boolean, String)} instead.
      */
+    @Deprecated
     public static class Base64 extends FormFieldValidator {
         private final boolean allowWhitespace;
         private final boolean allowEmpty;
@@ -647,6 +641,7 @@ public abstract class FormFieldValidator {
      * @deprecated as of 1.294
      *      Use {@link FormValidation#validateNonNegativeInteger(String)}
      */
+    @Deprecated
     public static class NonNegativeInteger extends FormFieldValidator {
         public NonNegativeInteger() {
             super(null);
@@ -655,11 +650,10 @@ public abstract class FormFieldValidator {
         protected void check() throws IOException, ServletException {
             try {
                 String value = request.getParameter("value");
-                if(Integer.parseInt(value)<0) {
+                if(Integer.parseInt(value)<0)
                     error(hudson.model.Messages.Hudson_NotAPositiveNumber());
-                } else {
+                else
                     ok();
-                }
             } catch (NumberFormatException e) {
                 error(hudson.model.Messages.Hudson_NotANumber());
             }

@@ -29,6 +29,7 @@ import hudson.triggers.Trigger;
 import hudson.ExtensionPoint;
 import hudson.Extension;
 import hudson.ExtensionList;
+import jenkins.model.Jenkins;
 import jenkins.util.Timer;
 
 import java.util.concurrent.TimeUnit;
@@ -57,6 +58,11 @@ import static hudson.init.InitMilestone.JOB_LOADED;
  */
 public abstract class PeriodicWork extends SafeTimerTask implements ExtensionPoint {
 
+    /** @deprecated Use your own logger, or send messages to the logger in {@link AsyncPeriodicWork#execute}. */
+    @SuppressWarnings("NonConstantLogger")
+    @Deprecated
+    protected final Logger logger = Logger.getLogger(getClass().getName());
+
     /**
      * Gets the number of milliseconds between successive executions.
      *
@@ -79,9 +85,8 @@ public abstract class PeriodicWork extends SafeTimerTask implements ExtensionPoi
     public long getInitialDelay() {
         long l = RANDOM.nextLong();
         // Math.abs(Long.MIN_VALUE)==Long.MIN_VALUE!
-        if (l==Long.MIN_VALUE) {
+        if (l==Long.MIN_VALUE)
             l++;
-        }
         return Math.abs(l)%getRecurrencePeriod();
     }
 

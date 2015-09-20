@@ -49,11 +49,9 @@ public class WorkspaceCleanupThread extends AsyncPeriodicWork {
     }
 
     @Override public long getRecurrencePeriod() {
-        return DAY;
+        return recurrencePeriodHours * HOUR;
     }
-    
-    // False positive for squid:S1217 "Thread.run() and Runnable.run() should not be called directly". Thread.run() is called in an ancestor.
-    @SuppressWarnings("all")
+
     public static void invoke() {
         ExtensionList.lookup(AsyncPeriodicWork.class).get(WorkspaceCleanupThread.class).run();
     }
@@ -81,10 +79,10 @@ public class WorkspaceCleanupThread extends AsyncPeriodicWork {
                 try {
                     check = shouldBeDeleted(item, ws, node);
                 } catch (IOException x) {
-                    x.printStackTrace(listener.error("Failed to check " + node.getDisplayName())); //NOSONAR
+                    x.printStackTrace(listener.error("Failed to check " + node.getDisplayName()));
                     continue;
                 } catch (InterruptedException x) {
-                    x.printStackTrace(listener.error("Failed to check " + node.getDisplayName())); //NOSONAR
+                    x.printStackTrace(listener.error("Failed to check " + node.getDisplayName()));
                     continue;
                 }
                 if (check) {
@@ -92,16 +90,16 @@ public class WorkspaceCleanupThread extends AsyncPeriodicWork {
                     try {
                         ws.deleteRecursive();
                     } catch (IOException x) {
-                        x.printStackTrace(listener.error("Failed to delete " + ws + " on " + node.getDisplayName())); //NOSONAR
+                        x.printStackTrace(listener.error("Failed to delete " + ws + " on " + node.getDisplayName()));
                     } catch (InterruptedException x) {
-                        x.printStackTrace(listener.error("Failed to delete " + ws + " on " + node.getDisplayName())); //NOSONAR
+                        x.printStackTrace(listener.error("Failed to delete " + ws + " on " + node.getDisplayName()));
                     }
                 }
             }
         }
     }
 
-    private boolean shouldBeDeleted(@Nonnull TopLevelItem item, FilePath dir, Node n) throws IOException, InterruptedException {
+    private boolean shouldBeDeleted(@Nonnull TopLevelItem item, FilePath dir, @Nonnull Node n) throws IOException, InterruptedException {
         // TODO: the use of remoting is not optimal.
         // One remoting can execute "exists", "lastModified", and "delete" all at once.
         // (Could even invert master loop so that one FileCallable takes care of all known items.)
@@ -112,7 +110,7 @@ public class WorkspaceCleanupThread extends AsyncPeriodicWork {
 
         // if younger than a month, keep it
         long now = new Date().getTime();
-        if(dir.lastModified() + 30 * DAY > now) {
+        if(dir.lastModified() + retainForDays * DAY > now) {
             LOGGER.log(Level.FINE, "Directory {0} is only {1} old, so not deleting", new Object[] {dir, Util.getTimeSpanString(now-dir.lastModified())});
             return false;
         }
@@ -130,7 +128,7 @@ public class WorkspaceCleanupThread extends AsyncPeriodicWork {
                 return false;
             }
             
-            if(!p.getScm().processWorkspaceBeforeDeletion(p,dir,n)) {
+            if(!p.getScm().processWorkspaceBeforeDeletion((Job<?, ?>) p,dir,n)) {
                 LOGGER.log(Level.FINE, "Directory deletion of {0} is vetoed by SCM", dir);
                 return false;
             }
@@ -145,5 +143,15 @@ public class WorkspaceCleanupThread extends AsyncPeriodicWork {
     /**
      * Can be used to disable workspace clean up.
      */
-    public static final boolean disabled = Boolean.getBoolean(WorkspaceCleanupThread.class.getName()+".disabled");
+    public static boolean disabled = Boolean.getBoolean(WorkspaceCleanupThread.class.getName()+".disabled");
+
+    /**
+     * How often the clean up should run. This is final as Jenkins will not reflect changes anyway.
+     */
+    public static final int recurrencePeriodHours = Integer.getInteger(WorkspaceCleanupThread.class.getName()+".recurrencePeriodHours", 24);
+
+    /**
+     * Number of days workspaces should be retained.
+     */
+    public static int retainForDays = Integer.getInteger(WorkspaceCleanupThread.class.getName()+".retainForDays", 30);
 }

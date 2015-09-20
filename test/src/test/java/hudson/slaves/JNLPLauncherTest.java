@@ -111,9 +111,8 @@ public class JNLPLauncherTest extends HudsonTestCase {
             // verify that the connection is established, up to 20 secs
             for( int i=0; i<200; i++ ) {
                 Thread.sleep(100);
-                if(!c.isOffline()) {
+                if(!c.isOffline())
                     break;
-                }
             }
 
             if (c.isOffline()) {
@@ -138,7 +137,7 @@ public class JNLPLauncherTest extends HudsonTestCase {
     private String getJnlpLink(Computer c) throws Exception {
         HtmlPage p = new WebClient().goTo("computer/"+c.getName()+"/");
         String href = ((HtmlAnchor) p.getElementById("jnlp-link")).getHrefAttribute();
-        href = new URL(new URL(p.getDocumentURI()),href).toExternalForm();
+        href = new URL(new URL(p.getUrl().toExternalForm()),href).toExternalForm();
         return href;
     }
 

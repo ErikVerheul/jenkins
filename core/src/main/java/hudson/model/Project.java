@@ -130,6 +130,7 @@ public abstract class Project<P extends Project<P,B>,B extends Build<P,B>>
      *      We will be soon removing the restriction that only one instance of publisher is allowed per type.
      *      Use {@link #getPublishersList()} instead.
      */
+    @Deprecated
     public Map<Descriptor<Publisher>,Publisher> getPublishers() {
         return getPublishersList().toMap();
     }
@@ -177,6 +178,7 @@ public abstract class Project<P extends Project<P,B>,B extends Build<P,B>>
      * @deprecated as of 1.290
      *      Use {@code getPublishersList().add(x)}
      */
+    @Deprecated
     public void addPublisher(Publisher buildStep) throws IOException {
         getPublishersList().add(buildStep);
     }
@@ -187,15 +189,15 @@ public abstract class Project<P extends Project<P,B>,B extends Build<P,B>>
      * @deprecated as of 1.290
      *      Use {@code getPublishersList().remove(x)}
      */
+    @Deprecated
     public void removePublisher(Descriptor<Publisher> descriptor) throws IOException {
         getPublishersList().remove(descriptor);
     }
 
     public Publisher getPublisher(Descriptor<Publisher> descriptor) {
         for (Publisher p : getPublishersList()) {
-            if(p.getDescriptor()==descriptor) {
+            if(p.getDescriptor()==descriptor)
                 return p;
-            }
         }
         return null;
     }
@@ -214,9 +216,7 @@ public abstract class Project<P extends Project<P,B>,B extends Build<P,B>>
 
     public MavenInstallation inferMavenInstallation() {
         Maven m = getBuildersList().get(Maven.class);
-        if (m!=null) {
-            return m.getMaven();
-        }
+        if (m!=null)    return m.getMaven();
         return null;
     }
 

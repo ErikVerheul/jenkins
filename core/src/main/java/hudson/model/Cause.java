@@ -124,6 +124,7 @@ public abstract class Cause {
      * Fall back implementation when no other type is available.
      * @deprecated since 2009-02-08
      */
+    @Deprecated
     public static class LegacyCodeCause extends Cause {
         private StackTraceElement [] stackTrace;
         public LegacyCodeCause() {
@@ -162,6 +163,7 @@ public abstract class Cause {
          * @deprecated since 2009-02-28
          */
         // for backward bytecode compatibility
+        @Deprecated
         public UpstreamCause(AbstractBuild<?,?> up) {
             this((Run<?,?>)up);
         }
@@ -204,28 +206,16 @@ public abstract class Cause {
         @Override
         public boolean equals(Object rhs) {
 
-            if (this == rhs) {
-                return true;
-            }
+            if (this == rhs) return true;
 
-            if (!(rhs instanceof UpstreamCause)) {
-                return false;
-            }
+            if (!(rhs instanceof UpstreamCause)) return false;
 
             final UpstreamCause o = (UpstreamCause) rhs;
 
-            if (upstreamBuild != o.upstreamBuild) {
-                return false;
-            }
-            if (!upstreamCauses.equals(o.upstreamCauses)) {
-                return false;
-            }
-            if (upstreamUrl == null ? o.upstreamUrl != null : !upstreamUrl.equals(o.upstreamUrl)) {
-                return false;
-            }
-            if (upstreamProject == null ? o.upstreamProject != null : !upstreamProject.equals(o.upstreamProject)) {
-                return false;
-            }
+            if (upstreamBuild != o.upstreamBuild) return false;
+            if (!upstreamCauses.equals(o.upstreamCauses)) return false;
+            if (upstreamUrl == null ? o.upstreamUrl != null : !upstreamUrl.equals(o.upstreamUrl)) return false;
+            if (upstreamProject == null ? o.upstreamProject != null : !upstreamProject.equals(o.upstreamProject)) return false;
 
             return true;
         }
@@ -347,9 +337,7 @@ public abstract class Cause {
             public ConverterImpl(XStream2 xstream) { super(xstream); }
             @Override protected void callback(UpstreamCause uc, UnmarshallingContext context) {
                 if (uc.upstreamCause != null) {
-                    if (uc.upstreamCauses == null) {
-                        uc.upstreamCauses = new ArrayList<Cause>();
-                    }
+                    if (uc.upstreamCauses == null) uc.upstreamCauses = new ArrayList<Cause>();
                     uc.upstreamCauses.add(uc.upstreamCause);
                     uc.upstreamCause = null;
                     OldDataMonitor.report(context, "1.288");
@@ -375,6 +363,7 @@ public abstract class Cause {
      * @deprecated 1.428
      *   use {@link UserIdCause}
      */
+    @Deprecated
     public static class UserCause extends Cause {
         private String authenticationName;
         public UserCause() {

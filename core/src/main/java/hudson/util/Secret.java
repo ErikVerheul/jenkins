@@ -73,6 +73,7 @@ public final class Secret implements Serializable {
      *      Or if you really know what you are doing, use the {@link #getPlainText()} method.
      */
     @Override
+    @Deprecated
     public String toString() {
         return value;
     }
@@ -103,11 +104,10 @@ public final class Secret implements Serializable {
      * This is no longer the key we use to encrypt new information, but we still need this
      * to be able to decrypt what's already persisted.
      */
+    @Deprecated
     /*package*/ static SecretKey getLegacyKey() throws GeneralSecurityException {
         String secret = SECRET;
-        if(secret==null) {
-            return Jenkins.getInstance().getSecretKeyAsAES128();
-        }
+        if(secret==null)    return Jenkins.getInstance().getSecretKeyAsAES128();
         return Util.toAes128Key(secret);
     }
 
@@ -133,15 +133,11 @@ public final class Secret implements Serializable {
      * if the given cipher text was invalid.
      */
     public static Secret decrypt(String data) {
-        if(data==null) {
-            return null;
-        }
+        if(data==null)      return null;
         try {
             byte[] in = Base64.decode(data.toCharArray());
             Secret s = tryDecrypt(KEY.decrypt(), in);
-            if (s!=null) {
-                return s;
-            }
+            if (s!=null)    return s;
 
             // try our historical key for backward compatibility
             Cipher cipher = getCipher("AES");
@@ -159,9 +155,8 @@ public final class Secret implements Serializable {
     /*package*/ static Secret tryDecrypt(Cipher cipher, byte[] in) throws UnsupportedEncodingException {
         try {
             String plainText = new String(cipher.doFinal(in), "UTF-8");
-            if(plainText.endsWith(MAGIC)) {
+            if(plainText.endsWith(MAGIC))
                 return new Secret(plainText.substring(0,plainText.length()-MAGIC.length()));
-            }
             return null;
         } catch (GeneralSecurityException e) {
             return null; // if the key doesn't match with the bytes, it can result in BadPaddingException
@@ -191,9 +186,7 @@ public final class Secret implements Serializable {
     public static Secret fromString(String data) {
         data = Util.fixNull(data);
         Secret s = decrypt(data);
-        if(s==null) {
-            s=new Secret(data);
-        }
+        if(s==null) s=new Secret(data);
         return s;
     }
 

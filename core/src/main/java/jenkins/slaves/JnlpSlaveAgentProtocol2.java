@@ -36,6 +36,7 @@ public class JnlpSlaveAgentProtocol2 extends JnlpSlaveAgentProtocol {
          * @deprecated as of 1.559
          *      Use {@link #Handler2(NioChannelHub, Socket)}
          */
+        @Deprecated
         public Handler2(Socket socket) throws IOException {
             super(socket);
         }
@@ -54,9 +55,8 @@ public class JnlpSlaveAgentProtocol2 extends JnlpSlaveAgentProtocol {
             final String nodeName = request.getProperty("Node-Name");
 
             for (JnlpAgentReceiver recv : JnlpAgentReceiver.all()) {
-                if (recv.handle(nodeName,this)) {
+                if (recv.handle(nodeName,this))
                     return;
-                }
             }
 
             error("Unrecognized name: "+nodeName);

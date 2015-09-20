@@ -25,8 +25,11 @@ package hudson.model;
 
 import hudson.Extension;
 import hudson.ExtensionList;
+import hudson.ExtensionListListener;
 import hudson.ExtensionPoint;
 import hudson.ProxyConfiguration;
+import hudson.init.InitMilestone;
+import hudson.init.Initializer;
 import hudson.util.FormValidation;
 import hudson.util.FormValidation.Kind;
 import hudson.util.QuotedStringTokenizer;
@@ -37,6 +40,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import jenkins.model.DownloadSettings;
 import jenkins.model.Jenkins;
@@ -66,15 +70,11 @@ public class DownloadService extends PageDecorator {
      * Builds up an HTML fragment that starts all the download jobs.
      */
     public String generateFragment() {
-        if (!DownloadSettings.get().isUseBrowser()) {
+        if (!DownloadSettings.usePostBack()) {
             return "";
         }
-    	if (neverUpdate) {
-            return "";
-        }
-        if (doesNotSupportPostMessage()) {
-            return "";
-        }
+    	if (neverUpdate) return "";
+        if (doesNotSupportPostMessage())  return "";
 
         StringBuilder buf = new StringBuilder();
         if(Jenkins.getInstance().hasPermission(Jenkins.READ)) {
@@ -104,14 +104,10 @@ public class DownloadService extends PageDecorator {
 
     private boolean doesNotSupportPostMessage() {
         StaplerRequest req = Stapler.getCurrentRequest();
-        if (req==null) {
-            return false;
-        }
+        if (req==null)      return false;
 
         String ua = req.getHeader("User-Agent");
-        if (ua==null) {
-            return false;
-        }
+        if (ua==null)       return false;
 
         // according to http://caniuse.com/#feat=x-doc-messaging, IE <=7 doesn't support pstMessage
         // see http://www.useragentstring.com/pages/Internet%20Explorer/ for user agents
@@ -134,9 +130,8 @@ public class DownloadService extends PageDecorator {
 
             We'll monitor the traffic to see if we can sustain this added traffic.
          */
-        if (url.startsWith("http://updates.jenkins-ci.org/") && Jenkins.getInstance().isRootUrlSecure()) {
+        if (url.startsWith("http://updates.jenkins-ci.org/") && Jenkins.getInstance().isRootUrlSecure())
             return "https"+url.substring(4);
-        }
         return url;
     }
 
@@ -145,11 +140,9 @@ public class DownloadService extends PageDecorator {
      * Used to bind them to URL.
      */
     public Downloadable getById(String id) {
-        for (Downloadable d : Downloadable.all()) {
-            if(d.getId().equals(id)) {
+        for (Downloadable d : Downloadable.all())
+            if(d.getId().equals(id))
                 return d;
-            }
-        }
         return null;
     }
 
@@ -179,6 +172,69 @@ public class DownloadService extends PageDecorator {
         } finally {
             is.close();
         }
+    }
+
+    /**
+     * Loads JSON from a JSON-with-{@code postMessage} URL.
+     * @param src a URL to a JSON HTML file (typically including {@code id} and {@code version} query parameters)
+     * @return the embedded JSON text
+     * @throws IOException if either downloading or processing failed
+     */
+    @Restricted(NoExternalUse.class)
+    public static String loadJSONHTML(URL src) throws IOException {
+        InputStream is = ProxyConfiguration.open(src).getInputStream();
+        try {
+            String jsonp = IOUtils.toString(is, "UTF-8");
+            String preamble = "window.parent.postMessage(JSON.stringify(";
+            int start = jsonp.indexOf(preamble);
+            int end = jsonp.lastIndexOf("),'*');");
+            if (start >= 0 && end > start) {
+                return jsonp.substring(start + preamble.length(), end).trim();
+            } else {
+                throw new IOException("Could not find JSON in " + src);
+            }
+        } finally {
+            is.close();
+        }
+    }
+
+    /**
+     * This installs itself as a listener to changes to the Downloadable extension list and will download the metadata
+     * for any newly added Downloadables.
+     */
+    @Restricted(NoExternalUse.class)
+    public static class DownloadableListener extends ExtensionListListener {
+
+        /**
+         * Install this listener to the Downloadable extension list after all extensions have been loaded; we only
+         * care about those that are added after initialization
+         */
+        @Initializer(after = InitMilestone.EXTENSIONS_AUGMENTED)
+        public static void installListener() {
+            ExtensionList.lookup(Downloadable.class).addListener(new DownloadableListener());
+        }
+
+        /**
+         * Look for Downloadables that have no data, and update them.
+         */
+        @Override
+        public void onChange() {
+            for (Downloadable d : Downloadable.all()) {
+                TextFile f = d.getDataFile();
+                if (f == null || !f.exists()) {
+                    LOGGER.log(Level.FINE, "Updating metadata for " + d.getId());
+                    try {
+                        d.updateNow();
+                    } catch (IOException e) {
+                        LOGGER.log(Level.WARNING, "Failed to update metadata for " + d.getId(), e);
+                    }
+                } else {
+                    LOGGER.log(Level.FINER, "Skipping update of metadata for " + d.getId());
+                }
+            }
+        }
+
+        private static final Logger LOGGER = Logger.getLogger(DownloadableListener.class.getName());
     }
 
     /**
@@ -266,12 +322,11 @@ public class DownloadService extends PageDecorator {
          * When shall we retrieve this file next time?
          */
         public long getDue() {
-            if(due==0) {
+            if(due==0)
                 // if the file doesn't exist, this code should result
                 // in a very small (but >0) due value, which should trigger
                 // the retrieval immediately.
                 due = getDataFile().file.lastModified()+interval;
-            }
             return due;
         }
 
@@ -281,14 +336,13 @@ public class DownloadService extends PageDecorator {
          */
         public JSONObject getData() throws IOException {
             TextFile df = getDataFile();
-            if(df.exists()) {
+            if(df.exists())
                 try {
                     return JSONObject.fromObject(df.read());
                 } catch (JSONException e) {
                     df.delete(); // if we keep this file, it will cause repeated failures
                     throw new IOException("Failed to parse "+df+" into JSON",e);
                 }
-            }
             return null;
         }
 
@@ -296,9 +350,7 @@ public class DownloadService extends PageDecorator {
          * This is where the browser sends us the data. 
          */
         public void doPostBack(StaplerRequest req, StaplerResponse rsp) throws IOException {
-            if (!DownloadSettings.get().isUseBrowser()) {
-                throw new IOException("not allowed");
-            }
+            DownloadSettings.checkPostBackAccess();
             long dataTimestamp = System.currentTimeMillis();
             due = dataTimestamp+getInterval();  // success or fail, don't try too often
 
@@ -330,7 +382,7 @@ public class DownloadService extends PageDecorator {
 
         @Restricted(NoExternalUse.class)
         public FormValidation updateNow() throws IOException {
-            return load(loadJSON(new URL(getUrl() + "?id=" + URLEncoder.encode(getId(), "UTF-8") + "&version=" + URLEncoder.encode(Jenkins.VERSION, "UTF-8"))), System.currentTimeMillis());
+            return load(loadJSONHTML(new URL(getUrl() + ".html?id=" + URLEncoder.encode(getId(), "UTF-8") + "&version=" + URLEncoder.encode(Jenkins.VERSION, "UTF-8"))), System.currentTimeMillis());
         }
 
         /**
@@ -345,9 +397,8 @@ public class DownloadService extends PageDecorator {
          */
         public static Downloadable get(String id) {
             for (Downloadable d : all()) {
-                if(d.id.equals(id)) {
+                if(d.id.equals(id))
                     return d;
-                }
             }
             return null;
         }

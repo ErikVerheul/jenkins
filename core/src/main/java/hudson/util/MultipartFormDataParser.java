@@ -28,6 +28,7 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 
+import javax.annotation.CheckForNull;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.ServletException;
 import java.util.List;
@@ -46,9 +47,8 @@ public class MultipartFormDataParser {
 
     public MultipartFormDataParser(HttpServletRequest request) throws ServletException {
         try {
-            for( FileItem fi : (List<FileItem>)upload.parseRequest(request) ) {
+            for( FileItem fi : (List<FileItem>)upload.parseRequest(request) )
                 byName.put(fi.getFieldName(),fi);
-            }
         } catch (FileUploadException e) {
             throw new ServletException(e);
         }
@@ -56,9 +56,7 @@ public class MultipartFormDataParser {
 
     public String get(String key) {
         FileItem fi = byName.get(key);
-        if(fi==null) {
-            return null;
-        }
+        if(fi==null)    return null;
         return fi.getString();
     }
 
@@ -71,8 +69,33 @@ public class MultipartFormDataParser {
      * Even if this method is not called, the resource will be still cleaned up later by GC.
      */
     public void cleanUp() {
-        for (FileItem item : byName.values()) {
+        for (FileItem item : byName.values())
             item.delete();
+    }
+
+    /**
+     * Checks a Content-Type string to assert if it is "multipart/form-data".
+     *
+     * @param contentType Content-Type string.
+     * @return {@code true} if the content type is "multipart/form-data", otherwise {@code false}.
+     * @since TODO
+     */
+    public static boolean isMultiPartForm(@CheckForNull String contentType) {
+        if (contentType == null) {
+            return false;
         }
+
+        String[] parts = contentType.split(";");
+        if (parts.length == 0) {
+            return false;
+        }
+
+        for (int i = 0; i < parts.length; i++) {
+            if ("multipart/form-data".equals(parts[i])) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

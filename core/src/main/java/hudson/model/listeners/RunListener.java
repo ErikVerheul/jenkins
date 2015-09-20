@@ -72,11 +72,10 @@ public abstract class RunListener<R extends Run> implements ExtensionPoint {
 
     protected RunListener() {
         Type type = Types.getBaseClass(getClass(), RunListener.class);
-        if (type instanceof ParameterizedType) {
+        if (type instanceof ParameterizedType)
             targetType = Types.erasure(Types.getTypeArgument(type,0));
-        } else {
+        else
             throw new IllegalStateException(getClass()+" uses the raw type for extending RunListener");
-        }
     }
 
     /**
@@ -172,6 +171,7 @@ public abstract class RunListener<R extends Run> implements ExtensionPoint {
      * @deprecated as of 1.281
      *      Put {@link Extension} on your class to get it auto-registered.
      */
+    @Deprecated
     public void register() {
         all().add(this);
     }
@@ -188,6 +188,7 @@ public abstract class RunListener<R extends Run> implements ExtensionPoint {
      * @deprecated as of 1.281
      *      Use {@link #all()} for read access, and use {@link Extension} for registration.
      */
+    @Deprecated
     public static final CopyOnWriteList<RunListener> LISTENERS = ExtensionListView.createCopyOnWriteList(RunListener.class);
 
     /**
@@ -195,13 +196,12 @@ public abstract class RunListener<R extends Run> implements ExtensionPoint {
      */
     public static void fireCompleted(Run r, @Nonnull TaskListener listener) {
         for (RunListener l : all()) {
-            if(l.targetType.isInstance(r)) {
+            if(l.targetType.isInstance(r))
                 try {
                     l.onCompleted(r,listener);
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     report(e);
                 }
-            }
         }
     }
 
@@ -210,13 +210,12 @@ public abstract class RunListener<R extends Run> implements ExtensionPoint {
      */
     public static void fireStarted(Run r, TaskListener listener) {
         for (RunListener l : all()) {
-            if(l.targetType.isInstance(r)) {
+            if(l.targetType.isInstance(r))
                 try {
                     l.onStarted(r,listener);
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     report(e);
                 }
-            }
         }
     }
 
@@ -228,13 +227,12 @@ public abstract class RunListener<R extends Run> implements ExtensionPoint {
             return;
         }
         for (RunListener l : all()) {
-            if(l.targetType.isInstance(r)) {
+            if(l.targetType.isInstance(r))
                 try {
                     l.onFinalized(r);
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     report(e);
                 }
-            }
         }
     }
 
@@ -243,13 +241,12 @@ public abstract class RunListener<R extends Run> implements ExtensionPoint {
      */
     public static void fireDeleted(Run r) {
         for (RunListener l : all()) {
-            if(l.targetType.isInstance(r)) {
+            if(l.targetType.isInstance(r))
                 try {
                     l.onDeleted(r);
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     report(e);
                 }
-            }
         }
     }
 

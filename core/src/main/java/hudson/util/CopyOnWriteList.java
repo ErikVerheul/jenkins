@@ -39,6 +39,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Arrays;
 
+import jenkins.util.xstream.CriticalXStreamException;
+
 
 /**
  * {@link List}-like implementation that has copy-on-write semantics.
@@ -181,9 +183,8 @@ public class CopyOnWriteList<E> implements Iterable<E> {
         }
 
         public void marshal(Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
-            for (Object o : (CopyOnWriteList) source) {
+            for (Object o : (CopyOnWriteList) source)
                 writeItem(o, context, writer);
-            }
         }
 
         @SuppressWarnings("unchecked")
@@ -195,6 +196,8 @@ public class CopyOnWriteList<E> implements Iterable<E> {
                 try {
                     Object item = readItem(reader, context, items);
                     items.add(item);
+                } catch (CriticalXStreamException e) {
+                    throw e;
                 } catch (XStreamException e) {
                     RobustReflectionConverter.addErrorInContext(context, e);
                 } catch (LinkageError e) {

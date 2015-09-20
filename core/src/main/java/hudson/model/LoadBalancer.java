@@ -23,6 +23,7 @@
  */
 package hudson.model;
 
+import com.google.common.collect.Maps;
 import hudson.Extension;
 import hudson.ExtensionPoint;
 import hudson.model.Queue.Task;
@@ -34,6 +35,7 @@ import hudson.util.ConsistentHash.Hash;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Strategy that decides which {@link Task} gets run on which {@link Executor}.
@@ -84,9 +86,14 @@ public abstract class LoadBalancer implements ExtensionPoint {
                         return node.getName();
                     }
                 });
-                for (ExecutorChunk ec : ws.works(i).applicableExecutorChunks()) {
-                    hash.add(ec,ec.size()*100);
+
+                // Build a Map to pass in rather than repeatedly calling hash.add() because each call does lots of expensive work
+                List<ExecutorChunk> chunks = ws.works(i).applicableExecutorChunks();
+                Map<ExecutorChunk, Integer> toAdd = Maps.newHashMapWithExpectedSize(chunks.size());
+                for (ExecutorChunk ec : chunks) {
+                    toAdd.put(ec, ec.size()*100);
                 }
+                hash.addAll(toAdd);
 
                 hashes.add(hash);
             }
@@ -98,15 +105,12 @@ public abstract class LoadBalancer implements ExtensionPoint {
             if (assignGreedily(m,task,hashes,0)) {
                 assert m.isCompletelyValid();
                 return m;
-            } else {
+            } else
                 return null;
-            }
         }
 
         private boolean assignGreedily(Mapping m, Task task, List<ConsistentHash<ExecutorChunk>> hashes, int i) {
-            if (i==hashes.size()) {
-                return true;    // fully assigned
-            }
+            if (i==hashes.size())   return true;    // fully assigned
 
             String key = task.getFullDisplayName() + (i>0 ? String.valueOf(i) : "");
 
@@ -114,11 +118,10 @@ public abstract class LoadBalancer implements ExtensionPoint {
                 // let's attempt this assignment
                 m.assign(i,ec);
 
-                if (m.isPartiallyValid() && assignGreedily(m,task,hashes,i+1)) {
+                if (m.isPartiallyValid() && assignGreedily(m,task,hashes,i+1))
                     return true;    // successful greedily allocation
-                    
-                    // otherwise 'ec' wasn't a good fit for us. try next.
-                }
+
+                // otherwise 'ec' wasn't a good fit for us. try next.
             }
 
             // every attempt failed
@@ -133,6 +136,7 @@ public abstract class LoadBalancer implements ExtensionPoint {
      * @deprecated as of 1.377
      *      The only implementation in the core now is the one based on consistent hash.
      */
+    @Deprecated
     public static final LoadBalancer DEFAULT = CONSISTENT_HASH;
 
 

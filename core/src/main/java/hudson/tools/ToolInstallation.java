@@ -90,6 +90,7 @@ public abstract class ToolInstallation extends AbstractDescribableImpl<ToolInsta
      * @deprecated
      *      as of 1.302. Use {@link #ToolInstallation(String, String, List)} 
      */
+    @Deprecated
     public ToolInstallation(String name, String home) {
         this.name = name;
         this.home = home;
@@ -101,9 +102,8 @@ public abstract class ToolInstallation extends AbstractDescribableImpl<ToolInsta
         if(properties!=null) {
             try {
                 this.properties.replaceBy(properties);
-                for (ToolProperty<?> p : properties) {
+                for (ToolProperty<?> p : properties)
                     _setTool(p,this);
-                }
             } catch (IOException e) {
                 throw new AssertionError(e); // no Saveable, so can't happen
             }
@@ -210,12 +210,10 @@ public abstract class ToolInstallation extends AbstractDescribableImpl<ToolInsta
      * Invoked by XStream when this object is read into memory.
      */
     protected Object readResolve() {
-        if(properties==null) {
+        if(properties==null)
             properties = new DescribableList<ToolProperty<?>,ToolPropertyDescriptor>(Saveable.NOOP);
-        }
-        for (ToolProperty<?> p : properties) {
+        for (ToolProperty<?> p : properties)
             _setTool(p, this);
-        }
         return this;
     }
 

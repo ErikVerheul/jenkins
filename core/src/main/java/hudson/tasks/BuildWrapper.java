@@ -101,11 +101,10 @@ public abstract class BuildWrapper extends AbstractDescribableImpl<BuildWrapper>
          * @since 1.150
          */
         public boolean tearDown( AbstractBuild build, BuildListener listener ) throws IOException, InterruptedException {
-            if (build instanceof Build) {
+            if (build instanceof Build)
                 return tearDown((Build)build, listener);
-            } else {
+            else
                 return true;
-            }
         }
 
         /**
@@ -139,13 +138,12 @@ public abstract class BuildWrapper extends AbstractDescribableImpl<BuildWrapper>
      * @since 1.150
      */
     public Environment setUp( AbstractBuild build, Launcher launcher, BuildListener listener ) throws IOException, InterruptedException {
-        if (build instanceof Build) {
+        if (build instanceof Build)
             return setUp((Build)build,launcher,listener);
-        } else {
+        else
             throw new AssertionError("The plugin '" + this.getClass().getName() + "' still uses " +
                     "deprecated setUp(Build,Launcher,BuildListener) method. " +
                     "Update the plugin to use setUp(AbstractBuild, Launcher, BuildListener) instead.");
-        }
     }
 
     /**
@@ -254,6 +252,7 @@ public abstract class BuildWrapper extends AbstractDescribableImpl<BuildWrapper>
      * @deprecated
      *      Use {@link #getProjectActions(AbstractProject)} instead.
      */
+    @Deprecated
     public Action getProjectAction(AbstractProject job) {
         return null;
     }
@@ -270,9 +269,7 @@ public abstract class BuildWrapper extends AbstractDescribableImpl<BuildWrapper>
     public Collection<? extends Action> getProjectActions(AbstractProject job) {
         // delegate to getJobAction (singular) for backward compatible behavior
         Action a = getProjectAction(job);
-        if (a==null) {
-            return Collections.emptyList();
-        }
+        if (a==null)    return Collections.emptyList();
         return Collections.singletonList(a);
     }
 

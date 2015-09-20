@@ -290,9 +290,8 @@ public abstract class SecurityRealm extends AbstractDescribableImpl<SecurityReal
      */
     public void doLogout(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException {
         HttpSession session = req.getSession(false);
-        if(session!=null) {
+        if(session!=null)
             session.invalidate();
-        }
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         SecurityContextHolder.clearContext();
 
@@ -358,7 +357,7 @@ public abstract class SecurityRealm extends AbstractDescribableImpl<SecurityReal
      * @param fetchMembers if {@code true} then try and fetch the members of the group if it exists. Trying does not
      *                     imply that the members will be fetched and {@link hudson.security.GroupDetails#getMembers()}
      *                     may still return {@code null}
-     * @throws UserMayOrMayNotExistException if no conclusive result could be determined regarding the group existance.
+     * @throws UserMayOrMayNotExistException if no conclusive result could be determined regarding the group existence.
      * @throws UsernameNotFoundException     if the group does not exist.
      * @throws DataAccessException           if the backing security realm could not be connected to.
      * @since 1.549
@@ -594,6 +593,7 @@ public abstract class SecurityRealm extends AbstractDescribableImpl<SecurityReal
      * @deprecated as of 1.286
      *      Use {@link #all()} for read access, and use {@link Extension} for registration.
      */
+    @Deprecated
     public static final DescriptorList<SecurityRealm> LIST = new DescriptorList<SecurityRealm>(SecurityRealm.class);
 
     /**

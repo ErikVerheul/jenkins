@@ -115,18 +115,18 @@ public abstract class AsynchronousAdministrativeMonitor extends AdministrativeMo
                 }
             }
          }
-        
+
         /**
-         * Runs the monitor and encapsulates all errors within. 
-         * @since TODO: define a version
+         * Runs the monitor and encapsulates all errors within.
+         * @since 1.590
          */
         private void doRun(@Nonnull TaskListener listener) {
             try {
                 fix(listener);
             } catch (AbortException e) {
                 listener.error(e.getMessage());
-            } catch (Exception e) {
-                e.printStackTrace(listener.error(getName() + " failed")); //NOSONAR
+            } catch (Throwable e) {
+                e.printStackTrace(listener.error(getName() + " failed"));
                 LOGGER.log(Level.WARNING, getName() + " failed", e);
             }
         }

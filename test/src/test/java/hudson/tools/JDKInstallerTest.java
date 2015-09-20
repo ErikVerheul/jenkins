@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
+import com.gargoylesoftware.htmlunit.html.HtmlFormUtil;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import hudson.tools.JDKInstaller.DescriptorImpl;
 import org.junit.Before;
@@ -74,7 +75,7 @@ public class JDKInstallerTest {
         HtmlForm form = p.getFormByName("postCredential");
         form.getInputByName("username").setValueAttribute("foo");
         form.getInputByName("password").setValueAttribute("bar");
-        form.submit(null);
+        HtmlFormUtil.submit(form, null);
 
         DescriptorImpl d = j.jenkins.getDescriptorByType(DescriptorImpl.class);
         assertEquals("foo",d.getUsername());
@@ -105,9 +106,8 @@ public class JDKInstallerTest {
     @Test
     public void locate() throws Exception {
         // this is a really time consuming test, so only run it when we really want.
-        if(!Boolean.getBoolean("jenkins.testJDKInstaller")) {
+        if(!Boolean.getBoolean("jenkins.testJDKInstaller"))
             return;
-        }
 
         retrieveUpdateCenterData();
 
@@ -149,9 +149,8 @@ public class JDKInstallerTest {
      */
     private void doTestAutoInstallation(String id, String fullversion) throws Exception {
         // this is a really time consuming test, so only run it when we really want
-        if(!Boolean.getBoolean("jenkins.testJDKInstaller")) {
+        if(!Boolean.getBoolean("jenkins.testJDKInstaller"))
             return;
-        }
 
         retrieveUpdateCenterData();
 
@@ -179,9 +178,8 @@ public class JDKInstallerTest {
     @Test
     public void fakeUnixInstall() throws Exception {
         // If we're on Windows, don't bother doing this.
-        if (Functions.isWindows()) {
+        if (Functions.isWindows())
             return;
-        }
 
         File bundle = File.createTempFile("fake-jdk-by-hudson","sh");
         try {

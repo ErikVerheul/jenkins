@@ -4,7 +4,6 @@ import hudson.Extension;
 import hudson.ExtensionList;
 import hudson.ExtensionPoint;
 import hudson.TcpSlaveAgentListener;
-import hudson.model.AperiodicWork;
 import jenkins.model.Jenkins;
 
 import java.io.IOException;
@@ -40,7 +39,7 @@ public abstract class AgentProtocol implements ExtensionPoint {
     public abstract void handle(Socket socket) throws IOException, InterruptedException;
 
     /**
-     * Returns all the registered {@link AperiodicWork}s.
+     * Returns all the registered {@link AgentProtocol}s.
      */
     public static ExtensionList<AgentProtocol> all() {
         return ExtensionList.lookup(AgentProtocol.class);
@@ -49,9 +48,8 @@ public abstract class AgentProtocol implements ExtensionPoint {
     public static AgentProtocol of(String protocolName) {
         for (AgentProtocol p : all()) {
             String n = p.getName();
-            if (n!=null && n.equals(protocolName)) {
+            if (n!=null && n.equals(protocolName))
                 return p;
-            }
         }
         return null;
     }

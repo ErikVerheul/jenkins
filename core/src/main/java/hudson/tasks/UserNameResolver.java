@@ -73,9 +73,7 @@ public abstract class UserNameResolver implements ExtensionPoint {
     public static String resolve(User u) {
         for (UserNameResolver r : all()) {
             String name = r.findNameFor(u);
-            if(name!=null) {
-                return name;
-            }
+            if(name!=null) return name;
         }
 
         return null;
@@ -94,5 +92,6 @@ public abstract class UserNameResolver implements ExtensionPoint {
      * @deprecated since 2009-02-24.
      *      Use {@link #all()} for read access, and use {@link Extension} for registration.
      */
+    @Deprecated
     public static final List<UserNameResolver> LIST = ExtensionListView.createList(UserNameResolver.class);
 }

@@ -39,6 +39,7 @@ import hudson.model.labels.LabelExpressionLexer;
 import hudson.model.labels.LabelExpressionParser;
 import hudson.model.labels.LabelOperatorPrecedence;
 import hudson.model.labels.LabelVisitor;
+import hudson.model.queue.SubTask;
 import hudson.security.ACL;
 import hudson.slaves.NodeProvisioner;
 import hudson.slaves.Cloud;
@@ -107,6 +108,17 @@ public abstract class Label extends Actionable implements Comparable<Label>, Mod
             public int computeQueueLength() {
                 return Jenkins.getInstance().getQueue().countBuildableItemsFor(Label.this);
             }
+
+            @Override
+            protected Set<Node> getNodes() {
+                return Label.this.getNodes();
+            }
+
+            @Override
+            protected boolean matches(Queue.Item item, SubTask subTask) {
+                final Label l = item.getAssignedLabelFor(subTask);
+                return l != null && Label.this.matches(l.name);
+            }
         };
         this.nodeProvisioner = new NodeProvisioner(this, loadStatistics);
     }
@@ -162,11 +174,9 @@ public abstract class Label extends Actionable implements Comparable<Label>, Mod
     public final boolean matches(final Collection<LabelAtom> labels) {
         return matches(new VariableResolver<Boolean>() {
             public Boolean resolve(String name) {
-                for (LabelAtom a : labels) {
-                    if (a.getName().equals(name)) {
+                for (LabelAtom a : labels)
+                    if (a.getName().equals(name))
                         return true;
-                    }
-                }
                 return false;
             }
         });
@@ -191,19 +201,15 @@ public abstract class Label extends Actionable implements Comparable<Label>, Mod
     @Exported
     public Set<Node> getNodes() {
         Set<Node> nodes = this.nodes;
-        if(nodes!=null) {
-            return nodes;
-        }
+        if(nodes!=null) return nodes;
 
         Set<Node> r = new HashSet<Node>();
         Jenkins h = Jenkins.getInstance();
-        if(this.matches(h)) {
+        if(this.matches(h))
             r.add(h);
-        }
         for (Node n : h.getNodes()) {
-            if(this.matches(n)) {
+            if(this.matches(n))
                 r.add(n);
-            }
         }
         return this.nodes = Collections.unmodifiableSet(r);
     }
@@ -217,9 +223,8 @@ public abstract class Label extends Actionable implements Comparable<Label>, Mod
             Set<Cloud> r = new HashSet<Cloud>();
             Jenkins h = Jenkins.getInstance();
             for (Cloud c : h.clouds) {
-                if(c.canProvision(this)) {
+                if(c.canProvision(this))
                     r.add(c);
-                }
             }
             clouds = Collections.unmodifiableSet(r);
         }
@@ -235,11 +240,9 @@ public abstract class Label extends Actionable implements Comparable<Label>, Mod
      * that can provision slaves that have this label.
      */
     public boolean isAssignable() {
-        for (Node n : getNodes()) {
-            if(n.getNumExecutors()>0) {
+        for (Node n : getNodes())
+            if(n.getNumExecutors()>0)
                 return true;
-            }
-        }
         return !getClouds().isEmpty();
     }
 
@@ -255,9 +258,8 @@ public abstract class Label extends Actionable implements Comparable<Label>, Mod
      */
     public int getTotalConfiguredExecutors() {
         int r=0;
-        for (Node n : getNodes()) {
+        for (Node n : getNodes())
             r += n.getNumExecutors();
-        }
         return r;
     }
 
@@ -271,9 +273,8 @@ public abstract class Label extends Actionable implements Comparable<Label>, Mod
         int r=0;
         for (Node n : getNodes()) {
             Computer c = n.toComputer();
-            if(c!=null && c.isOnline()) {
+            if(c!=null && c.isOnline())
                 r += c.countExecutors();
-            }
         }
         return r;
     }
@@ -286,9 +287,8 @@ public abstract class Label extends Actionable implements Comparable<Label>, Mod
         int r=0;
         for (Node n : getNodes()) {
             Computer c = n.toComputer();
-            if(c!=null && c.isOnline()) {
+            if(c!=null && c.isOnline())
                 r += c.countBusy();
-            }
         }
         return r;
     }
@@ -301,9 +301,8 @@ public abstract class Label extends Actionable implements Comparable<Label>, Mod
         int r=0;
         for (Node n : getNodes()) {
             Computer c = n.toComputer();
-            if(c!=null && (c.isOnline() || c.isConnecting()) && c.isAcceptingTasks()) {
+            if(c!=null && (c.isOnline() || c.isConnecting()) && c.isAcceptingTasks())
                 r += c.countIdle();
-            }
         }
         return r;
     }
@@ -315,9 +314,8 @@ public abstract class Label extends Actionable implements Comparable<Label>, Mod
     public boolean isOffline() {
         for (Node n : getNodes()) {
             Computer c = n.toComputer();
-            if(c != null && !c.isOffline()) {
+            if(c != null && !c.isOffline())
                 return false;
-            }
         }
         return true;
     }
@@ -330,16 +328,14 @@ public abstract class Label extends Actionable implements Comparable<Label>, Mod
         Set<Node> nodes = getNodes();
         if(nodes.isEmpty()) {
             Set<Cloud> clouds = getClouds();
-            if(clouds.isEmpty()) {
+            if(clouds.isEmpty())
                 return Messages.Label_InvalidLabel();
-            }
 
             return Messages.Label_ProvisionedFrom(toString(clouds));
         }
 
-        if(nodes.size()==1) {
+        if(nodes.size()==1)
             return nodes.iterator().next().getNodeDescription();
-        }
 
         return Messages.Label_GroupOf(toString(nodes));
     }
@@ -352,11 +348,8 @@ public abstract class Label extends Actionable implements Comparable<Label>, Mod
                 buf.append(",...");
                 break;
             }
-            if(!first) {
-                buf.append(',');
-            } else {
-                first=false;
-            }
+            if(!first)  buf.append(',');
+            else        first=false;
             buf.append(c.getDisplayName());
         }
         return buf.toString();
@@ -369,9 +362,8 @@ public abstract class Label extends Actionable implements Comparable<Label>, Mod
     public List<AbstractProject> getTiedJobs() {
         List<AbstractProject> r = new ArrayList<AbstractProject>();
         for (AbstractProject<?,?> p : Jenkins.getInstance().getAllItems(AbstractProject.class)) {
-            if(p instanceof TopLevelItem && this.equals(p.getAssignedLabel())) {
+            if(p instanceof TopLevelItem && this.equals(p.getAssignedLabel()))
                 r.add(p);
-            }
         }
         return r;
     }
@@ -394,7 +386,7 @@ public abstract class Label extends Actionable implements Comparable<Label>, Mod
             for (TopLevelItem topLevelItem : Jenkins.getInstance().getItemMap().values()) {
                 if (topLevelItem instanceof AbstractProject) {
                     final AbstractProject project = (AbstractProject) topLevelItem;
-                    if (this.equals(project.getAssignedLabel())) {
+                    if (matches(project.getAssignedLabelString())) {
                         result++;
                     }
                 }
@@ -409,7 +401,7 @@ public abstract class Label extends Actionable implements Comparable<Label>, Mod
                         for (Item i : parent.getItems()) {
                             if (i instanceof AbstractProject) {
                                 final AbstractProject project = (AbstractProject) i;
-                                if (this.equals(project.getAssignedLabel())) {
+                                if (matches(project.getAssignedLabelString())) {
                                     result++;
                                 }
                             }
@@ -517,25 +509,30 @@ public abstract class Label extends Actionable implements Comparable<Label>, Mod
 
 
     @Override
-    public boolean equals(Object that) {
-        if (this == that) {
-            return true;
-        }
-        if (that == null || getClass() != that.getClass()) {
-            return false;
-        }
+    public final boolean equals(Object that) {
+        if (this == that) return true;
+        if (that == null || getClass() != that.getClass()) return false;
 
-        return name.equals(((Label)that).name);
+        return matches(((Label)that).name);
 
     }
 
     @Override
-    public int hashCode() {
+    public final int hashCode() {
         return name.hashCode();
     }
 
-    public int compareTo(Label that) {
+    public final int compareTo(Label that) {
         return this.name.compareTo(that.name);
+    }
+
+
+    /**
+     * Evaluates whether the current label name is equal to the name parameter.
+     *
+     */
+    private final boolean matches(String name) {
+        return this.name.equals(name);
     }
 
     @Override
@@ -582,11 +579,9 @@ public abstract class Label extends Actionable implements Comparable<Label>, Mod
     public static Set<LabelAtom> parse(String labels) {
         Set<LabelAtom> r = new TreeSet<LabelAtom>();
         labels = fixNull(labels);
-        if(labels.length()>0) {
-            for( String l : new QuotedStringTokenizer(labels).toArray()) {
+        if(labels.length()>0)
+            for( String l : new QuotedStringTokenizer(labels).toArray())
                 r.add(Jenkins.getInstance().getLabelAtom(l));
-            }
-        }
         return r;
     }
 

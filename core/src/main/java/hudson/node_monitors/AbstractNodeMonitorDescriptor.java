@@ -58,6 +58,7 @@ public abstract class AbstractNodeMonitorDescriptor<T> extends Descriptor<NodeMo
      * @deprecated as of 1.522
      *      Extend from {@link AbstractAsyncNodeMonitorDescriptor}
      */
+    @Deprecated
     protected AbstractNodeMonitorDescriptor() {
         this(HOUR);
     }
@@ -66,6 +67,7 @@ public abstract class AbstractNodeMonitorDescriptor<T> extends Descriptor<NodeMo
      * @deprecated as of 1.522
      *      Extend from {@link AbstractAsyncNodeMonitorDescriptor}
      */
+    @Deprecated
     protected AbstractNodeMonitorDescriptor(long interval) {
         schedule(interval);
     }
@@ -74,6 +76,7 @@ public abstract class AbstractNodeMonitorDescriptor<T> extends Descriptor<NodeMo
      * @deprecated as of 1.522
      *      Extend from {@link AbstractAsyncNodeMonitorDescriptor}
      */
+    @Deprecated
     protected AbstractNodeMonitorDescriptor(Class<? extends NodeMonitor> clazz) {
         this(clazz,HOUR);
     }
@@ -82,6 +85,7 @@ public abstract class AbstractNodeMonitorDescriptor<T> extends Descriptor<NodeMo
      * @deprecated as of 1.522
      *      Extend from {@link AbstractAsyncNodeMonitorDescriptor}
      */
+    @Deprecated
     protected AbstractNodeMonitorDescriptor(Class<? extends NodeMonitor> clazz, long interval) {
         super(clazz);
 
@@ -142,11 +146,10 @@ public abstract class AbstractNodeMonitorDescriptor<T> extends Descriptor<NodeMo
             try {
                 Thread.currentThread().setName("Monitoring "+c.getDisplayName()+" for "+getDisplayName());
 
-                if(c.getChannel()==null) {
+                if(c.getChannel()==null)
                     data.put(c,null);
-                } else {
+                else
                     data.put(c,monitor(c));
-                }
             } catch (RuntimeException e) {
                 LOGGER.log(Level.WARNING, "Failed to monitor "+c.getDisplayName()+" for "+getDisplayName(), e);
             } catch (IOException e) {
@@ -167,13 +170,7 @@ public abstract class AbstractNodeMonitorDescriptor<T> extends Descriptor<NodeMo
     public T get(Computer c) {
         if(record==null || !record.data.containsKey(c)) {
             // if we don't have the data, schedule the check now
-            if(!isInProgress()) {
-                synchronized(this) {
-                    if(!isInProgress()) {
-                        new Record().start();
-                    }
-                }
-            }
+            triggerUpdate();
             return null;
         }
         return record.data.get(c);
@@ -194,9 +191,8 @@ public abstract class AbstractNodeMonitorDescriptor<T> extends Descriptor<NodeMo
     }
 
     public String getTimestampString() {
-        if (record==null) {
+        if (record==null)
             return Messages.AbstractNodeMonitorDescriptor_NoDataYet();
-        }
 //        return Messages.AbstractNodeMonitorDescriptor_DataObtainedSometimeAgo(
 //                Util.getTimeSpanString(System.currentTimeMillis()-record.timestamp));
         return Util.getPastTimeString(System.currentTimeMillis()-record.timestamp);
@@ -218,9 +214,7 @@ public abstract class AbstractNodeMonitorDescriptor<T> extends Descriptor<NodeMo
      *      or the computer was already online.)
      */
     protected boolean markOnline(Computer c) {
-        if(isIgnored() || c.isOnline()) {
-            return false; // noop
-        }
+        if(isIgnored() || c.isOnline()) return false; // noop
         c.setTemporarilyOffline(false,null);
         return true;
     }
@@ -233,17 +227,14 @@ public abstract class AbstractNodeMonitorDescriptor<T> extends Descriptor<NodeMo
      *      or the computer already marked offline.)
      */
     protected boolean markOffline(Computer c, OfflineCause oc) {
-        if(isIgnored() || c.isTemporarilyOffline()) {
-            return false; // noop
-        }
+        if(isIgnored() || c.isTemporarilyOffline()) return false; // noop
 
         c.setTemporarilyOffline(true, oc);
 
         // notify the admin
         MonitorMarkedNodeOffline no = AdministrativeMonitor.all().get(MonitorMarkedNodeOffline.class);
-        if(no!=null) {
+        if(no!=null)
             no.active = true;
-        }
         return true;
     }
 
@@ -251,6 +242,7 @@ public abstract class AbstractNodeMonitorDescriptor<T> extends Descriptor<NodeMo
      * @deprecated as of 1.320
      *      Use {@link #markOffline(Computer, OfflineCause)} to specify the cause.
      */
+    @Deprecated
     protected boolean markOffline(Computer c) {
         return markOffline(c,null);
     }
@@ -260,7 +252,11 @@ public abstract class AbstractNodeMonitorDescriptor<T> extends Descriptor<NodeMo
      */
     /*package*/ synchronized Thread triggerUpdate() {
         if (inProgress != null) {
-            if (System.currentTimeMillis() > inProgressStarted + getMonitoringTimeOut() + 1000) {
+            if (!inProgress.isAlive()) {
+                LOGGER.log(Level.WARNING, "Previous {0} monitoring activity died without cleaning up after itself",
+                    getDisplayName());
+                inProgress = null;
+            } else if (System.currentTimeMillis() > inProgressStarted + getMonitoringTimeOut() + 1000) {
                 // maybe it got stuck?
                 LOGGER.log(Level.WARNING, "Previous {0} monitoring activity still in progress. Interrupting",
                         getDisplayName());
@@ -316,13 +312,12 @@ public abstract class AbstractNodeMonitorDescriptor<T> extends Descriptor<NodeMo
                 LOGGER.log(Level.FINE, "Node monitoring {0} completed in {1}ms", new Object[] {getDisplayName(), System.currentTimeMillis()-startTime});
             } catch (InterruptedException x) {
                 // interrupted by new one, fine
-            } catch (Exception t) {
+            } catch (Throwable t) {
                 LOGGER.log(Level.WARNING, "Unexpected node monitoring termination: "+getDisplayName(),t);
             } finally {
                 synchronized(AbstractNodeMonitorDescriptor.this) {
-                    if (inProgress==this) {
+                    if (inProgress==this)
                         inProgress = null;
-                    }
                 }
             }
         }

@@ -82,9 +82,7 @@ public class LogRotator extends BuildDiscarder {
     }
 
     public static int parse(String p) {
-        if(p==null) {
-            return -1;
-        }
+        if(p==null)     return -1;
         try {
             return Integer.parseInt(p);
         } catch (NumberFormatException e) {
@@ -96,6 +94,7 @@ public class LogRotator extends BuildDiscarder {
      * @deprecated since 1.350.
      *      Use {@link #LogRotator(int, int, int, int)}
      */
+    @Deprecated
     public LogRotator(int daysToKeep, int numToKeep) {
         this(daysToKeep, numToKeep, -1, -1);
     }
@@ -189,6 +188,10 @@ public class LogRotator extends BuildDiscarder {
             LOGGER.log(FINER, "{0} is not to be removed or purged of artifacts because it’s the last stable build", r);
             return true;
         }
+        if (r.isBuilding()) {
+            LOGGER.log(FINER, "{0} is not to be removed or purged of artifacts because it’s still building", r);
+            return true;
+        }
         return false;
     }
 
@@ -245,9 +248,7 @@ public class LogRotator extends BuildDiscarder {
     }
 
     private String toString(Integer i) {
-        if (i==null || i==-1) {
-            return "";
-        }
+        if (i==null || i==-1)   return "";
         return String.valueOf(i);
     }
 

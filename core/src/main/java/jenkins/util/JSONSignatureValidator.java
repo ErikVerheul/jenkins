@@ -135,14 +135,15 @@ public class JSONSignatureValidator {
         // which isn't useful at all
         Set<TrustAnchor> anchors = new HashSet<TrustAnchor>(); // CertificateUtil.getDefaultRootCAs();
         Jenkins j = Jenkins.getInstance();
+        if (j == null) {
+            return anchors;
+        }
         for (String cert : (Set<String>) j.servletContext.getResourcePaths("/WEB-INF/update-center-rootCAs")) {
             if (cert.endsWith("/") || cert.endsWith(".txt"))  {
                 continue;       // skip directories also any text files that are meant to be documentation
             }
             InputStream in = j.servletContext.getResourceAsStream(cert);
-                    if (in == null) {
-                        continue; // our test for paths ending in / should prevent this from happening
-                    }
+            if (in == null) continue; // our test for paths ending in / should prevent this from happening
             Certificate certificate;
             try {
                 certificate = cf.generateCertificate(in);

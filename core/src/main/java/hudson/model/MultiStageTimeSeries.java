@@ -110,6 +110,7 @@ public class MultiStageTimeSeries implements Serializable {
      * @deprecated since 2009-04-05.
      *      Use {@link #MultiStageTimeSeries(Localizable, Color, float, float)}
      */
+    @Deprecated
     public MultiStageTimeSeries(float initialValue, float decay) {
         this(Messages._MultiStageTimeSeries_EMPTY_STRING(), Color.WHITE, initialValue,decay);
     }
@@ -120,12 +121,8 @@ public class MultiStageTimeSeries implements Serializable {
     public void update(float f) {
         counter = (counter+1)%360;   // 1hour/10sec = 60mins/10sec=3600secs/10sec = 360
         sec10.update(f);
-        if(counter%6==0) {
-            min.update(f);
-        }
-        if(counter==0) {
-            hour.update(f);
-        }
+        if(counter%6==0)    min.update(f);
+        if(counter==0)      hour.update(f);
     }
 
     /**
@@ -186,9 +183,7 @@ public class MultiStageTimeSeries implements Serializable {
          * Parses the {@link TimeScale} from the query parameter.
          */
         public static TimeScale parse(String type) {
-            if(type==null) {
-                return TimeScale.MIN;
-            }
+            if(type==null)   return TimeScale.MIN;
             return Enum.valueOf(TimeScale.class, type.toUpperCase(Locale.ENGLISH));
         }
     }
@@ -215,14 +210,12 @@ public class MultiStageTimeSeries implements Serializable {
          */
         protected DefaultCategoryDataset createDataset() {
             float[][] dataPoints = new float[series.size()][];
-            for (int i = 0; i < series.size(); i++) {
+            for (int i = 0; i < series.size(); i++)
                 dataPoints[i] = series.get(i).pick(timeScale).getHistory();
-            }
 
             int dataLength = dataPoints[0].length;
-            for (float[] dataPoint : dataPoints) {
+            for (float[] dataPoint : dataPoints)
                 assert dataLength ==dataPoint.length;
-            }
 
             DefaultCategoryDataset ds = new DefaultCategoryDataset();
 
@@ -232,9 +225,8 @@ public class MultiStageTimeSeries implements Serializable {
             for (int i = dataLength-1; i>=0; i--) {
                 dt = new Date(dt.getTime()+timeScale.tick);
                 String l = format.format(dt);
-                for(int j=0; j<dataPoints.length; j++) {
+                for(int j=0; j<dataPoints.length; j++)
                     ds.addValue(dataPoints[j][i],series.get(j).title.toString(),l);
-                }
             }
             return ds;
         }
@@ -292,9 +284,8 @@ public class MultiStageTimeSeries implements Serializable {
         protected void configureRenderer(LineAndShapeRenderer renderer) {
             renderer.setBaseStroke(new BasicStroke(3));
 
-            for (int i = 0; i < series.size(); i++) {
+            for (int i = 0; i < series.size(); i++)
                 renderer.setSeriesPaint(i, series.get(i).color);
-            }
         }
 
         protected void configurePlot(CategoryPlot plot) {

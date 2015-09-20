@@ -207,9 +207,8 @@ public class Maven extends Builder {
      */
     public MavenInstallation getMaven() {
         for( MavenInstallation i : getDescriptor().getInstallations() ) {
-            if(mavenName !=null && mavenName.equals(i.getName())) {
+            if(mavenName !=null && mavenName.equals(i.getName()))
                 return i;
-            }
         }
         return null;
     }
@@ -236,9 +235,8 @@ public class Maven extends Builder {
                 String t = tokens.nextToken();
                 if(t.equals("-f") && tokens.hasMoreTokens()) {
                     File file = new File(ws,tokens.nextToken());
-                    if(!file.exists()) {
+                    if(!file.exists())
                         continue;   // looks like an error, but let the execution fail later
-                    }
                     seed = file.isDirectory() ?
                         /* in M1, you specify a directory in -f */ "maven"
                         /* in M2, you specify a POM file name.  */ : "mvn";
@@ -252,9 +250,8 @@ public class Maven extends Builder {
                 seed = new File(ws,"project.xml").exists() ? "maven" : "mvn";
             }
 
-            if(Functions.isWindows()) {
+            if(Functions.isWindows())
                 seed += ".bat";
-            }
             return seed;
         }
     }
@@ -297,9 +294,8 @@ public class Maven extends Builder {
                 }
                 args.add(exec);
             }
-            if(pom!=null) {
+            if(pom!=null)
                 args.add("-f",pom);
-            }
             
             
             if(!S_PATTERN.matcher(targets).find()){ // check the given target/goals do not contain settings parameter already
@@ -320,13 +316,16 @@ public class Maven extends Builder {
             args.addKeyValuePairs("-D",build.getBuildVariables(),sensitiveVars);
             final VariableResolver<String> resolver = new Union<String>(new ByMap<String>(env), vr);
             args.addKeyValuePairsFromPropertyString("-D",this.properties,resolver,sensitiveVars);
-            if (usesPrivateRepository()) {
+            if (usesPrivateRepository())
                 args.add("-Dmaven.repo.local=" + build.getWorkspace().child(".repository"));
-            }
             args.addTokenized(normalizedTarget);
             wrapUpArguments(args,normalizedTarget,build,launcher,listener);
 
             buildEnvVars(env, mi);
+            
+            if (!launcher.isUnix()) {
+                args = args.toWindowsCommand();
+            }
 
             try {
                 MavenConsoleAnnotator mca = new MavenConsoleAnnotator(listener.getLogger(),build.getCharset());
@@ -336,7 +335,7 @@ public class Maven extends Builder {
                 }
             } catch (IOException e) {
                 Util.displayIOException(e,listener);
-                e.printStackTrace( listener.fatalError(Messages.Maven_ExecFailed()) ); //NOSONAR
+                e.printStackTrace( listener.fatalError(Messages.Maven_ExecFailed()) );
                 return false;
             }
             startIndex = endIndex + 1;
@@ -371,9 +370,8 @@ public class Maven extends Builder {
         env.put("MAVEN_TERMINATE_CMD","on");
 
         String jvmOptions = env.expand(this.jvmOptions);
-        if(jvmOptions!=null) {
+        if(jvmOptions!=null)
             env.put("MAVEN_OPTS",jvmOptions.replaceAll("[\t\r\n]+"," "));
-        }
     }
 
     @Override
@@ -387,6 +385,7 @@ public class Maven extends Builder {
      *      For compatibility, this field retains the last created {@link DescriptorImpl}.
      *      TODO: fix sonar plugin that depends on this. That's the only plugin that depends on this field.
      */
+    @Deprecated
     public static DescriptorImpl DESCRIPTOR;
 
     @Extension
@@ -405,9 +404,7 @@ public class Maven extends Builder {
 
         @Override
         public String getHelpFile(String fieldName) {
-            if (fieldName != null && fieldName.equals("globalSettings")) {
-                fieldName = "settings"; // same help file
-            }
+            if (fieldName != null && fieldName.equals("globalSettings")) fieldName = "settings"; // same help file
             return super.getHelpFile(fieldName);
         }
 
@@ -463,13 +460,14 @@ public class Maven extends Builder {
         /**
          * @deprecated since 2009-02-25.
          */
-        @Deprecated // kept for backward compatiblity - use getHome()
+        @Deprecated // kept for backward compatibility - use getHome()
         private transient String mavenHome;
 
         /**
          * @deprecated as of 1.308.
          *      Use {@link #Maven.MavenInstallation(String, String, List)}
          */
+        @Deprecated
         public MavenInstallation(String name, String home) {
             super(name, home);
         }
@@ -484,6 +482,7 @@ public class Maven extends Builder {
          *
          * @deprecated as of 1.308. Use {@link #getHome()}.
          */
+        @Deprecated
         public String getMavenHome() {
             return getHome();
         }
@@ -527,13 +526,9 @@ public class Maven extends Builder {
                                         jf = new JarFile(jar);
                                         Manifest manifest = jf.getManifest();
                                         String version = manifest.getMainAttributes().getValue(Attributes.Name.IMPLEMENTATION_VERSION);
-                                        if(version != null) {
-                                            return version;
-                                        }
+                                        if(version != null) return version;
                                     } finally {
-                                        if(jf != null) {
-                                            jf.close();
-                                        }
+                                        if(jf != null) jf.close();
                                     }
                                 }
                             }
@@ -544,19 +539,16 @@ public class Maven extends Builder {
 
             if (!mavenVersion.equals("")) {
                 if (mavenReqVersion == MAVEN_20) {
-                    if(mavenVersion.startsWith("2.")) {
+                    if(mavenVersion.startsWith("2."))
                         return true;
-                    }
                 }
                 else if (mavenReqVersion == MAVEN_21) {
-                    if(mavenVersion.startsWith("2.") && !mavenVersion.startsWith("2.0")) {
+                    if(mavenVersion.startsWith("2.") && !mavenVersion.startsWith("2.0"))
                         return true;
-                    }
                 }
                 else if (mavenReqVersion == MAVEN_30) {
-                    if(mavenVersion.startsWith("3.")) {
+                    if(mavenVersion.startsWith("3."))
                         return true;
-                    }
                 }                
             }
             return false;
@@ -582,26 +574,31 @@ public class Maven extends Builder {
 
                 public String call() throws IOException {
                     File exe = getExeFile("mvn");
-                    if(exe.exists()) {
+                    if(exe.exists())
                         return exe.getPath();
-                    }
                     exe = getExeFile("maven");
-                    if(exe.exists()) {
+                    if(exe.exists())
                         return exe.getPath();
-                    }
                     return null;
                 }
             });
         }
 
         private File getExeFile(String execName) {
-            if(File.separatorChar=='\\') {
-                execName += ".bat";
-            }
-
             String m2Home = Util.replaceMacro(getHome(),EnvVars.masterEnvVars);
 
-            return new File(m2Home, "bin/" + execName);
+            if(Functions.isWindows()) {
+                File exeFile = new File(m2Home, "bin/" + execName + ".bat");
+
+                // since Maven 3.3 .bat files are replaced with .cmd
+                if (!exeFile.exists()) {
+                    return new File(m2Home, "bin/" + execName + ".cmd");
+                }
+
+                return exeFile;
+            } else {
+                return new File(m2Home, "bin/" + execName);
+            }
         }
 
         /**
@@ -660,9 +657,8 @@ public class Maven extends Builder {
                 File maven1File = new File(value,MAVEN_1_INSTALLATION_COMMON_FILE);
                 File maven2File = new File(value,MAVEN_2_INSTALLATION_COMMON_FILE);
 
-                if(!maven1File.exists() && !maven2File.exists()) {
+                if(!maven1File.exists() && !maven2File.exists())
                     return FormValidation.error(Messages.Maven_NotMavenDirectory(value));
-                }
 
                 return FormValidation.ok();
             }
@@ -722,5 +718,5 @@ public class Maven extends Builder {
          */
         MavenInstallation inferMavenInstallation();
     }
-    
+
 }

@@ -58,6 +58,8 @@ import hudson.widgets.Widget;
 import jenkins.model.Jenkins;
 import jenkins.model.ModelObjectWithChildren;
 import jenkins.util.ProgressiveRendering;
+import jenkins.util.xml.XMLUtils;
+
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -75,9 +77,7 @@ import org.kohsuke.stapler.interceptor.RequirePOST;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import java.io.BufferedInputStream;
@@ -106,6 +106,7 @@ import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static jenkins.model.Jenkins.*;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
+import org.xml.sax.SAXException;
 
 /**
  * Encapsulates the rendering of the list of {@link TopLevelItem}s
@@ -234,13 +235,10 @@ public abstract class View extends AbstractModelObject implements AccessControll
      * Renames this view.
      */
     public void rename(String newName) throws Failure, FormException {
-        if(name.equals(newName)) {
-            return; // noop
-        }
+        if(name.equals(newName))    return; // noop
         checkGoodName(newName);
-        if(owner.getView(newName)!=null) {
+        if(owner.getView(newName)!=null)
             throw new FormException(Messages.Hudson_ViewAlreadyExists(newName),"name");
-        }
         String oldName = name;
         name = newName;
         owner.onViewRenamed(this,oldName,newName);
@@ -323,9 +321,8 @@ public abstract class View extends AbstractModelObject implements AccessControll
     public List<ViewPropertyDescriptor> getApplicablePropertyDescriptors() {
         List<ViewPropertyDescriptor> r = new ArrayList<ViewPropertyDescriptor>();
         for (ViewPropertyDescriptor pd : ViewProperty.all()) {
-            if (pd.isEnabledFor(this)) {
+            if (pd.isEnabledFor(this))
                 r.add(pd);
-            }
         }
         return r;
     }
@@ -442,9 +439,7 @@ public abstract class View extends AbstractModelObject implements AccessControll
         }
 
         for (Computer c : computers) {
-            if (isRelevant(labels, c)) {
-                result.add(c);
-            }
+            if (isRelevant(labels, c)) result.add(c);
         }
 
         return result;
@@ -452,18 +447,12 @@ public abstract class View extends AbstractModelObject implements AccessControll
 
     private boolean isRelevant(Collection<Label> labels, Computer computer) {
         Node node = computer.getNode();
-        if (node == null) {
-            return false;
-        }
-        if (labels.contains(null) && node.getMode() == Mode.NORMAL) {
-            return true;
-        }
+        if (node == null) return false;
+        if (labels.contains(null) && node.getMode() == Mode.NORMAL) return true;
 
-        for (Label l : labels) {
-            if (l != null && l.contains(node)) {
+        for (Label l : labels)
+            if (l != null && l.contains(node))
                 return true;
-            }
-        }
         return false;
     }
 
@@ -550,12 +539,9 @@ public abstract class View extends AbstractModelObject implements AccessControll
     public Object getDynamic(String token) {
         for (Action a : getActions()) {
             String url = a.getUrlName();
-            if (url==null) {
-                continue;
-            }
-            if(a.getUrlName().equals(token)) {
+            if (url==null)  continue;
+            if(a.getUrlName().equals(token))
                 return a;
-            }
         }
         return null;
     }
@@ -641,59 +627,26 @@ public abstract class View extends AbstractModelObject implements AccessControll
          * Returns a human-readable string representation of when this user was last active.
          */
         public String getLastChangeTimeString() {
-            if(lastChange==null) {
-                return "N/A";
-            }
+            if(lastChange==null)    return "N/A";
             long duration = new GregorianCalendar().getTimeInMillis()- ordinal();
             return Util.getTimeSpanString(duration);
         }
 
         public String getTimeSortKey() {
-            if(lastChange==null) {
-                return "-";
-            }
+            if(lastChange==null)    return "-";
             return Util.XS_DATETIME_FORMATTER.format(lastChange.getTime());
         }
 
-        @Override
         public int compareTo(UserInfo that) {
             long rhs = that.ordinal();
             long lhs = this.ordinal();
-            if(rhs>lhs) {
-                return 1;
-            }
-            if(rhs<lhs) {
-                return -1;
-            }
+            if(rhs>lhs) return 1;
+            if(rhs<lhs) return -1;
             return 0;
         }
-        
-        @Override
-        public boolean equals(Object obj) {
-            if (obj == null) {
-                return false;
-            }
-            if (obj == this) {
-                return true;
-            }
-            if (!(obj instanceof UserInfo)) {
-                return false;
-            }
-            UserInfo o = (UserInfo) obj;
-            return ordinal() == o.ordinal();
-        }
-
-        @Override
-        public int hashCode() {
-            int hash = 5;
-            return hash;
-        }
-
 
         private long ordinal() {
-            if(lastChange==null) {
-                return 0;
-            }
+            if(lastChange==null)    return 0;
             return lastChange.getTimeInMillis();
         }
     }
@@ -702,6 +655,7 @@ public abstract class View extends AbstractModelObject implements AccessControll
      * Does this {@link View} has any associated user information recorded?
      * @deprecated Potentially very expensive call; do not use from Jelly views.
      */
+    @Deprecated
     public boolean hasPeople() {
         return People.isApplicable(getItems());
     }
@@ -733,12 +687,9 @@ public abstract class View extends AbstractModelObject implements AccessControll
             Map<User,UserInfo> users = getUserInfo(parent.getItems());
             User unknown = User.getUnknown();
             for (User u : User.getAll()) {
-                if(u==unknown) {
-                    continue;   // skip the special 'unknown' user
-                }
-                if(!users.containsKey(u)) {
+                if(u==unknown)  continue;   // skip the special 'unknown' user
+                if(!users.containsKey(u))
                     users.put(u,new UserInfo(u,null,null));
-                }
             }
             this.users = toList(users);
         }
@@ -759,9 +710,9 @@ public abstract class View extends AbstractModelObject implements AccessControll
                                 User user = entry.getAuthor();
 
                                 UserInfo info = users.get(user);
-                                if(info==null) {
+                                if(info==null)
                                     users.put(user,new UserInfo(user,p,build.getTimestamp()));
-                                } else
+                                else
                                 if(info.getLastChange().before(build.getTimestamp())) {
                                     info.project = p;
                                     info.lastChange = build.getTimestamp();
@@ -788,6 +739,7 @@ public abstract class View extends AbstractModelObject implements AccessControll
         /**
          * @deprecated Potentially very expensive call; do not use from Jelly views.
          */
+        @Deprecated
         public static boolean isApplicable(Collection<? extends Item> items) {
             for (Item item : items) {
                 for (Job job : item.getAllJobs()) {
@@ -796,9 +748,8 @@ public abstract class View extends AbstractModelObject implements AccessControll
                         for (AbstractBuild<?,?> build : p.getBuilds()) {
                             for (Entry entry : build.getChangeSet()) {
                                 User user = entry.getAuthor();
-                                if(user!=null) {
+                                if(user!=null)
                                     return true;
-                                }
                             }
                         }
                     }
@@ -1072,9 +1023,7 @@ public abstract class View extends AbstractModelObject implements AccessControll
             if (item instanceof Job) {
                 Job job = (Job) item;
                 Run lb = job.getLastBuild();
-                if(lb!=null) {
-                    lastBuilds.add(lb);
-                }
+                if(lb!=null)    lastBuilds.add(lb);
             }
         }
         RSS.forwardToRss(getDisplayName()+" last builds only", getUrl(),
@@ -1117,7 +1066,10 @@ public abstract class View extends AbstractModelObject implements AccessControll
     }
 
     /**
-     * Updates Job by its XML definition.
+     * Updates the View with the new XML definition.
+     * @param source source of the Item's new definition.
+     *               The source should be either a <code>StreamSource</code> or <code>SAXSource</code>, other sources
+     *               may not be handled.
      */
     public void updateByXml(Source source) throws IOException {
         checkPermission(CONFIGURE);
@@ -1126,12 +1078,11 @@ public abstract class View extends AbstractModelObject implements AccessControll
             // this allows us to use UTF-8 for storing data,
             // plus it checks any well-formedness issue in the submitted
             // data
-            Transformer t = TransformerFactory.newInstance()
-                    .newTransformer();
-            t.transform(source,
-                    new StreamResult(out));
+            XMLUtils.safeTransform(source, new StreamResult(out));
             out.close();
         } catch (TransformerException e) {
+            throw new IOException("Failed to persist configuration.xml", e);
+        } catch (SAXException e) {
             throw new IOException("Failed to persist configuration.xml", e);
         }
 
@@ -1147,7 +1098,7 @@ public abstract class View extends AbstractModelObject implements AccessControll
             throw new IOException("Unable to read",e);
         } catch(ConversionException e) {
             throw new IOException("Unable to read",e);
-        } catch(RuntimeException e) {// mostly reflection errors
+        } catch(Error e) {// mostly reflection errors
             throw new IOException("Unable to read",e);
         } finally {
             in.close();
@@ -1157,9 +1108,8 @@ public abstract class View extends AbstractModelObject implements AccessControll
 
     public ContextMenu doChildrenContextMenu(StaplerRequest request, StaplerResponse response) throws Exception {
         ContextMenu m = new ContextMenu();
-        for (TopLevelItem i : getItems()) {
+        for (TopLevelItem i : getItems())
             m.add(i.getShortUrl(),i.getDisplayName());
-        }
         return m;
     }
 
@@ -1168,6 +1118,7 @@ public abstract class View extends AbstractModelObject implements AccessControll
      * @deprecated as of 1.286
      *      Use {@link #all()} for read access, and use {@link Extension} for registration.
      */
+    @Deprecated
     public static final DescriptorList<View> LIST = new DescriptorList<View>(View.class);
 
     /**
@@ -1179,11 +1130,9 @@ public abstract class View extends AbstractModelObject implements AccessControll
 
     public static List<ViewDescriptor> allInstantiable() {
         List<ViewDescriptor> r = new ArrayList<ViewDescriptor>();
-        for (ViewDescriptor d : all()) {
-            if(d.isInstantiable()) {
+        for (ViewDescriptor d : all())
+            if(d.isInstantiable())
                 r.add(d);
-            }
-        }
         return r;
     }
 
@@ -1210,17 +1159,15 @@ public abstract class View extends AbstractModelObject implements AccessControll
     public static View create(StaplerRequest req, StaplerResponse rsp, ViewGroup owner)
             throws FormException, IOException, ServletException {
         String requestContentType = req.getContentType();
-        if(requestContentType==null) {
+        if(requestContentType==null)
             throw new Failure("No Content-Type header set");
-        }
 
         boolean isXmlSubmission = requestContentType.startsWith("application/xml") || requestContentType.startsWith("text/xml");
 
         String name = req.getParameter("name");
         checkGoodName(name);
-        if(owner.getView(name)!=null) {
+        if(owner.getView(name)!=null)
             throw new Failure(Messages.Hudson_ViewAlreadyExists(name));
-        }
 
         String mode = req.getParameter("mode");
         if (mode==null || mode.length()==0) {
@@ -1229,9 +1176,8 @@ public abstract class View extends AbstractModelObject implements AccessControll
                 v.owner = owner;
                 rsp.setStatus(HttpServletResponse.SC_OK);
                 return v;
-            } else {
+            } else
                 throw new Failure(Messages.View_MissingMode());
-            }
         }
 
         View v;
@@ -1260,11 +1206,10 @@ public abstract class View extends AbstractModelObject implements AccessControll
         View src = src = owner.getView(from);
 
         if(src==null) {
-            if(Util.fixEmpty(from)==null) {
+            if(Util.fixEmpty(from)==null)
                 throw new Failure("Specify which view to copy");
-            } else {
+            else
                 throw new Failure("No such view: "+from);
-            }
         }
         String xml = Jenkins.XSTREAM.toXML(src);
         v = createViewFromXML(name, new StringInputStream(xml));
@@ -1280,16 +1225,14 @@ public abstract class View extends AbstractModelObject implements AccessControll
         InputStream in = new BufferedInputStream(xml);
         try {
             View v = (View) Jenkins.XSTREAM.fromXML(in);
-            if (name != null) {
-                v.name = name;
-            }
+            if (name != null) v.name = name;
             checkGoodName(v.name);
             return v;
         } catch(StreamException e) {
             throw new IOException("Unable to read",e);
         } catch(ConversionException e) {
             throw new IOException("Unable to read",e);
-        } catch(RuntimeException e) {// mostly reflection errors
+        } catch(Error e) {// mostly reflection errors
             throw new IOException("Unable to read",e);
         } finally {
             in.close();
@@ -1310,9 +1253,8 @@ public abstract class View extends AbstractModelObject implements AccessControll
 
         @Override
         protected void onModified() throws IOException {
-            for (ViewProperty p : this) {
+            for (ViewProperty p : this)
                 p.setView(getOwner());
-            }
         }
     }
 

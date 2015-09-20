@@ -98,9 +98,8 @@ public abstract class NodeDescriptor extends Descriptor<Node> {
 
     public FormValidation doCheckName(@QueryParameter String value ) {
         String name = Util.fixEmptyAndTrim(value);
-        if(name==null) {
+        if(name==null)
             return FormValidation.error(Messages.NodeDescripter_CheckName_Mandatory());
-        }
         try {
             Jenkins.checkGoodName(name);
         } catch (Failure f) {
@@ -121,15 +120,14 @@ public abstract class NodeDescriptor extends Descriptor<Node> {
      * @deprecated as of 1.286
      *      Use {@link #all()} for read access, and {@link Extension} for registration.
      */
+    @Deprecated
     public static final DescriptorList<Node> ALL = new DescriptorList<Node>(Node.class);
 
     public static List<NodeDescriptor> allInstantiable() {
         List<NodeDescriptor> r = new ArrayList<NodeDescriptor>();
-        for (NodeDescriptor d : all()) {
-            if(d.isInstantiable()) {
+        for (NodeDescriptor d : all())
+            if(d.isInstantiable())
                 r.add(d);
-            }
-        }
         return r;
     }
 }

@@ -97,6 +97,7 @@ public class CLI {
      * @deprecated
      *      Use {@link CLIConnectionFactory} to create {@link CLI}
      */
+    @Deprecated
     public CLI(URL jenkins, ExecutorService exec) throws IOException, InterruptedException {
         this(jenkins,exec,null);
     }
@@ -105,6 +106,7 @@ public class CLI {
      * @deprecated 
      *      Use {@link CLIConnectionFactory} to create {@link CLI}
      */
+    @Deprecated
     public CLI(URL jenkins, ExecutorService exec, String httpsProxyTunnel) throws IOException, InterruptedException {
         this(new CLIConnectionFactory().url(jenkins).executorService(exec).httpsProxyTunnel(httpsProxyTunnel));
     }
@@ -116,9 +118,7 @@ public class CLI {
         ExecutorService exec = factory.exec;
         
         String url = jenkins.toExternalForm();
-        if(!url.endsWith("/")) {
-            url+='/';
-        }
+        if(!url.endsWith("/"))  url+='/';
 
         ownsPool = exec==null;
         pool = exec!=null ? exec : Executors.newCachedThreadPool();
@@ -146,9 +146,8 @@ public class CLI {
         // execute the command
         entryPoint = (CliEntryPoint)_channel.waitForRemoteProperty(CliEntryPoint.class.getName());
 
-        if(entryPoint.protocolVersion()!=CliEntryPoint.VERSION) {
+        if(entryPoint.protocolVersion()!=CliEntryPoint.VERSION)
             throw new IOException(Messages.CLI_VersionMismatch());
-        }
     }
 
     private Channel connectViaHttp(String url) throws IOException {
@@ -172,12 +171,18 @@ public class CLI {
 
     private Channel connectViaCliPort(URL jenkins, CliPort clip) throws IOException {
         LOGGER.log(FINE, "Trying to connect directly via TCP/IP to {0}", clip.endpoint);
-        final Socket s;
+        final Socket s = new Socket();
+        // this prevents a connection from silently terminated by the router in between or the other peer
+        // and that goes without unnoticed. However, the time out is often very long (for example 2 hours
+        // by default in Linux) that this alone is enough to prevent that.
+        s.setKeepAlive(true);
+        // we take care of buffering on our own
+        s.setTcpNoDelay(true);
         OutputStream out;
 
         if (httpsProxyTunnel!=null) {
             String[] tokens = httpsProxyTunnel.split(":");
-            s = new Socket(tokens[0], Integer.parseInt(tokens[1]));
+            s.connect(new InetSocketAddress(tokens[0], Integer.parseInt(tokens[1])));
             PrintStream o = new PrintStream(s.getOutputStream());
             o.print("CONNECT " + clip.endpoint.getHostName() + ":" + clip.endpoint.getPort() + " HTTP/1.0\r\n\r\n");
 
@@ -185,15 +190,12 @@ public class CLI {
             ByteArrayOutputStream rsp = new ByteArrayOutputStream();
             while (!rsp.toString("ISO-8859-1").endsWith("\r\n\r\n")) {
                 int ch = s.getInputStream().read();
-                if (ch<0) {
-                    throw new IOException("Failed to read the HTTP proxy response: "+rsp);
-                }
+                if (ch<0)   throw new IOException("Failed to read the HTTP proxy response: "+rsp);
                 rsp.write(ch);
             }
             String head = new BufferedReader(new StringReader(rsp.toString("ISO-8859-1"))).readLine();
-            if (!head.startsWith("HTTP/1.0 200 ")) {
+            if (!head.startsWith("HTTP/1.0 200 "))
                 throw new IOException("Failed to establish a connection through HTTP proxy: "+rsp);
-            }
 
             // HTTP proxies (at least the one I tried --- squid) doesn't seem to do half-close very well.
             // So instead of relying on it, we'll just send the close command and then let the server
@@ -205,7 +207,6 @@ public class CLI {
                 }
             };
         } else {
-            s = new Socket();
             s.connect(clip.endpoint,3000);
             out = SocketChannelStream.out(s);
         }
@@ -229,9 +230,8 @@ public class CLI {
             dos = new DataOutputStream(s.getOutputStream());
             dos.writeUTF("Protocol:CLI2-connect");
             String greeting = dis.readUTF();
-            if (!greeting.equals("Welcome")) {
+            if (!greeting.equals("Welcome"))
                 throw new IOException("Handshaking failed: "+greeting);
-        }
             try {
                 byte[] secret = c.diffieHellman(false).generateSecret();
                 SecretKey sessionKey = new SecretKeySpec(Connection.fold(secret,128/8),"AES");
@@ -245,9 +245,8 @@ public class CLI {
                     Signature verifier = Signature.getInstance("SHA1withRSA");
                     verifier.initVerify(clip.getIdentity());
                     verifier.update(secret);
-                    if (!verifier.verify(signature)) {
+                    if (!verifier.verify(signature))
                         throw new IOException("Server identity signature validation failed.");
-                    }
                 }
 
             } catch (GeneralSecurityException e) {
@@ -275,13 +274,9 @@ public class CLI {
         }
 
         String h = head.getHeaderField("X-Jenkins-CLI-Host");
-        if (h==null) {
-            h = head.getURL().getHost();
-        }
+        if (h==null)    h = head.getURL().getHost();
         String p1 = head.getHeaderField("X-Jenkins-CLI-Port");
-        if (p1==null) {
-            p1 = head.getHeaderField("X-Hudson-CLI-Port");   // backward compatibility
-        }
+        if (p1==null)    p1 = head.getHeaderField("X-Hudson-CLI-Port");   // backward compatibility
         String p2 = head.getHeaderField("X-Jenkins-CLI2-Port");
 
         String identity = head.getHeaderField("X-Instance-Identity");
@@ -289,18 +284,14 @@ public class CLI {
         flushURLConnection(head);
         if (p1==null && p2==null) {
             // we aren't finding headers we are expecting. Is this even running Jenkins?
-            if (head.getHeaderField("X-Hudson")==null && head.getHeaderField("X-Jenkins")==null) {
+            if (head.getHeaderField("X-Hudson")==null && head.getHeaderField("X-Jenkins")==null)
                 throw new IOException("There's no Jenkins running at "+url);
-            }
 
             throw new IOException("No X-Jenkins-CLI2-Port among " + head.getHeaderFields().keySet());
         }
 
-        if (p2!=null) {
-            return new CliPort(new InetSocketAddress(h,Integer.parseInt(p2)),identity,2);
-        } else {
-            return new CliPort(new InetSocketAddress(h,Integer.parseInt(p1)),identity,1);
-        }
+        if (p2!=null)   return new CliPort(new InetSocketAddress(h,Integer.parseInt(p2)),identity,2);
+        else            return new CliPort(new InetSocketAddress(h,Integer.parseInt(p1)),identity,1);
     }
 
     /**
@@ -337,12 +328,10 @@ public class CLI {
     public void close() throws IOException, InterruptedException {
         channel.close();
         channel.join();
-        if(ownsPool) {
+        if(ownsPool)
             pool.shutdown();
-        }
-        for (Closeable c : closables) {
+        for (Closeable c : closables)
             c.close();
-        }
     }
 
     public int execute(List<String> args, InputStream stdin, OutputStream stdout, OutputStream stderr) {
@@ -386,9 +375,8 @@ public class CLI {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         if (execute(Arrays.asList("groovy", "="),
                 new ByteArrayInputStream("hudson.remoting.Channel.current().setRestricted(false)".getBytes()),
-                out,out)!=0) {
+                out,out)!=0)
             throw new SecurityException(out.toString()); // failed to upgrade
-        }
     }
 
     public static void main(final String[] _args) throws Exception {
@@ -398,7 +386,13 @@ public class CLI {
 //        h.setLevel(ALL);
 //        l.addHandler(h);
 //
-        System.exit(_main(_args)); //NOSONAR
+        try {
+            System.exit(_main(_args));
+        } catch (Throwable t) {
+            // if the CLI main thread die, make sure to kill the JVM.
+            t.printStackTrace();
+            System.exit(-1);
+        }
     }
 
     public static int _main(String[] _args) throws Exception {
@@ -409,9 +403,8 @@ public class CLI {
 
         String url = System.getenv("JENKINS_URL");
 
-        if (url==null) {
+        if (url==null)
             url = System.getenv("HUDSON_URL");
-        }
         
         boolean tryLoadPKey = true;
 
@@ -471,13 +464,11 @@ public class CLI {
             return -1;
         }
 
-        if(args.isEmpty()) {
+        if(args.isEmpty())
             args = Arrays.asList("help"); // default to help
-        }
 
-        if (tryLoadPKey && !provider.hasKeys()) {
+        if (tryLoadPKey && !provider.hasKeys())
             provider.readFromDefaultLocations();
-        }
 
         CLIConnectionFactory factory = new CLIConnectionFactory().url(url).httpsProxyTunnel(httpProxy);
         String userInfo = new URL(url).getUserInfo();
@@ -533,8 +524,7 @@ public class CLI {
                 }
             }
         } catch (IOException e) {
-            // if the version properties is missing, that's OK.
-            e.printStackTrace(); //NOSONAR
+            e.printStackTrace(); // if the version properties is missing, that's OK.
         }
         return props.getProperty("version","?");
     }
@@ -580,15 +570,13 @@ public class CLI {
             // try all the public keys
             for (KeyPair key : privateKeys) {
                 c.proveIdentity(sharedSecret,key);
-                if (c.readBoolean()) {
+                if (c.readBoolean())
                     return serverIdentity;  // succeeded
-                }
             }
-            if (privateKeys.iterator().hasNext()) {
+            if (privateKeys.iterator().hasNext())
                 throw new GeneralSecurityException("Authentication failed. No private key accepted.");
-            } else {
+            else
                 throw new GeneralSecurityException("No private key is available for use in authentication");
-            }
         } finally {
             c.close();
         }
@@ -599,9 +587,7 @@ public class CLI {
     }
 
     private static void printUsage(String msg) {
-        if(msg!=null) {
-            System.out.println(msg);
-        }
+        if(msg!=null)   System.out.println(msg);
         System.err.println(Messages.CLI_Usage());
     }
 

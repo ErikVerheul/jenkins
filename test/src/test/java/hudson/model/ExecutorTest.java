@@ -33,7 +33,6 @@ public class ExecutorTest {
     @Test
     public void yank() throws Exception {
         j.jenkins.setNumExecutors(1);
-        j.jenkins.updateComputerList(true);
         Computer c = j.jenkins.toComputer();
         final Executor e = c.getExecutors().get(0);
 
@@ -58,7 +57,6 @@ public class ExecutorTest {
     @Issue("JENKINS-4756")
     public void whenAnExecutorIsYankedANewExecutorTakesItsPlace() throws Exception {
         j.jenkins.setNumExecutors(1);
-        j.jenkins.updateComputerList(true);
 
         Computer c = j.jenkins.toComputer();
         Executor e = getExecutorByNumber(c, 0);

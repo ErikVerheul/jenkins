@@ -51,6 +51,8 @@ import jenkins.RestartRequiredException;
 import jenkins.YesNoMaybe;
 import jenkins.model.Jenkins;
 import jenkins.util.io.OnMaster;
+import jenkins.util.xml.RestrictiveEntityResolver;
+
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.fileupload.FileItem;
@@ -69,6 +71,7 @@ import org.kohsuke.stapler.HttpRedirect;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.HttpResponses;
 import org.kohsuke.stapler.QueryParameter;
+import org.kohsuke.stapler.StaplerOverridable;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.export.Exported;
@@ -109,6 +112,7 @@ import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
@@ -125,7 +129,7 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
  * @author Kohsuke Kawaguchi
  */
 @ExportedBean
-public abstract class PluginManager extends AbstractModelObject implements OnMaster {
+public abstract class PluginManager extends AbstractModelObject implements OnMaster, StaplerOverridable {
     /**
      * All discovered plugins.
      */
@@ -148,6 +152,7 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
      *      {@link PluginManager} can now live longer than {@link jenkins.model.Jenkins} instance, so
      *      use {@code Hudson.getInstance().servletContext} instead.
      */
+    @Deprecated
     public final ServletContext context;
 
     /**
@@ -190,9 +195,8 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
         this.context = context;
 
         this.rootDir = rootDir;
-        if(!rootDir.exists()) {
+        if(!rootDir.exists())
             rootDir.mkdirs();
-        }
 
         strategy = createPluginStrategy();
 
@@ -210,6 +214,16 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
 
     public Api getApi() {
         return new Api(this);
+    }
+
+    /**
+     * Find all registered overrides (intended to allow overriding/adding views)
+     * @return List of extensions
+     * @since 1.627
+     */
+    @Override
+    public Collection<PluginManagerStaplerOverride> getOverrides() {
+        return PluginManagerStaplerOverride.all();
     }
 
     /**
@@ -249,9 +263,7 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
                                     public void run(Reactor session1) throws Exception {
                                         try {
                                             PluginWrapper p = strategy.createPluginWrapper(arc);
-                                            if (isDuplicate(p)) {
-                                                return;
-                                            }
+                                            if (isDuplicate(p)) return;
 
                                             p.isBundled = containsHpiJpi(bundledPlugins, arc.getName());
                                             plugins.add(p);
@@ -296,9 +308,8 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
                                             private void addTo(List<Dependency> dependencies, List<PluginWrapper> r) {
                                                 for (Dependency d : dependencies) {
                                                     PluginWrapper p = getPlugin(d.shortName);
-                                                    if (p != null) {
+                                                    if (p != null)
                                                         r.add(p);
-                                                    }
                                                 }
                                             }
 
@@ -321,9 +332,8 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
                                         for (PluginWrapper p : cgd.getSorted()) {
                                             litr.next();
                                             litr.set(p);
-                                            if(p.isActive()) {
+                                            if(p.isActive())
                                                 activePlugins.add(p);
-                                            }
                                         }
                                     } catch (CycleDetectedException e) {
                                         stop(); // disable all plugins since classloading from them can lead to StackOverflow
@@ -443,16 +453,14 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
             p = strategy.createPluginWrapper(arc);
             sn = p.getShortName();
         }
-        if (getPlugin(sn)!=null) {
+        if (getPlugin(sn)!=null)
             throw new RestartRequiredException(Messages._PluginManager_PluginIsAlreadyInstalled_RestartRequired(sn));
-        }
 
         if (p == null) {
             p = strategy.createPluginWrapper(arc);
         }
-        if (p.supportsDynamicLoad()== YesNoMaybe.NO) {
+        if (p.supportsDynamicLoad()== YesNoMaybe.NO)
             throw new RestartRequiredException(Messages._PluginManager_PluginDoesntSupportDynamicLoad_RestartRequired(sn));
-        }
 
         // there's no need to do cyclic dependency check, because we are deploying one at a time,
         // so existing plugins can't be depending on this newly deployed one.
@@ -586,9 +594,7 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
      * doesn't work if the destination already exists.
      */
     private void rename(File legacyFile, File newFile) throws IOException {
-        if (!legacyFile.exists()) {
-            return;
-        }
+        if (!legacyFile.exists())   return;
         if (newFile.exists()) {
             Util.deleteFile(newFile);
         }
@@ -660,9 +666,8 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
      */
     public PluginWrapper getPlugin(String shortName) {
         for (PluginWrapper p : getPlugins()) {
-            if(p.getShortName().equals(shortName)) {
+            if(p.getShortName().equals(shortName))
                 return p;
-            }
         }
         return null;
     }
@@ -675,9 +680,8 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
      */
     public PluginWrapper getPlugin(Class<? extends Plugin> pluginClazz) {
         for (PluginWrapper p : getPlugins()) {
-            if(pluginClazz.isInstance(p.getPlugin())) {
+            if(pluginClazz.isInstance(p.getPlugin()))
                 return p;
-            }
         }
         return null;
     }
@@ -691,9 +695,8 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
     public List<PluginWrapper> getPlugins(Class<? extends Plugin> pluginSuperclass) {
         List<PluginWrapper> result = new ArrayList<PluginWrapper>();
         for (PluginWrapper p : getPlugins()) {
-            if(pluginSuperclass.isInstance(p.getPlugin())) {
+            if(pluginSuperclass.isInstance(p.getPlugin()))
                 result.add(p);
-            }
         }
         return Collections.unmodifiableList(result);
     }
@@ -730,9 +733,8 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
         ClassLoader cl = c.getClassLoader();
         for (PluginWrapper p : activePlugins) {
             if (p.classLoader==cl) {
-                if (oneAndOnly!=null) {
+                if (oneAndOnly!=null)
                     return null;    // ambigious
-                }
                 oneAndOnly = p;
             }
         }
@@ -760,16 +762,14 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
             UpdateCenter uc = Jenkins.getInstance().getUpdateCenter();
             BulkChange bc = new BulkChange(uc);
             try {
-                for (String id : req.getParameterValues("sources")) {
+                for (String id : req.getParameterValues("sources"))
                     uc.getSites().remove(uc.getById(id));
-                }
             } finally {
                 bc.commit();
             }
         } else
-        if (req.hasParameter("add")) {
+        if (req.hasParameter("add"))
             return new HttpRedirect("addSite");
-        }
 
         return new HttpRedirect("./sites");
     }
@@ -827,9 +827,8 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
         UpdateCenter uc = hudson.getUpdateCenter();
         PersistedList<UpdateSite> sites = uc.getSites();
         for (UpdateSite s : sites) {
-            if (s.getId().equals(UpdateCenter.ID_DEFAULT)) {
+            if (s.getId().equals(UpdateCenter.ID_DEFAULT))
                 sites.remove(s);
-            }
         }
         sites.add(new UpdateSite(UpdateCenter.ID_DEFAULT, site));
 
@@ -920,9 +919,7 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
             JarFile j = new JarFile(t);
             try {
                 String name = j.getManifest().getMainAttributes().getValue("Short-Name");
-                if (name!=null) {
-                    return name;
-                }
+                if (name!=null) return name;
             } finally {
                 j.close();
             }
@@ -1063,6 +1060,12 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
                         requestedPlugins.put(shortName, requested);
                     }
                 }
+
+                @Override public InputSource resolveEntity(String publicId, String systemId) throws IOException,
+                        SAXException {
+                    return RestrictiveEntityResolver.INSTANCE.resolveEntity(publicId, systemId);
+                }
+
             });
         } catch (SAXException x) {
             throw new IOException("Failed to parse XML",x);
@@ -1097,11 +1100,8 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
             WeakReference<Class> wc = generatedClasses.get(name);
             if (wc!=null) {
                 Class c = wc.get();
-                if (c!=null) {
-                    return c;
-                } else {
-                    generatedClasses.remove(name,wc);
-                }
+                if (c!=null)    return c;
+                else            generatedClasses.remove(name,wc);
             }
 
             if (name.startsWith("SimpleTemplateScript")) { // cf. groovy.text.SimpleTemplateEngine
@@ -1158,16 +1158,14 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
             if (FAST_LOOKUP) {
                     for (PluginWrapper p : activePlugins) {
                         URL url = ClassLoaderReflectionToolkit._findResource(p.classLoader, name);
-                        if(url!=null) {
+                        if(url!=null)
                             return url;
-                        }
                     }
             } else {
                 for (PluginWrapper p : activePlugins) {
                     URL url = p.classLoader.getResource(name);
-                    if(url!=null) {
+                    if(url!=null)
                         return url;
-                    }
                 }
             }
             return null;

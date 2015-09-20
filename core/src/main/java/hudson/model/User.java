@@ -35,6 +35,7 @@ import hudson.security.Permission;
 import hudson.security.SecurityRealm;
 import hudson.security.UserMayOrMayNotExistException;
 import hudson.util.FormApply;
+import hudson.util.FormValidation;
 import hudson.util.RunList;
 import hudson.util.XStream2;
 import jenkins.model.IdStrategy;
@@ -109,7 +110,18 @@ import javax.annotation.Nullable;
  */
 @ExportedBean
 public class User extends AbstractModelObject implements AccessControlled, DescriptorByNameOwner, Saveable, Comparable<User>, ModelObjectWithContextMenu {
-    
+
+    /**
+     * The username of the 'unknown' user used to avoid null user references.
+     */
+    private static final String UKNOWN_USERNAME = "unknown";
+
+    /**
+     * These usernames should not be used by real users logging into Jenkins. Therefore, we prevent
+     * users with these names from being saved.
+     */
+    private static final String[] ILLEGAL_PERSISTED_USERNAMES = new String[]{ACL.ANONYMOUS_USERNAME,
+            ACL.SYSTEM_USERNAME, UKNOWN_USERNAME};
     private transient final String id;
 
     private volatile String fullName;
@@ -149,31 +161,8 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
         return realm.getUserIdStrategy();
     }
 
-    @Override
     public int compareTo(User that) {
         return idStrategy().compare(this.id, that.id);
-    }
-    
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (obj == this) {
-            return true;
-        }
-        if (!(obj instanceof User)) {
-            return false;
-        }
-        User other = (User) obj;
-        return idStrategy().equalId(this.id, other.id);
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 3;
-        hash = 19 * hash + (this.id != null ? this.id.hashCode() : 0);
-        return hash;
     }
 
     /**
@@ -184,18 +173,16 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
 
         XmlFile config = getConfigFile();
         try {
-            if(config.exists()) {
+            if(config.exists())
                 config.unmarshal(this);
-            }
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Failed to load "+config,e);
         }
 
         // remove nulls that have failed to load
         for (Iterator<UserProperty> itr = properties.iterator(); itr.hasNext();) {
-            if(itr.next()==null) {
-                itr.remove();
-            }            
+            if(itr.next()==null)
+                itr.remove();            
         }
 
         // allocate default instances if needed.
@@ -203,15 +190,13 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
         for (UserPropertyDescriptor d : UserProperty.all()) {
             if(getProperty(d.clazz)==null) {
                 UserProperty up = d.newInstance(this);
-                if(up!=null) {
+                if(up!=null)
                     properties.add(up);
-                }
             }
         }
 
-        for (UserProperty p : properties) {
+        for (UserProperty p : properties)
             p.setUser(this);
-        }
     }
 
     @Exported
@@ -249,15 +234,22 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
      * If the input parameter is empty, the user's ID will be set.
      */
     public void setFullName(String name) {
-        if(Util.fixEmptyAndTrim(name)==null) {
-            name=id;
-        }
+        if(Util.fixEmptyAndTrim(name)==null)    name=id;
         this.fullName = name;
     }
 
     @Exported
     public @CheckForNull String getDescription() {
         return description;
+    }
+
+
+    /**
+     * Sets the description of the user.
+     * @since 1.609
+     */
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     /**
@@ -273,9 +265,8 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
     public synchronized void addProperty(@Nonnull UserProperty p) throws IOException {
         UserProperty old = getProperty(p.getClass());
         List<UserProperty> ps = new ArrayList<UserProperty>(properties);
-        if(old!=null) {
+        if(old!=null)
             ps.remove(old);
-        }
         ps.add(p);
         p.setUser(this);
         properties = ps;
@@ -295,9 +286,8 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
      */
     public <T extends UserProperty> T getProperty(Class<T> clazz) {
         for (UserProperty p : properties) {
-            if(clazz.isInstance(p)) {
+            if(clazz.isInstance(p))
                 return clazz.cast(p);
-            }
         }
         return null;
     }
@@ -323,7 +313,8 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
             // backend can't load information about other users. so use the stored information if available
         } catch (UsernameNotFoundException e) {
             // if the user no longer exists in the backend, we need to refuse impersonating this user
-            throw e;
+            if (!ALLOW_NON_EXISTENT_USER_TO_LOGIN)
+                throw e;
         } catch (DataAccessException e) {
             // seems like it's in the same boat as UserMayOrMayNotExistException
         }
@@ -351,7 +342,7 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
      * This is used to avoid null {@link User} instance.
      */
     public static @Nonnull User getUnknown() {
-        return get("unknown");
+        return get(UKNOWN_USERNAME);
     }
 
     /**
@@ -366,6 +357,7 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
      *      {@code create} is false.
      * @deprecated use {@link User#get(String, boolean, java.util.Map)}
      */
+    @Deprecated
     public static @Nullable User get(String idOrFullName, boolean create) {
         return get(idOrFullName, create, Collections.emptyMap());
     }
@@ -389,9 +381,8 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
      */
     public static @Nullable User get(String idOrFullName, boolean create, Map context) {
 
-        if(idOrFullName==null) {
+        if(idOrFullName==null)
             return null;
-        }
 
         // sort resolvers by priority
         List<CanonicalIdResolver> resolvers = new ArrayList<CanonicalIdResolver>(ExtensionList.lookup(CanonicalIdResolver.class));
@@ -438,7 +429,7 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
                     try {
                         Object o = legacyXml.read();
                         if (o instanceof User) {
-                            if (idStrategy().equalId(id, legacyUserDir.getName()) && !idStrategy().filenameOf(legacyUserDir.getName())
+                            if (idStrategy().equals(id, legacyUserDir.getName()) && !idStrategy().filenameOf(legacyUserDir.getName())
                                     .equals(legacyUserDir.getName())) {
                                 if (!legacyUserDir.renameTo(configFile.getParentFile())) {
                                     LOGGER.log(Level.WARNING, "Failed to migrate user record from {0} to {1}",
@@ -496,10 +487,19 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
      * @since 1.172
      */
     public static @CheckForNull User current() {
-        Authentication a = Jenkins.getAuthentication();
-        if(a instanceof AnonymousAuthenticationToken) {
+        return get(Jenkins.getAuthentication());
+    }
+
+    /**
+     * Gets the {@link User} object representing the supplied {@link Authentication} or
+     * {@code null} if the supplied {@link Authentication} is either anonymous or {@code null}
+     * @param a the supplied {@link Authentication} .
+     * @return a {@link User} object for the supplied {@link Authentication} or {@code null}
+     * @since 1.609
+     */
+    public static @CheckForNull User get(@CheckForNull Authentication a) {
+        if(a == null || a instanceof AnonymousAuthenticationToken)
             return null;
-        }
 
         // Since we already know this is a name, we can just call getOrCreate with the name directly.
         String id = a.getName();
@@ -521,16 +521,13 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
             lastScanned = System.currentTimeMillis();
 
             File[] subdirs = getRootDir().listFiles((FileFilter)DirectoryFileFilter.INSTANCE);
-            if(subdirs==null) {
-                return Collections.emptyList(); // shall never happen
-            }
+            if(subdirs==null)       return Collections.emptyList(); // shall never happen
 
-            for (File subdir : subdirs) {
+            for (File subdir : subdirs)
                 if(new File(subdir,"config.xml").exists()) {
                     String name = strategy.idFromFilename(subdir.getName());
                     User.getOrCreate(name, name, true);
                 }
-            }
 
             lastScanned = System.currentTimeMillis();
         }
@@ -613,7 +610,7 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
         for (Cause cause : b.getCauses()) {
             if (cause instanceof Cause.UserIdCause) {
                 String userId = ((Cause.UserIdCause) cause).getUserId();
-                if (userId != null && idStrategy().equalId(userId, getId())) {
+                if (userId != null && idStrategy().equals(userId, getId())) {
                     return true;
                 }
             }
@@ -640,11 +637,9 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
      */
     public @Nonnull Set<AbstractProject<?,?>> getProjects() {
         Set<AbstractProject<?,?>> r = new HashSet<AbstractProject<?,?>>();
-        for (AbstractProject<?,?> p : Jenkins.getInstance().getAllItems(AbstractProject.class)) {
-            if(p.hasParticipant(this)) {
+        for (AbstractProject<?,?> p : Jenkins.getInstance().getAllItems(AbstractProject.class))
+            if(p.hasParticipant(this))
                 r.add(p);
-            }
-        }
         return r;
     }
 
@@ -667,7 +662,7 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
         return getRootDir().listFiles(new FileFilter() {
             @Override
             public boolean accept(File pathname) {
-                return pathname.isDirectory() && new File(pathname, "config.xml").isFile() && idStrategy().equalId(
+                return pathname.isDirectory() && new File(pathname, "config.xml").isFile() && idStrategy().equals(
                         pathname.getName(), id);
             }
         });
@@ -681,12 +676,35 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
     }
 
     /**
+     * Is the ID allowed? Some are prohibited for security reasons. See SECURITY-166.
+     * <p/>
+     * Note that this is only enforced when saving. These users are often created
+     * via the constructor (and even listed on /asynchPeople), but our goal is to
+     * prevent anyone from logging in as these users. Therefore, we prevent
+     * saving a User with one of these ids.
+     *
+     * @return true if the username or fullname is valid
+     * @since 1.600
+     */
+    public static boolean isIdOrFullnameAllowed(String id) {
+        for (String invalidId : ILLEGAL_PERSISTED_USERNAMES) {
+            if (id.equalsIgnoreCase(invalidId))
+                return false;
+        }
+        return true;
+    }
+
+    /**
      * Save the settings to a file.
      */
-    public synchronized void save() throws IOException {
-        if(BulkChange.contains(this)) {
-            return;
+    public synchronized void save() throws IOException, FormValidation {
+        if (! isIdOrFullnameAllowed(id)) {
+            throw FormValidation.error(Messages.User_IllegalUsername(id));
         }
+        if (! isIdOrFullnameAllowed(fullName)) {
+            throw FormValidation.error(Messages.User_IllegalFullname(fullName));
+        }
+        if(BulkChange.contains(this))   return;
         getConfigFile().write(this);
         SaveableListener.fireOnChange(this, getConfigFile());
     }
@@ -742,9 +760,8 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
                 p.setUser(this);
             }
 
-            if (p!=null) {
+            if (p!=null)
                 props.add(p);
-            }
         }
         this.properties = props;
 
@@ -759,7 +776,7 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
     @RequirePOST
     public void doDoDelete(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException {
         checkPermission(Jenkins.ADMINISTER);
-        if (idStrategy().equalId(id, Jenkins.getAuthentication().getName())) {
+        if (idStrategy().equals(id, Jenkins.getAuthentication().getName())) {
             rsp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Cannot delete self");
             return;
         }
@@ -828,7 +845,7 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
         // always allow a non-anonymous user full control of himself.
         return new ACL() {
             public boolean hasPermission(Authentication a, Permission permission) {
-                return (idStrategy().equalId(a.getName(), id) && !(a instanceof AnonymousAuthenticationToken))
+                return (idStrategy().equals(a.getName(), id) && !(a instanceof AnonymousAuthenticationToken))
                         || base.hasPermission(a, permission);
             }
         };
@@ -847,7 +864,7 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
      */
     public boolean canDelete() {
         final IdStrategy strategy = idStrategy();
-        return hasPermission(Jenkins.ADMINISTER) && !strategy.equalId(id, Jenkins.getAuthentication().getName())
+        return hasPermission(Jenkins.ADMINISTER) && !strategy.equals(id, Jenkins.getAuthentication().getName())
                 && new File(getRootDir(), strategy.filenameOf(id)).exists();
     }
 
@@ -875,7 +892,7 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
                 continue;
             }
             String n = a.getAuthority();
-            if (n != null && !idStrategy().equalId(n, id)) {
+            if (n != null && !idStrategy().equals(n, id)) {
                 r.add(n);
             }
         }
@@ -889,14 +906,12 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
     
     public Object getDynamic(String token) {
         for(Action action: getTransientActions()){
-            if(action.getUrlName().equals(token)) {
+            if(action.getUrlName().equals(token))
                 return action;
-            }
         }
         for(Action action: getPropertyActions()){
-            if(action.getUrlName().equals(token)) {
+            if(action.getUrlName().equals(token))
                 return action;
-            }
         }
         return null;
     }
@@ -942,33 +957,11 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
          */
         public static final String REALM = "realm";
 
-        @Override
         public int compareTo(CanonicalIdResolver o) {
             // reverse priority order
             int i = getPriority();
             int j = o.getPriority();
             return i>j ? -1 : (i==j ? 0:1);
-        }
-        
-        @Override
-        public boolean equals(Object obj) {
-            if (obj == null) {
-                return false;
-            }
-            if (obj == this) {
-                return true;
-            }
-            if (!(obj instanceof CanonicalIdResolver)) {
-                return false;
-            }
-            CanonicalIdResolver other = (CanonicalIdResolver) obj;
-            return getPriority() == other.getPriority();
-        }
-        
-        @Override
-        public int hashCode() {
-            int hash = 7;
-            return hash;
         }
 
         /**
@@ -993,9 +986,7 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
         @Override
         public String resolveCanonicalId(String idOrFullName, Map<String, ?> context) {
             for (User user : getAll()) {
-                if (idOrFullName.equals(user.getFullName())) {
-                    return user.getId();
-                }
+                if (idOrFullName.equals(user.getFullName())) return user.getId();
             }
             return null;
         }
@@ -1006,5 +997,15 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
         }
     }
 
+    /**
+     * Jenkins now refuses to let the user login if he/she doesn't exist in {@link SecurityRealm},
+     * which was necessary to make sure users removed from the backend will get removed from the frontend.
+     * <p>
+     * Unfortunately this infringed some legitimate use cases of creating Jenkins-local users for
+     * automation purposes. This escape hatch switch can be enabled to resurrect that behaviour.
+     *
+     * JENKINS-22346.
+     */
+    public static boolean ALLOW_NON_EXISTENT_USER_TO_LOGIN = Boolean.getBoolean(User.class.getName()+".allowNonExistentUserToLogin");
 }
 

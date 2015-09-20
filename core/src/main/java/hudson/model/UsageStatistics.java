@@ -96,9 +96,7 @@ public class UsageStatistics extends PageDecorator {
      */
     public boolean isDue() {
         // user opted out. no data collection.
-        if(!Jenkins.getInstance().isUsageStatisticsCollected() || DISABLED) {
-            return false;
-        }
+        if(!Jenkins.getInstance().isUsageStatisticsCollected() || DISABLED)     return false;
         
         long now = System.currentTimeMillis();
         if(now - lastAttempt > DAY) {
@@ -150,9 +148,7 @@ public class UsageStatistics extends PageDecorator {
 
         List<JSONObject> plugins = new ArrayList<JSONObject>();
         for( PluginWrapper pw : j.getPluginManager().getPlugins() ) {
-            if(!pw.isActive()) {
-                continue;   // treat disabled plugins as if they are uninstalled
-            }
+            if(!pw.isActive())  continue;   // treat disabled plugins as if they are uninstalled
             JSONObject p = new JSONObject();
             p.put("name",pw.getShortName());
             p.put("version",pw.getVersion());
@@ -165,9 +161,8 @@ public class UsageStatistics extends PageDecorator {
         for (TopLevelItemDescriptor d : Items.all()) {
             int cnt=0;
             for (TopLevelItem item : items) {
-                if(item.getDescriptor()==d) {
+                if(item.getDescriptor()==d)
                     cnt++;
-                }
             }
             jobs.put(d.getJsonSafeClassName(),cnt);
         }
@@ -202,10 +197,10 @@ public class UsageStatistics extends PageDecorator {
     }
 
     /**
-     * Assymetric cipher is slow and in case of Sun RSA implementation it can only encyrypt the first block.
+     * Asymmetric cipher is slow and in case of Sun RSA implementation it can only encyrypt the first block.
      *
      * So first create a symmetric key, then place this key in the beginning of the stream by encrypting it
-     * with the assymetric cipher. The rest of the stream will be encrypted by a symmetric cipher.
+     * with the asymmetric cipher. The rest of the stream will be encrypted by a symmetric cipher.
      */
     public static final class CombinedCipherOutputStream extends FilterOutputStream {
         public CombinedCipherOutputStream(OutputStream out, Cipher asym, String algorithm) throws IOException, GeneralSecurityException {

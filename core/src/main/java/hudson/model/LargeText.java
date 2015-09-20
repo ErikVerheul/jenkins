@@ -50,6 +50,7 @@ import java.io.InputStreamReader;
  * @author Kohsuke Kawaguchi
  * @deprecated moved to stapler, as of Hudson 1.220
  */
+@Deprecated
 public class LargeText {
     /**
      * Represents the data source of this text.
@@ -114,11 +115,8 @@ public class LargeText {
             public int read() throws IOException {
                 byte[] buf = new byte[1];
                 int n = session.read(buf);
-                if(n==1) {
-                    return buf[0];
-                } else {
-                    return -1; // EOF
-                }
+                if(n==1)    return buf[0];
+                else        return -1; // EOF
             }
 
             public int read(byte[] buf, int off, int len) throws IOException {
@@ -155,9 +153,8 @@ public class LargeText {
             // write everything till EOF
             byte[] buf = new byte[1024];
             int sz;
-            while((sz=f.read(buf))>=0) {
+            while((sz=f.read(buf))>=0)
                 os.write(buf,0,sz);
-            }
         } else {
             ByteBuf buf = new ByteBuf(null,f);
             HeadMark head = new HeadMark(buf);
@@ -192,29 +189,25 @@ public class LargeText {
 
         long start = 0;
         String s = req.getParameter("start");
-        if(s!=null) {
+        if(s!=null)
             start = Long.parseLong(s);
-        }
 
-        if(source.length() < start ) {
+        if(source.length() < start )
             start = 0;  // text rolled over
-        }
 
         CharSpool spool = new CharSpool();
         long r = writeLogTo(start,spool);
 
         rsp.addHeader("X-Text-Size",String.valueOf(r));
-        if(!completed) {
+        if(!completed)
             rsp.addHeader("X-More-Data","true");
-        }
 
         // when sending big text, try compression. don't bother if it's small
         Writer w;
-        if(r-start>4096) {
+        if(r-start>4096)
             w = rsp.getCompressedWriter(req);
-        } else {
+        else
             w = rsp.getWriter();
-        }
         spool.writeTo(new LineEndNormalizingWriter(w));
         w.close();
 
@@ -281,9 +274,8 @@ public class LargeText {
                     }
                 }
                 byte b = buf.buf[pos++];
-                if(b=='\r' || b=='\n') {
+                if(b=='\r' || b=='\n')
                     return true;
-                }
             }
         }
     }
@@ -301,9 +293,8 @@ public class LargeText {
 
             while(!this.isFull()) {
                 int chunk = f.read(buf, size, buf.length - size);
-                if(chunk==-1) {
+                if(chunk==-1)
                     return;
-                }
                 size+= chunk;
             }
         }
@@ -367,9 +358,8 @@ public class LargeText {
         }
 
         public void skip(long n) throws IOException {
-            while(n>0) {
+            while(n>0)
                 n -= in.skip(n);
-            }
         }
 
         public int read(byte[] buf) throws IOException {

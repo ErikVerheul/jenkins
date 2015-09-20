@@ -46,6 +46,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Persisted list of {@link Describable}s with some operations specific
@@ -69,6 +71,7 @@ public class DescribableList<T extends Describable<T>, D extends Descriptor<T>> 
      * @deprecated since 2008-08-15.
      *      Use {@link #DescribableList(Saveable)} 
      */
+    @Deprecated
     public DescribableList(Owner owner) {
         setOwner(owner);
     }
@@ -86,6 +89,7 @@ public class DescribableList<T extends Describable<T>, D extends Descriptor<T>> 
      * @deprecated since 2008-08-15.
      *      Use {@link #setOwner(Saveable)}
      */
+    @Deprecated
     public void setOwner(Owner owner) {
         this.owner = owner;
     }
@@ -104,11 +108,9 @@ public class DescribableList<T extends Describable<T>, D extends Descriptor<T>> 
      */
     public T getDynamic(String id) {
         // by ID
-        for (T t : data) {
-            if(t.getDescriptor().getId().equals(id)) {
+        for (T t : data)
+            if(t.getDescriptor().getId().equals(id))
                 return t;
-            }
-        }
 
         // by position
         try {
@@ -121,11 +123,9 @@ public class DescribableList<T extends Describable<T>, D extends Descriptor<T>> 
     }
 
     public T get(D descriptor) {
-        for (T t : data) {
-            if(t.getDescriptor()==descriptor) {
+        for (T t : data)
+            if(t.getDescriptor()==descriptor)
                 return t;
-            }
-        }
         return null;
     }
 
@@ -171,20 +171,17 @@ public class DescribableList<T extends Describable<T>, D extends Descriptor<T>> 
 
             T instance = null;
             if (o!=null) {
-                if (existing instanceof ReconfigurableDescribable) {
+                if (existing instanceof ReconfigurableDescribable)
                     instance = (T)((ReconfigurableDescribable)existing).reconfigure(req,o);
-                } else {
+                else
                     instance = d.newInstance(req, o);
-                }
             } else {
-                if (existing instanceof ReconfigurableDescribable) {
+                if (existing instanceof ReconfigurableDescribable)
                     instance = (T)((ReconfigurableDescribable)existing).reconfigure(req,null);
-                }
             }
 
-            if (instance!=null) {
+            if (instance!=null)
                 newList.add(instance);
-            }
         }
 
         replaceBy(newList);
@@ -194,6 +191,7 @@ public class DescribableList<T extends Describable<T>, D extends Descriptor<T>> 
      * @deprecated as of 1.271
      *      Use {@link #rebuild(StaplerRequest, JSONObject, List)} instead.
      */
+    @Deprecated
     public void rebuild(StaplerRequest req, JSONObject json, List<? extends Descriptor<T>> descriptors, String prefix) throws FormException, IOException {
         rebuild(req,json,descriptors);
     }
@@ -217,7 +215,11 @@ public class DescribableList<T extends Describable<T>, D extends Descriptor<T>> 
         for (Object o : this) {
             if (o instanceof DependencyDeclarer) {
                 DependencyDeclarer dd = (DependencyDeclarer) o;
-                dd.buildDependencyGraph(owner,graph);
+                try {
+                    dd.buildDependencyGraph(owner,graph);
+                } catch (RuntimeException e) {
+                    LOGGER.log(Level.SEVERE, "Failed to build dependency graph for " + owner,e);
+                }
             }
         }
     }
@@ -240,6 +242,7 @@ public class DescribableList<T extends Describable<T>, D extends Descriptor<T>> 
      * @deprecated since 2008-08-15.
      *      Just implement {@link Saveable}.
      */
+    @Deprecated
     public interface Owner extends Saveable {
     }
 
@@ -262,9 +265,8 @@ public class DescribableList<T extends Describable<T>, D extends Descriptor<T>> 
         }
 
         public void marshal(Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
-            for (Object o : (DescribableList) source) {
+            for (Object o : (DescribableList) source)
                 writeItem(o, context, writer);
-            }
         }
 
         public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
@@ -285,4 +287,6 @@ public class DescribableList<T extends Describable<T>, D extends Descriptor<T>> 
             }
         }
     }
+
+    private final static Logger LOGGER = Logger.getLogger(DescribableList.class.getName());
 }

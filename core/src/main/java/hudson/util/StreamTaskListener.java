@@ -65,6 +65,7 @@ public class StreamTaskListener extends AbstractTaskListener implements Serializ
      *      the charset and output stream separately, so that this class can handle encoding correctly,
      *      or use {@link #fromStdout()} or {@link #fromStderr()}.
      */
+    @Deprecated
     public StreamTaskListener(PrintStream out) {
         this(out,null);
     }
@@ -75,11 +76,10 @@ public class StreamTaskListener extends AbstractTaskListener implements Serializ
 
     public StreamTaskListener(OutputStream out, Charset charset) {
         try {
-            if (charset == null) {
+            if (charset == null)
                 this.out = (out instanceof PrintStream) ? (PrintStream)out : new PrintStream(out, false);
-            } else {
+            else
                 this.out = new PrintStream(out, false, charset.name());
-            }
             this.charset = charset;
         } catch (UnsupportedEncodingException e) {
             // it's not very pretty to do this, but otherwise we'd have to touch too many call sites.
@@ -106,6 +106,7 @@ public class StreamTaskListener extends AbstractTaskListener implements Serializ
      * @deprecated as of 1.349
      *      Use {@link #NULL}
      */
+    @Deprecated
     public StreamTaskListener() throws IOException {
         this(new NullStream());
     }

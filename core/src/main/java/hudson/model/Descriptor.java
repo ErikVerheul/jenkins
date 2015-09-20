@@ -166,9 +166,8 @@ public abstract class Descriptor<T extends Describable<T>> implements Saveable {
          * If the property is a collection/array type, what is an item type?
          */
         public Class getItemType() {
-            if(itemType==null) {
+            if(itemType==null)
                 itemType = computeItemType();
-            }
             return itemType;
         }
 
@@ -179,11 +178,10 @@ public abstract class Descriptor<T extends Describable<T>> implements Saveable {
             if(Collection.class.isAssignableFrom(clazz)) {
                 Type col = Types.getBaseClass(type, Collection.class);
 
-                if (col instanceof ParameterizedType) {
+                if (col instanceof ParameterizedType)
                     return Types.erasure(Types.getTypeArgument(col,0));
-                } else {
+                else
                     return Object.class;
-                }
             }
             return null;
         }
@@ -201,9 +199,8 @@ public abstract class Descriptor<T extends Describable<T>> implements Saveable {
                 throw new AssertionError(clazz + " is not an array/collection type in " + displayName + ". See https://wiki.jenkins-ci.org/display/JENKINS/My+class+is+missing+descriptor");
             }
             Descriptor d = Jenkins.getInstance().getDescriptor(it);
-            if (d==null) {
+            if (d==null)
                 throw new AssertionError(it +" is missing its descriptor in "+displayName+". See https://wiki.jenkins-ci.org/display/JENKINS/My+class+is+missing+descriptor");
-            }
             return d;
         }
 
@@ -251,9 +248,8 @@ public abstract class Descriptor<T extends Describable<T>> implements Saveable {
      *      (this hack is needed since derived types can't call "getClass()" to refer to itself.
      */
     protected Descriptor(Class<? extends T> clazz) {
-        if (clazz==self()) {
+        if (clazz==self())
             clazz = (Class)getClass();
-        }
         this.clazz = clazz;
         // doing this turns out to be very error prone,
         // as field initializers in derived types will override values.
@@ -269,9 +265,8 @@ public abstract class Descriptor<T extends Describable<T>> implements Saveable {
      */
     protected Descriptor() {
         this.clazz = (Class<T>)getClass().getEnclosingClass();
-        if(clazz==null) {
+        if(clazz==null)
             throw new AssertionError(getClass()+" doesn't have an outer class. Use the constructor that takes the Class object explicitly.");
-        }
 
         // detect an type error
         Type bt = Types.getBaseClass(getClass(), Descriptor.class);
@@ -279,9 +274,8 @@ public abstract class Descriptor<T extends Describable<T>> implements Saveable {
             ParameterizedType pt = (ParameterizedType) bt;
             // this 't' is the closest approximation of T of Descriptor<T>.
             Class t = Types.erasure(pt.getActualTypeArguments()[0]);
-            if(!t.isAssignableFrom(clazz)) {
+            if(!t.isAssignableFrom(clazz))
                 throw new AssertionError("Outer class "+clazz+" of "+getClass()+" is not assignable to "+t+". Perhaps wrong outer class?");
-            }
         }
 
         // detect a type error. this Descriptor is supposed to be returned from getDescriptor(), so make sure its type match up.
@@ -362,9 +356,7 @@ public abstract class Descriptor<T extends Describable<T>> implements Saveable {
 
         // this override allows RenderOnDemandClosure to preserve the proper value
         Object url = req.getAttribute("currentDescriptorByNameUrl");
-        if (url!=null) {
-            return url.toString();
-        }
+        if (url!=null)  return url.toString();
 
         Ancestor a = req.findAncestor(DescriptorByNameOwner.class);
         return a.getUrl();
@@ -374,6 +366,7 @@ public abstract class Descriptor<T extends Describable<T>> implements Saveable {
      * @deprecated since 1.528
      *      Use {@link #getCheckMethod(String)}
      */
+    @Deprecated
     public String getCheckUrl(String fieldName) {
         return getCheckMethod(fieldName).toCheckUrl();
     }
@@ -403,16 +396,14 @@ public abstract class Descriptor<T extends Describable<T>> implements Saveable {
         String capitalizedFieldName = StringUtils.capitalize(field);
         String methodName = "doFill" + capitalizedFieldName + "Items";
         Method method = ReflectionUtils.getPublicMethodNamed(getClass(), methodName);
-        if(method==null) {
+        if(method==null)
             throw new IllegalStateException(String.format("%s doesn't have the %s method for filling a drop-down list", getClass(), methodName));
-        }
 
         // build query parameter line by figuring out what should be submitted
         List<String> depends = buildFillDependencies(method, new ArrayList<String>());
 
-        if (!depends.isEmpty()) {
+        if (!depends.isEmpty())
             attributes.put("fillDependsOn",Util.join(depends," "));
-        }
         attributes.put("fillUrl", String.format("%s/%s/fill%sItems", getCurrentDescriptorByNameUrl(), getDescriptorUrl(), capitalizedFieldName));
     }
 
@@ -421,26 +412,21 @@ public abstract class Descriptor<T extends Describable<T>> implements Saveable {
             QueryParameter qp = p.annotation(QueryParameter.class);
             if (qp!=null) {
                 String name = qp.value();
-                if (name.length()==0) {
-                    name = p.name();
-                }
-                if (name==null || name.length()==0) {
+                if (name.length()==0) name = p.name();
+                if (name==null || name.length()==0)
                     continue;   // unknown parameter name. we'll report the error when the form is submitted.
-                }
 
                 RelativePath rp = p.annotation(RelativePath.class);
-                if (rp!=null) {
+                if (rp!=null)
                     name = rp.value()+'/'+name;
-                }
 
                 depends.add(name);
                 continue;
             }
 
             Method m = ReflectionUtils.getPublicMethodNamed(p.type(), "fromStapler");
-            if (m!=null) {
+            if (m!=null)
                 buildFillDependencies(m,depends);
-            }
         }
         return depends;
     }
@@ -452,9 +438,8 @@ public abstract class Descriptor<T extends Describable<T>> implements Saveable {
         String capitalizedFieldName = StringUtils.capitalize(field);
         String methodName = "doAutoComplete" + capitalizedFieldName;
         Method method = ReflectionUtils.getPublicMethodNamed(getClass(), methodName);
-        if(method==null) {
+        if(method==null)
             return;    // no auto-completion
-        }
 
         attributes.put("autoCompleteUrl", String.format("%s/%s/autoComplete%s", getCurrentDescriptorByNameUrl(), getDescriptorUrl(), capitalizedFieldName));
     }
@@ -487,9 +472,8 @@ public abstract class Descriptor<T extends Describable<T>> implements Saveable {
      * Obtains the property type of the given field of {@link #clazz}
      */
     public PropertyType getPropertyType(String field) {
-        if(propertyTypes==null) {
+        if(propertyTypes==null)
             propertyTypes = buildPropertyTypes(clazz);
-        }
         return propertyTypes.get(field);
     }
 
@@ -497,9 +481,8 @@ public abstract class Descriptor<T extends Describable<T>> implements Saveable {
      * Obtains the property type of the given field of this descriptor.
      */
     public PropertyType getGlobalPropertyType(String field) {
-        if(globalPropertyTypes==null) {
+        if(globalPropertyTypes==null)
             globalPropertyTypes = buildPropertyTypes(getClass());
-        }
         return globalPropertyTypes.get(field);
     }
 
@@ -508,15 +491,12 @@ public abstract class Descriptor<T extends Describable<T>> implements Saveable {
      */
     private Map<String, PropertyType> buildPropertyTypes(Class<?> clazz) {
         Map<String, PropertyType> r = new HashMap<String, PropertyType>();
-        for (Field f : clazz.getFields()) {
+        for (Field f : clazz.getFields())
             r.put(f.getName(),new PropertyType(f));
-        }
 
-        for (Method m : clazz.getMethods()) {
-            if(m.getName().startsWith("get")) {
+        for (Method m : clazz.getMethods())
+            if(m.getName().startsWith("get"))
                 r.put(Introspector.decapitalize(m.getName().substring(3)),new PropertyType(m));
-            }
-        }
 
         return r;
     }
@@ -533,6 +513,7 @@ public abstract class Descriptor<T extends Describable<T>> implements Saveable {
      *      Implement {@link #newInstance(StaplerRequest, JSONObject)} method instead.
      *      Deprecated as of 1.145. 
      */
+    @Deprecated
     public T newInstance(StaplerRequest req) throws FormException {
         throw new UnsupportedOperationException(getClass()+" should implement newInstance(StaplerRequest,JSONObject)");
     }
@@ -654,9 +635,7 @@ public abstract class Descriptor<T extends Describable<T>> implements Saveable {
 
     public String getHelpFile(Klass<?> clazz, String fieldName) {
         HelpRedirect r = helpRedirect.get(fieldName);
-        if (r!=null) {
-            return r.resolve();
-        }
+        if (r!=null)    return r.resolve();
 
         for (Klass<?> c : clazz.getAncestors()) {
             String page = "/descriptor/" + getId() + "/help";
@@ -669,16 +648,13 @@ public abstract class Descriptor<T extends Describable<T>> implements Saveable {
             }
 
             try {
-                if(Stapler.getCurrentRequest().getView(c,"help"+suffix)!=null) {
+                if(Stapler.getCurrentRequest().getView(c,"help"+suffix)!=null)
                     return page;
-                }
             } catch (IOException e) {
                 throw new Error(e);
             }
 
-            if(getStaticHelpUrl(c, suffix) !=null) {
-                return page;
-            }
+            if(getStaticHelpUrl(c, suffix) !=null)    return page;
         }
         return null;
     }
@@ -710,6 +686,7 @@ public abstract class Descriptor<T extends Describable<T>> implements Saveable {
      * @deprecated
      *      As of 1.239, use {@link #configure(StaplerRequest, JSONObject)}.
      */
+    @Deprecated
     public boolean configure( StaplerRequest req ) throws FormException {
         return true;
     }
@@ -746,9 +723,8 @@ public abstract class Descriptor<T extends Describable<T>> implements Saveable {
         while(clazz!=Object.class && clazz!=null) {
             for (String pageName : pageNames) {
                 String name = clazz.getName().replace('.', '/').replace('$', '/') + "/" + pageName;
-                if(clazz.getClassLoader().getResource(name)!=null) {
+                if(clazz.getClassLoader().getResource(name)!=null)
                     return '/'+name;
-                }
             }
             clazz = clazz.getSuperclass();
         }
@@ -769,9 +745,8 @@ public abstract class Descriptor<T extends Describable<T>> implements Saveable {
         for (Facet f : WebApp.get(Jenkins.getInstance().servletContext).facets) {
             if (f instanceof JellyCompatibleFacet) {
                 JellyCompatibleFacet jcf = (JellyCompatibleFacet) f;
-                for (String ext : jcf.getScriptExtensions()) {
+                for (String ext : jcf.getScriptExtensions())
                     names.add(baseName +ext);
-                }
             }
         }
         return names;
@@ -782,9 +757,7 @@ public abstract class Descriptor<T extends Describable<T>> implements Saveable {
      * Saves the configuration info to the disk.
      */
     public synchronized void save() {
-        if(BulkChange.contains(this)) {
-            return;
-        }
+        if(BulkChange.contains(this))   return;
         try {
             getConfigFile().write(this);
             SaveableListener.fireOnChange(this, getConfigFile());
@@ -803,9 +776,8 @@ public abstract class Descriptor<T extends Describable<T>> implements Saveable {
      */
     public synchronized void load() {
         XmlFile file = getConfigFile();
-        if(!file.exists()) {
+        if(!file.exists())
             return;
-        }
 
         try {
             file.unmarshal(this);
@@ -833,9 +805,7 @@ public abstract class Descriptor<T extends Describable<T>> implements Saveable {
      */
     public void doHelp(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException {
         String path = req.getRestOfPath();
-        if(path.contains("..")) {
-            throw new ServletException("Illegal path: "+path);
-        }
+        if(path.contains("..")) throw new ServletException("Illegal path: "+path);
 
         path = path.replace('/','-');
 
@@ -878,17 +848,11 @@ public abstract class Descriptor<T extends Describable<T>> implements Saveable {
 
         URL url;
         url = c.getResource(base + '_' + locale.getLanguage() + '_' + locale.getCountry() + '_' + locale.getVariant() + ".html");
-        if(url!=null) {
-            return url;
-        }
+        if(url!=null)    return url;
         url = c.getResource(base + '_' + locale.getLanguage() + '_' + locale.getCountry() + ".html");
-        if(url!=null) {
-            return url;
-        }
+        if(url!=null)    return url;
         url = c.getResource(base + '_' + locale.getLanguage() + ".html");
-        if(url!=null) {
-            return url;
-        }
+        if(url!=null)    return url;
 
         // default
         return c.getResource(base + ".html");
@@ -948,14 +912,35 @@ public abstract class Descriptor<T extends Describable<T>> implements Saveable {
         if (formData!=null) {
             for (Object o : JSONArray.fromObject(formData)) {
                 JSONObject jo = (JSONObject)o;
-                String kind = jo.optString("$class", null);
-                if (kind == null) {
-                  // Legacy: Remove once plugins have been staged onto $class
-                  kind = jo.getString("kind");
+                Descriptor<T> d = null;
+                // 'kind' and '$class' are mutually exclusive (see class-entry.jelly), but to be more lenient on the reader side,
+                // we check them both anyway. 'kind' (which maps to ID) is more unique than '$class', which can have multiple matching
+                // Descriptors, so we prefer 'kind' if it's present.
+                String kind = jo.optString("kind", null);
+                if (kind != null) {
+                    // Only applies when Descriptor.getId is overridden.
+                    // Note that kind is only supported here,
+                    // *not* inside the StaplerRequest.bindJSON which is normally called by newInstance
+                    // (since Descriptor.newInstance is not itself available to Stapler).
+                    // If you merely override getId for some reason, but use @DataBoundConstructor on your Describable,
+                    // there is no problem; but you can only rely on newInstance being called at top level.
+                    d = findById(descriptors, kind);
                 }
-                Descriptor<T> d = find(descriptors, kind);
+                if (d == null) {
+                  kind = jo.optString("$class");
+                  if (kind != null) { // else we will fall through to the warning
+                      // This is the normal case.
+                      d = findByDescribableClassName(descriptors, kind);
+                      if (d == null) {
+                          // Deprecated system where stapler-class was the Descriptor class name (rather than Describable class name).
+                          d = findByClassName(descriptors, kind);
+                      }
+                  }
+                }
                 if (d != null) {
                     items.add(d.newInstance(req, jo));
+                } else {
+                    LOGGER.log(Level.WARNING, "Received unexpected form data element: {0}", jo);
                 }
             }
         }
@@ -964,24 +949,58 @@ public abstract class Descriptor<T extends Describable<T>> implements Saveable {
     }
 
     /**
-     * Finds a descriptor from a collection by its class name.
+     * Finds a descriptor from a collection by its ID.
+     * @param id should match {@link #getId}
+     * @since 1.610
      */
-    public static @CheckForNull <T extends Descriptor> T find(Collection<? extends T> list, String className) {
+    public static @CheckForNull <T extends Descriptor> T findById(Collection<? extends T> list, String id) {
         for (T d : list) {
-            if(d.getClass().getName().equals(className)) {
+            if(d.getId().equals(id))
                 return d;
-            }
-        }
-        // Since we introduced Descriptor.getId(), it is a preferred method of identifying descriptor by a string.
-        // To make that migration easier without breaking compatibility, let's also match up with the id.
-        for (T d : list) {
-            if(d.getId().equals(className)) {
-                return d;
-            }
         }
         return null;
     }
 
+    /**
+     * Finds a descriptor from a collection by the class name of the {@link Descriptor}.
+     * This is useless as of the introduction of {@link #getId} and so only very old compatibility code needs it.
+     */
+    private static @CheckForNull <T extends Descriptor> T findByClassName(Collection<? extends T> list, String className) {
+        for (T d : list) {
+            if(d.getClass().getName().equals(className))
+                return d;
+        }
+        return null;
+    }
+
+    /**
+     * Finds a descriptor from a collection by the class name of the {@link Describable} it describes.
+     * @param className should match {@link Class#getName} of a {@link #clazz}
+     * @since 1.610
+     */
+    public static @CheckForNull <T extends Descriptor> T findByDescribableClassName(Collection<? extends T> list, String className) {
+        for (T d : list) {
+            if(d.clazz.getName().equals(className))
+                return d;
+        }
+        return null;
+    }
+
+    /**
+     * Finds a descriptor from a collection by its class name or ID.
+     * @deprecated choose between {@link #findById} or {@link #findByDescribableClassName}
+     */
+    public static @CheckForNull <T extends Descriptor> T find(Collection<? extends T> list, String string) {
+        T d = findByClassName(list, string);
+        if (d != null) {
+                return d;
+        }
+        return findById(list, string);
+    }
+
+    /**
+     * @deprecated choose between {@link #findById} or {@link #findByDescribableClassName}
+     */
     public static @CheckForNull Descriptor find(String className) {
         return find(ExtensionList.lookup(Descriptor.class),className);
     }

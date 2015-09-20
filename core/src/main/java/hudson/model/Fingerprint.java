@@ -71,6 +71,7 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 import org.xmlpull.v1.XmlPullParserException;
 
 /**
@@ -143,9 +144,7 @@ public class Fingerprint implements ModelObject, Saveable {
          */
         public Run getRun() {
             Job j = getJob();
-            if(j==null) {
-                return null;
-            }
+            if(j==null)     return null;
             return j.getBuildByNumber(number);
         }
 
@@ -178,9 +177,8 @@ public class Fingerprint implements ModelObject, Saveable {
         public boolean belongsTo(Job job) {
             Item p = Jenkins.getInstance().getItemByFullName(name);
             while(p!=null) {
-                if(p==job) {
+                if(p==job)
                     return true;
-                }
 
                 // go up the chain while we
                 ItemGroup<? extends Item> parent = p.getParent();
@@ -302,12 +300,8 @@ public class Fingerprint implements ModelObject, Saveable {
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) {
-                return true;
-            }
-            if (o == null || getClass() != o.getClass()) {
-                return false;
-            }
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
 
             Range that = (Range) o;
             return start == that.start && end == that.end;
@@ -407,9 +401,7 @@ public class Fingerprint implements ModelObject, Saveable {
         public synchronized void add(int n) {
             for( int i=0; i<ranges.size(); i++ ) {
                 Range r = ranges.get(i);
-                if(r.includes(n)) {
-                    return; // already included
-                }
+                if(r.includes(n))   return; // already included
                 if(r.end==n) {
                     ranges.set(i,r.expandRight());
                     checkCollapse(i);
@@ -431,16 +423,13 @@ public class Fingerprint implements ModelObject, Saveable {
         }
 
         public synchronized void addAll(int... n) {
-            for (int i : n) {
+            for (int i : n)
                 add(i);
-            }
         }
 
 
         private void checkCollapse(int i) {
-            if(i<0 || i==ranges.size()-1) {
-                return;
-            }
+            if(i<0 || i==ranges.size()-1)     return;
             Range lhs = ranges.get(i);
             Range rhs = ranges.get(i+1);
             if(lhs.isAdjacentTo(rhs)) {
@@ -453,9 +442,8 @@ public class Fingerprint implements ModelObject, Saveable {
 
         public synchronized boolean includes(int i) {
             for (Range r : ranges) {
-                if(r.includes(i)) {
+                if(r.includes(i))
                     return true;
-                }
             }
             return false;
         }
@@ -600,9 +588,7 @@ public class Fingerprint implements ModelObject, Saveable {
                 }
             }
 
-            if (!modified) {
-                return false;   // no changes
-            }
+            if (!modified)  return false;   // no changes
 
             // whatever that remains in lhs will survive
             sub.addAll(this.ranges.subList(lhs,this.ranges.size()));
@@ -616,9 +602,7 @@ public class Fingerprint implements ModelObject, Saveable {
         public synchronized String toString() {
             StringBuilder buf = new StringBuilder();
             for (Range r : ranges) {
-                if(buf.length()>0) {
-                    buf.append(',');
-                }
+                if(buf.length()>0)  buf.append(',');
                 buf.append(r);
             }
             return buf.toString();
@@ -626,12 +610,8 @@ public class Fingerprint implements ModelObject, Saveable {
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) {
-                return true;
-            }
-            if (o == null || getClass() != o.getClass()) {
-                return false;
-            }
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
 
             return ranges.equals(((RangeSet) o).ranges);
 
@@ -672,9 +652,7 @@ public class Fingerprint implements ModelObject, Saveable {
          * Note that {} is smaller than any n.
          */
         public synchronized boolean isSmallerThan(int n) {
-            if(ranges.isEmpty()) {
-                return true;
-            }
+            if(ranges.isEmpty())    return true;
 
             return ranges.get(ranges.size() - 1).isSmallerThan(n);
         }
@@ -697,10 +675,9 @@ public class Fingerprint implements ModelObject, Saveable {
                         rs.ranges.add(new Range(n,n+1));
                     }
                 } catch (NumberFormatException e) {
-                    if (!skipError) {
+                    if (!skipError)
                         throw new IllegalArgumentException("Unable to parse "+list);
-                        // ignore malformed text
-                    }
+                    // ignore malformed text
 
                 }
             }
@@ -726,14 +703,11 @@ public class Fingerprint implements ModelObject, Saveable {
             static String serialize(RangeSet src) {
                 StringBuilder buf = new StringBuilder(src.ranges.size()*10);
                 for (Range r : src.ranges) {
-                    if(buf.length()>0) {
-                        buf.append(',');
-                    }
-                    if(r.isSingle()) {
+                    if(buf.length()>0)  buf.append(',');
+                    if(r.isSingle())
                         buf.append(r.start);
-                    } else {
+                    else
                         buf.append(r.start).append('-').append(r.end-1);
-                    }
                 }
                 return buf.toString();
             }
@@ -788,13 +762,16 @@ public class Fingerprint implements ModelObject, Saveable {
 
     private static final DateConverter DATE_CONVERTER = new DateConverter();
     
-    private final Date timestamp;
+    /**
+     * Time when the fingerprint has been captured.
+     */
+    private final @Nonnull Date timestamp;
 
     /**
      * Null if this fingerprint is for a file that's
      * apparently produced outside.
      */
-    private final BuildPtr original;
+    private final @CheckForNull BuildPtr original;
 
     private final byte[] md5sum;
 
@@ -812,13 +789,12 @@ public class Fingerprint implements ModelObject, Saveable {
      */
     private transient volatile List<FingerprintFacet> transientFacets = null;
 
-    public Fingerprint(Run build, String fileName, byte[] md5sum) throws IOException {
+    public Fingerprint(@CheckForNull Run build, @Nonnull String fileName, @Nonnull byte[] md5sum) throws IOException {
         this(build==null ? null : new BuildPtr(build), fileName, md5sum);
         save();
     }
 
-    // Suppress warning Constructors and methods receiving arrays should clone objects and store the copy. Trust the code.
-    Fingerprint(BuildPtr original, String fileName, byte[] md5sum) { //NOSONAR
+    Fingerprint(@CheckForNull BuildPtr original, @Nonnull String fileName, @Nonnull byte[] md5sum) {
         this.original = original;
         this.md5sum = md5sum;
         this.fileName = fileName;
@@ -837,11 +813,11 @@ public class Fingerprint implements ModelObject, Saveable {
      *      if the file is apparently created outside Hudson.
      */
     @Exported
-    public BuildPtr getOriginal() {
+    public @CheckForNull BuildPtr getOriginal() {
         return original;
     }
 
-    public String getDisplayName() {
+    public @Nonnull String getDisplayName() {
         return fileName;
     }
 
@@ -849,7 +825,7 @@ public class Fingerprint implements ModelObject, Saveable {
      * The file name (like "foo.jar" without path).
      */
     @Exported
-    public String getFileName() {
+    public @Nonnull String getFileName() {
         return fileName;
     }
 
@@ -857,7 +833,7 @@ public class Fingerprint implements ModelObject, Saveable {
      * Gets the MD5 hash string.
      */
     @Exported(name="hash")
-    public String getHashString() {
+    public @Nonnull String getHashString() {
         return Util.toHexString(md5sum);
     }
 
@@ -865,7 +841,7 @@ public class Fingerprint implements ModelObject, Saveable {
      * Gets the timestamp when this record is created.
      */
     @Exported
-    public Date getTimestamp() {
+    public @Nonnull Date getTimestamp() {
         return timestamp;
     }
 
@@ -875,7 +851,7 @@ public class Fingerprint implements ModelObject, Saveable {
      * @return
      *      string like "3 minutes" "1 day" etc.
      */
-    public String getTimestampString() {
+    public @Nonnull String getTimestampString() {
         long duration = System.currentTimeMillis()-timestamp.getTime();
         return Util.getPastTimeString(duration);
     }
@@ -885,12 +861,11 @@ public class Fingerprint implements ModelObject, Saveable {
      *
      * <p>
      * These builds of this job has used this file.
+     * @return may be empty but not null.
      */
-    public RangeSet getRangeSet(String jobFullName) {
+    public @Nonnull RangeSet getRangeSet(String jobFullName) {
         RangeSet r = usages.get(jobFullName);
-        if(r==null) {
-            r = new RangeSet();
-        }
+        if(r==null) r = new RangeSet();
         return r;
     }
 
@@ -901,14 +876,14 @@ public class Fingerprint implements ModelObject, Saveable {
     /**
      * Gets the sorted list of job names where this jar is used.
      */
-    public List<String> getJobs() {
+    public @Nonnull List<String> getJobs() {
         List<String> r = new ArrayList<String>();
         r.addAll(usages.keySet());
         Collections.sort(r);
         return r;
     }
 
-    public Hashtable<String,RangeSet> getUsages() {
+    public @Nonnull Hashtable<String,RangeSet> getUsages() {
         return usages;
     }
 
@@ -927,35 +902,39 @@ public class Fingerprint implements ModelObject, Saveable {
 
     // this is for remote API
     @Exported(name="usage")
-    public List<RangeItem> _getUsages() {
+    public @Nonnull List<RangeItem> _getUsages() {
         List<RangeItem> r = new ArrayList<RangeItem>();
-        for (Entry<String, RangeSet> e : usages.entrySet()) {
+        for (Entry<String, RangeSet> e : usages.entrySet())
             r.add(new RangeItem(e.getKey(),e.getValue()));
-        }
         return r;
     }
 
+    /**
+     * @deprecated Use {@link #addFor(hudson.model.Run)}
+     */
     @Deprecated
-    public synchronized void add(AbstractBuild b) throws IOException {
+    public synchronized void add(@Nonnull AbstractBuild b) throws IOException {
         addFor((Run) b);
     }
 
     /**
+     * Adds a usage reference to the build.
+     * @param b {@link Run} to be referenced in {@link #usages}
      * @since 1.577
      */
-    public synchronized void addFor(Run b) throws IOException {
+    public synchronized void addFor(@Nonnull Run b) throws IOException {
         add(b.getParent().getFullName(), b.getNumber());
     }
 
     /**
      * Records that a build of a job has used this file.
      */
-    public synchronized void add(String jobFullName, int n) throws IOException {
+    public synchronized void add(@Nonnull String jobFullName, int n) throws IOException {
         addWithoutSaving(jobFullName, n);
         save();
     }
 
-    void addWithoutSaving(String jobFullName, int n) {
+    void addWithoutSaving(@Nonnull String jobFullName, int n) {
         synchronized(usages) { // TODO why not synchronized (this) like some, though not all, other accesses?
             RangeSet r = usages.get(jobFullName);
             if(r==null) {
@@ -975,25 +954,21 @@ public class Fingerprint implements ModelObject, Saveable {
      * without losing too much information.
      */
     public synchronized boolean isAlive() {
-        if(original!=null && original.isAlive()) {
+        if(original!=null && original.isAlive())
             return true;
-        }
 
         for (Entry<String,RangeSet> e : usages.entrySet()) {
             Job j = Jenkins.getInstance().getItemByFullName(e.getKey(),Job.class);
-            if(j==null) {
+            if(j==null)
                 continue;
-            }
 
             Run firstBuild = j.getFirstBuild();
-            if(firstBuild==null) {
+            if(firstBuild==null)
                 continue;
-            }
 
             int oldest = firstBuild.getNumber();
-            if(!e.getValue().isSmallerThan(oldest)) {
+            if(!e.getValue().isSmallerThan(oldest))
                 return true;
-            }
         }
         return false;
     }
@@ -1003,6 +978,8 @@ public class Fingerprint implements ModelObject, Saveable {
      *
      * @return true
      *      if this record was modified.
+     * 
+     * @throws IOException Save failure
      */
     public synchronized boolean trim() throws IOException {
         boolean modified = false;
@@ -1076,7 +1053,7 @@ public class Fingerprint implements ModelObject, Saveable {
      *
      * @since 1.421
      */
-    public Collection<FingerprintFacet> getFacets() {
+    public @Nonnull Collection<FingerprintFacet> getFacets() {
         if (transientFacets==null) {
             List<FingerprintFacet> transientFacets = new ArrayList<FingerprintFacet>();
             for (TransientFingerprintFacetFactory fff : TransientFingerprintFacetFactory.all()) {
@@ -1114,18 +1091,18 @@ public class Fingerprint implements ModelObject, Saveable {
         };
     }
 
-    public Collection<FingerprintFacet> getSortedFacets() {
+    /**
+     * Sorts {@link FingerprintFacet}s by their timestamps.
+     * @return Sorted list of {@link FingerprintFacet}s 
+     */
+    public @Nonnull Collection<FingerprintFacet> getSortedFacets() {
         List<FingerprintFacet> r = new ArrayList<FingerprintFacet>(getFacets());
         Collections.sort(r,new Comparator<FingerprintFacet>() {
             public int compare(FingerprintFacet o1, FingerprintFacet o2) {
                 long a = o1.getTimestamp();
                 long b = o2.getTimestamp();
-                if (a<b) {
-                    return -1;
-                }
-                if (a==b) {
-                    return 0;
-                }
+                if (a<b)    return -1;
+                if (a==b)   return 0;
                 return 1;
             }
         });
@@ -1134,12 +1111,14 @@ public class Fingerprint implements ModelObject, Saveable {
 
     /**
      * Finds a facet of the specific type (including subtypes.)
+     * @param <T> Class of the {@link FingerprintFacet}
+     * @return First matching facet of the specified class
+     * @since 1.556
      */
-    public <T extends FingerprintFacet> T getFacet(Class<T> type) {
+    public @CheckForNull <T extends FingerprintFacet> T getFacet(Class<T> type) {
         for (FingerprintFacet f : getFacets()) {
-            if (type.isInstance(f)) {
+            if (type.isInstance(f))
                 return type.cast(f);
-            }
         }
         return null;
     }
@@ -1147,34 +1126,30 @@ public class Fingerprint implements ModelObject, Saveable {
     /**
      * Returns the actions contributed from {@link #getFacets()}
      */
-    public List<Action> getActions() {
+    public @Nonnull List<Action> getActions() {
         List<Action> r = new ArrayList<Action>();
-        for (FingerprintFacet ff : getFacets()) {
+        for (FingerprintFacet ff : getFacets())
             ff.createActions(r);
-        }
         return Collections.unmodifiableList(r);
     }
 
     /**
      * Save the settings to a file.
+     * @throws IOException Save error
      */
     public synchronized void save() throws IOException {
-        if(BulkChange.contains(this)) {
-            return;
-        }
+        if(BulkChange.contains(this))   return;
 
         long start=0;
-        if(logger.isLoggable(Level.FINE)) {
+        if(logger.isLoggable(Level.FINE))
             start = System.currentTimeMillis();
-        }
 
         File file = getFingerprintFile(md5sum);
         save(file);
         SaveableListener.fireOnChange(this, getConfigFile(file));
 
-        if(logger.isLoggable(Level.FINE)) {
+        if(logger.isLoggable(Level.FINE))
             logger.fine("Saving fingerprint "+file+" took "+(System.currentTimeMillis()-start)+"ms");
-        }
     }
 
     void save(File file) throws IOException {
@@ -1263,14 +1238,14 @@ public class Fingerprint implements ModelObject, Saveable {
     /**
      * The file we save our configuration.
      */
-    private static XmlFile getConfigFile(File file) {
+    private static @Nonnull XmlFile getConfigFile(@Nonnull File file) {
         return new XmlFile(XSTREAM,file);
     }
 
     /**
      * Determines the file name from md5sum.
      */
-    private static File getFingerprintFile(byte[] md5sum) {
+    private static @Nonnull File getFingerprintFile(@Nonnull byte[] md5sum) {
         assert md5sum.length==16;
         return new File( Jenkins.getInstance().getRootDir(),
             "fingerprints/"+ Util.toHexString(md5sum,0,1)+'/'+Util.toHexString(md5sum,1,1)+'/'+Util.toHexString(md5sum,2,md5sum.length-2)+".xml");
@@ -1278,32 +1253,29 @@ public class Fingerprint implements ModelObject, Saveable {
 
     /**
      * Loads a {@link Fingerprint} from a file in the image.
+     * @return Loaded {@link Fingerprint}. Null if the config file does not exist or
+     * malformed.
      */
-    /*package*/ static @CheckForNull Fingerprint load(byte[] md5sum) throws IOException {
+    /*package*/ static @CheckForNull Fingerprint load(@Nonnull byte[] md5sum) throws IOException {
         return load(getFingerprintFile(md5sum));
     }
-    /*package*/ static @CheckForNull Fingerprint load(File file) throws IOException {
+    /*package*/ static @CheckForNull Fingerprint load(@Nonnull File file) throws IOException {
         XmlFile configFile = getConfigFile(file);
-        if(!configFile.exists()) {
+        if(!configFile.exists())
             return null;
-        }
 
         long start=0;
-        if(logger.isLoggable(Level.FINE)) {
+        if(logger.isLoggable(Level.FINE))
             start = System.currentTimeMillis();
-        }
 
         try {
             Fingerprint f = (Fingerprint) configFile.read();
-            if(logger.isLoggable(Level.FINE)) {
+            if(logger.isLoggable(Level.FINE))
                 logger.fine("Loading fingerprint "+file+" took "+(System.currentTimeMillis()-start)+"ms");
-            }
-            if (f.facets==null) {
+            if (f.facets==null)
                 f.facets = new PersistedList<FingerprintFacet>(f);
-            }
-            for (FingerprintFacet facet : f.facets) {
+            for (FingerprintFacet facet : f.facets)
                 facet._setOwner(f);
-            }
             return f;
         } catch (IOException e) {
             if(file.exists() && file.length()==0) {

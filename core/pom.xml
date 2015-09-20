@@ -29,7 +29,7 @@ THE SOFTWARE.
   <parent>
     <groupId>org.jenkins-ci.main</groupId>
     <artifactId>pom</artifactId>
-    <version>1.598-SNAPSHOT</version>
+    <version>1.630-SNAPSHOT</version>
   </parent>
 
   <artifactId>jenkins-core</artifactId>
@@ -39,10 +39,9 @@ THE SOFTWARE.
 
   <properties>
     <staplerFork>true</staplerFork>
-    <stapler.version>1.234</stapler.version>
+    <stapler.version>1.237</stapler.version>
     <spring.version>2.5.6.SEC03</spring.version>
     <groovy.version>1.8.9</groovy.version>
-    <argLine>-XX:MaxPermSize=128m</argLine>
   </properties>
 
   <dependencies>
@@ -191,7 +190,7 @@ THE SOFTWARE.
     <dependency><!-- JENKINS-21160: remoting also depends on args4j, please update accordingly -->
       <groupId>args4j</groupId>
       <artifactId>args4j</artifactId>
-      <version>2.0.23</version>
+      <version>2.0.31</version>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci</groupId>
@@ -211,7 +210,7 @@ THE SOFTWARE.
     <dependency>
       <groupId>org.jvnet.localizer</groupId>
       <artifactId>localizer</artifactId>
-      <version>1.10</version>
+      <version>1.23</version>
     </dependency>
     <dependency>
       <groupId>antlr</groupId>
@@ -276,6 +275,11 @@ THE SOFTWARE.
       <groupId>commons-beanutils</groupId>
       <artifactId>commons-beanutils</artifactId>
       <version>1.8.3</version>
+    </dependency>
+    <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-compress</artifactId>
+        <version>1.10</version>
     </dependency>
     <dependency>
       <groupId>javax.mail</groupId>
@@ -465,8 +469,17 @@ THE SOFTWARE.
       <version>1.1.0</version>
     </dependency>
     <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>log4j-over-slf4j</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-jdk14</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.sun.xml.txw2</groupId>
@@ -506,7 +519,7 @@ THE SOFTWARE.
     <dependency>
       <groupId>org.kohsuke</groupId>
       <artifactId>akuma</artifactId>
-      <version>1.9</version>
+      <version>1.10</version>
     </dependency>
     <dependency>
       <groupId>org.kohsuke</groupId>
@@ -559,9 +572,9 @@ THE SOFTWARE.
     </dependency>
 
     <dependency>
-      <groupId>findbugs</groupId>
+      <groupId>com.google.code.findbugs</groupId>
       <artifactId>annotations</artifactId>
-      <version>1.0.0</version>
+      <version>3.0.0</version>
       <scope>provided</scope>
     </dependency>
 
@@ -749,9 +762,8 @@ THE SOFTWARE.
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <forkCount>0.5C</forkCount>
-          <!-- changed to false to please Sonar -->
-          <reuseForks>false</reuseForks> 
-          <!--<argLine>-XX:MaxPermSize=128m</argLine> moved to properties to please Sonar -->
+          <reuseForks>true</reuseForks>
+          <argLine>-XX:MaxPermSize=128m -noverify</argLine> <!-- some versions of JDK7/8 causes VerifyError during mock tests: http://code.google.com/p/powermock/issues/detail?id=504 -->
         </configuration>
       </plugin>
       <plugin><!-- set main class -->
@@ -867,7 +879,6 @@ THE SOFTWARE.
           <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>findbugs-maven-plugin</artifactId>
-            <version>2.5.2</version>
             <configuration>
               <effort>Max</effort>
               <threshold>High</threshold>

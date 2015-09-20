@@ -1,5 +1,6 @@
 package hudson.init;
 
+import com.google.inject.Injector;
 import hudson.model.Hudson;
 import jenkins.model.Jenkins;
 import org.jvnet.hudson.annotation_indexer.Index;
@@ -53,18 +54,13 @@ abstract class TaskMethodFinder<T extends Annotation> extends TaskBuilder {
     public Collection<Task> discoverTasks(Reactor session) throws IOException {
         List<Task> result = new ArrayList<Task>();
         for (Method e : Index.list(type, cl, Method.class)) {
-            if (filter(e)) {
-                continue;   // already reported once
-            }
+            if (filter(e)) continue;   // already reported once
 
-            if (!Modifier.isStatic(e.getModifiers())) {
+            if (!Modifier.isStatic(e.getModifiers()))
                 throw new IOException(e+" is not a static method");
-            }
 
             T i = e.getAnnotation(type);
-            if (i==null) {
-                continue; // stale index
-            }
+            if (i==null)        continue; // stale index
 
             result.add(new TaskImpl(i, e));
         }
@@ -84,9 +80,7 @@ abstract class TaskMethodFinder<T extends Annotation> extends TaskBuilder {
     protected String getDisplayNameOf(Method e, T i) {
         Class<?> c = e.getDeclaringClass();
         String key = displayNameOf(i);
-        if (key.length()==0) {
-            return c.getSimpleName()+"."+e.getName();
-        }
+        if (key.length()==0)  return c.getSimpleName()+"."+e.getName();
         try {
             ResourceBundleHolder rb = ResourceBundleHolder.get(
                     c.getClassLoader().loadClass(c.getPackage().getName() + ".Messages"));
@@ -107,9 +101,8 @@ abstract class TaskMethodFinder<T extends Annotation> extends TaskBuilder {
         try {
             Class<?>[] pt = e.getParameterTypes();
             Object[] args = new Object[pt.length];
-            for (int i=0; i<args.length; i++) {
+            for (int i=0; i<args.length; i++)
                 args[i] = lookUp(pt[i]);
-            }
             e.invoke(null,args);
         } catch (IllegalAccessException x) {
             throw (Error)new IllegalAccessError().initCause(x);
@@ -122,8 +115,13 @@ abstract class TaskMethodFinder<T extends Annotation> extends TaskBuilder {
      * Determines the parameter injection of the initialization method.
      */
     private Object lookUp(Class<?> type) {
-        if (type==Jenkins.class || type==Hudson.class) {
+        if (type==Jenkins.class || type==Hudson.class)
             return Jenkins.getInstance();
+        Jenkins j = Jenkins.getInstance();
+        if (j!=null) {
+            Injector i = j.getInjector();
+            if (i!=null)
+                return i.getInstance(type);
         }
         throw new IllegalArgumentException("Unable to inject "+type);
     }

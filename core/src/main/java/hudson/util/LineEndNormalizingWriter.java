@@ -39,6 +39,7 @@ import java.io.IOException;
  * @author Kohsuke Kawaguchi
  * @deprecated since 2008-05-28. moved to stapler
  */
+@Deprecated
 public class LineEndNormalizingWriter extends FilterWriter {
 
     private boolean seenCR;
@@ -56,11 +57,10 @@ public class LineEndNormalizingWriter extends FilterWriter {
     }
 
     public void write(int c) throws IOException {
-        if(!seenCR && c==LF) {
+        if(!seenCR && c==LF)
             super.write("\r\n");
-        } else {
+        else
             super.write(c);
-        }
         seenCR = (c==CR);
     }
 

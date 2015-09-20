@@ -76,7 +76,7 @@ public class Search {
                     SuggestedItem target = find(index, query, smo);
                     if(target!=null) {
                         // found
-                        rsp.sendRedirect2(a.getUrl()+target.getUrl());
+                        rsp.sendRedirect2(req.getContextPath()+target.getUrl());
                         return;
                     }
                 }
@@ -104,9 +104,8 @@ public class Search {
         w.value(q);
 
         w.startArray();
-        for (SuggestedItem item : getSuggestions(req, q)) {
+        for (SuggestedItem item : getSuggestions(req, q))
             w.value(item.getPath());
-        }
         w.endArray();
         w.endArray();
     }
@@ -116,9 +115,8 @@ public class Search {
      */
     public void doSuggest(StaplerRequest req, StaplerResponse rsp, @QueryParameter String query) throws IOException, ServletException {
         Result r = new Result();
-        for (SuggestedItem item : getSuggestions(req, query)) {
+        for (SuggestedItem item : getSuggestions(req, query))
             r.suggestions.add(new Item(item.getPath()));
-        }
 
         rsp.serveExposedBean(req,r,Flavor.JSON);
     }
@@ -140,9 +138,8 @@ public class Search {
                 r.hasMoreResults = true;
                 break;
             }
-            if(paths.add(i.getPath())) {
+            if(paths.add(i.getPath()))
                 r.add(i);
-            }
         }
         return r;
     }
@@ -293,40 +290,10 @@ public class Search {
                 prefixMatch = i.getPath().startsWith(tokenList)?1:0;
             }
 
-            @Override
             public int compareTo(Tag that) {
                 int r = this.prefixMatch -that.prefixMatch;
-                if(r!=0) {
-                    return -r;  // ones with head match should show up earlier
-                }
+                if(r!=0)    return -r;  // ones with head match should show up earlier
                 return this.distance-that.distance;
-            }
-        
-            @Override
-            public boolean equals(Object obj) {
-                if (obj == null) {
-                    return false;
-                }
-                if (obj == this) {
-                    return true;
-                }
-                if (!(obj instanceof Tag)) {
-                    return false;
-                }
-                Tag o = (Tag) obj;
-
-                if (this.prefixMatch != o.prefixMatch) {
-                    return false;
-                }
-                return this.distance == o.distance;
-            }
-
-            @Override
-            public int hashCode() {
-                int hash = 7;
-                hash = 37 * hash + this.distance;
-                hash = 37 * hash + this.prefixMatch;
-                return hash;
             }
         }
 
@@ -334,14 +301,12 @@ public class Search {
         List<SuggestedItem> items = find(Mode.SUGGEST, index, tokenList, searchContext);
 
         // sort them
-        for( SuggestedItem i : items) {
+        for( SuggestedItem i : items)
             buf.add(new Tag(i));
-        }
         Collections.sort(buf);
         items.clear();
-        for (Tag t : buf) {
+        for (Tag t : buf)
             items.add(t.item);
-        }
 
         return items;
     }
@@ -366,9 +331,8 @@ public class Search {
             return new AbstractList<String>() {
                 public String get(int index) {
                     StringBuilder buf = new StringBuilder();
-                    for(int i=start; i<=start+index; i++ ) {
+                    for(int i=start; i<=start+index; i++ )
                         buf.append(tokens[i]);
-                    }
                     return buf.toString().trim();
                 }
 
@@ -393,14 +357,11 @@ public class Search {
 
     private static List<SuggestedItem> find(Mode m, SearchIndex index, String tokenList, SearchableModelObject searchContext) {
         TokenList tokens = new TokenList(tokenList);
-        if(tokens.length()==0) {
-            return Collections.emptyList();   // no tokens given
-        }
+        if(tokens.length()==0) return Collections.emptyList();   // no tokens given
 
         List<SuggestedItem>[] paths = new List[tokens.length()+1]; // we won't use [0].
-        for(int i=1;i<=tokens.length();i++) {
+        for(int i=1;i<=tokens.length();i++)
             paths[i] = new ArrayList<SuggestedItem>();
-        }
 
         List<SearchItem> items = new ArrayList<SearchItem>(); // items found in 1 step
 
@@ -427,9 +388,8 @@ public class Search {
                 for (SuggestedItem r : paths[j]) {
                     items.clear();
                     m.find(r.item.getSearchIndex(),token,items);
-                    for (SearchItem i : items) {
+                    for (SearchItem i : items)
                         paths[j+w].add(new SuggestedItem(r,i));
-                    }
                 }
                 w++;
             }

@@ -104,6 +104,7 @@ public abstract class JobProperty<J extends Job<?,?>> implements ReconfigurableD
      * @deprecated
      *      as of 1.341. Override {@link #getJobActions(Job)} instead.
      */
+    @Deprecated
     public Action getJobAction(J job) {
         return null;
     }
@@ -131,9 +132,7 @@ public abstract class JobProperty<J extends Job<?,?>> implements ReconfigurableD
     public Collection<? extends Action> getJobActions(J job) {
         // delegate to getJobAction (singular) for backward compatible behavior
         Action a = getJobAction(job);
-        if (a==null) {
-            return Collections.emptyList();
-        }
+        if (a==null)    return Collections.emptyList();
         return Collections.singletonList(a);
     }
 

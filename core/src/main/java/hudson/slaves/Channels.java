@@ -62,6 +62,7 @@ public class Channels {
      * @deprecated since 2009-04-13.
      *      Use {@link #forProcess(String, ExecutorService, InputStream, OutputStream, OutputStream, Proc)}
      */
+    @Deprecated
     public static Channel forProcess(String name, ExecutorService execService, InputStream in, OutputStream out, Proc proc) throws IOException {
         return forProcess(name,execService,in,out,null,proc);
     }
@@ -215,9 +216,8 @@ public class Channels {
         vmb.classpath().addJarOf(Channel.class);
         vmb.mainClass(Launcher.class);
 
-        if(classpath!=null) {
+        if(classpath!=null)
             vmb.args().add("-cp").add(classpath);
-        }
         vmb.args().add("-connectTo","localhost:"+serverSocket.getLocalPort());
 
         listener.getLogger().println("Starting "+displayName);

@@ -5,6 +5,7 @@ import hudson.model.Node;
 import hudson.util.TimeUnit2;
 import jenkins.model.Jenkins;
 
+import javax.annotation.concurrent.GuardedBy;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,14 +23,14 @@ import java.util.logging.Logger;
 public class CloudSlaveRetentionStrategy<T extends Computer> extends RetentionStrategy<T> {
 
     @Override
+    @GuardedBy("hudson.model.Queue.lock")
     public long check(T c) {
         if (!c.isConnecting() && c.isAcceptingTasks()) {
             if (isIdleForTooLong(c)) {
                 try {
                     Node n = c.getNode();
-                    if (n!=null) {    // rare, but n==null if the node is deleted and being checked roughly at the same time
+                    if (n!=null)    // rare, but n==null if the node is deleted and being checked roughly at the same time
                         kill(n);
-                    }
                 } catch (IOException e) {
                     LOGGER.log(Level.WARNING, "Failed to remove "+c.getDisplayName(),e);
                 }

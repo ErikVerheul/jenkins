@@ -29,6 +29,11 @@
 //     for memory leak patterns and how to prevent them.
 //
 
+if (window.isRunAsTest) {
+    // Disable postMessage when running in test mode (HtmlUnit).
+    window.postMessage = false;
+}
+
 // create a new object whose prototype is the given object
 function object(o) {
     function F() {}
@@ -1681,9 +1686,9 @@ function updateBuildHistory(ajaxUrl,nBuild) {
         resetCellOverflows();
 
         // Insert zero-width spaces so as to allow text to wrap, allowing us to get the true clientWidth.
-        insertZeroWidthSpaces(displayName, 2);
+        insertZeroWidthSpacesInElementText(displayName, 2);
         if (desc) {
-            insertZeroWidthSpaces(desc, 30);
+            insertZeroWidthSpacesInElementText(desc, 30);
             markMultiline();
         }
 
@@ -1701,7 +1706,7 @@ function updateBuildHistory(ajaxUrl,nBuild) {
             // If the name is overflowed, lets remove the zero-width spaces we added above and
             // re-add zero-width spaces with a bigger max word sizes.
             removeZeroWidthSpaces(displayName);
-            insertZeroWidthSpaces(displayName, 20);
+            insertZeroWidthSpacesInElementText(displayName, 20);
         }
 
         function fitToControlsHeight(element) {
@@ -1871,11 +1876,11 @@ function updateBuildHistory(ajaxUrl,nBuild) {
         // Insert zero-width spaces in text that may cause overflow distortions.
         var displayNames = $(bh).getElementsBySelector('.display-name');
         for (var i = 0; i < displayNames.length; i++) {
-            insertZeroWidthSpaces(displayNames[i], 2);
+            insertZeroWidthSpacesInElementText(displayNames[i], 2);
         }
         var descriptions = $(bh).getElementsBySelector('.desc');
         for (var i = 0; i < descriptions.length; i++) {
-            insertZeroWidthSpaces(descriptions[i], 30);
+            insertZeroWidthSpacesInElementText(descriptions[i], 30);
         }
 
         for (var i = 0; i < rows.length; i++) {
@@ -1932,6 +1937,8 @@ function updateBuildHistory(ajaxUrl,nBuild) {
             window.setTimeout(updateBuilds, updateBuildsRefreshInterval);
         }
     }
+
+    checkAllRowCellOverflows();
     window.setTimeout(updateBuilds, updateBuildsRefreshInterval);
 
     onBuildHistoryChange(function() {
@@ -1968,13 +1975,17 @@ function getElementOverflowParams(element) {
 }
 
 var zeroWidthSpace = String.fromCharCode(8203);
-function insertZeroWidthSpaces(element, maxWordSize) {
-    if (Element.hasClassName(element, 'zws-inserted')) {
-        // already done.
+var ELEMENT_NODE = 1;
+var TEXT_NODE = 3;
+function insertZeroWidthSpacesInText(textNode, maxWordSize) {
+    if (textNode.textContent.length < maxWordSize) {
         return;
     }
 
-    var words = element.textContent.split(/\s+/);
+    // capture the original text
+    textNode.preZWSText = textNode.textContent;
+
+    var words = textNode.textContent.split(/\s+/);
     var newTextContent = '';
 
     var splitRegex = new RegExp('.{1,' + maxWordSize + '}', 'g');
@@ -1995,79 +2006,52 @@ function insertZeroWidthSpaces(element, maxWordSize) {
         newTextContent += ' ';
     }
 
-    element.textContent = newTextContent;
+    textNode.textContent = newTextContent;
+}
+function insertZeroWidthSpacesInElementText(element, maxWordSize) {
+    if (Element.hasClassName(element, 'zws-inserted')) {
+        // already done.
+        return;
+    }
+    if (!element.hasChildNodes()) {
+        return;
+    }
+
+    var children = element.childNodes;
+    for (var i = 0; i < children.length; i++) {
+        var child = children[i];
+        if (child.nodeType === TEXT_NODE) {
+            insertZeroWidthSpacesInText(child, maxWordSize);
+        } else if (child.nodeType === ELEMENT_NODE) {
+            insertZeroWidthSpacesInElementText(child, maxWordSize);
+        }
+    }
+
     Element.addClassName(element, 'zws-inserted');
 }
 function removeZeroWidthSpaces(element) {
     if (element) {
-        element.textContent = element.textContent.replace(zeroWidthSpace, '');
+        if (!Element.hasClassName(element, 'zws-inserted')) {
+            // Doesn't have ZWSed text.
+            return;
+        }
+        if (!element.hasChildNodes()) {
+            return;
+        }
+
+        var children = element.childNodes;
+        for (var i = 0; i < children.length; i++) {
+            var child = children[i];
+            if (child.nodeType === TEXT_NODE && child.preZWSText) {
+                child.textContent = child.preZWSText;
+            } else if (child.nodeType === ELEMENT_NODE) {
+                removeZeroWidthSpaces(child);
+            }
+        }
+
         Element.removeClassName(element, 'zws-inserted');
     }
 }
-
-Element.observe(document, 'dom:loaded', function(){
-    if(isRunAsTest) {
-        return;
-    }
-
-    var pageHead = $('page-head');
-    var pageBody = $('page-body');
-    var sidePanel = $(pageBody).getElementsBySelector('#side-panel')[0];
-    var sidePanelContent = $(sidePanel).getElementsBySelector('#side-panel-content')[0];
-    var mainPanel = $(pageBody).getElementsBySelector('#main-panel')[0];
-    var mainPanelContent = $(mainPanel).getElementsBySelector('#main-panel-content')[0];
-    var pageFooter = $('footer-container');
-
-    function applyFixedGridLayout() {
-        var pageBodyWidth = Element.getWidth(pageBody);
-        if (pageBodyWidth > 768) {
-            pageBody.addClassName("fixedGridLayout");
-            pageBody.removeClassName("container-fluid");
-            sidePanel.removeClassName("col-sm-9");
-            mainPanel.removeClassName("col-sm-15");
-            return true; // It's a fixedGridLayout
-        } else {
-            pageBody.removeClassName("fixedGridLayout");
-            pageBody.addClassName("container-fluid");
-            sidePanel.addClassName("col-sm-9");
-            mainPanel.addClassName("col-sm-15");
-            return false; // It's not a fixedGridLayout
-        }
-    }
-
-    function applyFixedGridHeights() {
-        var windowHeight = document.viewport.getDimensions().height;
-        var headHeight = Element.getHeight(pageHead);
-        var footerHeight = Element.getHeight(pageFooter);
-        var sidePanelHeight = Element.getHeight(sidePanel);
-        var mainPanelHeight = Element.getHeight(mainPanel);
-        var minPageBodyHeight = (windowHeight - headHeight - footerHeight);
-
-        minPageBodyHeight = Math.max(minPageBodyHeight, sidePanelHeight);
-        minPageBodyHeight = Math.max(minPageBodyHeight, mainPanelHeight);
-
-        $(pageBody).setStyle({minHeight: minPageBodyHeight + 'px'});
-        $(sidePanel).setStyle({minHeight: minPageBodyHeight + 'px'});
-        $(mainPanel).setStyle({minHeight: minPageBodyHeight + 'px'});
-    }
-
-    var doPanelLayouts = function() {
-        // remove all style
-        pageBody.removeAttribute('style');
-        sidePanel.removeAttribute('style');
-        mainPanel.removeAttribute('style');
-        if (applyFixedGridLayout()) {
-            applyFixedGridHeights();
-        }
-    }
-
-    Event.observe(window, 'resize', doPanelLayouts);
-    elementResizeTracker.onResize(sidePanelContent, doPanelLayouts);
-    elementResizeTracker.onResize(mainPanelContent, doPanelLayouts);
-
-    doPanelLayouts();
-    fireBuildHistoryChanged();
-});
 
 // get the cascaded computed style value. 'a' is the style name like 'backgroundColor'
 function getStyle(e,a){

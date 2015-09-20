@@ -125,9 +125,8 @@ public class BeanBuilder extends GroovyObjectSupport {
      * Parses the bean definition groovy script by first exporting the given {@link Binding}. 
      */
     public void parse(InputStream script, Binding binding) {
-        if (script==null) {
+        if (script==null)
             throw new IllegalArgumentException("No script is provided");
-        }
         setBinding(binding);
         CompilerConfiguration cc = new CompilerConfiguration();
         cc.setScriptBaseClass(ClosureScript.class.getName());
@@ -160,9 +159,8 @@ public class BeanBuilder extends GroovyObjectSupport {
 	 * @return The BeanDefinition instance
 	 */
 	public BeanDefinition getBeanDefinition(String name) {
-		if(!getSpringConfig().containsBean(name)) {
-                    return null;
-                }
+		if(!getSpringConfig().containsBean(name))
+			return null;
 		return getSpringConfig().getBeanConfig(name).getBeanDefinition();
 	}
 
@@ -238,9 +236,8 @@ public class BeanBuilder extends GroovyObjectSupport {
 		public ConfigurableRuntimeBeanReference(String beanName, BeanConfiguration beanConfig, boolean toParent) {
 			super(beanName, toParent);
 			this.beanConfig = beanConfig;
-			if(beanConfig == null) {
-                            throw new IllegalArgumentException("Argument [beanConfig] cannot be null");
-                        }
+			if(beanConfig == null)
+				throw new IllegalArgumentException("Argument [beanConfig] cannot be null");
 			this.metaClass = InvokerHelper.getMetaClass(this);
 		}
 
@@ -249,16 +246,15 @@ public class BeanBuilder extends GroovyObjectSupport {
 		}
 
 		public Object getProperty(String property) {
-			if(property.equals("beanName")) {
-                            return getBeanName();
-                        } else if(property.equals("source")) {
-                            return getSource();
-                        } else if(this.beanConfig != null) {
+			if(property.equals("beanName"))
+				return getBeanName();
+			else if(property.equals("source"))
+				return getSource();
+			else if(this.beanConfig != null) {
 				return new WrappedPropertyValue(property,beanConfig.getPropertyValue(property));
 			}
-			else {
-                            return this.metaClass.getProperty(this, property);
-                        }
+			else
+				return this.metaClass.getProperty(this, property);
 		}
 
 
@@ -331,7 +327,7 @@ public class BeanBuilder extends GroovyObjectSupport {
 	public void loadBeans(Resource[] resources) throws IOException {
 		Closure beans = new Closure(this){
 			@Override
-			public Object call(Object[] args) {
+			public Object call(Object... args) {
 				return beans((Closure)args[0]);
 			}
 		};
@@ -368,9 +364,8 @@ public class BeanBuilder extends GroovyObjectSupport {
 	public Object methodMissing(String name, Object arg) {
         Object[] args = (Object[])arg;
 
-        if(args.length == 0) {
-            throw new MissingMethodException(name,getClass(),args);
-        }
+        if(args.length == 0)
+			throw new MissingMethodException(name,getClass(),args);
 
 		if(args[0] instanceof Closure) {
             // abstract bean definition
@@ -437,28 +432,25 @@ public class BeanBuilder extends GroovyObjectSupport {
                         if(args.length-1 != 1) {
                             Object[] constructorArgs = ArrayUtils.subarray(args, 1, args.length-1);
                             filterGStringReferences(constructorArgs);
-                            if(name.equals(ANONYMOUS_BEAN)) {
+                            if(name.equals(ANONYMOUS_BEAN))
                                 currentBeanConfig = springConfig.createSingletonBean(beanClass,Arrays.asList(constructorArgs));
-                            } else {
+                            else
                                 currentBeanConfig = springConfig.addSingletonBean(name, beanClass, Arrays.asList(constructorArgs));
-                            }
                         }
                         else {
-                            if(name.equals(ANONYMOUS_BEAN)) {
+                            if(name.equals(ANONYMOUS_BEAN))
                                 currentBeanConfig = springConfig.createSingletonBean(beanClass);
-                            } else {
+                            else
                                 currentBeanConfig = springConfig.addSingletonBean(name, beanClass);
-                            }
                         }
                     }
                     else  {
                         Object[] constructorArgs = ArrayUtils.subarray(args, 1, args.length);
                         filterGStringReferences(constructorArgs);
-                        if(name.equals(ANONYMOUS_BEAN)) {
+                        if(name.equals(ANONYMOUS_BEAN))
                             currentBeanConfig = springConfig.createSingletonBean(beanClass,Arrays.asList(constructorArgs));
-                        } else {
+                        else
                             currentBeanConfig = springConfig.addSingletonBean(name, beanClass, Arrays.asList(constructorArgs));
-                        }
                     }
 
                 }
@@ -505,9 +497,7 @@ public class BeanBuilder extends GroovyObjectSupport {
     private void filterGStringReferences(Object[] constructorArgs) {
         for (int i = 0; i < constructorArgs.length; i++) {
             Object constructorArg = constructorArgs[i];
-            if(constructorArg instanceof GString) {
-                constructorArgs[i] = constructorArg.toString();
-            }
+            if(constructorArg instanceof GString) constructorArgs[i] = constructorArg.toString();
         }
     }
 
@@ -532,9 +522,7 @@ public class BeanBuilder extends GroovyObjectSupport {
 	@Override
 	public void setProperty(String name, Object value) {
 		if(currentBeanConfig != null) {
-			if(value instanceof GString) {
-                            value = value.toString();
-                        }
+			if(value instanceof GString)value = value.toString();
 			if(addToDeferred(currentBeanConfig, name, value)) {
 				return;
 			}
@@ -640,16 +628,15 @@ public class BeanBuilder extends GroovyObjectSupport {
 				if(beanConfig != null) {
 					return new ConfigurableRuntimeBeanReference(name, springConfig.getBeanConfig(name) ,false);
 				}
-				else {
-                                    return new RuntimeBeanReference(name,false);
-                                }
+				else
+					return new RuntimeBeanReference(name,false);
 			}
 			// this is to deal with the case where the property setter is the last
 			// statement in a closure (hence the return value)
 			else if(currentBeanConfig != null) {
-				if(currentBeanConfig.hasProperty(name)) {
-                                    return currentBeanConfig.getPropertyValue(name);
-                                } else {
+				if(currentBeanConfig.hasProperty(name))
+					return currentBeanConfig.getPropertyValue(name);
+				else {
 					DeferredProperty dp = deferredProperties.get(currentBeanConfig.getName()+name);
 					if(dp!=null) {
 						return dp.value;

@@ -26,10 +26,12 @@ package hudson.slaves;
 import hudson.FilePath;
 import hudson.Functions;
 import hudson.model.Computer;
+import java.io.Closeable;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Nonnull;
@@ -95,9 +97,7 @@ public final class WorkspaceList {
         @Override
         public String toString() {
             String s = path+" owned by "+holder.getName()+" from "+new Date(time);
-            if(quick) {
-                s+=" (quick)";
-            }
+            if(quick) s+=" (quick)";
             s+="\n"+Functions.printThrowable(source);
             return s;
         }
@@ -106,7 +106,7 @@ public final class WorkspaceList {
     /**
      * Represents a leased workspace that needs to be returned later.
      */
-    public static abstract class Lease {
+    public static abstract class Lease implements /*Auto*/Closeable {
         public final @Nonnull FilePath path;
 
         protected Lease(@Nonnull FilePath path) {
@@ -118,6 +118,14 @@ public final class WorkspaceList {
          * Releases this lease.
          */
         public abstract void release();
+
+        /**
+         * By default, calls {@link #release}, but should be idempotent.
+         * @since 1.600
+         */
+        @Override public void close() {
+            release();
+        }
 
         /**
          * Creates a dummy {@link Lease} object that does no-op in the release.
@@ -170,9 +178,8 @@ public final class WorkspaceList {
         for (int i=1; ; i++) {
             FilePath candidate = i==1 ? base : base.withSuffix(COMBINATOR+i);
             Entry e = inUse.get(candidate);
-            if(e!=null && !e.quick && e.context!=context) {
+            if(e!=null && !e.quick && e.context!=context)
                 continue;
-            }
             return acquire(candidate,false,context);
         }
     }
@@ -185,9 +192,8 @@ public final class WorkspaceList {
             LOGGER.log(Level.FINE, "recorded " + p, new Throwable("from " + this));
         }
         Entry old = inUse.put(p, new Entry(p, false));
-        if (old!=null) {
+        if (old!=null)
             throw new AssertionError("Tried to record a workspace already owned: "+old);
-        }
         return lease(p);
     }
 
@@ -196,16 +202,14 @@ public final class WorkspaceList {
      */
     private synchronized void _release(@Nonnull FilePath p) {
         Entry old = inUse.get(p);
-        if (old==null) {
+        if (old==null)
             throw new AssertionError("Releasing unallocated workspace "+p);
-        }
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.log(Level.FINE, "releasing " + p + " with lock count " + old.lockCount, new Throwable("from " + this));
         }
         old.lockCount--;
-        if (old.lockCount==0) {
+        if (old.lockCount==0)
             inUse.remove(p);
-        }
         notifyAll();
     }
 
@@ -246,9 +250,8 @@ public final class WorkspaceList {
         try {
             while (true) {
                 e = inUse.get(p);
-                if (e==null || e.context==context) {
+                if (e==null || e.context==context)
                     break;
-                }
                 wait();
             }
         } finally {
@@ -258,11 +261,8 @@ public final class WorkspaceList {
             LOGGER.log(Level.FINE, "acquired " + p + (e == null ? "" : " with lock count " + e.lockCount), new Throwable("from " + this));
         }
         
-        if (e!=null) {
-            e.lockCount++;
-        } else {
-            inUse.put(p,new Entry(p,quick,context));
-        }
+        if (e!=null)    e.lockCount++;
+        else            inUse.put(p,new Entry(p,quick,context));
         return lease(p);
     }
 
@@ -271,8 +271,14 @@ public final class WorkspaceList {
      */
     private Lease lease(@Nonnull FilePath p) {
         return new Lease(p) {
+            final AtomicBoolean released = new AtomicBoolean();
             public void release() {
                 _release(path);
+            }
+            @Override public void close() {
+                if (released.compareAndSet(false, true)) {
+                    release();
+                }
             }
         };
     }

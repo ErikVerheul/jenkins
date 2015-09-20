@@ -57,6 +57,7 @@ public class StreamBuildListener extends StreamTaskListener implements BuildList
      *      The caller should use {@link #StreamBuildListener(OutputStream, Charset)} to pass in
      *      the charset and output stream separately, so that this class can handle encoding correctly.
      */
+    @Deprecated
     public StreamBuildListener(PrintStream w) {
         super(w);
     }
@@ -67,13 +68,11 @@ public class StreamBuildListener extends StreamTaskListener implements BuildList
 
     public void started(List<Cause> causes) {
         PrintStream l = getLogger();
-        if (causes==null || causes.isEmpty()) {
+        if (causes==null || causes.isEmpty())
             l.println("Started");
-        } else {
-            for (Cause cause : causes) {
-                // TODO elide duplicates as per CauseAction.getCauseCounts (used in summary.jelly)
-                cause.print(this);
-            }
+        else for (Cause cause : causes) {
+            // TODO elide duplicates as per CauseAction.getCauseCounts (used in summary.jelly)
+            cause.print(this);
         }
     }
 

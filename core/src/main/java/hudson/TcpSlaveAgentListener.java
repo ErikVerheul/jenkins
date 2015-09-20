@@ -152,11 +152,10 @@ public final class TcpSlaveAgentListener extends Thread {
                 if(s.startsWith("Protocol:")) {
                     String protocol = s.substring(9);
                     AgentProtocol p = AgentProtocol.of(protocol);
-                    if (p!=null) {
+                    if (p!=null)
                         p.handle(this.s);
-                    } else {
+                    else
                         error(out, "Unknown protocol:" + s);
-                    }
                 } else {
                     error(out, "Unrecognized protocol: "+s);
                 }
@@ -205,6 +204,18 @@ public final class TcpSlaveAgentListener extends Thread {
      * TODO: think about how to expose this (including whether this needs to be exposed at all.)
      */
     public static String CLI_HOST_NAME = System.getProperty(TcpSlaveAgentListener.class.getName()+".hostName");
+
+    /**
+     * Port number that we advertise the CLI client to connect to.
+     * This is primarily for the case where the port that Jenkins runs is different from the port
+     * that external world should connect to, because of the presence of NAT / port-forwarding / TCP reverse
+     * proxy.
+     *
+     * If left to null, fall back to {@link #getPort()}
+     *
+     * @since 1.611
+     */
+    public static Integer CLI_PORT = Integer.getInteger(TcpSlaveAgentListener.class.getName()+".port");
 }
 
 /*

@@ -64,6 +64,7 @@ public class ParametersAction implements Action, Iterable<ParameterValue>, Queue
     /**
      * @deprecated since 1.283; kept to avoid warnings loading old build data, but now transient.
      */
+    @Deprecated
     private transient AbstractBuild<?, ?> build;
 
     public ParametersAction(List<ParameterValue> parameters) {
@@ -76,21 +77,15 @@ public class ParametersAction implements Action, Iterable<ParameterValue>, Queue
 
     public void createBuildWrappers(AbstractBuild<?,?> build, Collection<? super BuildWrapper> result) {
         for (ParameterValue p : parameters) {
-            if (p == null) {
-                continue;
-            }
+            if (p == null) continue;
             BuildWrapper w = p.createBuildWrapper(build);
-            if(w!=null) {
-                result.add(w);
-            }
+            if(w!=null) result.add(w);
         }
     }
 
     public void buildEnvVars(AbstractBuild<?,?> build, EnvVars env) {
         for (ParameterValue p : parameters) {
-            if (p == null) {
-                continue;
-            }
+            if (p == null) continue;
             p.buildEnvironment(build, env); 
         }
     }
@@ -114,9 +109,7 @@ public class ParametersAction implements Action, Iterable<ParameterValue>, Queue
         VariableResolver[] resolvers = new VariableResolver[parameters.size()+1];
         int i=0;
         for (ParameterValue p : parameters) {
-            if (p == null) {
-                continue;
-            }
+            if (p == null) continue;
             resolvers[i++] = p.createVariableResolver(build);
         }
             
@@ -136,25 +129,18 @@ public class ParametersAction implements Action, Iterable<ParameterValue>, Queue
 
     public ParameterValue getParameter(String name) {
         for (ParameterValue p : parameters) {
-            if (p == null) {
-                continue;
-            }
-            if (p.getName().equals(name)) {
+            if (p == null) continue;
+            if (p.getName().equals(name))
                 return p;
-            }
         }
         return null;
     }
 
     public Label getAssignedLabel(SubTask task) {
         for (ParameterValue p : parameters) {
-            if (p == null) {
-                continue;
-            }
+            if (p == null) continue;
             Label l = p.getAssignedLabel(task);
-            if (l!=null) {
-                return l;
-            }
+            if (l!=null)    return l;
         }
         return null;
     }
@@ -202,16 +188,12 @@ public class ParametersAction implements Action, Iterable<ParameterValue>, Queue
         Set<String> names = newHashSet();
 
         for(ParameterValue v : overrides) {
-            if (v == null) {
-                continue;
-            }
+            if (v == null) continue;
             names.add(v.getName());
         }
 
         for (ParameterValue v : parameters) {
-            if (v == null) {
-                continue;
-            }
+            if (v == null) continue;
             if (!names.contains(v.getName())) {
                 combinedParameters.add(v);
             }
@@ -234,9 +216,8 @@ public class ParametersAction implements Action, Iterable<ParameterValue>, Queue
     }
 
     private Object readResolve() {
-        if (build != null) {
+        if (build != null)
             OldDataMonitor.report(build, "1.283");
-        }
         return this;
     }
 }

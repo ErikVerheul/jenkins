@@ -127,6 +127,7 @@ public abstract class ParameterValue implements Serializable {
      * @deprecated as of 1.344
      *      Use {@link #buildEnvironment(Run, EnvVars)} instead.
      */
+    @Deprecated
     public void buildEnvVars(AbstractBuild<?,?> build, Map<String,String> env) {
         if (env instanceof EnvVars) {
             if (Util.isOverridden(ParameterValue.class, getClass(), "buildEnvironment", Run.class, EnvVars.class)) {
@@ -222,6 +223,7 @@ public abstract class ParameterValue implements Serializable {
      *    instead copy them in {@link ParameterDefinition#createValue(StaplerRequest, JSONObject)}
      *    into {@link ParameterValue}.
      */
+    @Deprecated
     public ParameterDefinition getDefinition() {
         throw new UnsupportedOperationException();
     }
@@ -236,23 +238,18 @@ public abstract class ParameterValue implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) {
+        if (this == obj)
             return true;
-        }
-        if (obj == null) {
+        if (obj == null)
             return false;
-        }
-        if (getClass() != obj.getClass()) {
+        if (getClass() != obj.getClass())
             return false;
-        }
         ParameterValue other = (ParameterValue) obj;
         if (name == null) {
-            if (other.name != null) {
+            if (other.name != null)
                 return false;
-            }
-        } else if (!name.equals(other.name)) {
+        } else if (!name.equals(other.name))
             return false;
-        }
         return true;
     }
 

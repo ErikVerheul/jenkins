@@ -75,6 +75,7 @@ public final class DirectoryBrowserSupport implements HttpResponse {
      * @deprecated as of 1.297
      *      Use {@link #DirectoryBrowserSupport(ModelObject, FilePath, String, String, boolean)}
      */
+    @Deprecated
     public DirectoryBrowserSupport(ModelObject owner, String title) {
         this(owner, (VirtualFile) null, title, null, false);
     }
@@ -147,6 +148,7 @@ public final class DirectoryBrowserSupport implements HttpResponse {
      *      Instead of calling this method explicitly, just return the {@link DirectoryBrowserSupport} object
      *      from the {@code doXYZ} method and let Stapler generate a response for you.
      */
+    @Deprecated
     public void serveFile(StaplerRequest req, StaplerResponse rsp, FilePath root, String icon, boolean serveDirIndex) throws IOException, ServletException, InterruptedException {
         serveFile(req, rsp, root.toVirtualFile(), icon, serveDirIndex);
     }
@@ -154,9 +156,8 @@ public final class DirectoryBrowserSupport implements HttpResponse {
     private void serveFile(StaplerRequest req, StaplerResponse rsp, VirtualFile root, String icon, boolean serveDirIndex) throws IOException, ServletException, InterruptedException {
         // handle form submission
         String pattern = req.getParameter("pattern");
-        if(pattern==null) {
+        if(pattern==null)
             pattern = req.getParameter("path"); // compatibility with Hudson<1.129
-        }
         if(pattern!=null && !Util.isAbsoluteUri(pattern)) {// avoid open redirect
             rsp.sendRedirect2(pattern);
             return;
@@ -183,9 +184,8 @@ public final class DirectoryBrowserSupport implements HttpResponse {
                 String pathElement = pathTokens.nextToken();
                 // Treat * and ? as wildcard unless they match a literal filename
                 if((pathElement.contains("?") || pathElement.contains("*"))
-                        && inBase && !root.child((_base.length() > 0 ? _base + "/" : "") + pathElement).exists()) {
+                        && inBase && !root.child((_base.length() > 0 ? _base + "/" : "") + pathElement).exists())
                     inBase = false;
-                }
                 if(pathElement.equals("*zip*")) {
                     // the expected syntax is foo/bar/*zip*/bar.zip
                     // the last 'bar.zip' portion is to causes browses to set a good default file name.
@@ -199,13 +199,10 @@ public final class DirectoryBrowserSupport implements HttpResponse {
                 }
 
                 StringBuilder sb = inBase?_base:_rest;
-                if(sb.length()>0) {
-                    sb.append('/');
-                }
+                if(sb.length()>0)   sb.append('/');
                 sb.append(pathElement);
-                if(!inBase) {
+                if(!inBase)
                     restSize++;
-                }
             }
         }
         restSize = Math.max(restSize,0);
@@ -301,9 +298,8 @@ public final class DirectoryBrowserSupport implements HttpResponse {
         long lastModified = baseFile.lastModified();
         long length = baseFile.length();
 
-        if(LOGGER.isLoggable(Level.FINE)) {
+        if(LOGGER.isLoggable(Level.FINE))
             LOGGER.fine("Serving "+baseFile+" with lastModified=" + lastModified + ", length=" + length);
-        }
 
         InputStream in = baseFile.open();
         if (view) {
@@ -319,9 +315,8 @@ public final class DirectoryBrowserSupport implements HttpResponse {
 
     private String getPath(StaplerRequest req) {
         String path = req.getRestOfPath();
-        if(path.length()==0) {
+        if(path.length()==0)
             path = "/";
-        }
         return path;
     }
 
@@ -343,13 +338,10 @@ public final class DirectoryBrowserSupport implements HttpResponse {
     }
 
     private static String createBackRef(int times) {
-        if(times==0) {
-            return "./";
-        }
+        if(times==0)    return "./";
         StringBuilder buf = new StringBuilder(3*times);
-        for(int i=0; i<times; i++ ) {
+        for(int i=0; i<times; i++ )
             buf.append("../");
-        }
         return buf.toString();
     }
 
@@ -433,19 +425,17 @@ public final class DirectoryBrowserSupport implements HttpResponse {
         }
 
         public String getIconName() {
-            if (isReadable) {
+            if (isReadable)
                 return isFolder?"folder.png":"text.png";
-            } else {
+            else
                 return isFolder?"folder-error.png":"text-error.png";
-            }
         }
 
         public String getIconClassName() {
-            if (isReadable) {
+            if (isReadable)
                 return isFolder?"icon-folder":"icon-text";
-            } else {
+            else
                 return isFolder?"icon-folder-error":"icon-text-error";
-            }
         }
 
         public long getSize() {
@@ -467,20 +457,15 @@ public final class DirectoryBrowserSupport implements HttpResponse {
         public int compare(VirtualFile lhs, VirtualFile rhs) {
             // directories first, files next
             int r = dirRank(lhs)-dirRank(rhs);
-            if(r!=0) {
-                return r;
-            }
+            if(r!=0) return r;
             // otherwise alphabetical
             return this.collator.compare(lhs.getName(), rhs.getName());
         }
 
         private int dirRank(VirtualFile f) {
             try {
-            if(f.isDirectory()) {
-                return 0;
-            } else {
-                return 1;
-            }
+            if(f.isDirectory())     return 0;
+            else                    return 1;
             } catch (IOException ex) {
                 return 0;
             }
@@ -527,9 +512,8 @@ public final class DirectoryBrowserSupport implements HttpResponse {
                                     sub.add(vf);
                                 }
                             }
-                            if (sub.size() !=1 || !sub.get(0).isDirectory()) {
+                            if (sub.size() !=1 || !sub.get(0).isDirectory())
                                 break;
-                            }
                             f = sub.get(0);
                             relPath += '/'+Util.rawEncode(f.getName());
                             l.add(new Path(relPath,f.getName(),true,0, f.canRead()));

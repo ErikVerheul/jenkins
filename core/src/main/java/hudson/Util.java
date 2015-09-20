@@ -101,9 +101,8 @@ public class Util {
     public static <T> List<T> filter( @Nonnull Iterable<?> base, @Nonnull Class<T> type ) {
         List<T> r = new ArrayList<T>();
         for (Object i : base) {
-            if(type.isInstance(i)) {
+            if(type.isInstance(i))
                 r.add(type.cast(i));
-            }
         }
         return r;
     }
@@ -132,7 +131,7 @@ public class Util {
     public static String replaceMacro( @CheckForNull String s, @Nonnull Map<String,String> properties) {
         return replaceMacro(s,new VariableResolver.ByMap<String>(properties));
     }
-    
+
     /**
      * Replaces the occurrence of '$key' by <tt>resolver.get('key')</tt>.
      *
@@ -144,13 +143,11 @@ public class Util {
     	if (s == null) {
     		return null;
     	}
-    	
+
         int idx=0;
         while(true) {
             Matcher m = VARIABLE.matcher(s);
-            if(!m.find(idx)) {
-                return s;
-            }
+            if(!m.find(idx))   return s;
 
             String key = m.group().substring(1);
 
@@ -159,15 +156,13 @@ public class Util {
             if(key.charAt(0)=='$') {
                value = "$";
             } else {
-               if(key.charAt(0)=='{') {
-                   key = key.substring(1,key.length()-1);
-               }
+               if(key.charAt(0)=='{')  key = key.substring(1,key.length()-1);
                value = resolver.resolve(key);
             }
 
-            if(value==null) {
+            if(value==null)
                 idx = m.end(); // skip this
-            } else {
+            else {
                 s = s.substring(0,m.start())+value+s.substring(m.end());
                 idx = m.start() + value.length();
             }
@@ -184,9 +179,8 @@ public class Util {
 
     @Nonnull
     public static String loadFile(@Nonnull File logfile, @Nonnull Charset charset) throws IOException {
-        if(!logfile.exists()) {
+        if(!logfile.exists())
             return "";
-        }
 
         StringBuilder str = new StringBuilder((int)logfile.length());
 
@@ -194,9 +188,8 @@ public class Util {
         try {
             char[] buf = new char[1024];
             int len;
-            while((len=r.read(buf,0,buf.length))>0) {
-                str.append(buf,0,len);
-            }
+            while((len=r.read(buf,0,buf.length))>0)
+               str.append(buf,0,len);
         } finally {
             r.close();
         }
@@ -213,12 +206,10 @@ public class Util {
      */
     public static void deleteContentsRecursive(@Nonnull File file) throws IOException {
         File[] files = file.listFiles();
-        if(files==null) {
+        if(files==null)
             return;     // the directory didn't exist in the first place
-        }
-        for (File child : files) {
+        for (File child : files)
             deleteRecursive(child);
-        }
     }
 
     /**
@@ -228,10 +219,9 @@ public class Util {
      */
     public static void deleteFile(@Nonnull File f) throws IOException {
         if (!f.delete()) {
-            if(!f.exists()) {
+            if(!f.exists())
                 // we are trying to delete a file that no longer exists, so this is not an error
                 return;
-            }
 
             // perhaps this file is read-only?
             makeWritable(f);
@@ -262,15 +252,14 @@ public class Util {
                         throw (IOException) x2;
                     }
                     // else suppress
-                } catch (Exception x) {
+                } catch (Throwable x) {
                     // linkage errors, etc.; suppress
                 }
                 // see http://www.nabble.com/Sometimes-can%27t-delete-files-from-hudson.scm.SubversionSCM%24CheckOutTask.invoke%28%29-tt17333292.html
                 // I suspect other processes putting files in this directory
                 File[] files = f.listFiles();
-                if(files!=null && files.length>0) {
+                if(files!=null && files.length>0)
                     throw new IOException("Unable to delete " + f.getPath()+" - files in dir: "+Arrays.asList(files));
-                }
                 throw new IOException("Unable to delete " + f.getPath());
             }
         }
@@ -301,25 +290,23 @@ public class Util {
             String path = f.getAbsolutePath();
             FileStat stat = posix.stat(path);
             posix.chmod(path, stat.mode()|0200); // u+w
-        } catch (Exception t) {
+        } catch (Throwable t) {
             LOGGER.log(Level.FINE,"Failed to chmod(2) "+f,t);
         }
 
     }
 
     public static void deleteRecursive(@Nonnull File dir) throws IOException {
-        if(!isSymlink(dir)) {
+        if(!isSymlink(dir))
             deleteContentsRecursive(dir);
-        }
         try {
             deleteFile(dir);
         } catch (IOException e) {
             // if some of the child directories are big, it might take long enough to delete that
             // it allows others to create new files, causing problemsl ike JENKINS-10113
             // so give it one more attempt before we give up.
-            if(!isSymlink(dir)) {
+            if(!isSymlink(dir))
                 deleteContentsRecursive(dir);
-            }
             deleteFile(dir);
         }
     }
@@ -358,9 +345,8 @@ public class Util {
             }
         }
         String name = file.getName();
-        if (name.equals(".") || name.equals("..")) {
+        if (name.equals(".") || name.equals(".."))
             return false;
-        }
 
         File fileInCanonicalParent;
         File parentDir = file.getParentFile();
@@ -385,16 +371,38 @@ public class Util {
     }
 
     /**
+     * A mostly accurate check of whether a path is a relative path or not. This is designed to take a path against
+     * an unknown operating system so may give invalid results.
+     *
+     * @param path the path.
+     * @return {@code true} if the path looks relative.
+     * @since 1.606
+     */
+    public static boolean isRelativePath(String path) {
+        if (path.startsWith("/"))
+            return false;
+        if (path.startsWith("\\\\") && path.length() > 3 && path.indexOf('\\', 3) != -1)
+            return false; // a UNC path which is the most absolute you can get on windows
+        if (path.length() >= 3 && ':' == path.charAt(1)) {
+            // never mind that the drive mappings can be changed between sessions, we just want to
+            // know if the 3rd character is a `\` (or a '/' is acceptable too)
+            char p = path.charAt(0);
+            if (('A' <= p && p <= 'Z') || ('a' <= p && p <= 'z')) {
+                return path.charAt(2) != '\\' && path.charAt(2) != '/';
+            }
+        }
+        return true;
+    }
+
+    /**
      * Creates a new temporary directory.
      */
     public static File createTempDir() throws IOException {
         File tmp = File.createTempFile("hudson", "tmp");
-        if(!tmp.delete()) {
+        if(!tmp.delete())
             throw new IOException("Failed to delete "+tmp);
-        }
-        if(!tmp.mkdirs()) {
+        if(!tmp.mkdirs())
             throw new IOException("Failed to create a new directory "+tmp);
-        }
         return tmp;
     }
 
@@ -406,9 +414,8 @@ public class Util {
      */
     public static void displayIOException(@Nonnull IOException e, @Nonnull TaskListener listener ) {
         String msg = getWin32ErrorMessage(e);
-        if(msg!=null) {
+        if(msg!=null)
             listener.getLogger().println(msg);
-        }
     }
 
     @CheckForNull
@@ -437,9 +444,8 @@ public class Util {
             }
         }
 
-        if(e.getCause()!=null) {
+        if(e.getCause()!=null)
             return getWin32ErrorMessage(e.getCause());
-        }
         return null; // no message
     }
 
@@ -475,17 +481,15 @@ public class Util {
     public static void copyStream(@Nonnull InputStream in,@Nonnull OutputStream out) throws IOException {
         byte[] buf = new byte[8192];
         int len;
-        while((len=in.read(buf))>=0) {
+        while((len=in.read(buf))>=0)
             out.write(buf,0,len);
-        }
     }
 
     public static void copyStream(@Nonnull Reader in, @Nonnull Writer out) throws IOException {
         char[] buf = new char[8192];
         int len;
-        while((len=in.read(buf))>0) {
+        while((len=in.read(buf))>0)
             out.write(buf,0,len);
-        }
     }
 
     public static void copyStreamAndClose(@Nonnull InputStream in, @Nonnull OutputStream out) throws IOException {
@@ -542,9 +546,8 @@ public class Util {
 
     public static int min(int x, @Nonnull int... values) {
         for (int i : values) {
-            if(i<x) {
+            if(i<x)
                 x=i;
-            }
         }
         return x;
     }
@@ -556,11 +559,8 @@ public class Util {
 
     @Nonnull
     public static String removeTrailingSlash(@Nonnull String s) {
-        if(s.endsWith("/")) {
-            return s.substring(0,s.length()-1);
-        } else {
-            return s;
-        }
+        if(s.endsWith("/")) return s.substring(0,s.length()-1);
+        else                return s;
     }
 
 
@@ -576,13 +576,9 @@ public class Util {
     @Nullable
     public static String ensureEndsWith(@CheckForNull String subject, @CheckForNull String suffix) {
 
-        if (subject == null) {
-            return null;
-        }
+        if (subject == null) return null;
 
-        if (subject.endsWith(suffix)) {
-            return subject;
-        }
+        if (subject.endsWith(suffix)) return subject;
 
         return subject + suffix;
     }
@@ -652,7 +648,7 @@ public class Util {
      * Converts a string into 128-bit AES key.
      * @since 1.308
      */
-    @Nonnull 
+    @Nonnull
     public static SecretKey toAes128Key(@Nonnull String s) {
         try {
             // turn secretKey into 256 bit hash
@@ -674,9 +670,7 @@ public class Util {
         StringBuilder buf = new StringBuilder();
         for( int i=0; i<len; i++ ) {
             int b = data[start+i]&0xFF;
-            if(b<16) {
-                buf.append('0');
-            }
+            if(b<16)    buf.append('0');
             buf.append(Integer.toHexString(b));
         }
         return buf.toString();
@@ -690,9 +684,8 @@ public class Util {
     @Nonnull
     public static byte[] fromHexString(@Nonnull String data) {
         byte[] r = new byte[data.length() / 2];
-        for (int i = 0; i < data.length(); i += 2) {
+        for (int i = 0; i < data.length(); i += 2)
             r[i / 2] = (byte) Integer.parseInt(data.substring(i, i + 2), 16);
-        }
         return r;
     }
 
@@ -720,25 +713,24 @@ public class Util {
         duration %= ONE_SECOND_MS;
         long millisecs = duration;
 
-        if (years > 0) {
+        if (years > 0)
             return makeTimeSpanString(years, Messages.Util_year(years), months, Messages.Util_month(months));
-        } else if (months > 0) {
+        else if (months > 0)
             return makeTimeSpanString(months, Messages.Util_month(months), days, Messages.Util_day(days));
-        } else if (days > 0) {
+        else if (days > 0)
             return makeTimeSpanString(days, Messages.Util_day(days), hours, Messages.Util_hour(hours));
-        } else if (hours > 0) {
+        else if (hours > 0)
             return makeTimeSpanString(hours, Messages.Util_hour(hours), minutes, Messages.Util_minute(minutes));
-        } else if (minutes > 0) {
+        else if (minutes > 0)
             return makeTimeSpanString(minutes, Messages.Util_minute(minutes), seconds, Messages.Util_second(seconds));
-        } else if (seconds >= 10) {
+        else if (seconds >= 10)
             return Messages.Util_second(seconds);
-        } else if (seconds >= 1) {
+        else if (seconds >= 1)
             return Messages.Util_second(seconds+(float)(millisecs/100)/10); // render "1.2 sec"
-        } else if(millisecs>=100) {
+        else if(millisecs>=100)
             return Messages.Util_second((float)(millisecs/10)/100); // render "0.12 sec".
-        } else {
+        else
             return Messages.Util_millisecond(millisecs);
-        }
     }
 
 
@@ -757,9 +749,8 @@ public class Util {
                                              long smallUnit,
                                              @Nonnull String smallLabel) {
         String text = bigLabel;
-        if (bigUnit < 10) {
+        if (bigUnit < 10)
             text += ' ' + smallLabel;
-        }
         return text;
     }
 
@@ -776,19 +767,19 @@ public class Util {
 
     /**
      * Combines number and unit, with a plural suffix if needed.
-     * 
-     * @deprecated 
-     *   Use individual localization methods instead. 
+     *
+     * @deprecated
+     *   Use individual localization methods instead.
      *   See {@link Messages#Util_year(Object)} for an example.
      *   Deprecated since 2009-06-24, remove method after 2009-12-24.
      */
     @Nonnull
+    @Deprecated
     public static String combine(long n, @Nonnull String suffix) {
         String s = Long.toString(n)+' '+suffix;
-        if(n!=1) {
-            // Just adding an 's' won't work in most natural languages, even English has exception to the rule (e.g. copy/copies).
+        if(n!=1)
+        	// Just adding an 's' won't work in most natural languages, even English has exception to the rule (e.g. copy/copies).
             s += "s";
-        }
         return s;
     }
 
@@ -799,9 +790,8 @@ public class Util {
     public static <T> List<T> createSubList(@Nonnull Collection<?> source, @Nonnull Class<T> type ) {
         List<T> r = new ArrayList<T>();
         for (Object item : source) {
-            if(type.isInstance(item)) {
+            if(type.isInstance(item))
                 r.add(type.cast(item));
-            }
         }
         return r;
     }
@@ -815,7 +805,7 @@ public class Util {
      * {@link #rawEncode(String)} should generally be used instead, though be careful to pass only
      * a single path component to that method (it will encode /, but this method does not).
      */
-    @Nonnull 
+    @Nonnull
     public static String encode(@Nonnull String s) {
         try {
             boolean escaped = false;
@@ -857,14 +847,11 @@ public class Util {
   //  ^--so these are encoded
         int i;
         // Encode control chars and space
-        for (i = 0; i < 33; i++) {
-            uriMap[i] = true;
-        }
-        for (int j = 0; j < raw.length(); i++, j++) {
+        for (i = 0; i < 33; i++) uriMap[i] = true;
+        for (int j = 0; j < raw.length(); i++, j++)
             uriMap[i] = (raw.charAt(j) == ' ');
-            // If we add encodeQuery() just add a 2nd map to encode &+=
-            // queryMap[38] = queryMap[43] = queryMap[61] = true;
-        }
+        // If we add encodeQuery() just add a 2nd map to encode &+=
+        // queryMap[38] = queryMap[43] = queryMap[61] = true;
     }
 
     /**
@@ -926,32 +913,30 @@ public class Util {
     /**
      * Escapes HTML unsafe characters like &lt;, &amp; to the respective character entities.
      */
-    @Nonnull 
+    @Nonnull
     public static String escape(@Nonnull String text) {
-        if (text==null) {
-            return null;
-        }
+        if (text==null)     return null;
         StringBuilder buf = new StringBuilder(text.length()+64);
         for( int i=0; i<text.length(); i++ ) {
             char ch = text.charAt(i);
-            if(ch=='\n') {
+            if(ch=='\n')
                 buf.append("<br>");
-            } else
-            if(ch=='<') {
+            else
+            if(ch=='<')
                 buf.append("&lt;");
-            } else
-            if(ch=='>') {
+            else
+            if(ch=='>')
                 buf.append("&gt;");
-            } else
-            if(ch=='&') {
+            else
+            if(ch=='&')
                 buf.append("&amp;");
-            } else
-            if(ch=='"') {
+            else
+            if(ch=='"')
                 buf.append("&quot;");
-            } else
-            if(ch=='\'') {
+            else
+            if(ch=='\'')
                 buf.append("&#039;");
-            } else
+            else
             if(ch==' ') {
                 // All spaces in a block of consecutive spaces are converted to
                 // non-breaking space (&nbsp;) except for the last one.  This allows
@@ -959,9 +944,8 @@ public class Util {
                 char nextCh = i+1 < text.length() ? text.charAt(i+1) : 0;
                 buf.append(nextCh==' ' ? "&nbsp;" : " ");
             }
-            else {
+            else
                 buf.append(ch);
-            }
         }
         return buf.toString();
     }
@@ -971,17 +955,16 @@ public class Util {
         StringBuilder buf = new StringBuilder(text.length()+64);
         for( int i=0; i<text.length(); i++ ) {
             char ch = text.charAt(i);
-            if(ch=='<') {
+            if(ch=='<')
                 buf.append("&lt;");
-            } else
-            if(ch=='>') {
+            else
+            if(ch=='>')
                 buf.append("&gt;");
-            } else
-            if(ch=='&') {
+            else
+            if(ch=='&')
                 buf.append("&amp;");
-            } else {
+            else
                 buf.append(ch);
-            }
         }
         return buf.toString();
     }
@@ -1010,11 +993,8 @@ public class Util {
      */
     @Nonnull
     public static String fixNull(@CheckForNull String s) {
-        if(s==null) {
-            return "";
-        } else {
-            return s;
-        }
+        if(s==null)     return "";
+        else            return s;
     }
 
     /**
@@ -1022,9 +1002,7 @@ public class Util {
      */
     @CheckForNull
     public static String fixEmpty(@CheckForNull String s) {
-        if(s==null || s.length()==0) {
-            return null;
-        }
+        if(s==null || s.length()==0)    return null;
         return s;
     }
 
@@ -1035,9 +1013,7 @@ public class Util {
      */
     @CheckForNull
     public static String fixEmptyAndTrim(@CheckForNull String s) {
-        if(s==null) {
-            return null;
-        }
+        if(s==null)    return null;
         return fixEmpty(s.trim());
     }
 
@@ -1067,13 +1043,11 @@ public class Util {
     @Nonnull
     public static String getFileName(@Nonnull String filePath) {
         int idx = filePath.lastIndexOf('\\');
-        if(idx>=0) {
+        if(idx>=0)
             return getFileName(filePath.substring(idx+1));
-        }
         idx = filePath.lastIndexOf('/');
-        if(idx>=0) {
+        if(idx>=0)
             return getFileName(filePath.substring(idx+1));
-        }
         return filePath;
     }
 
@@ -1085,11 +1059,8 @@ public class Util {
         StringBuilder buf = new StringBuilder();
         boolean first=true;
         for (Object s : strings) {
-            if(first) {
-                first=false;
-            } else {
-                buf.append(separator);
-            }
+            if(first)   first=false;
+            else        buf.append(separator);
             buf.append(s);
         }
         return buf.toString();
@@ -1101,13 +1072,11 @@ public class Util {
     @Nonnull
     public static <T> List<T> join(@Nonnull Collection<? extends T>... items) {
         int size = 0;
-        for (Collection<? extends T> item : items) {
+        for (Collection<? extends T> item : items)
             size += item.size();
-        }
         List<T> r = new ArrayList<T>(size);
-        for (Collection<? extends T> item : items) {
+        for (Collection<? extends T> item : items)
             r.addAll(item);
-        }
         return r;
     }
 
@@ -1168,7 +1137,7 @@ public class Util {
      * @param symlinkPath
      *      Where to create a symlink in (relative to {@code baseDir})
      */
-    public static void createSymlink(@Nonnull File baseDir, @Nonnull String targetPath, 
+    public static void createSymlink(@Nonnull File baseDir, @Nonnull String targetPath,
             @Nonnull String symlinkPath, @Nonnull TaskListener listener) throws InterruptedException {
         try {
             if (createSymlinkJava7(baseDir, targetPath, symlinkPath)) {
@@ -1201,10 +1170,9 @@ public class Util {
                 // if a file or a directory exists here, delete it first.
                 // try simple delete first (whether exists() or not, as it may be symlink pointing
                 // to non-existent target), but fallback to "rm -rf" to delete non-empty dir.
-                if (!symlinkFile.delete() && symlinkFile.exists()) {
+                if (!symlinkFile.delete() && symlinkFile.exists())
                     // ignore a failure.
                     new LocalProc(new String[]{"rm","-rf", symlinkPath},new String[0],listener.getLogger(), baseDir).join();
-                }
 
                 Integer r=null;
                 if (!SYMLINK_ESCAPEHATCH) {
@@ -1231,15 +1199,14 @@ public class Util {
                         "ln","-s", targetPath, symlinkPath},
                         new String[0],listener.getLogger(), baseDir).join();
                 }
-                if (r!=0) {
+                if (r!=0)
                     listener.getLogger().println(String.format("ln -s %s %s failed: %d %s",targetPath, symlinkFile, r, errmsg));
-                }
             }
         } catch (IOException e) {
             PrintStream log = listener.getLogger();
             log.printf("ln %s %s failed%n",targetPath, new File(baseDir, symlinkPath));
             Util.displayIOException(e,listener);
-            e.printStackTrace( log ); //NOSONAR
+            e.printStackTrace( log );
         }
     }
 
@@ -1303,6 +1270,7 @@ public class Util {
      * @deprecated as of 1.456
      *      Use {@link #resolveSymlink(File)}
      */
+    @Deprecated
     public static String resolveSymlink(File link, TaskListener listener) throws InterruptedException, IOException {
         return resolveSymlink(link);
     }
@@ -1316,14 +1284,10 @@ public class Util {
     @CheckForNull
     public static File resolveSymlinkToFile(@Nonnull File link) throws InterruptedException, IOException {
         String target = resolveSymlink(link);
-        if (target==null) {
-            return null;
-        }
+        if (target==null)   return null;
 
         File f = new File(target);
-        if (f.isAbsolute()) {
-            return f;   // absolute symlink
-        }
+        if (f.isAbsolute()) return f;   // absolute symlink
         return new File(link.getParentFile(),target);   // relative symlink
     }
 
@@ -1369,9 +1333,7 @@ public class Util {
             throw (IOException) new IOException(x.toString()).initCause(x);
         }
 
-        if(Functions.isWindows()) {
-            return null;
-        }
+        if(Functions.isWindows())     return null;
 
         String filename = link.getAbsolutePath();
         try {
@@ -1380,14 +1342,12 @@ public class Util {
                 int r = LIBC.readlink(filename,m,new NativeLong(sz));
                 if (r<0) {
                     int err = Native.getLastError();
-                    if (err==22/*EINVAL --- but is this really portable?*/) {
+                    if (err==22/*EINVAL --- but is this really portable?*/)
                         return null; // this means it's not a symlink
-                    }
                     throw new IOException("Failed to readlink "+link+" error="+ err+" "+ LIBC.strerror(err));
                 }
-                if (r==sz) {
+                if (r==sz)
                     continue;   // buffer too small
-                }
 
                 byte[] buf = new byte[r];
                 m.read(0,buf,0,r);
@@ -1412,7 +1372,7 @@ public class Util {
      * @deprecated since 2008-05-13. This method is broken (see ISSUE#1666). It should probably
      * be removed but I'm not sure if it is considered part of the public API
      * that needs to be maintained for backwards compatibility.
-     * Use {@link #encode(String)} instead. 
+     * Use {@link #encode(String)} instead.
      */
     @Deprecated
     public static String encodeRFC2396(String url) {
@@ -1433,7 +1393,7 @@ public class Util {
         s = "<span class=error style='display:inline-block'>"+s+"</span>";
         return s;
     }
-    
+
     /**
      * Returns the parsed string if parsed successful; otherwise returns the default number.
      * If the string is null, empty or a ParseException is thrown then the defaultNumber
@@ -1477,11 +1437,8 @@ public class Util {
     public static File changeExtension(@Nonnull File dst, @Nonnull String ext) {
         String p = dst.getPath();
         int pos = p.lastIndexOf('.');
-        if (pos<0) {
-            return new File(p+ext);
-        } else {
-            return new File(p.substring(0,pos)+ext);
-        }
+        if (pos<0)  return new File(p+ext);
+        else        return new File(p.substring(0,pos)+ext);
     }
 
     /**
@@ -1502,9 +1459,7 @@ public class Util {
      */
     public static boolean isAbsoluteUri(@Nonnull String uri) {
         int idx = uri.indexOf(':');
-        if (idx<0) {
-            return false;   // no ':'. can't be absolute
-        }
+        if (idx<0)  return false;   // no ':'. can't be absolute
 
         // #, ?, and / must not be before ':'
         return idx<_indexOf(uri, '#') && idx<_indexOf(uri,'?') && idx<_indexOf(uri,'/');
@@ -1516,9 +1471,7 @@ public class Util {
      */
     private static int _indexOf(@Nonnull String s, char ch) {
         int idx = s.indexOf(ch);
-        if (idx<0) {
-            return s.length();
-        }
+        if (idx<0)  return s.length();
         return idx;
     }
 

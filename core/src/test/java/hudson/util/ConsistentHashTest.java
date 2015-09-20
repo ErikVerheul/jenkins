@@ -83,11 +83,8 @@ public class ConsistentHashTest {
         int even=0,odd=0;
         for(int i=0; i<1000; i++) {
             String v = hash.lookup(r.nextInt());
-            if(v.equals("even")) {
-                even++;
-            } else {
-                odd++;
-            }
+            if(v.equals("even"))    even++;
+            else                    odd++;
         }
 
         // again, there's a small chance tha this test fails.
@@ -101,9 +98,8 @@ public class ConsistentHashTest {
     @Test
     public void removal() {
         ConsistentHash<Integer> hash = new ConsistentHash<Integer>();
-        for( int i=0; i<10; i++ ) {
+        for( int i=0; i<10; i++ )
             hash.add(i);
-        }
 
         // what was the mapping before the mutation?
         Map<Integer,Integer> before = new HashMap<Integer, Integer>();
@@ -126,9 +122,56 @@ public class ConsistentHashTest {
     @Test
     public void emptyBehavior() {
         ConsistentHash<String> hash = new ConsistentHash<String>();
+        assertEquals(0, hash.countAllPoints());
         assertFalse(hash.list(0).iterator().hasNext());
         assertNull(hash.lookup(0));
         assertNull(hash.lookup(999));
+    }
+
+    @Test
+    public void countAllPoints() {
+        ConsistentHash<String> hash = new ConsistentHash<String>();
+        assertEquals(0, hash.countAllPoints());
+        hash.add("foo", 10);
+        assertEquals(10, hash.countAllPoints());
+        hash.add("bar", 5);
+        assertEquals(15, hash.countAllPoints());
+        hash.remove("foo");
+        assertEquals(5, hash.countAllPoints());
+    }
+
+    @Test
+    public void defaultReplicationIsOneHundred() {
+        ConsistentHash<String> hash = new ConsistentHash<String>();
+        assertEquals(0, hash.countAllPoints());
+        hash.add("foo");
+        assertEquals(100, hash.countAllPoints());
+    }
+
+    @Test
+    public void setCustomDefaultReplication() {
+        ConsistentHash<String> hash = new ConsistentHash<String>((ConsistentHash.Hash<String>) ConsistentHash.DEFAULT_HASH, 7);
+        assertEquals(0, hash.countAllPoints());
+        hash.add("foo");
+        assertEquals(7, hash.countAllPoints());
+    }
+
+    @Test
+    public void usesCustomHash() {
+        final RuntimeException exception = new RuntimeException();
+        ConsistentHash.Hash<String> hashFunction = new ConsistentHash.Hash<String>() {
+            public String hash(String str) {
+                throw exception;
+            }
+        };
+
+        try {
+            ConsistentHash<String> hash = new ConsistentHash<String>(hashFunction);
+            hash.add("foo");
+            fail("Didn't use custom hash function");
+        } catch (RuntimeException e) {
+            assertSame(exception, e);
+        }
     }
 
     /**
@@ -137,9 +180,8 @@ public class ConsistentHashTest {
     @Test
     public void speed() {
         Map<String,Integer> data = new Hash<String, Integer>();
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 1000; i++)
             data.put("node" + i,100);
-        }
         data.put("tail",100);
 
         long start = System.currentTimeMillis();

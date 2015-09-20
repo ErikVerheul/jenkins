@@ -30,10 +30,12 @@ import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
+import org.kohsuke.args4j.spi.FieldSetter;
 import org.kohsuke.args4j.spi.Setter;
 import org.kohsuke.args4j.spi.OptionHandler;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -79,6 +81,16 @@ class MethodBinder {
                 public boolean isMultiValued() {
                     return false;
                 }
+
+                @Override
+                public FieldSetter asFieldSetter() {
+                    return null;
+                }
+
+                @Override
+                public AnnotatedElement asAnnotatedElement() {
+                    return p;
+                }
             };
             Option option = p.annotation(Option.class);
             if (option!=null) {
@@ -86,18 +98,14 @@ class MethodBinder {
             }
             Argument arg = p.annotation(Argument.class);
             if (arg!=null) {
-                if (bias>0) {
-                    arg = new ArgumentImpl(arg,bias);
-                }
+                if (bias>0) arg = new ArgumentImpl(arg,bias);
                 parser.addArgument(setter,arg);
             }
-            if (p.type()==CLICommand.class) {
+            if (p.type()==CLICommand.class)
                 arguments[index] = command;
-            }
 
-            if (p.type().isPrimitive()) {
+            if (p.type().isPrimitive())
                 arguments[index] = ReflectionUtils.getVmDefaultValueForPrimitiveType(p.type());
-            }
         }
     }
 
@@ -106,9 +114,8 @@ class MethodBinder {
             return method.invoke(instance,arguments);
         } catch (InvocationTargetException e) {
             Throwable t = e.getTargetException();
-            if (t instanceof Exception) {
+            if (t instanceof Exception)
                 throw (Exception) t;
-            }
             throw e;
         }
     }
@@ -152,6 +159,11 @@ class MethodBinder {
 
         public Class<? extends Annotation> annotationType() {
             return base.annotationType();
+        }
+
+        @Override
+        public boolean hidden() {
+            return base.hidden();
         }
     }
 }

@@ -73,6 +73,7 @@ public abstract class LoadPredictor implements ExtensionPoint {
      * @deprecated as of 1.380
      *      Use {@link #predict(MappingWorksheet, Computer, long, long)}
      */
+    @Deprecated
     public Iterable<FutureLoad> predict(Computer computer, long start, long end) {
         return Collections.emptyList();
     }
@@ -94,15 +95,11 @@ public abstract class LoadPredictor implements ExtensionPoint {
             long now = System.currentTimeMillis();
             List<FutureLoad> fl = new ArrayList<FutureLoad>();
             for (Executor e : computer.getExecutors()) {
-                if (e.isIdle()) {
-                    continue;
-                }
+                if (e.isIdle())     continue;
 
                 long eta = e.getEstimatedRemainingTimeMillis();
                 long end = eta<0 ? eternity : now + eta; // when does this task end?
-                if (end < start) {
-                    continue;   // should be over by the 'start' time.
-                }
+                if (end < start)    continue;   // should be over by the 'start' time.
                 fl.add(new FutureLoad(start, end-start, 1));
             }
             return fl;

@@ -34,15 +34,18 @@ import hudson.remoting.Future;
 import hudson.remoting.VirtualChannel;
 import hudson.security.AccessControlled;
 import jenkins.security.MasterToSlaveCallable;
+
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.WebMethod;
 
+import javax.annotation.Nonnull;
 import javax.management.JMException;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -65,9 +68,8 @@ import java.util.TreeMap;
  */
 public final class RemotingDiagnostics {
     public static Map<Object,Object> getSystemProperties(VirtualChannel channel) throws IOException, InterruptedException {
-        if(channel==null) {
+        if(channel==null)
             return Collections.<Object,Object>singletonMap("N/A","N/A");
-        }
         return channel.call(new GetSystemProperties());
     }
 
@@ -79,16 +81,14 @@ public final class RemotingDiagnostics {
     }
 
     public static Map<String,String> getThreadDump(VirtualChannel channel) throws IOException, InterruptedException {
-        if(channel==null) {
+        if(channel==null)
             return Collections.singletonMap("N/A","N/A");
-        }
         return channel.call(new GetThreadDump());
     }
 
     public static Future<Map<String,String>> getThreadDumpAsync(VirtualChannel channel) throws IOException, InterruptedException {
-        if(channel==null) {
+        if(channel==null)
             return new AsyncFutureImpl<Map<String, String>>(Collections.singletonMap("N/A","offline"));
-        }
         return channel.callAsync(new GetThreadDump());
     }
 
@@ -97,9 +97,8 @@ public final class RemotingDiagnostics {
             Map<String,String> r = new LinkedHashMap<String,String>();
                 ThreadInfo[] data = Functions.getThreadInfos();
                 Functions.ThreadGroupMap map = Functions.sortThreadsAndGetGroupMap(data);
-                for (ThreadInfo ti : data) {
+                for (ThreadInfo ti : data)
                     r.put(ti.getThreadName(),Functions.dumpThreadInfo(ti,map));
-            }
             return r;
         }
         private static final long serialVersionUID = 1L;
@@ -108,7 +107,7 @@ public final class RemotingDiagnostics {
     /**
      * Executes Groovy script remotely.
      */
-    public static String executeGroovy(String script, VirtualChannel channel) throws IOException, InterruptedException {
+    public static String executeGroovy(String script, @Nonnull VirtualChannel channel) throws IOException, InterruptedException {
         return channel.call(new Script(script));
     }
 
@@ -127,9 +126,7 @@ public final class RemotingDiagnostics {
 
         public String call() throws RuntimeException {
             // if we run locally, cl!=null. Otherwise the delegating classloader will be available as context classloader.
-            if (cl==null) {
-                cl = Thread.currentThread().getContextClassLoader();
-            }
+            if (cl==null)       cl = Thread.currentThread().getContextClassLoader();
             CompilerConfiguration cc = new CompilerConfiguration();
             cc.addCompilationCustomizers(new ImportCustomizer().addStarImports(
                     "jenkins",
@@ -143,11 +140,10 @@ public final class RemotingDiagnostics {
             shell.setVariable("out", pw);
             try {
                 Object output = shell.evaluate(script);
-                if(output!=null) {
-                    pw.println("Result: "+output);
-                }
-            } catch (Exception t) {
-                t.printStackTrace(pw); //NOSONAR
+                if(output!=null)
+                pw.println("Result: "+output);
+            } catch (Throwable t) {
+                t.printStackTrace(pw);
             }
             return out.toString();
         }

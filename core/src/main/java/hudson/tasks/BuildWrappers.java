@@ -44,6 +44,7 @@ public class BuildWrappers {
      *      as of 1.281. Use {@link Extension} for registration, and use {@link BuildWrapper#all()}
      *      for listing them.
      */
+    @Deprecated
     public static final List<Descriptor<BuildWrapper>> WRAPPERS = new DescriptorList<BuildWrapper>(BuildWrapper.class);
 
     /**
@@ -58,14 +59,12 @@ public class BuildWrappers {
         Descriptor pd = Jenkins.getInstance().getDescriptor((Class)project.getClass());
 
         for (Descriptor<BuildWrapper> w : BuildWrapper.all()) {
-            if (pd instanceof AbstractProjectDescriptor && !((AbstractProjectDescriptor)pd).isApplicable(w)) {
+            if (pd instanceof AbstractProjectDescriptor && !((AbstractProjectDescriptor)pd).isApplicable(w))
                 continue;
-            }
             if (w instanceof BuildWrapperDescriptor) {
                 BuildWrapperDescriptor bwd = (BuildWrapperDescriptor) w;
-                if(bwd.isApplicable(project)) {
+                if(bwd.isApplicable(project))
                     result.add(bwd);
-                }
             } else {
                 // old BuildWrapper that doesn't implement BuildWrapperDescriptor
                 result.add(w);

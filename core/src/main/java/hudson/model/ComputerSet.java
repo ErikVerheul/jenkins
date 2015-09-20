@@ -95,6 +95,7 @@ public final class ComputerSet extends AbstractModelObject implements Describabl
      * @deprecated as of 1.301
      *      Use {@link #getMonitors()}.
      */
+    @Deprecated
     public static List<NodeMonitor> get_monitors() {
         return monitors.toList();
     }
@@ -129,9 +130,8 @@ public final class ComputerSet extends AbstractModelObject implements Describabl
     public static Map<Descriptor<NodeMonitor>,NodeMonitor> getNonIgnoredMonitors() {
         Map<Descriptor<NodeMonitor>,NodeMonitor> r = new HashMap<Descriptor<NodeMonitor>, NodeMonitor>();
         for (NodeMonitor m : monitors) {
-            if(!m.isIgnored()) {
+            if(!m.isIgnored())
                 r.put(m.getDescriptor(),m);
-            }
         }
         return r;
     }
@@ -162,9 +162,8 @@ public final class ComputerSet extends AbstractModelObject implements Describabl
     public int getTotalExecutors() {
         int r=0;
         for (Computer c : get_all()) {
-            if(c.isOnline()) {
+            if(c.isOnline())
                 r += c.countExecutors();
-            }
         }
         return r;
     }
@@ -176,9 +175,8 @@ public final class ComputerSet extends AbstractModelObject implements Describabl
     public int getBusyExecutors() {
         int r=0;
         for (Computer c : get_all()) {
-            if(c.isOnline()) {
+            if(c.isOnline())
                 r += c.countBusy();
-            }
         }
         return r;
     }
@@ -188,11 +186,9 @@ public final class ComputerSet extends AbstractModelObject implements Describabl
      */
     public int getIdleExecutors() {
         int r=0;
-        for (Computer c : get_all()) {
-            if((c.isOnline() || c.isConnecting()) && c.isAcceptingTasks()) {
+        for (Computer c : get_all())
+            if((c.isOnline() || c.isConnecting()) && c.isAcceptingTasks())
                 r += c.countIdle();
-            }
-        }
         return r;
     }
 
@@ -208,9 +204,8 @@ public final class ComputerSet extends AbstractModelObject implements Describabl
         Jenkins.getInstance().checkPermission(Jenkins.ADMINISTER);
 
         for(Computer c : get_all()) {
-            if(c.isLaunchSupported()) {
+            if(c.isLaunchSupported())
                 c.connect(true);
-            }
         }
         rsp.sendRedirect(".");
     }
@@ -296,6 +291,7 @@ public final class ComputerSet extends AbstractModelObject implements Describabl
         JSONObject formData = req.getSubmittedForm();
         formData.put("name", fixedName);
         
+        // TODO type is probably NodeDescriptor.id but confirm
         Node result = NodeDescriptor.all().find(type).newInstance(req, formData);
         app.addNode(result);
 
@@ -308,16 +304,14 @@ public final class ComputerSet extends AbstractModelObject implements Describabl
      * @return trimmed name if valid; throws ParseException if not
      */
     public String checkName(String name) throws Failure {
-        if(name==null) {
+        if(name==null)
             throw new Failure("Query parameter 'name' is required");
-        }
 
         name = name.trim();
         Jenkins.checkGoodName(name);
 
-        if(Jenkins.getInstance().getNode(name)!=null) {
+        if(Jenkins.getInstance().getNode(name)!=null)
             throw new Failure(Messages.ComputerSet_SlaveAlreadyExists(name));
-        }
 
         // looks good
         return name;
@@ -329,9 +323,8 @@ public final class ComputerSet extends AbstractModelObject implements Describabl
     public FormValidation doCheckName(@QueryParameter String value) throws IOException, ServletException {
         Jenkins.getInstance().checkPermission(Computer.CREATE);
 
-        if(Util.fixEmpty(value)==null) {
+        if(Util.fixEmpty(value)==null)
             return FormValidation.ok();
-        }
         
         try {
             checkName(value);
@@ -352,14 +345,12 @@ public final class ComputerSet extends AbstractModelObject implements Describabl
             monitors.rebuild(req,req.getSubmittedForm(),getNodeMonitorDescriptors());
 
             // add in the rest of instances are ignored instances
-            for (Descriptor<NodeMonitor> d : NodeMonitor.all()) {
+            for (Descriptor<NodeMonitor> d : NodeMonitor.all())
                 if(monitors.get(d)==null) {
                     NodeMonitor i = createDefaultInstance(d, true);
-                    if(i!=null) {
+                    if(i!=null)
                         monitors.add(i);
-                    }
                 }
-            }
 
             // recompute the data
             for (NodeMonitor nm : monitors) {
@@ -401,9 +392,8 @@ public final class ComputerSet extends AbstractModelObject implements Describabl
             final AutoCompletionCandidates r = new AutoCompletionCandidates();
 
             for (Node n : Jenkins.getInstance().getNodes()) {
-                if (n.getNodeName().startsWith(value)) {
+                if (n.getNodeName().startsWith(value))
                     r.add(n.getNodeName());
-                }
             }
 
             return r;
@@ -442,7 +432,7 @@ public final class ComputerSet extends AbstractModelObject implements Describabl
                     try {
                         nm.getDescriptor();
                         sanitized.add(nm);
-                    } catch (Exception e) {
+                    } catch (Throwable e) {
                         // the descriptor didn't load? see JENKINS-15869
                     }
                 }
@@ -450,16 +440,14 @@ public final class ComputerSet extends AbstractModelObject implements Describabl
             }
 
             // if we have any new monitors, let's add them
-            for (Descriptor<NodeMonitor> d : NodeMonitor.all()) {
+            for (Descriptor<NodeMonitor> d : NodeMonitor.all())
                 if(r.get(d)==null) {
                     NodeMonitor i = createDefaultInstance(d,false);
-                    if(i!=null) {
+                    if(i!=null)
                         r.add(i);
-                    }
                 }
-            }
             monitors.replaceBy(r.toList());
-        } catch (Exception x) {
+        } catch (Throwable x) {
             LOGGER.log(Level.WARNING, "Failed to instantiate NodeMonitors", x);
         }
     }

@@ -85,6 +85,7 @@ public abstract class ExtensionFinder implements ExtensionPoint {
      *      Use and implement {@link #find(Class,Hudson)} that allows us to put some metadata.
      */
     @Restricted(NoExternalUse.class)
+    @Deprecated
     public <T> Collection<T> findExtensions(Class<T> type, Hudson hudson) {
         return Collections.emptyList();
     }
@@ -277,7 +278,7 @@ public abstract class ExtensionFinder implements ExtensionPoint {
 
             try {
                 container = Guice.createInjector(modules);
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 LOGGER.log(Level.SEVERE, "Failed to create Guice container from all the plugins",e);
                 // failing to load all bindings are disastrous, so recover by creating minimum that works
                 // by just including the core
@@ -342,7 +343,7 @@ public abstract class ExtensionFinder implements ExtensionPoint {
                         return result;
                     }
                 };
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 LOGGER.log(Level.SEVERE, "Failed to create Guice container from newly added plugins",e);
                 throw new ExtensionRefreshException(e);
             }
@@ -503,9 +504,7 @@ public abstract class ExtensionFinder implements ExtensionPoint {
                     try {
                         AnnotatedElement e = item.element();
                         Annotation a = item.annotation();
-                        if (!isActive(a,e)) {
-                            continue;
-                        }
+                        if (!isActive(a,e))   continue;
 
                         Scope scope = optional ? QUIET_FAULT_TOLERANT_SCOPE : FAULT_TOLERANT_SCOPE;
                         if (e instanceof Class) {
@@ -520,9 +519,8 @@ public abstract class ExtensionFinder implements ExtensionPoint {
                             } else
                             if (e instanceof Method) {
                                 extType = ((Method)e).getReturnType();
-                            } else {
+                            } else
                                 throw new AssertionError();
-                            }
 
                             resolve(extType);
 
@@ -588,9 +586,7 @@ public abstract class ExtensionFinder implements ExtensionPoint {
         @Override
         public synchronized ExtensionComponentSet refresh() {
             final List<IndexItem<Extension,Object>> old = indices;
-            if (old==null) {
-                return ExtensionComponentSet.EMPTY; // we haven't loaded anything
-            }
+            if (old==null)      return ExtensionComponentSet.EMPTY; // we haven't loaded anything
 
             final List<IndexItem<Extension, Object>> delta = listDelta(Extension.class,old);
 
@@ -640,15 +636,13 @@ public abstract class ExtensionFinder implements ExtensionPoint {
                     } else
                     if (e instanceof Method) {
                         extType = ((Method)e).getReturnType();
-                    } else {
+                    } else
                         throw new AssertionError();
-                    }
 
                     if(type.isAssignableFrom(extType)) {
                         Object instance = item.instance();
-                        if(instance!=null) {
+                        if(instance!=null)
                             result.add(new ExtensionComponent<T>(type.cast(instance),item.annotation()));
-                        }
                     }
                 } catch (LinkageError e) {
                     // sometimes the instantiation fails in an indirect classloading failure,
@@ -680,9 +674,8 @@ public abstract class ExtensionFinder implements ExtensionPoint {
                     } else
                     if (e instanceof Method) {
                         extType = ((Method)e).getReturnType();
-                    } else {
+                    } else
                         throw new AssertionError();
-                    }
                     // according to http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6459208
                     // this appears to be the only way to force a class initialization
                     Class.forName(extType.getName(),true,extType.getClassLoader());

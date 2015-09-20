@@ -46,6 +46,7 @@ public class RepositoryBrowsers {
      * @deprecated as of 1.286.
      *      Use {@link RepositoryBrowser#all()} for read access and {@link Extension} for registration.
      */
+    @Deprecated
     public static final List<Descriptor<RepositoryBrowser<?>>> LIST = new DescriptorList<RepositoryBrowser<?>>((Class)RepositoryBrowser.class);
 
     /**
@@ -53,11 +54,9 @@ public class RepositoryBrowsers {
      */
     public static List<Descriptor<RepositoryBrowser<?>>> filter(Class<? extends RepositoryBrowser> t) {
         List<Descriptor<RepositoryBrowser<?>>> r = new ArrayList<Descriptor<RepositoryBrowser<?>>>();
-        for (Descriptor<RepositoryBrowser<?>> d : RepositoryBrowser.all()) {
-            if(d.isSubTypeOf(t)) {
+        for (Descriptor<RepositoryBrowser<?>> d : RepositoryBrowser.all())
+            if(d.isSubTypeOf(t))
                 r.add(d);
-            }
-        }
         return r;
     }
 
@@ -67,13 +66,13 @@ public class RepositoryBrowsers {
      * @deprecated since 2008-06-19.
      *      Use {@link #createInstance(Class, StaplerRequest, JSONObject, String)}.
      */
+    @Deprecated
     public static <T extends RepositoryBrowser>
     T createInstance(Class<T> type, StaplerRequest req, String fieldName) throws FormException {
         List<Descriptor<RepositoryBrowser<?>>> list = filter(type);
         String value = req.getParameter(fieldName);
-        if(value==null || value.equals("auto")) {
+        if(value==null || value.equals("auto"))
             return null;
-        }
 
         return type.cast(list.get(Integer.parseInt(value)).newInstance(req,null/*TODO*/));
     }
@@ -86,9 +85,7 @@ public class RepositoryBrowsers {
     public static <T extends RepositoryBrowser>
     T createInstance(Class<T> type, StaplerRequest req, JSONObject parent, String fieldName) throws FormException {
         JSONObject o = (JSONObject)parent.get(fieldName);
-        if(o==null) {
-            return null;
-        }
+        if(o==null) return null;
 
         return req.bindJSON(type,o);
     }

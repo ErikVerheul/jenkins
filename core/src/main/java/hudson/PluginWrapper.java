@@ -63,7 +63,7 @@ import javax.annotation.CheckForNull;
  * for Jenkins to control {@link Plugin}.
  *
  * <p>
- * A plug-in is packaged into a jar file whose extension is <tt>".jpi"</tt> (or <tt>".hpi"</tt> for backward compatability),
+ * A plug-in is packaged into a jar file whose extension is <tt>".jpi"</tt> (or <tt>".hpi"</tt> for backward compatibility),
  * A plugin needs to have a special manifest entry to identify what it is.
  *
  * <p>
@@ -161,9 +161,8 @@ public class PluginWrapper implements Comparable<PluginWrapper>, ModelObject {
 
         public Dependency(String s) {
             int idx = s.indexOf(':');
-            if(idx==-1) {
+            if(idx==-1)
                 throw new IllegalArgumentException("Illegal dependency specifier "+s);
-            }
             this.shortName = s.substring(0,idx);
             this.version = s.substring(idx+1);
             
@@ -231,9 +230,8 @@ public class PluginWrapper implements Comparable<PluginWrapper>, ModelObject {
         URL idx = null;
         try {
             Enumeration<URL> en = classLoader.getResources("index.jelly");
-            while (en.hasMoreElements()) {
+            while (en.hasMoreElements())
                 idx = en.nextElement();
-            }
         } catch (IOException ignore) { }
         // In case plugin has dependencies but is missing its own index.jelly,
         // check that result has this plugin's artifactId in it:
@@ -244,15 +242,11 @@ public class PluginWrapper implements Comparable<PluginWrapper>, ModelObject {
         // use the name captured in the manifest, as often plugins
         // depend on the specific short name in its URLs.
         String n = manifest.getMainAttributes().getValue("Short-Name");
-        if(n!=null) {
-            return n;
-        }
+        if(n!=null)     return n;
 
         // maven seems to put this automatically, so good fallback to check.
         n = manifest.getMainAttributes().getValue("Extension-Name");
-        if(n!=null) {
-            return n;
-        }
+        if(n!=null)     return n;
 
         // otherwise infer from the file name, since older plugins don't have
         // this entry.
@@ -295,15 +289,11 @@ public class PluginWrapper implements Comparable<PluginWrapper>, ModelObject {
     public String getUrl() {
         // first look for the manifest entry. This is new in maven-hpi-plugin 1.30
         String url = manifest.getMainAttributes().getValue("Url");
-        if(url!=null) {
-            return url;
-        }
+        if(url!=null)      return url;
 
         // fallback to update center metadata
         UpdateSite.Plugin ui = getInfo();
-        if(ui!=null) {
-            return ui.wiki;
-        }
+        if(ui!=null)    return ui.wiki;
 
         return null;
     }
@@ -321,9 +311,7 @@ public class PluginWrapper implements Comparable<PluginWrapper>, ModelObject {
     @Exported
     public String getLongName() {
         String name = manifest.getMainAttributes().getValue("Long-Name");
-        if(name!=null) {
-            return name;
-        }
+        if(name!=null)      return name;
         return shortName;
     }
 
@@ -333,9 +321,7 @@ public class PluginWrapper implements Comparable<PluginWrapper>, ModelObject {
     @Exported
     public YesNoMaybe supportsDynamicLoad() {
         String v = manifest.getMainAttributes().getValue("Support-Dynamic-Loading");
-        if (v==null) {
-            return YesNoMaybe.MAYBE;
-        }
+        if (v==null) return YesNoMaybe.MAYBE;
         return Boolean.parseBoolean(v) ? YesNoMaybe.YES : YesNoMaybe.NO;
     }
 
@@ -349,15 +335,11 @@ public class PluginWrapper implements Comparable<PluginWrapper>, ModelObject {
 
     private String getVersionOf(Manifest manifest) {
         String v = manifest.getMainAttributes().getValue("Plugin-Version");
-        if(v!=null) {
-            return v;
-        }
+        if(v!=null)      return v;
 
         // plugins generated before maven-hpi-plugin 1.3 should still have this attribute
         v = manifest.getMainAttributes().getValue("Implementation-Version");
-        if(v!=null) {
-            return v;
-        }
+        if(v!=null)      return v;
 
         return "???";
     }
@@ -391,7 +373,7 @@ public class PluginWrapper implements Comparable<PluginWrapper>, ModelObject {
             try {
                 LOGGER.log(Level.FINE, "Stopping {0}", shortName);
                 plugin.stop();
-            } catch (Exception t) {
+            } catch (Throwable t) {
                 LOGGER.log(WARNING, "Failed to shut down " + shortName, t);
             }
         } else {
@@ -403,22 +385,20 @@ public class PluginWrapper implements Comparable<PluginWrapper>, ModelObject {
     }
 
     public void releaseClassLoader() {
-        if (classLoader instanceof Closeable) {
+        if (classLoader instanceof Closeable)
             try {
                 ((Closeable) classLoader).close();
             } catch (IOException e) {
                 LOGGER.log(WARNING, "Failed to shut down classloader",e);
             }
-        }
     }
 
     /**
      * Enables this plugin next time Jenkins runs.
      */
     public void enable() throws IOException {
-        if(!disableFile.delete()) {
+        if(!disableFile.delete())
             throw new IOException("Failed to delete "+disableFile);
-        }
     }
 
     /**
@@ -493,19 +473,16 @@ public class PluginWrapper implements Comparable<PluginWrapper>, ModelObject {
         List<String> missingDependencies = new ArrayList<String>();
         // make sure dependencies exist
         for (Dependency d : dependencies) {
-            if (parent.getPlugin(d.shortName) == null) {
+            if (parent.getPlugin(d.shortName) == null)
                 missingDependencies.add(d.toString());
-            }
         }
-        if (!missingDependencies.isEmpty()) {
+        if (!missingDependencies.isEmpty())
             throw new IOException("Dependency "+Util.join(missingDependencies, ", ")+" doesn't exist");
-        }
 
         // add the optional dependencies that exists
         for (Dependency d : optionalDependencies) {
-            if (parent.getPlugin(d.shortName) != null) {
+            if (parent.getPlugin(d.shortName) != null)
                 dependencies.add(d);
-            }
         }
     }
 
@@ -520,9 +497,7 @@ public class PluginWrapper implements Comparable<PluginWrapper>, ModelObject {
     public UpdateSite.Plugin getUpdateInfo() {
         UpdateCenter uc = Jenkins.getInstance().getUpdateCenter();
         UpdateSite.Plugin p = uc.getPlugin(getShortName());
-        if(p!=null && p.isNewerThan(getVersion())) {
-            return p;
-        }
+        if(p!=null && p.isNewerThan(getVersion())) return p;
         return null;
     }
     
@@ -564,32 +539,8 @@ public class PluginWrapper implements Comparable<PluginWrapper>, ModelObject {
     /**
      * Sort by short name.
      */
-    @Override
     public int compareTo(PluginWrapper pw) {
         return shortName.compareToIgnoreCase(pw.shortName);
-    }
-    
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (obj == this) {
-            return true;
-        }
-        if (!(obj instanceof PluginWrapper)) {
-            return false;
-        }
-        PluginWrapper o = (PluginWrapper) obj;
-
-        return shortName.compareToIgnoreCase(o.shortName) == 0;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 67 * hash + (this.shortName != null ? this.shortName.hashCode() : 0);
-        return hash;
     }
 
     /**

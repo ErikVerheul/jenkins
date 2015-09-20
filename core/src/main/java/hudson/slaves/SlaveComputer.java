@@ -1,18 +1,18 @@
 /*
  * The MIT License
- * 
+ *
  * Copyright (c) 2004-2009, Sun Microsystems, Inc., Kohsuke Kawaguchi, Stephen Connolly
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -26,8 +26,6 @@ package hudson.slaves;
 import edu.umd.cs.findbugs.annotations.OverrideMustInvoke;
 import edu.umd.cs.findbugs.annotations.When;
 import hudson.AbortException;
-import hudson.remoting.ChannelBuilder;
-import hudson.util.IOUtils;
 import hudson.FilePath;
 import hudson.Util;
 import hudson.model.Computer;
@@ -39,23 +37,35 @@ import hudson.model.Slave;
 import hudson.model.TaskListener;
 import hudson.model.User;
 import hudson.remoting.Channel;
+import hudson.remoting.ChannelBuilder;
 import hudson.remoting.Launcher;
 import hudson.remoting.VirtualChannel;
 import hudson.security.ACL;
 import hudson.slaves.OfflineCause.ChannelTermination;
 import hudson.util.Futures;
+import hudson.util.IOUtils;
 import hudson.util.NullStream;
 import hudson.util.RingBufferLogHandler;
 import hudson.util.StreamTaskListener;
 import hudson.util.io.ReopenableFileOutputStream;
 import hudson.util.io.ReopenableRotatingFileOutputStream;
+import jenkins.model.Jenkins;
+import jenkins.security.ChannelConfigurator;
+import jenkins.security.MasterToSlaveCallable;
 import jenkins.slaves.EncryptedSlaveAgentJnlpFile;
+import jenkins.slaves.JnlpSlaveAgentProtocol;
 import jenkins.slaves.systemInfo.SlaveSystemInfo;
 import org.acegisecurity.context.SecurityContext;
 import org.acegisecurity.context.SecurityContextHolder;
+import org.kohsuke.stapler.HttpRedirect;
+import org.kohsuke.stapler.HttpResponse;
+import org.kohsuke.stapler.QueryParameter;
+import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.interceptor.RequirePOST;
 
+import javax.annotation.CheckForNull;
 import javax.servlet.ServletException;
 import java.io.File;
 import java.io.IOException;
@@ -73,17 +83,7 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
-import javax.annotation.CheckForNull;
-import jenkins.model.Jenkins;
-import static hudson.slaves.SlaveComputer.LogHolder.*;
-import jenkins.security.ChannelConfigurator;
-import jenkins.security.MasterToSlaveCallable;
-import jenkins.slaves.JnlpSlaveAgentProtocol;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
-import org.kohsuke.stapler.QueryParameter;
-import org.kohsuke.stapler.HttpResponse;
-import org.kohsuke.stapler.HttpRedirect;
+import static hudson.slaves.SlaveComputer.LogHolder.SLAVE_LOG_HANDLER;
 
 
 /**
@@ -102,7 +102,7 @@ public class SlaveComputer extends Computer {
      *
      * <p>
      * This is normally the same as {@link Slave#getLauncher()} but
-     * can be different. See {@link #grabLauncher(Node)}. 
+     * can be different. See {@link #grabLauncher(Node)}.
      */
     private ComputerLauncher launcher;
 
@@ -131,6 +131,8 @@ public class SlaveComputer extends Computer {
     private volatile Future<?> lastConnectActivity = null;
 
     private Object constructed = new Object();
+
+    private transient volatile String absoluteRemoteFs;
 
     public SlaveComputer(Slave slave) {
         super(slave);
@@ -170,12 +172,7 @@ public class SlaveComputer extends Computer {
         this.acceptingTasks = acceptingTasks;
     }
 
-    /**
-     * True if this computer is a Unix machine (as opposed to Windows machine).
-     *
-     * @return
-     *      null if the computer is disconnected and therefore we don't know whether it is Unix or not.
-     */
+    @Override
     public Boolean isUnix() {
         return isUnix;
     }
@@ -195,9 +192,8 @@ public class SlaveComputer extends Computer {
     @Override
     public String getIcon() {
         Future<?> l = lastConnectActivity;
-        if(l!=null && !l.isDone()) {
+        if(l!=null && !l.isDone())
             return "computer-flash.gif";
-        }
         return super.getIcon();
     }
 
@@ -219,15 +215,11 @@ public class SlaveComputer extends Computer {
     }
 
     protected Future<?> _connect(boolean forceReconnect) {
-        if(channel!=null) {
-            return Futures.precomputed(null);
-        }
-        if(!forceReconnect && isConnecting()) {
+        if(channel!=null)   return Futures.precomputed(null);
+        if(!forceReconnect && isConnecting())
             return lastConnectActivity;
-        }
-        if(forceReconnect && isConnecting()) {
+        if(forceReconnect && isConnecting())
             logger.fine("Forcing a reconnect on "+getName());
-        }
 
         closeChannel();
         return lastConnectActivity = Computer.threadPoolForRemoting.submit(new java.util.concurrent.Callable<Object>() {
@@ -240,9 +232,8 @@ public class SlaveComputer extends Computer {
                 try {
                     log.rewind();
                     try {
-                        for (ComputerListener cl : ComputerListener.all()) {
+                        for (ComputerListener cl : ComputerListener.all())
                             cl.preLaunch(SlaveComputer.this, taskListener);
-                        }
 
                         launcher.launch(SlaveComputer.this, taskListener);
                     } catch (AbortException e) {
@@ -250,24 +241,25 @@ public class SlaveComputer extends Computer {
                         throw e;
                     } catch (IOException e) {
                         Util.displayIOException(e,taskListener);
-                        e.printStackTrace(taskListener.error(Messages.ComputerLauncher_unexpectedError())); //NOSONAR
+                        e.printStackTrace(taskListener.error(Messages.ComputerLauncher_unexpectedError()));
                         throw e;
                     } catch (InterruptedException e) {
-                        e.printStackTrace(taskListener.error(Messages.ComputerLauncher_abortedLaunch())); //NOSONAR
+                        e.printStackTrace(taskListener.error(Messages.ComputerLauncher_abortedLaunch()));
+                        throw e;
+                    } catch (Exception e) {
+                        e.printStackTrace(taskListener.error(Messages.ComputerLauncher_unexpectedError()));
                         throw e;
                     }
                 } finally {
                     if (channel==null) {
                         offlineCause = new OfflineCause.LaunchFailed();
-                        for (ComputerListener cl : ComputerListener.all()) {
+                        for (ComputerListener cl : ComputerListener.all())
                             cl.onLaunchFailure(SlaveComputer.this, taskListener);
-                        }
                     }
                 }
 
-                if (channel==null) {
+                if (channel==null)
                     throw new IOException("Slave failed to connect, even though the launcher didn't report it. See the log output for details.");
-                }
                 return null;
             }
         });
@@ -282,7 +274,7 @@ public class SlaveComputer extends Computer {
         if (launcher instanceof ExecutorListener) {
             ((ExecutorListener)launcher).taskAccepted(executor, task);
         }
-        
+
         //getNode() can return null at indeterminate times when nodes go offline
         Slave node = getNode();
         if (node != null && node.getRetentionStrategy() instanceof ExecutorListener) {
@@ -418,6 +410,19 @@ public class SlaveComputer extends Computer {
         return channel.call(new LoadingTime(true));
     }
 
+    /**
+     * Returns the remote FS root absolute path or {@code null} if the slave is off-line. The absolute path may change
+     * between connections if the connection method does not provide a consistent working directory and the node's
+     * remote FS is specified as a relative path.
+     *
+     * @return the remote FS root absolute path or {@code null} if the slave is off-line.
+     * @since 1.606
+     */
+    @CheckForNull
+    public String getAbsoluteRemoteFs() {
+        return channel == null ? null : absoluteRemoteFs;
+    }
+
     static class LoadingCount extends MasterToSlaveCallable<Integer,RuntimeException> {
         private final boolean resource;
         LoadingCount(boolean resource) {
@@ -452,12 +457,11 @@ public class SlaveComputer extends Computer {
      * @since 1.444
      */
     public void setChannel(Channel channel, OutputStream launchLog, Channel.Listener listener) throws IOException, InterruptedException {
-        if(this.channel!=null) {
+        if(this.channel!=null)
             throw new IllegalStateException("Already connected");
-        }
 
-        final TaskListener taskListenerLocal = new StreamTaskListener(launchLog);
-        PrintStream logLocal = taskListenerLocal.getLogger();
+        final TaskListener taskListener = new StreamTaskListener(launchLog);
+        PrintStream log = taskListener.getLogger();
 
         channel.setProperty(SlaveComputer.class, this);
 
@@ -467,23 +471,30 @@ public class SlaveComputer extends Computer {
                 // Orderly shutdown will have null exception
                 if (cause!=null) {
                     offlineCause = new ChannelTermination(cause);
-                    cause.printStackTrace(taskListener.error("Connection terminated")); //NOSONAR
+                    cause.printStackTrace(taskListener.error("Connection terminated"));
                 } else {
-                    taskListenerLocal.getLogger().println("Connection terminated");
+                    taskListener.getLogger().println("Connection terminated");
                 }
                 closeChannel();
-                launcher.afterDisconnect(SlaveComputer.this, taskListenerLocal);
+                try {
+                    launcher.afterDisconnect(SlaveComputer.this, taskListener);
+                } catch (Throwable t) {
+                    LogRecord lr = new LogRecord(Level.SEVERE,
+                            "Launcher {0}'s afterDisconnect method propagated an exception when {1}'s connection was closed: {2}");
+                    lr.setThrown(t);
+                    lr.setParameters(new Object[]{launcher, SlaveComputer.this.getName(), t.getMessage()});
+                    logger.log(lr);
+                }
             }
         });
-        if(listener!=null) {
+        if(listener!=null)
             channel.addListener(listener);
-        }
 
         String slaveVersion = channel.call(new SlaveVersion());
-        logLocal.println("Slave.jar version: " + slaveVersion);
+        log.println("Slave.jar version: " + slaveVersion);
 
         boolean _isUnix = channel.call(new DetectOS());
-        logLocal.println(_isUnix? hudson.model.Messages.Slave_UnixSlave():hudson.model.Messages.Slave_WindowsSlave());
+        log.println(_isUnix? hudson.model.Messages.Slave_UnixSlave():hudson.model.Messages.Slave_WindowsSlave());
 
         String defaultCharsetName = channel.call(new DetectDefaultCharset());
 
@@ -491,12 +502,16 @@ public class SlaveComputer extends Computer {
         if (node == null) { // Node has been disabled/removed during the connection
             throw new IOException("Node "+nodeName+" has been deleted during the channel setup");
         }
-        
-        String remoteFs = node.getRemoteFS();
-        if(_isUnix && !remoteFs.contains("/") && remoteFs.contains("\\")) {
-            logLocal.println("WARNING: "+remoteFs+" looks suspiciously like Windows path. Maybe you meant "+remoteFs.replace('\\','/')+"?");
+
+        String remoteFS = node.getRemoteFS();
+        if (Util.isRelativePath(remoteFS)) {
+            remoteFS = channel.call(new AbsolutePath(remoteFS));
+            log.println("NOTE: Relative remote path resolved to: "+remoteFS);
         }
-        FilePath root = new FilePath(channel,remoteFs);
+        if(_isUnix && !remoteFS.contains("/") && remoteFS.contains("\\"))
+            log.println("WARNING: "+remoteFS
+                    +" looks suspiciously like Windows path. Maybe you meant "+remoteFS.replace('\\','/')+"?");
+        FilePath root = new FilePath(channel,remoteFS);
 
         // reference counting problem is known to happen, such as JENKINS-9017, and so as a preventive measure
         // we pin the base classloader so that it'll never get GCed. When this classloader gets released,
@@ -507,7 +522,7 @@ public class SlaveComputer extends Computer {
         SecurityContext old = ACL.impersonate(ACL.SYSTEM);
         try {
             for (ComputerListener cl : ComputerListener.all()) {
-                cl.preOnline(this,channel,root,taskListenerLocal);
+                cl.preOnline(this,channel,root,taskListener);
             }
         } finally {
             SecurityContextHolder.setContext(old);
@@ -530,6 +545,7 @@ public class SlaveComputer extends Computer {
             isUnix = _isUnix;
             numRetryAttempt = 0;
             this.channel = channel;
+            this.absoluteRemoteFs = remoteFS;
             defaultCharset = Charset.forName(defaultCharsetName);
 
             synchronized (statusChangeLock) {
@@ -539,12 +555,12 @@ public class SlaveComputer extends Computer {
         old = ACL.impersonate(ACL.SYSTEM);
         try {
             for (ComputerListener cl : ComputerListener.all()) {
-                cl.onOnline(this,taskListenerLocal);
+                cl.onOnline(this,taskListener);
             }
         } finally {
             SecurityContextHolder.setContext(old);
         }
-        logLocal.println("Slave successfully connected and online");
+        log.println("Slave successfully connected and online");
         Jenkins.getInstance().getQueue().scheduleMaintenance();
     }
 
@@ -558,11 +574,10 @@ public class SlaveComputer extends Computer {
     }
 
     public List<LogRecord> getLogRecords() throws IOException, InterruptedException {
-        if(channel==null) {
+        if(channel==null)
             return Collections.emptyList();
-        } else {
+        else
             return channel.call(new SlaveLogFetcher());
-        }
     }
 
     @RequirePOST
@@ -620,6 +635,7 @@ public class SlaveComputer extends Computer {
      *      This URL binding is no longer used and moved up directly under to {@link jenkins.model.Jenkins},
      *      but it's left here for now just in case some old JNLP slave agents request it.
      */
+    @Deprecated
     public Slave.JnlpJar getJnlpJars(String fileName) {
         return new Slave.JnlpJar(fileName);
     }
@@ -634,6 +650,12 @@ public class SlaveComputer extends Computer {
         super.kill();
         closeChannel();
         IOUtils.closeQuietly(log);
+
+        try {
+            Util.deleteRecursive(getLogDir());
+        } catch (IOException ex) {
+            logger.log(Level.WARNING, "Unable to delete slave logs", ex);
+        }
     }
 
     public RetentionStrategy getRetentionStrategy() {
@@ -646,23 +668,26 @@ public class SlaveComputer extends Computer {
      */
     private void closeChannel() {
         // TODO: race condition between this and the setChannel method.
-        Channel c = channel;
-        channel = null;
-        isUnix = null;
+        Channel c;
+        synchronized (channelLock) {
+            c = channel;
+            channel = null;
+            absoluteRemoteFs = null;
+            isUnix = null;
+        }
         if (c != null) {
             try {
                 c.close();
             } catch (IOException e) {
                 logger.log(Level.SEVERE, "Failed to terminate channel to " + getDisplayName(), e);
             }
-            for (ComputerListener cl : ComputerListener.all()) {
+            for (ComputerListener cl : ComputerListener.all())
                 cl.onOffline(this, offlineCause);
-            }
         }
     }
 
     @Override
-    protected void setNode(Node node) {
+    protected void setNode(final Node node) {
         super.setNode(node);
         launcher = grabLauncher(node);
 
@@ -671,7 +696,12 @@ public class SlaveComputer extends Computer {
         // constructed.
         if(constructed!=null) {
             if (node instanceof Slave) {
-                ((Slave)node).getRetentionStrategy().check(this);
+                Queue.withLock(new Runnable() {
+                    @Override
+                    public void run() {
+                        ((Slave)node).getRetentionStrategy().check(SlaveComputer.this);
+                    }
+                });
             } else {
                 connect(false);
             }
@@ -713,12 +743,27 @@ public class SlaveComputer extends Computer {
     private static final class SlaveVersion extends MasterToSlaveCallable<String,IOException> {
         public String call() throws IOException {
             try { return Launcher.VERSION; }
-            catch (Exception ex) { return "< 1.335"; } // Older slave.jar won't have VERSION
+            catch (Throwable ex) { return "< 1.335"; } // Older slave.jar won't have VERSION
         }
     }
     private static final class DetectOS extends MasterToSlaveCallable<Boolean,IOException> {
         public Boolean call() throws IOException {
             return File.pathSeparatorChar==':';
+        }
+    }
+
+    private static final class AbsolutePath extends MasterToSlaveCallable<String,IOException> {
+
+        private static final long serialVersionUID = 1L;
+
+        private final String relativePath;
+
+        private AbsolutePath(String relativePath) {
+            this.relativePath = relativePath;
+        }
+
+        public String call() throws IOException {
+            return new File(relativePath).getAbsolutePath();
         }
     }
 
@@ -745,9 +790,8 @@ public class SlaveComputer extends Computer {
             // and each connection gets a different RemoteClassLoader, so we need to evict them by class name,
             // not by their identity.
             for (Handler h : LOGGER.getHandlers()) {
-                if (h.getClass().getName().equals(SLAVE_LOG_HANDLER.getClass().getName())) {
+                if (h.getClass().getName().equals(SLAVE_LOG_HANDLER.getClass().getName()))
                     LOGGER.removeHandler(h);
-                }
             }
             LOGGER.addHandler(SLAVE_LOG_HANDLER);
 
@@ -759,7 +803,7 @@ public class SlaveComputer extends Computer {
             }
 
             Channel.current().setProperty("slave",Boolean.TRUE); // indicate that this side of the channel is the slave side.
-            
+
             return null;
         }
         private static final long serialVersionUID = 1L;
@@ -776,15 +820,13 @@ public class SlaveComputer extends Computer {
      * @since 1.362
      */
     public static VirtualChannel getChannelToMaster() {
-        if (Jenkins.getInstance()!=null) {
+        if (Jenkins.getInstance()!=null)
             return FilePath.localChannel;
-        }
 
         // if this method is called from within the slave computation thread, this should work
         Channel c = Channel.current();
-        if (c!=null && Boolean.TRUE.equals(c.getProperty("slave"))) {
+        if (c!=null && Boolean.TRUE.equals(c.getProperty("slave")))
             return c;
-        }
 
         return null;
     }

@@ -31,6 +31,7 @@ import hudson.model.BuildListener;
 import hudson.scm.ChangeLogParser;
 import hudson.scm.NullSCM;
 import hudson.scm.SCM;
+import hudson.scm.SCMDescriptor;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -51,18 +52,16 @@ public class ExtractResourceWithChangesSCM extends NullSCM {
     private final String moduleRoot;
     
     public ExtractResourceWithChangesSCM(URL firstZip, URL secondZip) {
-        if ((firstZip == null) || (secondZip == null)) {
+        if ((firstZip == null) || (secondZip == null))
             throw new IllegalArgumentException();
-        }
         this.firstZip = firstZip;
         this.secondZip = secondZip;
         this.moduleRoot = null;
     }
 
     public ExtractResourceWithChangesSCM(URL firstZip, URL secondZip, String moduleRoot) {
-        if ((firstZip == null) || (secondZip == null)) {
+        if ((firstZip == null) || (secondZip == null))
             throw new IllegalArgumentException();
-        }
         this.firstZip = firstZip;
         this.secondZip = secondZip;
         this.moduleRoot = moduleRoot;
@@ -94,9 +93,8 @@ public class ExtractResourceWithChangesSCM extends NullSCM {
 
         try {
             while ((e = zip.getNextEntry()) != null) {
-                if (!e.isDirectory()) {
+                if (!e.isDirectory())
                     changeLog.addFile(new ExtractChangeLogParser.FileInZip(e.getName()));
-                }
             }
         }
         finally {
@@ -142,4 +140,13 @@ public class ExtractResourceWithChangesSCM extends NullSCM {
      * Don't write 'this', so that subtypes can be implemented as anonymous class.
      */
     private Object writeReplace() { return new Object(); }
+
+    @Override public SCMDescriptor<?> getDescriptor() {
+        return new SCMDescriptor<ExtractResourceWithChangesSCM>(ExtractResourceWithChangesSCM.class, null) {
+            @Override public String getDisplayName() {
+                return "ExtractResourceWithChangesSCM";
+            }
+        };
+    }
+
 }

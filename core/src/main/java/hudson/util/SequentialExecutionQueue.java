@@ -1,5 +1,6 @@
 package hudson.util;
 
+import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -58,7 +59,7 @@ public class SequentialExecutionQueue implements Executor {
     }
 
 
-    public synchronized void execute(Runnable item) {
+    public synchronized void execute(@Nonnull Runnable item) {
         QueueEntry e = entries.get(item);
         if(e==null) {
             e = new QueueEntry(item);
@@ -75,11 +76,9 @@ public class SequentialExecutionQueue implements Executor {
      */
     public synchronized boolean isStarving(long threshold) {
         long now = System.currentTimeMillis();
-        for (QueueEntry e : entries.values()) {
-            if (now-e.submissionTime > threshold) {
+        for (QueueEntry e : entries.values())
+            if (now-e.submissionTime > threshold)
                 return true;
-            }
-        }
         return false;
     }
 
@@ -110,7 +109,6 @@ public class SequentialExecutionQueue implements Executor {
             executors.submit(this);
         }
 
-        @Override
         public void run() {
             try {
                 synchronized (SequentialExecutionQueue.this) {
@@ -118,16 +116,14 @@ public class SequentialExecutionQueue implements Executor {
                     queued = false;
                     inProgress.add(this);
                 }
-                // False positive for squid:S1217 "Thread.run() and Runnable.run() should not be called directly".
-                item.run(); //NOSONAR
+                item.run();
             } finally {
                 synchronized (SequentialExecutionQueue.this) {
-                    if(queued) {
+                    if(queued)
                         // another polling for this job is requested while we were doing the polling. do it again.
                         submit();
-                    } else {
+                    else
                         entries.remove(item);
-                    }
                     inProgress.remove(this);
                 }
             }

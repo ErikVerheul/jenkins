@@ -100,6 +100,7 @@ public class ArtifactArchiver extends Recorder implements SimpleBuildStep {
 
     @DataBoundConstructor public ArtifactArchiver(String artifacts) {
         this.artifacts = artifacts.trim();
+        allowEmptyArchive = false;
     }
 
     @Deprecated
@@ -231,9 +232,8 @@ public class ArtifactArchiver extends Recorder implements SimpleBuildStep {
                     } catch (Exception e) {
                     	listenerWarnOrError(listener, e.getMessage());
                     }
-                    if(msg!=null) {
+                    if(msg!=null)
                         listenerWarnOrError(listener, msg);
-                    }
                 }
                 if (!allowEmptyArchive) {
                 	build.setResult(Result.FAILURE);
@@ -242,7 +242,8 @@ public class ArtifactArchiver extends Recorder implements SimpleBuildStep {
             }
         } catch (IOException e) {
             Util.displayIOException(e,listener);
-            e.printStackTrace(listener.error(Messages.ArtifactArchiver_FailedToArchive(artifacts))); //NOSONAR
+            e.printStackTrace(listener.error(
+                    Messages.ArtifactArchiver_FailedToArchive(artifacts)));
             build.setResult(Result.FAILURE);
             return;
         }
@@ -281,6 +282,7 @@ public class ArtifactArchiver extends Recorder implements SimpleBuildStep {
      *      Some plugin depends on this, so this field is left here and points to the last created instance.
      *      Use {@link jenkins.model.Jenkins#getDescriptorByType(Class)} instead.
      */
+    @Deprecated
     public static volatile DescriptorImpl DESCRIPTOR;
 
     @Extension

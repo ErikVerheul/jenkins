@@ -2,6 +2,7 @@
  * The MIT License
  * 
  * Copyright (c) 2004-2009, Sun Microsystems, Inc., Kohsuke Kawaguchi, Brian Westrich, Jean-Baptiste Quenot, id:cactusman
+ *               2015 Kanstantsin Shautsou
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,6 +25,7 @@
 package hudson.triggers;
 
 import antlr.ANTLRException;
+import com.google.common.base.Preconditions;
 import hudson.Extension;
 import hudson.Util;
 import hudson.console.AnnotatedLargeText;
@@ -117,6 +119,10 @@ public class SCMTrigger extends Trigger<Item> {
 
     @Override
     public void run() {
+        if (job == null) {
+            return;
+        }
+
         run(null);
     }
 
@@ -128,8 +134,7 @@ public class SCMTrigger extends Trigger<Item> {
      * @since 1.375
      */
     public void run(Action[] additionalActions) {
-        if (Jenkins.getInstance().isQuietingDown()) {
-            LOGGER.log(INFO, "Skipping polling for {0} since Jenkins is in quiet mode", job.getFullName());
+        if (job == null) {
             return;
         }
 
@@ -139,8 +144,7 @@ public class SCMTrigger extends Trigger<Item> {
         if (d.synchronousPolling) {
         	LOGGER.fine("Running the trigger directly without threading, " +
         			"as it's already taken care of by Trigger.Cron");
-            // False positive for squid:S1217 "Thread.run() and Runnable.run() should not be called directly".
-            new Runner(additionalActions).run(); //NOSONAR
+            new Runner(additionalActions).run();
         } else {
             // schedule the polling.
             // even if we end up submitting this too many times, that's OK.
@@ -158,6 +162,10 @@ public class SCMTrigger extends Trigger<Item> {
 
     @Override
     public Collection<? extends Action> getProjectActions() {
+        if (job == null) {
+            return Collections.emptyList();
+        }
+
         return Collections.singleton(new SCMAction());
     }
 
@@ -236,9 +244,8 @@ public class SCMTrigger extends Trigger<Item> {
          // originally List<SCMedItem> but known to be used only for logging, in which case the instances are not actually cast to SCMedItem anyway
         public List<SCMTriggerItem> getItemsBeingPolled() {
             List<SCMTriggerItem> r = new ArrayList<SCMTriggerItem>();
-            for (Runner i : getRunners()) {
+            for (Runner i : getRunners())
                 r.add(i.getTarget());
-            }
             return r;
         }
 
@@ -262,12 +269,8 @@ public class SCMTrigger extends Trigger<Item> {
          */
         public void setPollingThreadCount(int n) {
             // fool proof
-            if(n<0) {
-                n=0;
-            }
-            if(n>100) {
-                n=100;
-            }
+            if(n<0)     n=0;
+            if(n>100)   n=100;
 
             maximumThreads = n;
 
@@ -295,11 +298,10 @@ public class SCMTrigger extends Trigger<Item> {
         @Override
         public boolean configure(StaplerRequest req, JSONObject json) throws FormException {
             String t = json.optString("pollingThreadCount",null);
-            if(t==null || t.length()==0) {
+            if(t==null || t.length()==0)
                 setPollingThreadCount(0);
-            } else {
+            else
                 setPollingThreadCount(Integer.parseInt(t));
-            }
 
             // Save configuration
             save();
@@ -308,9 +310,8 @@ public class SCMTrigger extends Trigger<Item> {
         }
 
         public FormValidation doCheckPollingThreadCount(@QueryParameter String value) {
-            if (value != null && "".equals(value.trim())) {
+            if (value != null && "".equals(value.trim()))
                 return FormValidation.ok();
-            }
             return FormValidation.validateNonNegativeInteger(value);
         }
     }
@@ -470,11 +471,12 @@ public class SCMTrigger extends Trigger<Item> {
         private Action[] additionalActions;
 
         public Runner() {
-            additionalActions = new Action[0];
+            this(null);
         }
         
-        // Suppress warning Constructors and methods receiving arrays should clone objects and store the copy. Trust the code.
-        public Runner(Action[] actions) { //NOSONAR
+        public Runner(Action[] actions) {
+            Preconditions.checkNotNull(job, "Runner can't be instantiated when job is null");
+
             if (actions == null) {
                 additionalActions = new Action[0];
             } else {
@@ -523,14 +525,13 @@ public class SCMTrigger extends Trigger<Item> {
                     logger.println("Started on "+ DateFormat.getDateTimeInstance().format(new Date()));
                     boolean result = job().poll(listener).hasChanges();
                     logger.println("Done. Took "+ Util.getTimeSpanString(System.currentTimeMillis()-start));
-                    if(result) {
+                    if(result)
                         logger.println("Changes found");
-                    } else {
+                    else
                         logger.println("No changes");
-                    }
                     return result;
-                } catch (RuntimeException e) {
-                    e.printStackTrace(listener.error("Failed to record SCM polling for "+job)); //NOSONAR
+                } catch (Error | RuntimeException e) {
+                    e.printStackTrace(listener.error("Failed to record SCM polling for "+job));
                     LOGGER.log(Level.SEVERE,"Failed to record SCM polling for "+job,e);
                     throw e;
                 } finally {
@@ -543,6 +544,10 @@ public class SCMTrigger extends Trigger<Item> {
         }
 
         public void run() {
+            if (job == null) {
+                return;
+            }
+
             String threadName = Thread.currentThread().getName();
             Thread.currentThread().setName("SCM polling for "+job);
             try {
@@ -611,6 +616,7 @@ public class SCMTrigger extends Trigger<Item> {
          * @deprecated
          *      Use {@link #SCMTrigger.SCMTriggerCause(String)}.
          */
+        @Deprecated
         public SCMTriggerCause() {
             this("");
         }

@@ -28,6 +28,7 @@ import org.kohsuke.stapler.ClassDescriptor;
 
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -48,11 +49,9 @@ public class ReflectionUtils extends org.springframework.util.ReflectionUtils {
      * Finds a public method of the given name, regardless of its parameter definitions,
      */
     public static Method getPublicMethodNamed(Class c, String methodName) {
-        for( Method m : c.getMethods() ) {
-            if(m.getName().equals(methodName)) {
+        for( Method m : c.getMethods() )
+            if(m.getName().equals(methodName))
                 return m;
-            }
-        }
         return null;
     }
 
@@ -106,28 +105,25 @@ public class ReflectionUtils extends org.springframework.util.ReflectionUtils {
         }
 
         public Type[] genericTypes() {
-            if (genericTypes==null) {
+            if (genericTypes==null)
                 genericTypes = method.getGenericParameterTypes();
-            }
             return genericTypes;
         }
 
         public Annotation[][] annotations() {
-            if (annotations==null) {
+            if (annotations==null)
                 annotations = method.getParameterAnnotations();
-            }
             return annotations;
         }
 
         public String[] names() {
-            if (names==null) {
+            if (names==null)
                 names = ClassDescriptor.loadParameterNames(method);
-            }
             return names;
         }
     }
 
-    public static final class Parameter {
+    public static final class Parameter implements AnnotatedElement {
         private final MethodInfo parent;
         private final int index;
 
@@ -168,11 +164,9 @@ public class ReflectionUtils extends org.springframework.util.ReflectionUtils {
          * Gets the specified annotation on this parameter or null.
          */
         public <A extends Annotation> A annotation(Class<A> type) {
-            for (Annotation a : annotations()) {
-                if (a.annotationType()==type) {
+            for (Annotation a : annotations())
+                if (a.annotationType()==type)
                     return type.cast(a);
-                }
-            }
             return null;
         }
 
@@ -183,10 +177,29 @@ public class ReflectionUtils extends org.springframework.util.ReflectionUtils {
          */
         public String name() {
             String[] names = parent.names();
-            if (index<names.length) {
+            if (index<names.length)
                 return names[index];
-            }
             return null;
+        }
+
+        @Override
+        public boolean isAnnotationPresent(Class<? extends Annotation> type) {
+            return annotation(type)!=null;
+        }
+
+        @Override
+        public <T extends Annotation> T getAnnotation(Class<T> type) {
+            return annotation(type);
+        }
+
+        @Override
+        public Annotation[] getAnnotations() {
+            return annotations();
+        }
+
+        @Override
+        public Annotation[] getDeclaredAnnotations() {
+            return annotations();
         }
     }
 
