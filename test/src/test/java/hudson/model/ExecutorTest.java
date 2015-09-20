@@ -46,7 +46,7 @@ public class ExecutorTest {
         // test the UI
         HtmlPage p = j.createWebClient().goTo("");
         p = p.getAnchorByText("Dead (!)").click();
-        assertTrue(p.getWebResponse().getContentAsString().contains(RuntimeException.class.getName()));
+        assertTrue(p.getWebResponse().getContentAsString().contains("Thread has died"));
         j.submit(p.getFormByName("yank"));
 
         assertFalse(c.getExecutors().contains(e));
