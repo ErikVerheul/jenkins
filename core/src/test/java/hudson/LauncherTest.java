@@ -34,6 +34,8 @@ import java.io.File;
 import jenkins.security.MasterToSlaveCallable;
 import org.apache.commons.io.FileUtils;
 import static org.junit.Assert.*;
+
+import org.junit.Assume;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -46,19 +48,15 @@ public class LauncherTest {
 
     @Issue("JENKINS-4611")
     @Test public void remoteKill() throws Exception {
-        if (File.pathSeparatorChar != ':') {
-            System.err.println("Skipping, currently Unix-specific test");
-            return;
-        }
+        Assume.assumeFalse("Skipping, currently Unix-specific test", Functions.isWindows());
 
         File tmp = temp.newFile();
 
             FilePath f = new FilePath(channels.french, tmp.getPath());
             Launcher l = f.createLauncher(StreamTaskListener.fromStderr());
             Proc p = l.launch().cmds("sh", "-c", "echo $$$$ > "+tmp+"; sleep 30").stdout(System.out).stderr(System.err).start();
-            while (!tmp.exists()) {
+            while (!tmp.exists())
                 Thread.sleep(100);
-            }
             long start = System.currentTimeMillis();
             p.kill();
             assertTrue(p.join()!=0);
