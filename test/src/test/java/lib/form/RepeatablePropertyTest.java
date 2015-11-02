@@ -74,9 +74,8 @@ public class RepeatablePropertyTest extends HudsonTestCase implements Describabl
         final HtmlForm form = getForm(viewName);
         final List<HtmlTextInput> inputs = toTextInputList(form.getElementsByAttribute("input", "type", "text"));
         assertEquals("size", expected.size(), inputs.size());
-        for (int i = 0; i < expected.size(); i++) {
+        for (int i = 0; i < expected.size(); i++)
             assertEquals(expected.get(i).greatProperty, inputs.get(i).getValueAttribute());
-        }
     }
     
     private List<HtmlTextInput> toTextInputList(final List<HtmlElement> inputs) {
@@ -108,12 +107,7 @@ public class RepeatablePropertyTest extends HudsonTestCase implements Describabl
     }
 
     @Extension
-    public static final class DescriptorImpl extends Descriptor<RepeatablePropertyTest> {
-        @Override
-        public String getDisplayName() {
-            return "RepeatablePropertyTest";
-        }
-    }
+    public static final class DescriptorImpl extends Descriptor<RepeatablePropertyTest> {}
         
     public static final class ExcitingObject implements Describable<ExcitingObject> {
         private final String greatProperty;
@@ -129,16 +123,11 @@ public class RepeatablePropertyTest extends HudsonTestCase implements Describabl
         }
         @Override
         public boolean equals(Object o) {
-            if (this == o) {
-                return true;
-            }
-            if (o == null || getClass() != o.getClass()) {
-                return false;
-            }
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
             ExcitingObject that = (ExcitingObject) o;
-            if (greatProperty != null ? !greatProperty.equals(that.greatProperty) : that.greatProperty != null) {
+            if (greatProperty != null ? !greatProperty.equals(that.greatProperty) : that.greatProperty != null)
                 return false;
-            }
             return true;
         }
         @Override
@@ -154,10 +143,6 @@ public class RepeatablePropertyTest extends HudsonTestCase implements Describabl
         public static final class ExcitingDescriptor extends Descriptor<ExcitingObject> {
             public ExcitingDescriptor() {
                 super(ExcitingObject.class);
-            }
-            @Override
-            public String getDisplayName() {
-                return "This is an awesome thing!";
             }
         }
     }

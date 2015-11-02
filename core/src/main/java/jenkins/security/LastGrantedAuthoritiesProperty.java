@@ -102,13 +102,11 @@ public class LastGrantedAuthoritiesProperty extends UserProperty {
             try {
                 User u = User.get(username);
                 LastGrantedAuthoritiesProperty o = u.getProperty(LastGrantedAuthoritiesProperty.class);
-                if (o==null) {
+                if (o==null)
                     u.addProperty(o=new LastGrantedAuthoritiesProperty());
-                }
                 Authentication a = Jenkins.getAuthentication();
-                if (a!=null && a.getName().equals(username)) {
+                if (a!=null && a.getName().equals(username))
                     o.update(a);    // just for defensive sanity checking
-                }
             } catch (IOException e) {
                 LOGGER.log(Level.WARNING, "Failed to record granted authorities",e);
             }
@@ -150,15 +148,11 @@ public class LastGrantedAuthoritiesProperty extends UserProperty {
 
     @Extension
     public static final class DescriptorImpl extends UserPropertyDescriptor {
-        public String getDisplayName() {
-            return null;    // not visible
-        }
-
         @Override
-        public LastGrantedAuthoritiesProperty newInstance(StaplerRequest req, JSONObject formData) throws FormException {
-            return new LastGrantedAuthoritiesProperty();
+        public boolean isEnabled() {
+            return false;
         }
-
+        
         public UserProperty newInstance(User user) {
             return null;
         }

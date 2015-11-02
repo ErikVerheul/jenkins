@@ -46,18 +46,12 @@ public class PretendSlave extends Slave {
                     numLaunch++;
                 }
                 Proc p = faker.onLaunch(starter);
-                if (p!=null) {
-                    return p;
-                }
+                if (p!=null)    return p;
                 return super.launch(starter);
             }
         };
     }
 
     @Extension
-    public static final class DescriptorImpl extends SlaveDescriptor {
-        public String getDisplayName() {
-            return "Test mock up slave";
-        }
-    }
+    public static final class DescriptorImpl extends SlaveDescriptor {}
 }

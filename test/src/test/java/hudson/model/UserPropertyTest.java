@@ -22,18 +22,13 @@ public class UserPropertyTest {
         User u = User.get("foo");
         u.addProperty(new UserProperty1());
         j.configRoundtrip(u);
-        for (UserProperty p : u.getAllProperties()) {
+        for (UserProperty p : u.getAllProperties())
             assertNotNull(p);
-        }
     }
 
     public static class UserProperty1 extends UserProperty {
         @TestExtension
         public static class DescriptorImpl extends UserPropertyDescriptor {
-            public String getDisplayName() {
-                return "UserProperty1";
-            }
-
             @Override
             public UserProperty newInstance(User user) {
                 return new UserProperty1();
@@ -44,10 +39,6 @@ public class UserPropertyTest {
     public static class UserProperty2 extends UserProperty {
         @TestExtension
         public static class DescriptorImpl extends UserPropertyDescriptor {
-            public String getDisplayName() {
-                return "UserProperty2";
-            }
-
             @Override
             public boolean isEnabled() {
                 return false;
