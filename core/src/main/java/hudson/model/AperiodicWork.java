@@ -31,6 +31,7 @@ import jenkins.util.Timer;
 
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 import static hudson.init.InitMilestone.JOB_LOADED;
 
@@ -47,7 +48,9 @@ import static hudson.init.InitMilestone.JOB_LOADED;
  * @since 1.410
  */
 public abstract class AperiodicWork extends SafeTimerTask implements ExtensionPoint {
-		
+	
+	protected final Logger logger = Logger.getLogger(getClass().getName());
+	
     /**
      * Gets the number of milliseconds between successive executions.
      *
@@ -75,9 +78,8 @@ public abstract class AperiodicWork extends SafeTimerTask implements ExtensionPo
     public long getInitialDelay() {
         long l = RANDOM.nextLong();
         // Math.abs(Long.MIN_VALUE)==Long.MIN_VALUE!
-        if (l==Long.MIN_VALUE) {
+        if (l==Long.MIN_VALUE)
             l++;
-        }
         return Math.abs(l)%getRecurrencePeriod();
     }
 

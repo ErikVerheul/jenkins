@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.lang.reflect.Type;
 import java.lang.reflect.ParameterizedType;
+import jenkins.model.OptionalJobProperty;
 
 import net.sf.json.JSONObject;
 
@@ -60,15 +61,13 @@ public abstract class JobPropertyDescriptor extends Descriptor<JobProperty<?>> {
      * {@inheritDoc}
      *
      * @return
-     *      null to avoid setting an instance of {@link JobProperty} to the target project.
+     *      null to avoid setting an instance of {@link JobProperty} to the target project (or just use {@link OptionalJobProperty})
      */
     @Override
     public JobProperty<?> newInstance(StaplerRequest req, JSONObject formData) throws FormException {
         // JobPropertyDescriptors are bit different in that we allow them even without any user-visible configuration parameter,
         // so replace the lack of form data by an empty one. 
-        if(formData.isNullObject()) {
-            formData=new JSONObject();
-        }
+        if(formData.isNullObject()) formData=new JSONObject();
 
         return super.newInstance(req, formData);
     }
@@ -101,11 +100,9 @@ public abstract class JobPropertyDescriptor extends Descriptor<JobProperty<?>> {
      */
     public static List<JobPropertyDescriptor> getPropertyDescriptors(Class<? extends Job> clazz) {
         List<JobPropertyDescriptor> r = new ArrayList<JobPropertyDescriptor>();
-        for (JobPropertyDescriptor p : all()) {
-            if(p.isApplicable(clazz)) {
+        for (JobPropertyDescriptor p : all())
+            if(p.isApplicable(clazz))
                 r.add(p);
-            }
-        }
         return r;
     }
 

@@ -30,23 +30,15 @@ import hudson.model.AbstractProject;
 import jenkins.model.Jenkins;
 import hudson.model.Item;
 import hudson.model.Run;
-import hudson.remoting.Callable;
-import hudson.AbortException;
 import hudson.Extension;
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.FileUtils;
 
 import java.io.IOException;
-import java.io.Serializable;
-import java.io.File;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-import java.net.URL;
-import java.net.MalformedURLException;
 
 /**
  * Executes the specified groovy script.
@@ -99,12 +91,10 @@ public class GroovyCommand extends CLICommand {
      * Loads the script from the argument.
      */
     private String loadScript() throws CmdLineException, IOException, InterruptedException {
-        if(script==null) {
+        if(script==null)
             throw new CmdLineException(null, "No script is specified");
-        }
-        if (script.equals("=")) {
+        if (script.equals("="))
             return IOUtils.toString(stdin);
-        }
 
         return checkChannel().call(new ScriptLoader(script));
     }

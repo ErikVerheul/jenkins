@@ -35,7 +35,6 @@ import hudson.model.ParameterDefinition;
 import hudson.Extension;
 import hudson.AbortException;
 import hudson.model.Item;
-import hudson.model.Result;
 import hudson.model.TaskListener;
 import hudson.model.User;
 import hudson.model.queue.QueueTaskFuture;
@@ -52,7 +51,6 @@ import java.util.ArrayList;
 import java.util.Map.Entry;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
-import javax.annotation.Nonnull;
 
 import jenkins.model.Jenkins;
 
@@ -100,9 +98,8 @@ public class BuildCommand extends CLICommand {
         ParametersAction a = null;
         if (!parameters.isEmpty()) {
             ParametersDefinitionProperty pdp = job.getProperty(ParametersDefinitionProperty.class);
-            if (pdp==null) {
+            if (pdp==null)
                 throw new AbortException(job.getFullDisplayName()+" is not parameterized but the -p option was specified");
-            }
 
             //TODO: switch to type annotations after the migration to Java 1.8
             List<ParameterValue> values = new ArrayList<ParameterValue>();
@@ -123,9 +120,8 @@ public class BuildCommand extends CLICommand {
 
             // handle missing parameters by adding as default values ISSUE JENKINS-7162
             for(ParameterDefinition pd :  pdp.getParameterDefinitions()) {
-                if (parameters.containsKey(pd.getName())) {
+                if (parameters.containsKey(pd.getName()))
                     continue;
-                }
 
                 // not passed in use default
                 ParameterValue defaultValue = pd.getDefaultParameterValue();

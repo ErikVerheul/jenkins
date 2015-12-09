@@ -28,7 +28,6 @@ import hudson.ExtensionList;
 import hudson.Extension;
 import hudson.ExtensionPoint.LegacyInstancesAreScopedToHudson;
 import hudson.triggers.SCMTrigger;
-import hudson.triggers.TimerTrigger;
 
 import java.util.Set;
 import java.io.IOException;
@@ -114,11 +113,8 @@ public abstract class AdministrativeMonitor extends AbstractModelObject implemen
     public void disable(boolean value) throws IOException {
         AbstractCIBase hudson = Jenkins.getInstance();
         Set<String> set = hudson.disabledAdministrativeMonitors;
-        if(value) {
-            set.add(id);
-        } else {
-            set.remove(id);
-        }
+        if(value)   set.add(id);
+        else        set.remove(id);
         hudson.save();
     }
 

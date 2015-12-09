@@ -24,8 +24,6 @@
 package hudson.security;
 
 import hudson.Functions;
-import jenkins.model.Jenkins;
-import hudson.TcpSlaveAgentListener;
 
 import com.google.common.base.Strings;
 import org.acegisecurity.AuthenticationException;
@@ -77,9 +75,7 @@ public class HudsonAuthenticationEntryPoint extends AuthenticationProcessingFilt
         } else {
             // give the opportunity to include the target URL
             String uriFrom = req.getRequestURI();
-            if(!Strings.isNullOrEmpty(req.getQueryString())) {
-                uriFrom += "?" + req.getQueryString();
-            }
+            if(!Strings.isNullOrEmpty(req.getQueryString())) uriFrom += "?" + req.getQueryString();
             String loginForm = req.getContextPath()+getLoginFormUrl();
             loginForm = MessageFormat.format(loginForm, URLEncoder.encode(uriFrom,"UTF-8"));
             req.setAttribute("loginForm", loginForm);
@@ -114,18 +110,16 @@ public class HudsonAuthenticationEntryPoint extends AuthenticationProcessingFilt
                 "Authentication required\n"+
                 "<!--\n",loginForm);
 
-            if (cause!=null) {
+            if (cause!=null)
                 cause.report(out);
-            }
 
             out.printf(
                 "-->\n\n"+
                 "</body></html>");
             // Turn Off "Show Friendly HTTP Error Messages" Feature on the Server Side.
             // See http://support.microsoft.com/kb/294807
-            for (int i=0; i < 10; i++) {
+            for (int i=0; i < 10; i++)
                 out.print("                              ");
-            }
             out.close();
         }
     }

@@ -29,7 +29,6 @@ import hudson.util.StreamTaskListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import jenkins.model.Jenkins;
 
@@ -41,10 +40,8 @@ import jenkins.model.Jenkins;
  * @since 1.410
  */
 public abstract class AsyncAperiodicWork extends AperiodicWork {
-    
-    private static final Logger LOGGER = Logger.getLogger(AsyncAperiodicWork.class.getName());
 	
-    /**
+	/**
      * Name of the work.
      */
     public final String name;
@@ -62,12 +59,12 @@ public abstract class AsyncAperiodicWork extends AperiodicWork {
     public final void doAperiodicRun() {
         try {
             if(thread!=null && thread.isAlive()) {
-                LOGGER.log(Level.INFO, name+" thread is still running. Execution aborted.");
+                logger.log(Level.INFO, name+" thread is still running. Execution aborted.");
                 return;
             }
             thread = new Thread(new Runnable() {
                 public void run() {
-                    LOGGER.log(Level.INFO, "Started "+name);
+                    logger.log(Level.INFO, "Started "+name);
                     long startTime = System.currentTimeMillis();
 
                     StreamTaskListener l = createListener();
@@ -76,20 +73,20 @@ public abstract class AsyncAperiodicWork extends AperiodicWork {
 
                         execute(l);
                     } catch (IOException e) {
-                        LOGGER.log(Level.SEVERE, e.getMessage(), e);
+                        e.printStackTrace(l.fatalError(e.getMessage()));
                     } catch (InterruptedException e) {
-                        LOGGER.log(Level.SEVERE, "aborted", e);
+                        e.printStackTrace(l.fatalError("aborted"));
                     } finally {
                         l.closeQuietly();
                     }
 
-                    LOGGER.log(Level.INFO, "Finished "+name+". "+
+                    logger.log(Level.INFO, "Finished "+name+". "+
                         (System.currentTimeMillis()-startTime)+" ms");
                 }
             },name+" thread");
             thread.start(); 
-        } catch (Exception t) {
-            LOGGER.log(Level.SEVERE, name+" thread failed with error", t);
+        } catch (Throwable t) {
+            logger.log(Level.SEVERE, name+" thread failed with error", t);
         }
     }
 

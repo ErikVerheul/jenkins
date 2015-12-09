@@ -23,9 +23,7 @@ public class DNSMultiCast implements Closeable {
     private JmDNS jmdns;
 
     public DNSMultiCast(final Jenkins jenkins) {
-        if (disabled) {
-            return; // escape hatch
-        }
+        if (disabled)   return; // escape hatch
         
         // the registerService call can be slow. run these asynchronously
         MasterComputer.threadPoolForRemoting.submit(new Callable<Object>() {
@@ -35,9 +33,7 @@ public class DNSMultiCast implements Closeable {
 
                     Map<String,String> props = new HashMap<String, String>();
                     String rootURL = jenkins.getRootUrl();
-                    if (rootURL==null) {
-                        return null;
-                    }
+                    if (rootURL==null)  return null;
 
                     props.put("url", rootURL);
                     try {
@@ -47,9 +43,8 @@ public class DNSMultiCast implements Closeable {
                     }
 
                     TcpSlaveAgentListener tal = jenkins.getTcpSlaveAgentListener();
-                    if (tal!=null) {
+                    if (tal!=null)
                         props.put("slave-port",String.valueOf(tal.getPort()));
-                    }
 
                     props.put("server-id", jenkins.getLegacyInstanceId());
 
@@ -71,7 +66,8 @@ public class DNSMultiCast implements Closeable {
                     jmdns.registerService(ServiceInfo.create("_http._tcp.local.","Jenkins",
                             jenkins_port,0,0,props));
                 } catch (IOException e) {
-                    LOGGER.log(Level.WARNING,"Failed to advertise the service to DNS multi-cast",e);
+                    LOGGER.log(Level.INFO, "Cannot advertise service to DNS multi-cast, skipping: {0}", e);
+                    LOGGER.log(Level.FINE, null, e);
                 }
                 return null;
             }

@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -84,25 +83,22 @@ public abstract class ViewGroupMixIn {
     }
 
     public synchronized void deleteView(View view) throws IOException {
-        if (views().size() <= 1) {
+        if (views().size() <= 1)
             throw new IllegalStateException("Cannot delete last view");
-        }
         views().remove(view);
         owner.save();
     }
 
     public View getView(String name) {
         for (View v : views()) {
-            if(v.getViewName().equals(name)) {
+            if(v.getViewName().equals(name))
                 return v;
-            }
         }
         if (name != null && !name.equals(primaryView())) {
             // Fallback to subview of primary view if it is a ViewGroup
             View pv = getPrimaryView();
-            if (pv instanceof ViewGroup) {
+            if (pv instanceof ViewGroup)
                 return ((ViewGroup)pv).getView(name);
-            }
         }
         return null;
     }
@@ -115,9 +111,8 @@ public abstract class ViewGroupMixIn {
         List<View> orig = views();
         List<View> copy = new ArrayList<View>(orig.size());
         for (View v : orig) {
-            if (v.hasPermission(View.READ)) {
+            if (v.hasPermission(View.READ))
                 copy.add(v);
-            }
         }
         Collections.sort(copy, View.SORTER);
         return copy;
@@ -129,9 +124,8 @@ public abstract class ViewGroupMixIn {
     @Exported
     public View getPrimaryView() {
         View v = getView(primaryView());
-        if(v==null) { // fallback
+        if(v==null) // fallback
             v = views().get(0);
-        }
         return v;
     }
 

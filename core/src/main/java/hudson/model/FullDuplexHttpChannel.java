@@ -39,7 +39,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -76,9 +75,7 @@ abstract public class FullDuplexHttpChannel {
         // this is created first, and this controls the lifespan of the channel
         rsp.addHeader("Transfer-Encoding", "chunked");
         OutputStream out = rsp.getOutputStream();
-        if (DIY_CHUNKING) {
-            out = new ChunkedOutputStream(out);
-        }
+        if (DIY_CHUNKING) out = new ChunkedOutputStream(out);
 
         // send something out so that the client will see the HTTP headers
         out.write("Starting HTTP duplex channel".getBytes());
@@ -86,13 +83,11 @@ abstract public class FullDuplexHttpChannel {
 
         {// wait until we have the other channel
             long end = System.currentTimeMillis() + CONNECTION_TIMEOUT;
-            while (upload == null && System.currentTimeMillis()<end) {
+            while (upload == null && System.currentTimeMillis()<end)
                 wait(1000);
-            }
 
-            if (upload==null) {
+            if (upload==null)
                 throw new IOException("HTTP full-duplex channel timeout: "+uuid);
-            }
         }
 
         try {
@@ -137,18 +132,15 @@ abstract public class FullDuplexHttpChannel {
     public synchronized void upload(StaplerRequest req, StaplerResponse rsp) throws InterruptedException, IOException {
         rsp.setStatus(HttpServletResponse.SC_OK);
         InputStream in = req.getInputStream();
-        if(DIY_CHUNKING) {
-            in = new ChunkedInputStream(in);
-        }
+        if(DIY_CHUNKING)    in = new ChunkedInputStream(in);
 
         // publish the upload channel
         upload = in;
         notify();
 
         // wait until we are done
-        while (!completed) {
+        while (!completed)
             wait();
-        }
     }
 
     public Channel getChannel() {

@@ -10,7 +10,6 @@ import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.TestBuilder;
 
-import java.io.IOException;
 
 /**
  * @author Kohsuke Kawaguchi
@@ -26,7 +25,7 @@ public class ExceptionAnnotationTest {
         p.getBuildersList().add(new TestBuilder() {
             @Override
             public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) {
-                new Throwable().printStackTrace(listener.error("Injecting a failure")); //NOSONAR
+                new Throwable().printStackTrace(listener.error("Injecting a failure"));
                 return true;
             }
         });

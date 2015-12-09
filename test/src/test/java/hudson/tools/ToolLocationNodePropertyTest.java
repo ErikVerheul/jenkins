@@ -42,7 +42,6 @@ import java.io.IOException;
 
 import jenkins.model.Jenkins;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -129,11 +128,10 @@ public class ToolLocationNodePropertyTest {
     }
 
     private void configureDumpEnvBuilder() throws IOException {
-        if(Functions.isWindows()) {
+        if(Functions.isWindows())
             project.getBuildersList().add(new BatchFile("set"));
-        } else {
+        else
             project.getBuildersList().add(new Shell("export"));
-        }
     }
 
     @Test

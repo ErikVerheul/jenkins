@@ -25,14 +25,12 @@ package hudson.tasks;
 
 import hudson.FilePath;
 import hudson.Launcher;
-import hudson.Launcher.ProcStarter;
 import hudson.Proc;
 import hudson.Util;
 import hudson.EnvVars;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.model.Node;
-import hudson.model.Result;
 import hudson.model.TaskListener;
 import hudson.remoting.ChannelClosedException;
 
@@ -82,7 +80,7 @@ public abstract class CommandInterpreter extends Builder {
                 script = createScriptFile(ws);
             } catch (IOException e) {
                 Util.displayIOException(e,listener);
-                e.printStackTrace(listener.fatalError(Messages.CommandInterpreter_UnableToProduceScript())); //NOSONAR
+                e.printStackTrace(listener.fatalError(Messages.CommandInterpreter_UnableToProduceScript()));
                 return false;
             }
 
@@ -91,21 +89,19 @@ public abstract class CommandInterpreter extends Builder {
                 // on Windows environment variables are converted to all upper case,
                 // but no such conversions are done on Unix, so to make this cross-platform,
                 // convert variables to all upper cases.
-                for(Map.Entry<String,String> e : build.getBuildVariables().entrySet()) {
+                for(Map.Entry<String,String> e : build.getBuildVariables().entrySet())
                     envVars.put(e.getKey(),e.getValue());
-                }
 
                 r = join(launcher.launch().cmds(buildCommandLine(script)).envs(envVars).stdout(listener).pwd(ws).start());
             } catch (IOException e) {
                 Util.displayIOException(e, listener);
-                e.printStackTrace(listener.fatalError(Messages.CommandInterpreter_CommandFailed())); //NOSONAR
+                e.printStackTrace(listener.fatalError(Messages.CommandInterpreter_CommandFailed()));
             }
             return r==0;
         } finally {
             try {
-                if(script!=null) {
+                if(script!=null)
                     script.delete();
-                }
             } catch (IOException e) {
                 if (r==-1 && e.getCause() instanceof ChannelClosedException) {
                     // JENKINS-5073
@@ -118,10 +114,10 @@ public abstract class CommandInterpreter extends Builder {
                     LOGGER.log(Level.FINE, "Script deletion failed", e);
                 } else {
                     Util.displayIOException(e,listener);
-                    e.printStackTrace( listener.fatalError(Messages.CommandInterpreter_UnableToDelete(script)) ); //NOSONAR
+                    e.printStackTrace( listener.fatalError(Messages.CommandInterpreter_UnableToDelete(script)) );
                 }
             } catch (Exception e) {
-                e.printStackTrace( listener.fatalError(Messages.CommandInterpreter_UnableToDelete(script)) ); //NOSONAR
+                e.printStackTrace( listener.fatalError(Messages.CommandInterpreter_UnableToDelete(script)) );
             }
         }
     }

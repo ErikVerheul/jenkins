@@ -11,7 +11,7 @@ import java.security.spec.X509EncodedKeySpec;
 /**
  * @author Kohsuke Kawaguchi
  */
-final class CliPort {
+public final class CliPort {
     /**
      * The TCP endpoint to talk to.
      */
@@ -27,7 +27,7 @@ final class CliPort {
      */
     final String identity;
 
-    CliPort(InetSocketAddress endpoint, String identity, int version) {
+    public CliPort(InetSocketAddress endpoint, String identity, int version) {
         this.endpoint = endpoint;
         this.identity = identity;
         this.version = version;
@@ -37,9 +37,7 @@ final class CliPort {
      * Gets the public part of the RSA key that represents the server identity.
      */
     public PublicKey getIdentity() throws GeneralSecurityException {
-        if (identity==null) {
-            return null;
-        }
+        if (identity==null) return null;
         byte[] image = Base64.decodeBase64(identity);
         return KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(image));
     }

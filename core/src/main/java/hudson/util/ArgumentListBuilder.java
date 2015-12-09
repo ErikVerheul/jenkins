@@ -24,7 +24,6 @@
  */
 package hudson.util;
 
-import hudson.FilePath;
 import hudson.Launcher;
 import hudson.Util;
 
@@ -100,9 +99,8 @@ public class ArgumentListBuilder implements Serializable, Cloneable {
     public ArgumentListBuilder prepend(String... args) {
         // left-shift the mask
         BitSet nm = new BitSet(this.args.size()+args.length);
-        for(int i=0; i<this.args.size(); i++) {
+        for(int i=0; i<this.args.size(); i++)
             nm.set(i+args.length, mask.get(i));
-        }
         mask = nm;
 
         this.args.addAll(0, Arrays.asList(args));
@@ -139,9 +137,7 @@ public class ArgumentListBuilder implements Serializable, Cloneable {
      * Decomposes the given token into multiple arguments by splitting via whitespace.
      */
     public ArgumentListBuilder addTokenized(String s) {
-        if(s==null) {
-            return this;
-        }
+        if(s==null) return this;
         add(Util.tokenize(s));
         return this;
     }
@@ -150,9 +146,7 @@ public class ArgumentListBuilder implements Serializable, Cloneable {
      * @since 1.378
      */
     public ArgumentListBuilder addKeyValuePair(String prefix, String key, String value, boolean mask) {
-        if(key==null) {
-            return this;
-        }
+        if(key==null) return this;
         add(((prefix==null)?"-D":prefix)+key+'='+value, mask);
         return this;
     }
@@ -164,9 +158,8 @@ public class ArgumentListBuilder implements Serializable, Cloneable {
      * @since 1.114
      */
     public ArgumentListBuilder addKeyValuePairs(String prefix, Map<String,String> props) {
-        for (Entry<String,String> e : props.entrySet()) {
+        for (Entry<String,String> e : props.entrySet())
             addKeyValuePair(prefix, e.getKey(), e.getValue(), false);
-        }
         return this;
     }
 
@@ -221,9 +214,7 @@ public class ArgumentListBuilder implements Serializable, Cloneable {
      * @since 1.378
      */
     public ArgumentListBuilder addKeyValuePairsFromPropertyString(String prefix, String properties, VariableResolver<String> vr, Set<String> propsToMask) throws IOException {
-        if(properties==null) {
-            return this;
-        }
+        if(properties==null)    return this;
 
         properties = Util.replaceMacro(properties, propertiesGeneratingResolver(vr));
 
@@ -250,9 +241,7 @@ public class ArgumentListBuilder implements Serializable, Cloneable {
 
             public String resolve(String name) {
                 final String value = original.resolve(name);
-                if (value == null) {
-                    return null;
-                }
+                if (value == null) return null;
                 // Substitute one backslash with two
                 return value.replaceAll("\\\\", "\\\\\\\\");
             }
@@ -290,15 +279,12 @@ public class ArgumentListBuilder implements Serializable, Cloneable {
     public String toStringWithQuote() {
         StringBuilder buf = new StringBuilder();
         for (String arg : args) {
-            if(buf.length()>0) {
-                buf.append(' ');
-            }
+            if(buf.length()>0)  buf.append(' ');
 
-            if(arg.indexOf(' ')>=0 || arg.length()==0) {
+            if(arg.indexOf(' ')>=0 || arg.length()==0)
                 buf.append('"').append(arg).append('"');
-            } else {
+            else
                 buf.append(arg);
-            }
         }
         return buf.toString();
     }
@@ -338,35 +324,23 @@ public class ArgumentListBuilder implements Serializable, Cloneable {
                     quoted = startQuoting(quotedArgs, arg, i);
                 }
                 else if (c == '^' || c == '&' || c == '<' || c == '>' || c == '|') {
-                    if (!quoted) {
-                        quoted = startQuoting(quotedArgs, arg, i);
-                    }
+                    if (!quoted) quoted = startQuoting(quotedArgs, arg, i);
                     // quotedArgs.append('^'); See note in javadoc above
                 }
                 else if (c == '"') {
-                    if (!quoted) {
-                        quoted = startQuoting(quotedArgs, arg, i);
-                    }
+                    if (!quoted) quoted = startQuoting(quotedArgs, arg, i);
                     quotedArgs.append('"');
                 }
                 else if (percent && escapeVars
                          && ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'))) {
-                    if (!quoted) {
-                        quoted = startQuoting(quotedArgs, arg, i);
-                    }
+                    if (!quoted) quoted = startQuoting(quotedArgs, arg, i);
                     quotedArgs.append('"').append(c);
                     c = '"';
                 }
                 percent = (c == '%');
-                if (quoted) {
-                    quotedArgs.append(c);
-                }
+                if (quoted) quotedArgs.append(c);
             }
-            if (quoted) {
-                quotedArgs.append('"');
-            } else {
-                quotedArgs.append(arg);
-            }
+            if (quoted) quotedArgs.append('"'); else quotedArgs.append(arg);
             quotedArgs.append(' ');
         }
         // (comment copied from old code in hudson.tasks.Ant)
@@ -405,9 +379,8 @@ public class ArgumentListBuilder implements Serializable, Cloneable {
      */
     public boolean[] toMaskArray() {
         boolean[] mask = new boolean[args.size()];
-        for( int i=0; i<mask.length; i++) {
+        for( int i=0; i<mask.length; i++)
             mask[i] = this.mask.get(i);
-        }
         return mask;
     }
 
@@ -430,19 +403,15 @@ public class ArgumentListBuilder implements Serializable, Cloneable {
         StringBuilder buf = new StringBuilder();
         for (int i=0; i<args.size(); i++) {
             String arg = args.get(i);
-            if (mask.get(i)) {
+            if (mask.get(i))
                 arg = "******";
-            }
 
-            if(buf.length()>0) {
-                buf.append(' ');
-            }
+            if(buf.length()>0)  buf.append(' ');
 
-            if(arg.indexOf(' ')>=0 || arg.length()==0) {
+            if(arg.indexOf(' ')>=0 || arg.length()==0)
                 buf.append('"').append(arg).append('"');
-            } else {
+            else
                 buf.append(arg);
-            }
         }
         return buf.toString();
     }

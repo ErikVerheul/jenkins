@@ -31,7 +31,6 @@ import hudson.model.AdministrativeMonitor;
 import hudson.model.Describable;
 import hudson.model.Descriptor;
 import hudson.model.DescriptorVisibilityFilter;
-import jenkins.model.Jenkins;
 
 /**
  * Filters out {@link ExtensionComponent}s discovered by {@link ExtensionFinder}s,
@@ -73,15 +72,12 @@ public abstract class ExtensionFilter implements ExtensionPoint {
 
     public static <T> boolean isAllowed(Class<T> type, ExtensionComponent<T> component) {
         // to avoid infinite recursion, those extension points are handled differently.
-        if (type==ExtensionFilter.class || type==ExtensionFinder.class) {
+        if (type==ExtensionFilter.class || type==ExtensionFinder.class)
             return true;
-        }
 
-        for (ExtensionFilter f : all()) {
-            if (!f.allows(type, component)) {
+        for (ExtensionFilter f : all())
+            if (!f.allows(type, component))
                 return false;
-            }
-        }
         return true;
     }
 

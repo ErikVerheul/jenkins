@@ -26,7 +26,6 @@ package hudson.console;
 import hudson.Extension;
 import hudson.ExtensionList;
 import hudson.ExtensionPoint;
-import jenkins.model.Jenkins;
 import hudson.model.Run;
 import hudson.util.TimeUnit2;
 import org.jvnet.tiger_types.Types;
@@ -88,11 +87,10 @@ public abstract class ConsoleAnnotatorFactory<T> implements ExtensionPoint {
      */
     public Class type() {
         Type type = Types.getBaseClass(getClass(), ConsoleAnnotator.class);
-        if (type instanceof ParameterizedType) {
+        if (type instanceof ParameterizedType)
             return Types.erasure(Types.getTypeArgument(type,0));
-        } else {
+        else
             return Object.class;
-        }
     }
 
     /**

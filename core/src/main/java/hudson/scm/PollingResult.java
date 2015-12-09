@@ -7,7 +7,6 @@ import hudson.FilePath;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.Serializable;
 
 /**
@@ -81,9 +80,7 @@ public final class PollingResult implements Serializable {
     }
 
     public PollingResult(@CheckForNull SCMRevisionState baseline, @CheckForNull SCMRevisionState remote, @Nonnull Change change) {
-        if (change==null) {
-            throw new IllegalArgumentException();
-        }
+        if (change==null)   throw new IllegalArgumentException();
         this.baseline = baseline;
         this.remote = remote;
         this.change = change;

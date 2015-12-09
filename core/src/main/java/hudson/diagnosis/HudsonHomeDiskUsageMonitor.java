@@ -24,7 +24,6 @@
 package hudson.diagnosis;
 
 import hudson.model.AdministrativeMonitor;
-import jenkins.model.Jenkins;
 import hudson.model.AbstractModelObject;
 import hudson.Extension;
 import hudson.ExtensionPoint;
@@ -81,11 +80,9 @@ public final class HudsonHomeDiskUsageMonitor extends AdministrativeMonitor {
      * Binds a solution to the URL.
      */
     public Solution getSolution(String id) {
-        for( Solution s : Solution.all() ) {
-            if(s.id.equals(id)) {
+        for( Solution s : Solution.all() )
+            if(s.id.equals(id))
                 return s;
-            }
-        }
         return null;
     }
 

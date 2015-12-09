@@ -522,7 +522,6 @@ public /*transient*/ abstract class Computer extends Actionable implements Acces
         setTemporarilyOffline(true, new ByCLI(cause));
     }
 
-    @CLIMethod(name="online-node")
     public void cliOnline() throws ExecutionException, InterruptedException {
         checkPermission(CONNECT);
         setTemporarilyOffline(false, null);
@@ -587,6 +586,7 @@ public /*transient*/ abstract class Computer extends Actionable implements Acces
     /**
      * {@inheritDoc}
      */
+    @Override
     public void taskAccepted(Executor executor, Queue.Task task) {
         // dummy implementation
     }
@@ -594,6 +594,7 @@ public /*transient*/ abstract class Computer extends Actionable implements Acces
     /**
      * {@inheritDoc}
      */
+    @Override
     public void taskCompleted(Executor executor, Queue.Task task, long durationMS) {
         // dummy implementation
     }
@@ -601,6 +602,7 @@ public /*transient*/ abstract class Computer extends Actionable implements Acces
     /**
      * {@inheritDoc}
      */
+    @Override
     public void taskCompletedWithProblems(Executor executor, Queue.Task task, long durationMS, Throwable problems) {
         // dummy implementation
     }

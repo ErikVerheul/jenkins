@@ -35,7 +35,6 @@ import java.util.Set;
 import java.util.Collection;
 import java.util.logging.Logger;
 
-import org.acegisecurity.Authentication;
 import org.acegisecurity.context.SecurityContext;
 import org.acegisecurity.context.SecurityContextHolder;
 
@@ -60,14 +59,13 @@ public class DependencyRunner implements Runnable {
             Set<AbstractProject> topLevelProjects = new HashSet<AbstractProject>();
             // Get all top-level projects
             LOGGER.fine("assembling top level projects");
-            for (AbstractProject p : Jenkins.getInstance().getAllItems(AbstractProject.class)) {
+            for (AbstractProject p : Jenkins.getInstance().getAllItems(AbstractProject.class))
                 if (p.getUpstreamProjects().size() == 0) {
                     LOGGER.fine("adding top level project " + p.getName());
                     topLevelProjects.add(p);
                 } else {
                     LOGGER.fine("skipping project since not a top level project: " + p.getName());
                 }
-            }
             populate(topLevelProjects);
             for (AbstractProject p : polledProjects) {
                     LOGGER.fine("running project in correct dependency order: " + p.getName());

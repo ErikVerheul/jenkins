@@ -25,7 +25,6 @@ package hudson.model.queue;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
-import hudson.model.AbstractProject;
 import hudson.model.Computer;
 import hudson.model.Executor;
 import hudson.model.Label;
@@ -128,17 +127,14 @@ public class MappingWorksheet {
          * Is this executor chunk and the given work chunk compatible? Can the latter be run on the former?
          */
         public boolean canAccept(WorkChunk c) {
-            if (this.size()<c.size()) {
+            if (this.size()<c.size())
                 return false;   // too small compared towork
-            }
 
-            if (c.assignedLabel!=null && !c.assignedLabel.contains(node)) {
+            if (c.assignedLabel!=null && !c.assignedLabel.contains(node))
                 return false;   // label mismatch
-            }
 
-            if (!nodeAcl.hasPermission(item.authenticate(), Computer.BUILD)) {
+            if (!nodeAcl.hasPermission(item.authenticate(), Computer.BUILD))
                 return false;   // tasks don't have a permission to run on this node
-            }
 
             return true;
         }
@@ -162,9 +158,8 @@ public class MappingWorksheet {
             assert capacity() >= wc.size();
             int e = 0;
             for (SubTask s : wc) {
-                while (!get(e).isAvailable()) {
+                while (!get(e).isAvailable())
                     e++;
-                }
                 get(e++).set(wuc.createWorkUnit(s));
             }
         }
@@ -216,9 +211,7 @@ public class MappingWorksheet {
         private Label getAssignedLabel(SubTask task) {
             for (LabelAssignmentAction laa : item.getActions(LabelAssignmentAction.class)) {
                 Label l = laa.getAssignedLabel(task);
-                if (l!=null) {
-                    return l;
-                }
+                if (l!=null)    return l;
             }
             return task.getAssignedLabel();
         }
@@ -226,9 +219,8 @@ public class MappingWorksheet {
         public List<ExecutorChunk> applicableExecutorChunks() {
             List<ExecutorChunk> r = new ArrayList<ExecutorChunk>(executors.size());
             for (ExecutorChunk e : executors) {
-                if (e.canAccept(this)) {
+                if (e.canAccept(this))
                     r.add(e);
-                }
             }
             return r;
         }
@@ -278,9 +270,8 @@ public class MappingWorksheet {
          */
         public Map<WorkChunk,ExecutorChunk> toMap() {
             Map<WorkChunk,ExecutorChunk> r = new HashMap<WorkChunk,ExecutorChunk>();
-            for (int i=0; i<size(); i++) {
+            for (int i=0; i<size(); i++)
                 r.put(get(i),assigned(i));
-            }
             return r;
         }
 
@@ -291,15 +282,11 @@ public class MappingWorksheet {
             int[] used = new int[executors.size()];
             for (int i=0; i<mapping.length; i++) {
                 ExecutorChunk ec = mapping[i];
-                if (ec==null) {
-                    continue;
-                }
-                if (!ec.canAccept(works(i))) {
+                if (ec==null)   continue;
+                if (!ec.canAccept(works(i)))
                     return false;   // invalid assignment
-                }
-                if ((used[ec.index] += works(i).size()) > ec.capacity()) {
+                if ((used[ec.index] += works(i).size()) > ec.capacity())
                     return false;
-                }
             }
             return true;
         }
@@ -308,11 +295,8 @@ public class MappingWorksheet {
          * Makes sure that all the assignments are made and it is within the constraints.
          */
         public boolean isCompletelyValid() {
-            for (ExecutorChunk ec : mapping) {
-                if (ec==null) {
-                    return false;   // unassigned
-                }
-            }
+            for (ExecutorChunk ec : mapping)
+                if (ec==null)   return false;   // unassigned
             return isPartiallyValid();
         }
 
@@ -321,13 +305,11 @@ public class MappingWorksheet {
          * as defined by the mapping.
          */
         public void execute(WorkUnitContext wuc) {
-            if (!isCompletelyValid()) {
+            if (!isCompletelyValid())
                 throw new IllegalStateException();
-            }
 
-            for (int i=0; i<size(); i++) {
+            for (int i=0; i<size(); i++)
                 assigned(i).execute(get(i),wuc);
-            }
         }
     }
 
@@ -343,9 +325,8 @@ public class MappingWorksheet {
         for (ExecutorSlot o : offers) {
             Computer c = o.getExecutor().getOwner();
             List<ExecutorSlot> l = j.get(c);
-            if (l==null) {
+            if (l==null)
                 j.put(c,l=new ArrayList<ExecutorSlot>());
-            }
             l.add(o);
         }
 
@@ -364,9 +345,7 @@ public class MappingWorksheet {
                     for (LoadPredictor lp : loadPredictors) {
                         for (FutureLoad fl : Iterables.limit(lp.predict(this,e.getKey(), now, now + duration),100)) {
                             peak = max(peak,timeline.insert(fl.startTime, fl.startTime+fl.duration, fl.numExecutors));
-                            if (peak>=max) {
-                                break OUTER;
-                            }
+                            if (peak>=max)  break OUTER;
                         }
                     }
 
@@ -376,9 +355,8 @@ public class MappingWorksheet {
                         // Should we toss a warning/info message?
                         minIdle = 0;
                     }
-                    if (minIdle<list.size()) {
+                    if (minIdle<list.size())
                         e.setValue(list.subList(0,minIdle));
-                    }
                 }
             }
         }
@@ -386,13 +364,9 @@ public class MappingWorksheet {
         // build into the final shape
         List<ExecutorChunk> executors = new ArrayList<ExecutorChunk>();
         for (List<ExecutorSlot> group : j.values()) {
-            if (group.isEmpty()) {
-                continue;   // evict empty group
-            }
+            if (group.isEmpty())    continue;   // evict empty group
             ExecutorChunk ec = new ExecutorChunk(group, executors.size());
-            if (ec.node==null) {
-                continue;   // evict out of sync node
-            }
+            if (ec.node==null)  continue;   // evict out of sync node
             executors.add(ec);
         }
         this.executors = ImmutableList.copyOf(executors);
@@ -401,14 +375,11 @@ public class MappingWorksheet {
         Map<Object,List<SubTask>> m = new LinkedHashMap<Object,List<SubTask>>();
         for (SubTask meu : Tasks.getSubTasksOf(item.task)) {
             Object c = Tasks.getSameNodeConstraintOf(meu);
-            if (c==null) {
-                c = new Object();
-            }
+            if (c==null)    c = new Object();
 
             List<SubTask> l = m.get(c);
-            if (l==null) {
+            if (l==null)
                 m.put(c,l= new ArrayList<SubTask>());
-            }
             l.add(meu);
         }
 

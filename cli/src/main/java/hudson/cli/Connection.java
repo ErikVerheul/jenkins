@@ -23,6 +23,8 @@
  */
 package hudson.cli;
 
+import hudson.remoting.ClassFilter;
+import hudson.remoting.ObjectInputStreamEx;
 import hudson.remoting.SocketChannelStream;
 import org.apache.commons.codec.binary.Base64;
 
@@ -107,7 +109,8 @@ public class Connection {
      * Receives an object sent by {@link #writeObject(Object)}
      */
     public <T> T readObject() throws IOException, ClassNotFoundException {
-        ObjectInputStream ois = new ObjectInputStream(in);
+        ObjectInputStream ois = new ObjectInputStreamEx(in,
+                getClass().getClassLoader(), ClassFilter.DEFAULT);
         return (T)ois.readObject();
     }
 
@@ -215,12 +218,8 @@ public class Connection {
     }
 
     private String detectKeyAlgorithm(PublicKey kp) {
-        if (kp instanceof RSAPublicKey) {
-            return "RSA";
-        }
-        if (kp instanceof DSAPublicKey) {
-            return "DSA";
-        }
+        if (kp instanceof RSAPublicKey)     return "RSA";
+        if (kp instanceof DSAPublicKey)     return "DSA";
         throw new IllegalArgumentException("Unknown public key type: "+kp);
     }
 

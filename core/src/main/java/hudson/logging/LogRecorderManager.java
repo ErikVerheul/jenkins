@@ -40,6 +40,7 @@ import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.HttpRedirect;
+import org.kohsuke.stapler.interceptor.RequirePOST;
 
 import javax.servlet.ServletException;
 import java.io.File;
@@ -93,9 +94,7 @@ public class LogRecorderManager extends AbstractModelObject implements ModelObje
         logRecorders.clear();
         File dir = configDir();
         File[] files = dir.listFiles((FileFilter)new WildcardFileFilter("*.xml"));
-        if(files==null) {
-            return;
-        }
+        if(files==null)     return;
         for (File child : files) {
             String name = child.getName();
             name = name.substring(0,name.length()-4);   // cut off ".xml"
@@ -108,6 +107,7 @@ public class LogRecorderManager extends AbstractModelObject implements ModelObje
     /**
      * Creates a new log recorder.
      */
+    @RequirePOST
     public HttpResponse doNewLogRecorder(@QueryParameter String name) {
         Jenkins.checkGoodName(name);
         
@@ -133,11 +133,10 @@ public class LogRecorderManager extends AbstractModelObject implements ModelObje
     public HttpResponse doConfigLogger(@QueryParameter String name, @QueryParameter String level) {
         Jenkins.getInstance().checkPermission(Jenkins.ADMINISTER);
         Level lv;
-        if(level.equals("inherit")) {
+        if(level.equals("inherit"))
             lv = null;
-        } else {
+        else
             lv = Level.parse(level.toUpperCase(Locale.ENGLISH));
-        }
         Logger.getLogger(name).setLevel(lv);
         return new HttpRedirect("levels");
     }
@@ -159,9 +158,8 @@ public class LogRecorderManager extends AbstractModelObject implements ModelObje
             Level threshold = Level.parse(level);
             List<LogRecord> filtered = new ArrayList<LogRecord>();
             for (LogRecord r : logs) {
-                if(r.getLevel().intValue() >= threshold.intValue()) {
+                if(r.getLevel().intValue() >= threshold.intValue())
                     filtered.add(r);
-                }
             }
             logs = filtered;
         }
