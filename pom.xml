@@ -486,12 +486,12 @@ THE SOFTWARE.
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>cobertura-maven-plugin</artifactId>
-                    <version>2.5.2</version>
+                    <version>2.7</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>findbugs-maven-plugin</artifactId>
-                    <version>2.5.2</version> <!--[Erik] same version as used by current Sonar -->
+                    <version>3.0.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -581,7 +581,7 @@ THE SOFTWARE.
             </plugin>
             <plugin>
                 <artifactId>maven-release-plugin</artifactId>
-                <version>2.5.1</version>
+                <version>2.5.3</version>
                 <configuration>
                     <!-- enable release profile during the release, create IPS package, and sign bits. -->
                     <prepareVerifyArgs>-P release,sign</prepareVerifyArgs>
@@ -782,7 +782,7 @@ THE SOFTWARE.
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>findbugs-maven-plugin</artifactId>
-                        <version>2.5.2</version> <!--[Erik] same version as used by current Sonar -->
+                        <version>3.0.1</version> <!--[Erik] same version as used by current Sonar -->
                         <configuration>
                             <threshold>High</threshold>
                         </configuration>
@@ -895,8 +895,8 @@ THE SOFTWARE.
                 </plugins>
             </build>
         </profile>
-        <profile>
-            <!-- [Added by Erik] calculate coverage metrics per test with SonarQube and JaCoCo -->
+        <!--profile>
+            <!- [Added by Erik] calculate coverage metrics per test with SonarQube and JaCoCo ->
             <id>coverage-per-test</id>
             <build>
                 <plugins>
@@ -905,18 +905,18 @@ THE SOFTWARE.
                         <artifactId>maven-surefire-plugin</artifactId>
                         <version>2.19</version>
                         <configuration>
-                            <!-- same configuration as in the regular test execution goal -->
+                            <!- same configuration as in the regular test execution goal ->
                             <systemPropertyVariables>
                                 <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
                                 <forkedProcessTimeoutInSeconds>3600</forkedProcessTimeoutInSeconds>
                                 <java.awt.headless>true</java.awt.headless>
                             </systemPropertyVariables>
-                            <!-- plus argLine parameter configured by JaCoCo prepare-agent -->
+                            <!- plus argLine parameter configured by JaCoCo prepare-agent ->
                             <argLine>${argLine} -XX:-UseSplitVerifier</argLine>
                             <includes>
                                 <include>**/*Test.java</include>
                             </includes>
-                            <!-- new configuration needed for coverage per test -->
+                            <!- new configuration needed for coverage per test ->
                             <properties>
                                 <property>
                                     <name>listener</name>
@@ -935,7 +935,7 @@ THE SOFTWARE.
                     <scope>test</scope>
                 </dependency>
             </dependencies>
-        </profile>
+        </profile-->
         
         <!-- Added as it is no longer recommended to use SonarQube maven builder. 
             It is preferable to set up SonarQube in the build environment and use a standard Jenkins maven target.
