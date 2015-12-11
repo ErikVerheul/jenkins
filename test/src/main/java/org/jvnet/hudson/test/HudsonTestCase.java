@@ -578,15 +578,7 @@ public abstract class HudsonTestCase extends TestCase implements RootAction {
         jenkins.getDescriptorByType(Maven.DescriptorImpl.class).setInstallations(m3);
         return m3;
     }
-
-    protected MavenInstallation configureMaven31() throws Exception {
-        MavenInstallation mvn = configureDefaultMaven("apache-maven-3.1.0", MavenInstallation.MAVEN_30);
-
-        MavenInstallation m3 = new MavenInstallation("apache-maven-3.1.0",mvn.getHome(), NO_PROPERTIES);
-        jenkins.getDescriptorByType(Maven.DescriptorImpl.class).setInstallations(m3);
-        return m3;
-    }
-    
+   
     /**
      * Locates Maven and configures that as the only Maven in the system.
      */

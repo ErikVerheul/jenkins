@@ -655,7 +655,7 @@ public class JenkinsRule implements TestRule, MethodRule, RootAction {
      * Returns the older default Maven, while still allowing specification of other bundled Mavens.
      */
     public Maven.MavenInstallation configureDefaultMaven() throws Exception {
-        return configureDefaultMaven("apache-maven-2.2.1", Maven.MavenInstallation.MAVEN_20);
+        return configureDefaultMaven("apache-maven-3.0.1", Maven.MavenInstallation.MAVEN_30);
     }
 
     public Maven.MavenInstallation configureMaven3() throws Exception {

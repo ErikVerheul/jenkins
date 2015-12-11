@@ -365,7 +365,7 @@ THE SOFTWARE.
                                     <propertyName>jacocoSurefireArgs</propertyName>
                                     <!-- exclude this class as Jacoco can not handle multiple occurrences -->
                                     <excludes>
-                                        <exclude>**/*BytesURLConnection.*</exclude>
+                                        <exclude>**/org/codehaus/classworlds/*.class</exclude>
                                     </excludes>
                                 </configuration>
                             </execution>
