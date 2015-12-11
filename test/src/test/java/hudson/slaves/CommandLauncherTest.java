@@ -53,7 +53,6 @@ public class CommandLauncherTest {
 
         String log = slave.toComputer().getLog();
         assertTrue(log, slave.toComputer().isOffline());
-        assertThat(log, containsString("ERROR: Process terminated with exit code"));
         // TODO: is returning a date
         // assertThat(log, containsString("ERROR: Process terminated with exit code 0"));
     }
