@@ -277,7 +277,6 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
 
                                     /**
                                      * Inspects duplication. this happens when you run hpi:run on a bundled plugin,
-                                     * as well as putting numbered jpi files, like "cobertura-1.0.jpi" and "cobertura-1.1.jpi"
                                      */
                                     private boolean isDuplicate(PluginWrapper p) {
                                         String shortName = p.getShortName();

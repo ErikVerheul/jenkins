@@ -41,10 +41,6 @@ import java.util.regex.Pattern;
  *
  * <pre>[INFO] --- gmaven-plugin:1.0-rc-5:generateTestStubs (test-in-groovy) @ jobConfigHistory ---</pre>
  *
- * or
- *
- * <pre>[INFO] --- cobertura-maven-plugin:2.4:instrument (report:cobertura) @ sardine ---</pre>
- *
  * @author Mirko Friedenhagen
  */
 public class Maven3MojoNote extends ConsoleNote {

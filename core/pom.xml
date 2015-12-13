@@ -760,7 +760,7 @@ THE SOFTWARE.
       </plugin>
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
+        <configuration combine.self="override">
           <forkCount>0.5C</forkCount>
           <reuseForks>true</reuseForks> <!--[Erik] set to false if Sonar has problems with this -->
           <argLine>-XX:MaxPermSize=128m -noverify</argLine> <!-- some versions of JDK7/8 causes VerifyError during mock tests: http://code.google.com/p/powermock/issues/detail?id=504 -->
@@ -879,7 +879,7 @@ THE SOFTWARE.
           <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>findbugs-maven-plugin</artifactId>
-            <version>2.5.2</version> <!--[Erik] same version as used by current Sonar -->
+            <version>3.0.3</version> <!--[Erik] same version as used by current Sonar -->
             <configuration>
               <effort>Max</effort>
               <threshold>High</threshold>
@@ -888,42 +888,6 @@ THE SOFTWARE.
           </plugin>
         </plugins>
       </reporting>
-    </profile>
-    <profile>
-      <!-- Obtain code coverage report. This is done by running Unit tests on our own and suppressing surefire. -->
-      <id>cobertura</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.codehaus.gmaven</groupId>
-            <artifactId>gmaven-plugin</artifactId>
-            <!-- version specified in grandparent pom -->
-            <executions>
-              <!-- run unit test -->
-              <execution>
-                <phase>test</phase>
-                <goals>
-                  <goal>execute</goal>
-                </goals>
-                <configuration>
-                  <scriptpath>
-                    <element>${project.basedir}/src/build-script</element>
-                  </scriptpath>
-                  <source>${project.basedir}/src/build-script/unitTest.groovy</source>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <!-- unit tests are run by GMaven through Ant. -->
-            <artifactId>maven-surefire-plugin</artifactId>
-            <!-- version specified in grandparent pom -->
-            <configuration>
-              <skipTests>true</skipTests>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
     </profile>
   </profiles>
 </project>

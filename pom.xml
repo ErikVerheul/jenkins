@@ -104,6 +104,8 @@ THE SOFTWARE.
     <test-annotations.version>1.2</test-annotations.version>
 
     <java.level>7</java.level>
+    <!-- Jacoco version to use -->
+    <jacoco.version>0.7.5.201505241946</jacoco.version>
 
     <changelog.url>https://jenkins-ci.org/changelog</changelog.url>
   </properties>
@@ -312,11 +314,11 @@ THE SOFTWARE.
               <groupId>org.apache.ant</groupId>
               <artifactId>ant-junit</artifactId>
               <version>1.7.0</version>
-            </dependency>
+            </dependency>            
             <dependency>
-              <groupId>net.sourceforge.cobertura</groupId>
-              <artifactId>cobertura</artifactId>
-              <version>1.9</version>
+              <groupId>org.jacoco</groupId>
+                 <artifactId>jacoco-maven-plugin</artifactId>
+                 <version>${jacoco.version}</version>
             </dependency>
             <dependency>
               <!-- this provided scope dependency doesn't get added to GMaven unless explicitly added here -->
@@ -396,19 +398,19 @@ THE SOFTWARE.
               during the development, debug profile will cause
               the jars to be signed by a self-certified dummy public key.
 
-              For release, you should define the real values in ~/.m2/settings.xml
-            -->
-            <alias>${hudson.sign.alias}</alias>
-            <storepass>${hudson.sign.storepass}</storepass>
-            <keystore>${hudson.sign.keystore}</keystore>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-resources-plugin</artifactId>
-          <version>2.6</version>
-        </plugin>
-        <plugin>
+                          For release, you should define the real values in ~/.m2/settings.xml
+                        -->
+                        <alias>${hudson.sign.alias}</alias>
+                        <storepass>${hudson.sign.storepass}</storepass>
+                        <keystore>${hudson.sign.keystore}</keystore>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>2.6</version>
+                </plugin>
+                <plugin>          
           <!--
             Both test harness and core uses stapler as an extension,
             and apparently without having extension preloaded at the parent, the main artifact of the 'test' module
@@ -482,12 +484,7 @@ THE SOFTWARE.
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>apt-maven-plugin</artifactId>
                     <version>1.0-alpha-5</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>cobertura-maven-plugin</artifactId>
-                    <version>2.7</version>
-                </plugin>
+                </plugin>                
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>findbugs-maven-plugin</artifactId>
@@ -911,9 +908,7 @@ THE SOFTWARE.
                 <sonar.projectVersion>${yearMonth}</sonar.projectVersion>
                 <sonar.language>java</sonar.language>
                 <sonar.sourceEncoding>UTF-8</sonar.sourceEncoding>
-                <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
-                <!-- Jacoco version to use -->
-                <jacoco.version>0.7.4.201502262128</jacoco.version>
+                <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>                
                 <!-- The Sonar Jacoco Listener for JUnit to extract coverage details per test -->
                 <sonar-jacoco-listeners.version>3.2</sonar-jacoco-listeners.version>
                 <!-- Don't let Sonar execute tests. We will ask it to Maven 'sonar.dynamicAnalysis' is deprecated since version 4.3 and should no longer be used. -->
@@ -946,8 +941,7 @@ THE SOFTWARE.
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
                         <version>2.16</version>
-                        <configuration>
-                            
+                        <configuration>                           
                             <!-- Specific to generate mapping between tests and covered code -->
                             <properties>
                                 <property>
@@ -964,7 +958,6 @@ THE SOFTWARE.
                         <artifactId>maven-failsafe-plugin</artifactId>
                         <version>2.19</version>
                         <configuration>
-
                             <!-- Specific to generate mapping between tests and covered code -->
                             <properties>
                                 <property>
