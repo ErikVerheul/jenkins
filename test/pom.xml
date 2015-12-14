@@ -233,7 +233,13 @@ THE SOFTWARE.
                 <artifactId>maven-surefire-plugin</artifactId>
                 <!-- version specified in grandparent pom -->
                 <configuration combine.self="override">
-                    <argLine>${jacocoSurefireArgs} -Dfile.encoding=UTF-8 -Xmx256m -XX:MaxPermSize=128m</argLine>
+                    <!-- Specific to generate mapping between tests and covered code -->
+                    <properties>
+                        <property>
+                            <name>listener</name>
+                            <value>org.sonar.java.jacoco.JUnitListener</value>
+                        </property>
+                    </properties>
                     <systemPropertyVariables>
                         <!-- use AntClassLoader that supports predictable file handle release -->
                         <hudson.ClassicPluginStrategy.useAntClassLoader>true</hudson.ClassicPluginStrategy.useAntClassLoader>
@@ -244,6 +250,44 @@ THE SOFTWARE.
                     <reuseForks>true</reuseForks>
                     <forkCount>${concurrency}</forkCount>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>2.19</version>
+                <configuration>
+                    <!-- Specific to generate mapping between tests and covered code -->
+                    <properties>
+                        <property>
+                            <name>listener</name>
+                            <value>org.sonar.java.jacoco.JUnitListener</value>
+                        </property>
+                    </properties>
+                    <!-- Let's put failsafe reports with surefire to have access to tests 
+                    failures/success reports in sonar -->
+                    <reportsDirectory>${project.build.directory}/surefire-reports
+                    </reportsDirectory>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <executions>
+                    <!-- Prepares a variable, jacoco.agent.ut.arg, that contains the info 
+                    to be passed to the JVM hosting the code being tested. -->
+                    <execution>
+                        <id>prepare-ut-agent</id>
+                        <phase>process-test-classes</phase>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                        <configuration combine.self="override">                                  
+                            <destFile>${sonar.jacoco.itReportPath}</destFile>
+                            <propertyName>jacoco.agent.arg</propertyName>
+                            <append>true</append>
+                        </configuration>                               
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.gmaven</groupId>
@@ -311,6 +355,6 @@ THE SOFTWARE.
             <properties>
                 <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
             </properties>
-        </profile>                 
+        </profile>
     </profiles>
 </project>

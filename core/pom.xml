@@ -758,14 +758,6 @@ THE SOFTWARE.
           </execution>
         </executions>
       </plugin>
-      <plugin>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration combine.self="override">
-          <forkCount>0.5C</forkCount>
-          <reuseForks>true</reuseForks> <!--[Erik] set to false if Sonar has problems with this -->
-          <argLine>-XX:MaxPermSize=128m -noverify</argLine> <!-- some versions of JDK7/8 causes VerifyError during mock tests: http://code.google.com/p/powermock/issues/detail?id=504 -->
-        </configuration>
-      </plugin>
       <plugin><!-- set main class -->
         <artifactId>maven-jar-plugin</artifactId>
         <!-- version specified in grandparent pom -->
@@ -870,24 +862,6 @@ THE SOFTWARE.
           </plugin>
         </plugins>
       </build>
-    </profile>
-    <profile>
-      <!-- Run FindBugs for better error detection. Run as "mvn -Pfindbugs install site". -->
-      <id>findbugs</id>
-      <reporting>
-        <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>findbugs-maven-plugin</artifactId>
-            <version>3.0.3</version> <!--[Erik] same version as used by current Sonar -->
-            <configuration>
-              <effort>Max</effort>
-              <threshold>High</threshold>
-              <excludeFilterFile>src/findbugs-filter.xml</excludeFilterFile>
-            </configuration>
-          </plugin>
-        </plugins>
-      </reporting>
     </profile>
   </profiles>
 </project>
