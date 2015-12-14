@@ -105,8 +105,43 @@ THE SOFTWARE.
     <test-annotations.version>1.2</test-annotations.version>
 
     <java.level>7</java.level>
+    
+    <!-- Example taken from https://dzone.com/articles/integration-jenkins-jacoco-and-sonarqube and modified -->
+    <!-- ************************-->
+    <!-- Sonar/Reporting settings -->
+    <!-- ************************-->
+    <!-- Sonar/Jacoco integration. Note that these properties need to be defined outside the "coverage" profile
+         because we want to be to able to execute mvn sonar:sonar without passing a profile -->
+    <!-- Tells Sonar to use jacoco for coverage results -->
     <!-- Jacoco version to use -->
     <jacoco.version>0.7.5.201505241946</jacoco.version>
+    <sonar.projectKey>Jenkins</sonar.projectKey>
+    <sonar.projectName>Jenkins on Jenkins</sonar.projectName>
+    <sonar.projectVersion>${yearMonth}</sonar.projectVersion>
+    <sonar.language>java</sonar.language>
+    <sonar.sourceEncoding>UTF-8</sonar.sourceEncoding>
+    <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>                
+    <!-- The Sonar Jacoco Listener for JUnit to extract coverage details per test -->
+    <sonar-jacoco-listeners.version>3.2</sonar-jacoco-listeners.version>
+    <!-- Don't let Sonar execute tests. We will ask it to Maven 'sonar.dynamicAnalysis' is deprecated since version 4.3 and should no longer be used. -->
+    <!-- <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis> -->
+    <!-- The system property jacoco.outputDir needs to be override on the command line
+         with an absolute path if you want to merge results from all modules.
+         Example in a Jenkisn build where ${WORKSPACE} is defined and your project in the root directory of the workspace 
+         mvn clean install -Prun-its,coverage -Djacoco.outputDir=${WORKSPACE}/target
+         Note that unfortunately using the following does not work because of
+         http://jira.codehaus.org/browse/SONAR-3427:
+         <jacoco.outputDir>${session.executionRootDirectory}/target/</jacoco.outputDir>
+         -->
+    <jacoco.outputDir>${project.build.directory}</jacoco.outputDir>
+    <!-- Jacoco output file for UTs -->
+    <jacoco.out.ut.file>jacoco-ut.exec</jacoco.out.ut.file>
+    <!-- Tells Sonar where the Jacoco coverage result file is located for Unit Tests -->
+    <sonar.jacoco.utReportPath>${jacoco.outputDir}/${jacoco.out.ut.file}</sonar.jacoco.utReportPath>
+    <!-- Jacoco output file for ITs -->
+    <jacoco.out.it.file>jacoco-it.exec</jacoco.out.it.file>
+    <!-- Tells Sonar where the Jacoco coverage result file is located for Integration Tests -->
+    <sonar.jacoco.itReportPath>${jacoco.outputDir}/${jacoco.out.it.file}</sonar.jacoco.itReportPath>
 
     <changelog.url>https://jenkins-ci.org/changelog</changelog.url>
   </properties>
@@ -316,11 +351,6 @@ THE SOFTWARE.
               <artifactId>ant-junit</artifactId>
               <version>1.7.0</version>
             </dependency>            
-            <dependency>
-              <groupId>org.jacoco</groupId>
-                 <artifactId>jacoco-maven-plugin</artifactId>
-                 <version>${jacoco.version}</version>
-            </dependency>
             <dependency>
               <!-- this provided scope dependency doesn't get added to GMaven unless explicitly added here -->
               <groupId>javax.servlet</groupId>
@@ -901,45 +931,10 @@ THE SOFTWARE.
         <!-- coverage -->
         <profile>
             <id>coverage</id>
-            <properties>
-                <!-- Example taken from https://dzone.com/articles/integration-jenkins-jacoco-and-sonarqube and modified -->
-                <!-- ************************-->
-                <!-- Sonar/Reporting settings -->
-                <!-- ************************-->
-                <!-- Sonar/Jacoco integration. Note that these properties need to be defined outside the "coverage" profile
-                because we want to be to able to execute mvn sonar:sonar without passing a profile -->
-                <!-- Tells Sonar to use jacoco for coverage results -->
-                <sonar.projectKey>Jenkins</sonar.projectKey>
-                <sonar.projectName>Jenkins on Jenkins</sonar.projectName>
-                <sonar.projectVersion>${yearMonth}</sonar.projectVersion>
-                <sonar.language>java</sonar.language>
-                <sonar.sourceEncoding>UTF-8</sonar.sourceEncoding>
-                <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>                
-                <!-- The Sonar Jacoco Listener for JUnit to extract coverage details per test -->
-                <sonar-jacoco-listeners.version>3.2</sonar-jacoco-listeners.version>
-                <!-- Don't let Sonar execute tests. We will ask it to Maven 'sonar.dynamicAnalysis' is deprecated since version 4.3 and should no longer be used. -->
-                <!-- <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis> -->
-                <!-- The system property jacoco.outputDir needs to be override on the command line
-                    with an absolute path if you want to merge results from all modules.
-                    Example in a Jenkisn build where ${WORKSPACE} is defined and your project in the root directory of the workspace 
-                    mvn clean install -Prun-its,coverage -Djacoco.outputDir=${WORKSPACE}/target
-                    Note that unfortunately using the following does not work because of
-                    http://jira.codehaus.org/browse/SONAR-3427:
-                    <jacoco.outputDir>${session.executionRootDirectory}/target/</jacoco.outputDir>
-                -->
-                <jacoco.outputDir>${project.build.directory}</jacoco.outputDir>
-                <!-- Jacoco output file for UTs -->
-                <jacoco.out.ut.file>jacoco-ut.exec</jacoco.out.ut.file>
-                <!-- Tells Sonar where the Jacoco coverage result file is located for Unit Tests -->
-                <sonar.jacoco.utReportPath>${jacoco.outputDir}/${jacoco.out.ut.file}</sonar.jacoco.utReportPath>
-                <!-- Jacoco output file for ITs -->
-                <jacoco.out.it.file>jacoco-it.exec</jacoco.out.it.file>
-                <!-- Tells Sonar where the Jacoco coverage result file is located for Integration Tests -->
-                <sonar.jacoco.itReportPath>${jacoco.outputDir}/${jacoco.out.it.file}</sonar.jacoco.itReportPath>
-                <!-- <sonar.junit.reportsPath>${project.build.directory}/surefire-reports/</sonar.junit.reportsPath> -->
-                <!-- <sonar.tests>src/test/java</sonar.tests> -->
+            <properties>                
                 <!-- The argLine must be set as a property. See http://docs.sonarqube.org/display/PLUG/JaCoCo+Plugin -->
-                <argLine>-Xmx1024m -XX:MaxPermSize=256m ${jacoco.agent.arg} </argLine>
+                <!--some versions of JDK7/8 causes VerifyError during mock tests: http://code.google.com/p/powermock/issues/detail?id=504-->
+                <argLine>-Xmx1024m -XX:MaxPermSize=256m -noverify ${jacoco.agent.arg} </argLine>
             </properties>
             <build>
                 <plugins>
@@ -955,6 +950,11 @@ THE SOFTWARE.
                                     <value>org.sonar.java.jacoco.JUnitListener</value>
                                 </property>
                             </properties>
+                            <systemPropertyVariables>
+                                <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
+                                <forkedProcessTimeoutInSeconds>3600</forkedProcessTimeoutInSeconds>
+                                <java.awt.headless>true</java.awt.headless>
+                            </systemPropertyVariables>
                             <!-- test failure ignore -->
                             <testFailureIgnore>true</testFailureIgnore>
                         </configuration>
