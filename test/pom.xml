@@ -37,7 +37,7 @@ THE SOFTWARE.
     <description>Unit test harness (src/main) and Unit tests for Jenkins core (src/test)</description>
 
     <properties>
-        <concurrency>2</concurrency> <!-- may use e.g. 2C for 2 × (number of cores) -->
+        <concurrency>1C</concurrency> <!-- may use e.g. 2C for 2 × (number of cores) -->
         <mavenDebug>false</mavenDebug>
         <ignore.random.failures>false</ignore.random.failures>
         <jacocoSurefireArgs /><!-- empty by default -->
