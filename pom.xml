@@ -301,6 +301,20 @@ THE SOFTWARE.
         <pluginManagement>
             <plugins>
                 <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>2.19</version>
+                    <executions>
+                        <execution>
+                            <id>integration-test</id>
+                            <goals>
+                                <goal>integration-test</goal>
+                                <goal>verify</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>build-helper-maven-plugin</artifactId>
                     <version>1.7</version>
@@ -400,10 +414,10 @@ THE SOFTWARE.
                     <configuration>                           
                         <!-- Specific to generate mapping between tests and covered code -->
                         <properties>
-                            <property>
+                            <!--property>
                                 <name>listener</name>
                                 <value>org.sonar.java.jacoco.JUnitListener</value>
-                            </property>
+                            </property-->
                         </properties>
                         <systemPropertyVariables>
                             <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
@@ -417,14 +431,7 @@ THE SOFTWARE.
                 <plugin>
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
-                    <version>0.7.5.201505241946</version>
-                    <!-- prevent SONAR error: Unable to create symbol table for : 
-                    /home/erik/jenkins/workspace/Jenkins-Sonar/core/src/main/java/jenkins/model/lazy/LazyBuildMixIn.java-->
-                    <configuration>
-                        <excludes>
-                            <exclude>**/*LazyBuildMixIn.*</exclude>
-                        </excludes>
-                    </configuration>
+                    <version>0.7.5.201505241946</version>                   
                     <executions>
                         <!-- Prepares a variable, jacoco.agent.ut.arg, that contains the info 
                         to be passed to the JVM hosting the code being tested. -->

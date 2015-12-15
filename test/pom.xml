@@ -255,7 +255,26 @@ THE SOFTWARE.
                     <reportsDirectory>
                         ${project.build.directory}/surefire-reports
                     </reportsDirectory>
+                    <includes>
+                        <include>**/*.java</include>
+                    </includes>
+                    <!-- prevent SONAR error: Unable to create symbol table for : 
+                    /home/erik/jenkins/workspace/Jenkins-Sonar/core/src/main/java/jenkins/model/lazy/LazyBuildMixIn.java-->
+                    <excludes>
+                        <exclude>**/LazyBuildMixIn.java</exclude>
+                    </excludes>
+                    <!-- test failure ignore -->
+                    <testFailureIgnore>true</testFailureIgnore>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>integration-test</id>
+                        <phase>integration-test</phase>
+                        <goals>
+                            <goal>integration-test</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
@@ -321,6 +340,14 @@ THE SOFTWARE.
                 </dependencies>
                 <configuration>
                     <providerSelection>2.0</providerSelection>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration combine.self="override">
+                    <!-- Disable unit tests -->
+                    <skip>true</skip>
                 </configuration>
             </plugin>
         </plugins>
