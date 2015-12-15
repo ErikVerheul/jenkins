@@ -108,11 +108,12 @@ THE SOFTWARE.
         <!--sonar.projectKey>Jenkins</sonar.projectKey>
         <sonar.projectName>Jenkins on Jenkins</sonar.projectName>
         <sonar.projectVersion>${yearMonth}</sonar.projectVersion-->
+        <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
         <sonar.language>java</sonar.language>
         <sonar.sourceEncoding>UTF-8</sonar.sourceEncoding>
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>                
         <!-- The Sonar Jacoco Listener for JUnit to extract coverage details per test -->
-        <sonar-jacoco-listeners.version>3.2</sonar-jacoco-listeners.version>
+        <!--sonar-jacoco-listeners.version>3.2</sonar-jacoco-listeners.version-->
         <jacoco.outputDir>${project.build.directory}</jacoco.outputDir>
         <!-- Jacoco output file for UTs -->
         <jacoco.out.ut.file>jacoco-ut.exec</jacoco.out.ut.file>
