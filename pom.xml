@@ -415,24 +415,6 @@ THE SOFTWARE.
                     </configuration>
                 </plugin>
                 <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-failsafe-plugin</artifactId>
-                    <version>2.19</version>
-                    <configuration>
-                        <!-- Specific to generate mapping between tests and covered code -->
-                        <properties>
-                            <property>
-                                <name>listener</name>
-                                <value>org.sonar.java.jacoco.JUnitListener</value>
-                            </property>
-                        </properties>
-                        <!-- Let's put failsafe reports with surefire to have access to tests 
-                        failures/success reports in sonar -->
-                        <reportsDirectory>${project.build.directory}/surefire-reports
-                        </reportsDirectory>
-                    </configuration>
-                </plugin>
-                <plugin>
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
                     <version>0.7.5.201505241946</version>
