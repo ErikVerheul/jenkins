@@ -108,6 +108,7 @@ THE SOFTWARE.
         <!--sonar.projectKey>Jenkins</sonar.projectKey>
         <sonar.projectName>Jenkins on Jenkins</sonar.projectName>
         <sonar.projectVersion>${yearMonth}</sonar.projectVersion-->
+        <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
         <sonar.language>java</sonar.language>
         <sonar.sourceEncoding>UTF-8</sonar.sourceEncoding>
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>                
@@ -414,10 +415,10 @@ THE SOFTWARE.
                     <configuration>                           
                         <!-- Specific to generate mapping between tests and covered code -->
                         <properties>
-                            <!--property>
+                            <property>
                                 <name>listener</name>
                                 <value>org.sonar.java.jacoco.JUnitListener</value>
-                            </property-->
+                            </property>
                         </properties>
                         <systemPropertyVariables>
                             <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
