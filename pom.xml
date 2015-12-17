@@ -126,8 +126,8 @@ THE SOFTWARE.
         <!-- The argLine must be set as a property. See http://docs.sonarqube.org/display/PLUG/JaCoCo+Plugin -->
         <!--some versions of JDK7/8 causes VerifyError during mock tests: http://code.google.com/p/powermock/issues/detail?id=504-->
         <!-- -XX:-UseGCOverheadLimit switches the GC overhead limit exceeded check completely off; this is an issue when Sonar processes the huge IT file-->
-        <!-- Use @{jacoco.agent.arg}, see http://maven.apache.org/surefire/maven-surefire-plugin/faq.html -->
-        <argLine>-Xmx2048m -XX:MaxPermSize=256m -XX:-UseGCOverheadLimit -noverify @{jacoco.agent.arg} </argLine>
+        <!-- The use @{jacoco.agent.arg}, see http://maven.apache.org/surefire/maven-surefire-plugin/faq.html does not work-->
+        <argLine>-Xmx2048m -XX:MaxPermSize=256m -XX:-UseGCOverheadLimit -noverify ${jacoco.agent.arg} </argLine>
 
         <changelog.url>https://jenkins-ci.org/changelog</changelog.url>
     </properties>
@@ -301,12 +301,7 @@ THE SOFTWARE.
             </resource>
         </resources>
         <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.jacoco</groupId>
-                    <artifactId>jacoco-maven-plugin</artifactId>
-                    <version>0.7.5.201505241946</version>                                       
-                </plugin>
+            <plugins>                
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-failsafe-plugin</artifactId>
@@ -617,7 +612,12 @@ THE SOFTWARE.
             </plugins>
         </pluginManagement>
 
-        <plugins>            
+        <plugins>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.7.5.201505241946</version>                                       
+            </plugin>         
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
