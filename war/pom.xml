@@ -156,424 +156,431 @@ THE SOFTWARE.
         We also get tickets like JENKINS-12650 for not reporting logs at all
         (although this is a non-fatal problem.)
 
-        The downside of adding a jar is that we can potentially get "multiple binding jar"
-        warning like http://www.slf4j.org/codes.html, but that's at least non-fatal.
-      -->
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-jdk14</artifactId>
-    </dependency>
-
-    <!-- offline profiler API when we need it -->
-
-    <!--dependency
-      <groupId>com.yourkit.api</groupId>
-      <artifactId>yjp</artifactId>
-      <version>dontcare</version>
-      <scope>system</scope>
-      <systemPath>/usr/local/yjp/lib/yjp.jar</systemPath>
-    </dependency-->
-  </dependencies>
-
-  <build>
-    <finalName>jenkins</finalName>
-    <plugins>
-      <plugin>
-        <artifactId>maven-war-plugin</artifactId>
-        <!-- version specified in grandparent pom -->
-        <configuration>
-          <filteringDeploymentDescriptors>true</filteringDeploymentDescriptors>
-          <!-- for putting Main-Class into war -->
-          <archive>
-            <manifest>
-              <mainClass>Main</mainClass>
-            </manifest>
-            <manifestEntries>
-              <Implementation-Version>${project.version}</Implementation-Version>
-              <Hudson-Version>1.395</Hudson-Version>
-              <Jenkins-Version>${project.version}</Jenkins-Version>
-            </manifestEntries>
-          </archive>
-          <!--outputFileNameMapping>@{artifactId}@.@{extension}@</outputFileNameMapping-->
-        </configuration>
-      </plugin>
-      <plugin>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <!-- version specified in grandparent pom -->
-        <executions>
-          <execution>
-            <id>list-dependencies</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>list</goal>
-            </goals>
-            <configuration>
-              <outputFile>${project.build.outputDirectory}/dependencies.txt</outputFile>
-            </configuration>
-          </execution>
-          <execution>
-            <!-- put executable war header -->
-            <id>executable-war-header</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>unpack-dependencies</goal>
-            </goals>
-            <configuration>
-              <includeGroupIds>org.jenkins-ci</includeGroupIds>
-              <includeArtifactIds>executable-war</includeArtifactIds>
-              <includeScope>provided</includeScope>
-              <includes>**/*.class</includes>
-              <outputDirectory>${project.build.directory}/${project.build.finalName}</outputDirectory>
-            </configuration>
-          </execution>
-          <execution>
-            <id>resgen</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>copy</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <!-- dependencies that goes to unusual locations -->
-                <artifactItem>
-                  <groupId>${project.groupId}</groupId>
-                  <artifactId>remoting</artifactId>
-                  <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF</outputDirectory>
-                  <destFileName>remoting.jar</destFileName>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>${project.groupId}</groupId>
-                  <artifactId>remoting</artifactId>
-                  <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF</outputDirectory>
-                  <destFileName>slave.jar</destFileName>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>${project.groupId}</groupId>
-                  <artifactId>cli</artifactId>
-                  <classifier>jar-with-dependencies</classifier>
-                  <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF</outputDirectory>
-                  <destFileName>jenkins-cli.jar</destFileName>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.jenkins-ci</groupId>
-                  <artifactId>winstone</artifactId>
-                  <outputDirectory>${project.build.directory}/${project.build.finalName}</outputDirectory>
-                  <destFileName>winstone.jar</destFileName>
-                </artifactItem>
-                <!-- bundled plugins -->
-                <artifactItem>
-                  <groupId>${project.groupId}</groupId>
-                  <artifactId>maven-plugin</artifactId>
-                  <type>hpi</type>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.jenkins-ci.plugins</groupId>
-                  <artifactId>ssh-slaves</artifactId>
-                  <version>1.9</version>
-                  <type>hpi</type>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.jenkins-ci.plugins</groupId>
-                  <artifactId>credentials</artifactId>
-                  <version>1.18</version>
-                  <type>hpi</type>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.jenkins-ci.plugins</groupId>
-                  <artifactId>ssh-credentials</artifactId>
-                  <version>1.10</version>
-                  <type>hpi</type>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.jenkins-ci.plugins</groupId>
-                  <artifactId>subversion</artifactId>
-                  <version>1.54</version>
-                  <type>hpi</type>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.jenkins-ci.plugins</groupId>
-                  <artifactId>cvs</artifactId>
-                  <version>2.11</version>
-                  <type>hpi</type>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.jenkins-ci.plugins</groupId>
-                  <artifactId>ant</artifactId>
-                  <version>1.2</version>
-                  <type>hpi</type>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.jenkins-ci.plugins</groupId>
-                  <artifactId>javadoc</artifactId>
-                  <version>1.1</version>
-                  <type>hpi</type>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.jenkins-ci.plugins</groupId>
-                  <artifactId>translation</artifactId>
-                  <version>1.10</version>
-                  <type>hpi</type>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.jenkins-ci.plugins</groupId>
-                  <artifactId>external-monitor-job</artifactId>
-                  <version>1.4</version>
-                  <type>hpi</type>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.jenkins-ci.plugins</groupId>
-                  <artifactId>ldap</artifactId>
-                  <version>1.11</version>
-                  <type>hpi</type>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.jenkins-ci.plugins</groupId>
-                  <artifactId>pam-auth</artifactId>
-                  <version>1.1</version>
-                  <type>hpi</type>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.jenkins-ci.plugins</groupId>
-                  <artifactId>mailer</artifactId>
-                  <version>1.11</version>
-                  <type>hpi</type>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.jenkins-ci.plugins</groupId>
-                  <artifactId>matrix-auth</artifactId>
-                  <version>1.1</version>
-                  <type>hpi</type>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.jenkins-ci.plugins</groupId>
-                  <artifactId>windows-slaves</artifactId>
-                  <version>1.0</version>
-                  <type>hpi</type>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.jenkins-ci.plugins</groupId>
-                  <artifactId>antisamy-markup-formatter</artifactId>
-                  <version>1.1</version>
-                  <type>hpi</type>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.jenkins-ci.plugins</groupId>
-                  <artifactId>matrix-project</artifactId>
-                  <version>${matrix-project.version}</version>
-                  <type>hpi</type>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.jenkins-ci.plugins</groupId>
-                  <artifactId>script-security</artifactId>
-                  <version>1.13</version>
-                  <type>hpi</type>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.jenkins-ci.plugins</groupId>
-                  <artifactId>junit</artifactId>
-                  <version>1.2-beta-4</version>
-                  <type>hpi</type>
-                </artifactItem>
-              </artifactItems>
-              <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF/plugins</outputDirectory>
-              <stripVersion>true</stripVersion>
-              <overWriteIfNewer>true</overWriteIfNewer>
-              <overWriteReleases>false</overWriteReleases>
-              <overWriteSnapshots>true</overWriteSnapshots>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <!-- deploy the war as a jar, so that the tests can pull this into the classpath -->
-            <id>deploy-war-for-test</id>
-            <phase>package</phase>
-            <goals>
-              <goal>attach-artifact</goal>
-            </goals>
-            <configuration>
-              <artifacts>
-                <artifact>
-                  <file>${project.build.directory}/${project.build.finalName}.war</file>
-                  <type>jar</type>
-                  <classifier>war-for-test</classifier>
-                </artifact>
-              </artifacts>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin><!-- generate licenses.xml -->
-        <groupId>com.cloudbees</groupId>
-        <artifactId>maven-license-plugin</artifactId>
-        <!-- version specified in grandparent pom -->
-        <configuration>
-          <generateLicenseXml>${project.build.outputDirectory}/META-INF/licenses.xml</generateLicenseXml>
-          <generateLicenseHtml>${project.build.outputDirectory}/META-INF/licenses.html</generateLicenseHtml>
-          <attach>true</attach>
-          <inlineScript>
-            filter {
-                // add Winstone since we are bundling it.
-                def d = project.dependencies.find { it.artifactId=="winstone" };
-                def a = mojo.artifactFactory.createProjectArtifact(d.groupId,d.artifactId,d.version);
-                def p = mojo.projectBuilder.buildFromRepository(a, project.getRemoteArtifactRepositories(), mojo.localRepository)
-                models.put(a,p);
-            }
-          </inlineScript>
-        </configuration>
-      </plugin>
-      <plugin>
-        <!-- this is really just a patched version of maven-jetty-plugin to workaround issue #932 -->
-        <groupId>org.jenkins-ci.tools</groupId>
-        <artifactId>maven-jenkins-dev-plugin</artifactId>
-        <!-- version specified in grandparent pom -->
-        <configuration>
-          <!--
-            Reload webapp when you hit ENTER. (See JETTY-282 for more)
-          -->
-          <reload>manual</reload>
-          <connectors>
-            <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
-                <port>${port}</port>
-            </connector>
-          </connectors>
-          <additionalClassesDirectories>
-            <!-- load resoures straight from source -->
-            <additionalClassesDirectory>../core/src/main/resources</additionalClassesDirectory>
-            
-            <!--
-              read directly from core module's output directory,
-              so that changes are picked up right away without running mvn.
+              The downside of adding a jar is that we can potentially get "multiple binding jar"
+              warning like http://www.slf4j.org/codes.html, but that's at least non-fatal.
             -->
-            <additionalClassesDirectory>../core/target/classes</additionalClassesDirectory>
-          </additionalClassesDirectories>
-          <loginServices>
-            <loginService implementation="org.eclipse.jetty.security.HashLoginService">
-              <name>default</name>
-              <config>${basedir}/src/realm.properties</config>
-            </loginService>
-          </loginServices>
-          <systemProperties>
-            <systemProperty>
-              <name>JENKINS_HOME</name>
-              <value>${JENKINS_HOME}</value>
-            </systemProperty>
-            <systemProperty>
-              <!-- always reload views during debugging -->
-              <name>stapler.jelly.noCache</name>
-              <value>true</value>
-            </systemProperty>
-            <systemProperty>
-              <!-- show the stapler evaluation during execution -->
-              <name>stapler.trace</name>
-              <value>true</value>
-            </systemProperty>
-            <systemProperty>
-              <!-- always reload scripts during debugging -->
-              <name>hudson.script.noCache</name>
-              <value>true</value>
-            </systemProperty>
-            <systemProperty>
-              <!-- load view resources from the source directly, again for real time change -->
-              <name>stapler.resourcePath</name>
-              <value>
-                  ../core/src/main/resources;
-              </value>
-            </systemProperty>
-            <systemProperty>
-              <!-- enable the plugins in main by default -->
-              <name>hudson.bundled.plugins</name>
-              <value><!-- run "mvn install" once will generate the.hpl -->
-                  ${project.build.directory}/${project.build.finalName}/WEB-INF/plugins/*.hpi
-              </value>
-            </systemProperty>
-            <systemProperty>
-              <!-- stat collection pointless -->
-              <name>hudson.model.UsageStatistics.disabled</name>
-              <value>true</value>
-            </systemProperty>
-            <systemProperty>
-              <name>hudson.Main.development</name>
-              <value>true</value>
-            </systemProperty>
-            <systemProperty>
-              <!-- this adds 3 sec to the shutdown, and most likely pointless, too -->
-              <name>hudson.DNSMultiCast.disabled</name>
-              <value>true</value>
-            </systemProperty>
-          </systemProperties>
-          <webApp>
-            <contextPath>${contextPath}</contextPath>
-            <configurationDiscovered>false</configurationDiscovered>
-          </webApp>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-jdk14</artifactId>
+        </dependency>
 
-  <profiles>
-    <profile>
-      <!-- sign war -->
-      <id>sign</id>
-      <build>
+        <!-- offline profiler API when we need it -->
+
+        <!--dependency
+          <groupId>com.yourkit.api</groupId>
+          <artifactId>yjp</artifactId>
+          <version>dontcare</version>
+          <scope>system</scope>
+          <systemPath>/usr/local/yjp/lib/yjp.jar</systemPath>
+        </dependency-->
+    </dependencies>
+
+    <build>
+        <finalName>jenkins</finalName>
         <plugins>
-          <plugin>
-            <artifactId>maven-jarsigner-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>signWar</id>
-                <phase>verify</phase>
-                <goals>
-                  <goal>sign</goal>
-                </goals>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                  <archive>${project.build.directory}/${project.build.finalName}.war</archive>
+                    <skipTests>true</skipTests>
                 </configuration>
-              </execution>
-            </executions>
-          </plugin>
+            </plugin>
+            <plugin>
+                <artifactId>maven-war-plugin</artifactId>
+                <!-- version specified in grandparent pom -->
+                <configuration>
+                    <filteringDeploymentDescriptors>true</filteringDeploymentDescriptors>
+                    <!-- for putting Main-Class into war -->
+                    <archive>
+                        <manifest>
+                            <mainClass>Main</mainClass>
+                        </manifest>
+                        <manifestEntries>
+                            <Implementation-Version>${project.version}</Implementation-Version>
+                            <Hudson-Version>1.395</Hudson-Version>
+                            <Jenkins-Version>${project.version}</Jenkins-Version>
+                        </manifestEntries>
+                    </archive>
+                    <!--outputFileNameMapping>@{artifactId}@.@{extension}@</outputFileNameMapping-->
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <!-- version specified in grandparent pom -->
+                <executions>
+                    <execution>
+                        <id>list-dependencies</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>list</goal>
+                        </goals>
+                        <configuration>
+                            <outputFile>${project.build.outputDirectory}/dependencies.txt</outputFile>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <!-- put executable war header -->
+                        <id>executable-war-header</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>unpack-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <includeGroupIds>org.jenkins-ci</includeGroupIds>
+                            <includeArtifactIds>executable-war</includeArtifactIds>
+                            <includeScope>provided</includeScope>
+                            <includes>**/*.class</includes>
+                            <outputDirectory>${project.build.directory}/${project.build.finalName}</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>resgen</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <!-- dependencies that goes to unusual locations -->
+                                <artifactItem>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>remoting</artifactId>
+                                    <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF</outputDirectory>
+                                    <destFileName>remoting.jar</destFileName>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>remoting</artifactId>
+                                    <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF</outputDirectory>
+                                    <destFileName>slave.jar</destFileName>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>cli</artifactId>
+                                    <classifier>jar-with-dependencies</classifier>
+                                    <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF</outputDirectory>
+                                    <destFileName>jenkins-cli.jar</destFileName>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.jenkins-ci</groupId>
+                                    <artifactId>winstone</artifactId>
+                                    <outputDirectory>${project.build.directory}/${project.build.finalName}</outputDirectory>
+                                    <destFileName>winstone.jar</destFileName>
+                                </artifactItem>
+                                <!-- bundled plugins -->
+                                <artifactItem>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>maven-plugin</artifactId>
+                                    <type>hpi</type>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.jenkins-ci.plugins</groupId>
+                                    <artifactId>ssh-slaves</artifactId>
+                                    <version>1.9</version>
+                                    <type>hpi</type>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.jenkins-ci.plugins</groupId>
+                                    <artifactId>credentials</artifactId>
+                                    <version>1.18</version>
+                                    <type>hpi</type>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.jenkins-ci.plugins</groupId>
+                                    <artifactId>ssh-credentials</artifactId>
+                                    <version>1.10</version>
+                                    <type>hpi</type>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.jenkins-ci.plugins</groupId>
+                                    <artifactId>subversion</artifactId>
+                                    <version>1.54</version>
+                                    <type>hpi</type>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.jenkins-ci.plugins</groupId>
+                                    <artifactId>cvs</artifactId>
+                                    <version>2.11</version>
+                                    <type>hpi</type>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.jenkins-ci.plugins</groupId>
+                                    <artifactId>ant</artifactId>
+                                    <version>1.2</version>
+                                    <type>hpi</type>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.jenkins-ci.plugins</groupId>
+                                    <artifactId>javadoc</artifactId>
+                                    <version>1.1</version>
+                                    <type>hpi</type>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.jenkins-ci.plugins</groupId>
+                                    <artifactId>translation</artifactId>
+                                    <version>1.10</version>
+                                    <type>hpi</type>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.jenkins-ci.plugins</groupId>
+                                    <artifactId>external-monitor-job</artifactId>
+                                    <version>1.4</version>
+                                    <type>hpi</type>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.jenkins-ci.plugins</groupId>
+                                    <artifactId>ldap</artifactId>
+                                    <version>1.11</version>
+                                    <type>hpi</type>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.jenkins-ci.plugins</groupId>
+                                    <artifactId>pam-auth</artifactId>
+                                    <version>1.1</version>
+                                    <type>hpi</type>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.jenkins-ci.plugins</groupId>
+                                    <artifactId>mailer</artifactId>
+                                    <version>1.11</version>
+                                    <type>hpi</type>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.jenkins-ci.plugins</groupId>
+                                    <artifactId>matrix-auth</artifactId>
+                                    <version>1.1</version>
+                                    <type>hpi</type>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.jenkins-ci.plugins</groupId>
+                                    <artifactId>windows-slaves</artifactId>
+                                    <version>1.0</version>
+                                    <type>hpi</type>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.jenkins-ci.plugins</groupId>
+                                    <artifactId>antisamy-markup-formatter</artifactId>
+                                    <version>1.1</version>
+                                    <type>hpi</type>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.jenkins-ci.plugins</groupId>
+                                    <artifactId>matrix-project</artifactId>
+                                    <version>${matrix-project.version}</version>
+                                    <type>hpi</type>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.jenkins-ci.plugins</groupId>
+                                    <artifactId>script-security</artifactId>
+                                    <version>1.13</version>
+                                    <type>hpi</type>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.jenkins-ci.plugins</groupId>
+                                    <artifactId>junit</artifactId>
+                                    <version>1.2-beta-4</version>
+                                    <type>hpi</type>
+                                </artifactItem>
+                            </artifactItems>
+                            <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF/plugins</outputDirectory>
+                            <stripVersion>true</stripVersion>
+                            <overWriteIfNewer>true</overWriteIfNewer>
+                            <overWriteReleases>false</overWriteReleases>
+                            <overWriteSnapshots>true</overWriteSnapshots>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <!-- deploy the war as a jar, so that the tests can pull this into the classpath -->
+                        <id>deploy-war-for-test</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>attach-artifact</goal>
+                        </goals>
+                        <configuration>
+                            <artifacts>
+                                <artifact>
+                                    <file>${project.build.directory}/${project.build.finalName}.war</file>
+                                    <type>jar</type>
+                                    <classifier>war-for-test</classifier>
+                                </artifact>
+                            </artifacts>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin><!-- generate licenses.xml -->
+                <groupId>com.cloudbees</groupId>
+                <artifactId>maven-license-plugin</artifactId>
+                <!-- version specified in grandparent pom -->
+                <configuration>
+                    <generateLicenseXml>${project.build.outputDirectory}/META-INF/licenses.xml</generateLicenseXml>
+                    <generateLicenseHtml>${project.build.outputDirectory}/META-INF/licenses.html</generateLicenseHtml>
+                    <attach>true</attach>
+                    <inlineScript>
+                        filter {
+                        // add Winstone since we are bundling it.
+                        def d = project.dependencies.find { it.artifactId=="winstone" };
+                        def a = mojo.artifactFactory.createProjectArtifact(d.groupId,d.artifactId,d.version);
+                        def p = mojo.projectBuilder.buildFromRepository(a, project.getRemoteArtifactRepositories(), mojo.localRepository)
+                        models.put(a,p);
+                        }
+                    </inlineScript>
+                </configuration>
+            </plugin>
+            <plugin>
+                <!-- this is really just a patched version of maven-jetty-plugin to workaround issue #932 -->
+                <groupId>org.jenkins-ci.tools</groupId>
+                <artifactId>maven-jenkins-dev-plugin</artifactId>
+                <!-- version specified in grandparent pom -->
+                <configuration>
+                    <!--
+                      Reload webapp when you hit ENTER. (See JETTY-282 for more)
+                    -->
+                    <reload>manual</reload>
+                    <connectors>
+                        <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
+                            <port>${port}</port>
+                        </connector>
+                    </connectors>
+                    <additionalClassesDirectories>
+                        <!-- load resoures straight from source -->
+                        <additionalClassesDirectory>../core/src/main/resources</additionalClassesDirectory>
+            
+                        <!--
+                          read directly from core module's output directory,
+                          so that changes are picked up right away without running mvn.
+                        -->
+                        <additionalClassesDirectory>../core/target/classes</additionalClassesDirectory>
+                    </additionalClassesDirectories>
+                    <loginServices>
+                        <loginService implementation="org.eclipse.jetty.security.HashLoginService">
+                            <name>default</name>
+                            <config>${basedir}/src/realm.properties</config>
+                        </loginService>
+                    </loginServices>
+                    <systemProperties>
+                        <systemProperty>
+                            <name>JENKINS_HOME</name>
+                            <value>${JENKINS_HOME}</value>
+                        </systemProperty>
+                        <systemProperty>
+                            <!-- always reload views during debugging -->
+                            <name>stapler.jelly.noCache</name>
+                            <value>true</value>
+                        </systemProperty>
+                        <systemProperty>
+                            <!-- show the stapler evaluation during execution -->
+                            <name>stapler.trace</name>
+                            <value>true</value>
+                        </systemProperty>
+                        <systemProperty>
+                            <!-- always reload scripts during debugging -->
+                            <name>hudson.script.noCache</name>
+                            <value>true</value>
+                        </systemProperty>
+                        <systemProperty>
+                            <!-- load view resources from the source directly, again for real time change -->
+                            <name>stapler.resourcePath</name>
+                            <value>
+                                ../core/src/main/resources;
+                            </value>
+                        </systemProperty>
+                        <systemProperty>
+                            <!-- enable the plugins in main by default -->
+                            <name>hudson.bundled.plugins</name>
+                            <value><!-- run "mvn install" once will generate the.hpl -->
+                                ${project.build.directory}/${project.build.finalName}/WEB-INF/plugins/*.hpi
+                            </value>
+                        </systemProperty>
+                        <systemProperty>
+                            <!-- stat collection pointless -->
+                            <name>hudson.model.UsageStatistics.disabled</name>
+                            <value>true</value>
+                        </systemProperty>
+                        <systemProperty>
+                            <name>hudson.Main.development</name>
+                            <value>true</value>
+                        </systemProperty>
+                        <systemProperty>
+                            <!-- this adds 3 sec to the shutdown, and most likely pointless, too -->
+                            <name>hudson.DNSMultiCast.disabled</name>
+                            <value>true</value>
+                        </systemProperty>
+                    </systemProperties>
+                    <webApp>
+                        <contextPath>${contextPath}</contextPath>
+                        <configurationDiscovered>false</configurationDiscovered>
+                    </webApp>
+                </configuration>
+            </plugin>
         </plugins>
-      </build>
-    </profile>
-    <profile>
-      <!-- profile for running Grunt and optimize static resources -->
-      <id>grunt</id>
-        <build>
-            <plugins>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>exec-maven-plugin</artifactId>
-                    <executions>
-                        <execution>
-                            <id>install</id>
-                            <phase>validate</phase>
-                            <goals>
-                                <goal>exec</goal>
-                            </goals>
-                            <configuration>
-                                <executable>npm</executable>
-                                <arguments>
-                                    <argument>install</argument>
-                                </arguments>
-                            </configuration>
-                        </execution>
-                        <execution>
-                            <id>grunt</id>
-                            <phase>prepare-package</phase>
-                            <goals>
-                                <goal>exec</goal>
-                            </goals>
-                            <configuration>
-                                <executable>grunt</executable>
-                            </configuration>
-                        </execution>
-                    </executions>
-                </plugin>
-            </plugins>
-        </build>
-    </profile>
-  </profiles>
+    </build>
+
+    <profiles>
+        <profile>
+            <!-- sign war -->
+            <id>sign</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-jarsigner-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>signWar</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                                <configuration>
+                                    <archive>${project.build.directory}/${project.build.finalName}.war</archive>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <!-- profile for running Grunt and optimize static resources -->
+            <id>grunt</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>install</id>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>npm</executable>
+                                    <arguments>
+                                        <argument>install</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>grunt</id>
+                                <phase>prepare-package</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>grunt</executable>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

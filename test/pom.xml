@@ -40,7 +40,6 @@ THE SOFTWARE.
         <concurrency>1C</concurrency> <!-- may use e.g. 2C for 2 × (number of cores) -->
         <mavenDebug>false</mavenDebug>
         <ignore.random.failures>false</ignore.random.failures>
-        <jacocoSurefireArgs /><!-- empty by default -->
     </properties>
 
     <dependencies>
@@ -265,16 +264,7 @@ THE SOFTWARE.
                     </excludes>
                     <!-- test failure ignore -->
                     <testFailureIgnore>true</testFailureIgnore>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>integration-test</id>
-                        <phase>integration-test</phase>
-                        <goals>
-                            <goal>integration-test</goal>
-                        </goals>
-                    </execution>
-                </executions>
+                </configuration>                
             </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
@@ -283,12 +273,14 @@ THE SOFTWARE.
                     <!-- Prepares a variable, jacoco.agent.ut.arg, that contains the info 
                     to be passed to the JVM hosting the code being tested. -->
                     <execution>
-                        <id>prepare-ut-agent</id>
-                        <phase>process-test-classes</phase>
+                        <id>prepare-it-agent</id>
+                        <phase>
+                            process-test-classes
+                        </phase>
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
-                        <configuration combine.self="override">                                  
+                        <configuration>                                  
                             <destFile>${sonar.jacoco.itReportPath}</destFile>
                             <propertyName>jacoco.agent.arg</propertyName>
                             <append>true</append>
@@ -340,14 +332,6 @@ THE SOFTWARE.
                 </dependencies>
                 <configuration>
                     <providerSelection>2.0</providerSelection>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration combine.self="override">
-                    <!-- Disable unit tests -->
-                    <skip>true</skip>
                 </configuration>
             </plugin>
         </plugins>

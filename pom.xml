@@ -109,6 +109,7 @@ THE SOFTWARE.
         <sonar.projectName>Jenkins on Jenkins</sonar.projectName>
         <sonar.projectVersion>${yearMonth}</sonar.projectVersion-->
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+        <sonar.tests>junit</sonar.tests>
         <sonar.language>java</sonar.language>
         <sonar.sourceEncoding>UTF-8</sonar.sourceEncoding>
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>                
@@ -118,11 +119,11 @@ THE SOFTWARE.
         <!-- Jacoco output file for UTs -->
         <jacoco.out.ut.file>jacoco-ut.exec</jacoco.out.ut.file>
         <!-- Tells Sonar where the Jacoco coverage result file is located for Unit Tests -->
-        <sonar.jacoco.utReportPath>${jacoco.outputDir}/${jacoco.out.ut.file}</sonar.jacoco.utReportPath>
+        <sonar.jacoco.utReportPath>${jacoco.outputDir}/../target/${jacoco.out.ut.file}</sonar.jacoco.utReportPath>
         <!-- Jacoco output file for ITs -->
         <jacoco.out.it.file>jacoco-it.exec</jacoco.out.it.file>
         <!-- Tells Sonar where the Jacoco coverage result file is located for Integration Tests -->
-        <sonar.jacoco.itReportPath>${jacoco.outputDir}/${jacoco.out.it.file}</sonar.jacoco.itReportPath>
+        <sonar.jacoco.itReportPath>${jacoco.outputDir}/../target/${jacoco.out.it.file}</sonar.jacoco.itReportPath>
         <!-- The argLine must be set as a property. See http://docs.sonarqube.org/display/PLUG/JaCoCo+Plugin -->
         <!--some versions of JDK7/8 causes VerifyError during mock tests: http://code.google.com/p/powermock/issues/detail?id=504-->
         <!-- -XX:-UseGCOverheadLimit switches the GC overhead limit exceeded check completely off; this is an issue when Sonar processes the huge IT file-->
@@ -302,6 +303,11 @@ THE SOFTWARE.
         <pluginManagement>
             <plugins>
                 <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>0.7.5.201505241946</version>                                       
+                </plugin>
+                <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-failsafe-plugin</artifactId>
                     <version>2.19</version>
@@ -428,28 +434,7 @@ THE SOFTWARE.
                         <!-- test failure ignore -->
                         <testFailureIgnore>true</testFailureIgnore>
                     </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.jacoco</groupId>
-                    <artifactId>jacoco-maven-plugin</artifactId>
-                    <version>0.7.5.201505241946</version>                   
-                    <executions>
-                        <!-- Prepares a variable, jacoco.agent.ut.arg, that contains the info 
-                        to be passed to the JVM hosting the code being tested. -->
-                        <execution>
-                            <id>prepare-ut-agent</id>
-                            <phase>process-test-classes</phase>
-                            <goals>
-                                <goal>prepare-agent</goal>
-                            </goals>
-                            <configuration>                                  
-                                <destFile>${sonar.jacoco.utReportPath}</destFile>
-                                <propertyName>jacoco.agent.arg</propertyName>
-                                <append>true</append>
-                            </configuration>                               
-                        </execution>
-                    </executions>
-                </plugin>
+                </plugin>               
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-assembly-plugin</artifactId>
@@ -632,11 +617,7 @@ THE SOFTWARE.
             </plugins>
         </pluginManagement>
 
-        <plugins>
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-            </plugin>
+        <plugins>            
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
