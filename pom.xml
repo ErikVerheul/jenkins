@@ -48,11 +48,11 @@ THE SOFTWARE.
     </licenses>
 
     <modules>
-        <module>core</module>
+        <!--module>core</module>
         <module>war</module>
-        <!--module>test</module-->
+        <module>test</module-->
         <module>cli</module>
-        <module>plugins</module>
+        <!--module>plugins</module->
     </modules>
 
     <scm>
