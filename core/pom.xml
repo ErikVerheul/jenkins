@@ -621,7 +621,7 @@ THE SOFTWARE.
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <executions>
-                    <!-- Prepares a variable, jacoco.agent.ut.arg, that contains the info 
+                    <!-- Prepares a variable, jacoco.agent.arg, that contains the info 
                     to be passed to the JVM hosting the code being tested. -->
                     <execution>
                         <id>prepare-ut-agent</id>
