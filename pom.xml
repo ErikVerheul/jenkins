@@ -52,7 +52,7 @@ THE SOFTWARE.
         <module>war</module>
         <module>test</module-->
         <module>cli</module>
-        <!--module>plugins</module-->
+        <module>plugins</module>
     </modules>
 
     <scm>
@@ -127,7 +127,7 @@ THE SOFTWARE.
         <!--some versions of JDK7/8 causes VerifyError during mock tests: http://code.google.com/p/powermock/issues/detail?id=504-->
         <!-- -XX:-UseGCOverheadLimit switches the GC overhead limit exceeded check completely off; this is an issue when Sonar processes the huge IT file-->
         <!-- The use @{jacoco.agent.arg}, see http://maven.apache.org/surefire/maven-surefire-plugin/faq.html does not work-->
-        <argLine>-Xmx2048m -XX:MaxPermSize=256m -XX:-UseGCOverheadLimit -noverify ${jacoco.outputDir}/jacoco-ut.exec </argLine>
+        <argLine>-Xmx2048m -XX:MaxPermSize=256m -XX:-UseGCOverheadLimit -noverify ${jacoco.agent.arg} </argLine>
 
         <changelog.url>https://jenkins-ci.org/changelog</changelog.url>
     </properties>
