@@ -38,7 +38,7 @@
     <slf4jVersion>1.7.7</slf4jVersion>
     <node.version>4.0.0</node.version>
     <npm.version>2.13.1</npm.version>
-    <argLine>-Xmx2048m -XX:MaxPermSize=256m -noverify ${jacoco.agent.arg} </argLine>
+    <argLine>-Xmx2048m -XX:MaxPermSize=256m -Dfile.encoding=UTF-8 -noverify ${jacoco.agent.arg} </argLine>
   </properties>
   <dependencyManagement>
     <!-- mark logging dependencies as provided by war -->

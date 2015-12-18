@@ -615,7 +615,14 @@ THE SOFTWARE.
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>                
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <!-- prevent SONAR error: Unable to create symbol table for : 
+                    /home/erik/jenkins/workspace/Jenkins-Sonar/core/src/main/java/jenkins/model/lazy/LazyBuildMixIn.java-->
+                    <excludes>
+                        <exclude>**/LazyBuildMixIn*</exclude>
+                    </excludes>
+                </configuration>            
             </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
@@ -632,12 +639,7 @@ THE SOFTWARE.
                         <configuration>                                  
                             <destFile>${sonar.jacoco.utReportPath}</destFile>
                             <propertyName>jacoco.agent.arg</propertyName>
-                            <append>true</append>                           
-                            <!-- prevent SONAR error: Unable to create symbol table for : 
-                            /home/erik/jenkins/workspace/Jenkins-Sonar/core/src/main/java/jenkins/model/lazy/LazyBuildMixIn.java-->
-                            <excludes>
-                                <exclude>**/LazyBuildMixIn.*</exclude>
-                            </excludes>
+                            <append>true</append>                                                                                   
                         </configuration>                              
                     </execution>
                 </executions>
