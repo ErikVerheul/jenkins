@@ -632,11 +632,11 @@ THE SOFTWARE.
                         <configuration>                                  
                             <destFile>${sonar.jacoco.utReportPath}</destFile>
                             <propertyName>jacoco.agent.arg</propertyName>
-                            <append>true</append>
+                            <append>true</append>                           
                             <!-- prevent SONAR error: Unable to create symbol table for : 
                             /home/erik/jenkins/workspace/Jenkins-Sonar/core/src/main/java/jenkins/model/lazy/LazyBuildMixIn.java-->
                             <excludes>
-                                <exclude>**/LazyBuildMixIn.java</exclude>
+                                <exclude>**/LazyBuildMixIn.*</exclude>
                             </excludes>
                         </configuration>                              
                     </execution>
