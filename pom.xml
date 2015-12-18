@@ -105,22 +105,18 @@ THE SOFTWARE.
         <test-annotations.version>1.2</test-annotations.version>
         <java.level>7</java.level>
         <!-- SONAR properties-->
-        <!--sonar.projectKey>Jenkins</sonar.projectKey>
-        <sonar.projectName>Jenkins on Jenkins</sonar.projectName>
-        <sonar.projectVersion>${yearMonth}</sonar.projectVersion-->
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
         <sonar.language>java</sonar.language>
         <sonar.sourceEncoding>UTF-8</sonar.sourceEncoding>
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>                
         <!-- The Sonar Jacoco Listener for JUnit to extract coverage details per test -->
         <sonar-jacoco-listeners.version>3.2</sonar-jacoco-listeners.version>
-        <sonar.jacoco.utReportPath>${project.build.directory}/../target/jacoco.exec</sonar.jacoco.utReportPath>        
+        <sonar.jacoco.utReportPath>${project.build.directory}/jacoco.exec</sonar.jacoco.utReportPath>        
         <!-- Tells Sonar where the Jacoco coverage result file is located for Integration Tests -->
-        <sonar.jacoco.itReportPath>${project.build.directory}/../target/jacoco-it.exec</sonar.jacoco.itReportPath>
+        <sonar.jacoco.itReportPath>${project.build.directory}/jacoco-it.exec</sonar.jacoco.itReportPath>
         <!-- The argLine must be set as a property. See http://docs.sonarqube.org/display/PLUG/JaCoCo+Plugin -->
         <!--some versions of JDK7/8 causes VerifyError during mock tests: http://code.google.com/p/powermock/issues/detail?id=504-->
         <!-- -XX:-UseGCOverheadLimit switches the GC overhead limit exceeded check completely off; this is an issue when Sonar processes the huge IT file-->
-        <!-- The use @{jacoco.agent.arg}, see http://maven.apache.org/surefire/maven-surefire-plugin/faq.html does not work-->
         <argLine>-Xmx2048m -XX:MaxPermSize=256m -XX:-UseGCOverheadLimit -noverify ${jacoco.agent.arg} </argLine>
 
         <changelog.url>https://jenkins-ci.org/changelog</changelog.url>
@@ -603,15 +599,15 @@ THE SOFTWARE.
                     <artifactId>animal-sniffer-maven-plugin</artifactId>
                     <version>1.9</version>
                 </plugin>
-            </plugins>
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>0.7.5.201505241946</version>                                       
+                </plugin>
+            </plugins>           
         </pluginManagement>
 
-        <plugins>
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.7.5.201505241946</version>                                       
-            </plugin>         
+        <plugins>                     
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>

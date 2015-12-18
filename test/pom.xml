@@ -37,7 +37,8 @@ THE SOFTWARE.
     <description>Unit test harness (src/main) and Unit tests for Jenkins core (src/test)</description>
 
     <properties>
-        <concurrency>1C</concurrency> <!-- may use e.g. 2C for 2 × (number of cores) -->
+        <!--Jacoco cannot handle parallel executions-->
+        <concurrency>1</concurrency> <!-- may use e.g. 2C for 2 × (number of cores) -->
         <mavenDebug>false</mavenDebug>
         <ignore.random.failures>false</ignore.random.failures>
     </properties>
@@ -255,7 +256,7 @@ THE SOFTWARE.
                         <ignore.random.failures>${ignore.random.failures}</ignore.random.failures>
                     </systemPropertyVariables>
                     <reuseForks>true</reuseForks>
-                    <forkCount>1</forkCount> <!--Jacoco cannot handle parallel executions-->
+                    <forkCount>${concurrency}</forkCount>
                     <!-- Let's put failsafe reports with surefire to have access to tests 
                     failures/success reports in sonar -->
                     <reportsDirectory>
@@ -263,12 +264,7 @@ THE SOFTWARE.
                     </reportsDirectory>
                     <includes>
                         <include>**/*.java</include>
-                    </includes>
-                    <!-- prevent SONAR error: Unable to create symbol table for : 
-                    /home/erik/jenkins/workspace/Jenkins-Sonar/core/src/main/java/jenkins/model/lazy/LazyBuildMixIn.java-->
-                    <excludes>
-                        <exclude>**/LazyBuildMixIn.java</exclude>
-                    </excludes>
+                    </includes>                    
                     <!-- test failure ignore -->
                     <testFailureIgnore>true</testFailureIgnore>
                 </configuration>
