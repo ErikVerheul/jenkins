@@ -33,7 +33,7 @@ THE SOFTWARE.
 
     <groupId>org.jenkins-ci.main</groupId>
     <artifactId>pom</artifactId>
-  <version>1.643-SNAPSHOT</version>
+    <version>1.643-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Jenkins main module</name>
@@ -603,6 +603,12 @@ THE SOFTWARE.
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
                     <version>0.7.5.201505241946</version>                                       
+                </plugin>
+                <plugin>
+                    <!-- [Erik] see http://docs.sonarqube.org/display/SONAR/Analyzing+with+SonarQube+Scanner+for+Maven -->
+                    <groupId>org.sonarsource.scanner.maven</groupId>
+                    <artifactId>sonar-maven-plugin</artifactId>
+                    <version>3.0.1</version>
                 </plugin>
             </plugins>           
         </pluginManagement>
