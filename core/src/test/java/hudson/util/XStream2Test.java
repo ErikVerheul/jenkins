@@ -40,7 +40,6 @@ import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.jvnet.hudson.test.Issue;
-import org.jvnet.hudson.test.Issue;
 
 /**
  * Tests for XML serialization of java objects.
@@ -274,7 +273,8 @@ public class XStream2Test {
 
     /**
      * Tests that ConcurrentHashMap is serialized into a more compact format,
-     * but still can deserialize to older, verbose format.
+     * but still can de-serialize to older, verbose format.
+     * @throws java.lang.Exception
      */
     @Test
     public void concurrentHashMapSerialization() throws Exception {
@@ -299,6 +299,7 @@ public class XStream2Test {
 
         // should be able to read in old data just fine
         Foo2 map = (Foo2) new XStream2().fromXML(getClass().getResourceAsStream("old-concurrentHashMap.xml"));
+        //ToDo: check why next line gives a NPE occasionally.
         assertEquals(1,map.m.size());
         assertEquals("def",map.m.get("abc"));
     }
