@@ -781,7 +781,7 @@ public class UpdateCenter extends AbstractModelObject implements Saveable, OnMas
                     out = new DigestOutputStream(out, sha1);
                 }
 
-                LOGGER.info("Downloading "+job.getName());
+                LOGGER.log(Level.INFO, "Downloading {0}", job.getName());
                 Thread t = Thread.currentThread();
                 String oldName = t.getName();
                 t.setName(oldName + ": " + src);
@@ -793,7 +793,7 @@ public class UpdateCenter extends AbstractModelObject implements Saveable, OnMas
                 } catch (IOException e) {
                     throw new IOException("Failed to load "+src+" to "+tmp,e);
                 } finally {
-                    IOUtils.closeQuietly(out);
+                    org.apache.commons.io.IOUtils.closeQuietly(out);
                     t.setName(oldName);
                 }
 
@@ -813,15 +813,16 @@ public class UpdateCenter extends AbstractModelObject implements Saveable, OnMas
                 // assist troubleshooting in case of e.g. "too many redirects" by printing actual URL
                 String extraMessage = "";
                 if (con != null && con.getURL() != null && !src.toString().equals(con.getURL().toString())) {
+                    // ToDo: Sonar thinks that the above expression is always false.
                     // Two URLs are considered equal if different hosts resolve to same IP. Prefer to log in case of string inequality,
                     // because who knows how the server responds to different host name in the request header?
                     // Also, since it involved name resolution, it'd be an expensive operation.
                     extraMessage = " (redirected to: " + con.getURL() + ")";
                 }
-                throw new IOException2("Failed to download from "+src+extraMessage,e);
+                throw new IOException("Failed to download from "+src+extraMessage,e);
             } finally {
-                IOUtils.closeQuietly(in);
-                IOUtils.closeQuietly(out);
+                org.apache.commons.io.IOUtils.closeQuietly(in);
+                org.apache.commons.io.IOUtils.closeQuietly(out);
             }
         }
 
