@@ -1184,17 +1184,7 @@ public abstract class View extends AbstractModelObject implements AccessControll
         }
 
         View v;
-        if (mode!=null && mode.equals("copy")) {
-            v = copy(req, owner, name);
-        } else {
-            ViewDescriptor descriptor = all().findByName(mode);
-            if (descriptor == null) {
-                throw new Failure("No view type ‘" + mode + "’ is known");
-            }
-
-            // create a view
-            v = descriptor.newInstance(req,req.getSubmittedForm());
-        }
+        v = copy(req, owner, name);
         v.owner = owner;
 
         // redirect to the config screen
@@ -1206,7 +1196,7 @@ public abstract class View extends AbstractModelObject implements AccessControll
     private static View copy(StaplerRequest req, ViewGroup owner, String name) throws IOException {
         View v;
         String from = req.getParameter("from");
-        View src = src = owner.getView(from);
+        View src = owner.getView(from);
 
         if(src==null) {
             if(Util.fixEmpty(from)==null)
