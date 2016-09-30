@@ -106,3 +106,4 @@ war/node_modules/
 /cli/nb-configuration.xml
 /test/nb-configuration.xml
 /war/nb-configuration.xml
+/core/nbproject/
