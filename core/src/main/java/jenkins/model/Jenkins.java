@@ -3010,6 +3010,7 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
         if (block) {
             long waitUntil = timeout;
             if (timeout > 0) waitUntil += System.currentTimeMillis();
+            //ToDo: Sonar thinks that the condition below is always true.
             while (isQuietingDown
                    && (timeout <= 0 || System.currentTimeMillis() < waitUntil)
                    && !RestartListener.isAllReady()) {
