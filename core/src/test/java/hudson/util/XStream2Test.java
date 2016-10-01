@@ -299,13 +299,9 @@ public class XStream2Test {
 
         // should be able to read in old data just fine
         Foo2 map = (Foo2) new XStream2().fromXML(getClass().getResourceAsStream("old-concurrentHashMap.xml"));
-        //Check the cause of a NPE occasionally.
-        assertTrue("The file old-concurrentHashMap.xml does not exist", new File("old-concurrentHashMap.xml").exists());
-        if (new File("old-concurrentHashMap.xml").exists()) {
             assertEquals(1,map.m.size());
             assertEquals("def",map.m.get("abc"));
         }
-    }
 
     @Issue("SECURITY-105")
     @Test

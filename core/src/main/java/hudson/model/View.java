@@ -1184,7 +1184,17 @@ public abstract class View extends AbstractModelObject implements AccessControll
         }
 
         View v;
+        if (mode.equals("copy")) {
         v = copy(req, owner, name);
+        } else {
+            ViewDescriptor descriptor = all().findByName(mode);
+            if (descriptor == null) {
+                throw new Failure("No view type ‘" + mode + "’ is known");
+            }
+
+            // create a view
+            v = descriptor.newInstance(req,req.getSubmittedForm());
+        }
         v.owner = owner;
 
         // redirect to the config screen
