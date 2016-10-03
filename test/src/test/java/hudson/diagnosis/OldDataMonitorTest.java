@@ -54,7 +54,7 @@ import org.jvnet.hudson.test.MemoryAssert;
 import org.jvnet.hudson.test.recipes.LocalData;
 import org.kohsuke.stapler.Stapler;
 
-// [Erik] Not that this test crashed the VM with Mave Surefire 2.19. Seems to be fixed with version 2.19.1
+// [Erik] Not that this test crashed the VM with Maven Surefire 2.19. Seems to be fixed with version 2.19.1
 public class OldDataMonitorTest {
 
     static {
