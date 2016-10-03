@@ -298,6 +298,7 @@ public class XStream2Test {
         }
 
         // should be able to read in old data just fine
+        // ToDo: [Erik] Fails with Java 8 JRE. The file is not found!
         Foo2 map = (Foo2) new XStream2().fromXML(getClass().getResourceAsStream("old-concurrentHashMap.xml"));
             assertEquals(1,map.m.size());
             assertEquals("def",map.m.get("abc"));
