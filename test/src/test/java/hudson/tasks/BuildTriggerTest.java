@@ -324,6 +324,7 @@ public class BuildTriggerTest {
         j.buildAndAssertSuccess(us);
 
         final FreeStyleBuild dsb = ds.getBuildByNumber(1);
+        //ToDo: [Erik] fails with NPE with Java 8 RJE.
         j.waitForCompletion(dsb);
         j.assertBuildStatusSuccess(dsb);
     }
