@@ -239,7 +239,6 @@ THE SOFTWARE.
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <version>2.19</version>
                 <configuration>
                     <!-- Specific to generate mapping between tests and covered code -->
                     <properties>
