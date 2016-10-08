@@ -54,6 +54,7 @@ public class CliManagerImpl implements CliEntryPoint, Serializable {
      * Runs callable from this CLI client with the transport authentication credential.
      */
     private final CallableFilter authenticationFilter = new CallableFilter() {
+        @Override
         public <V> V call(Callable<V> callable) throws Exception {
             SecurityContext context = SecurityContextHolder.getContext();
             Authentication old = context.getAuthentication();
@@ -73,6 +74,7 @@ public class CliManagerImpl implements CliEntryPoint, Serializable {
         channel.addLocalExecutionInterceptor(authenticationFilter);
     }
 
+    @Override
     public int main(List<String> args, Locale locale, InputStream stdin, OutputStream stdout, OutputStream stderr) {
         // remoting sets the context classloader to the RemoteClassLoader,
         // which slows down the classloading. we don't load anything from CLI,
@@ -101,6 +103,7 @@ public class CliManagerImpl implements CliEntryPoint, Serializable {
         return -1;
     }
 
+    @Override
     public void authenticate(final String protocol, final Pipe c2s, final Pipe s2c) {
         for (final CliTransportAuthenticator cta : CliTransportAuthenticator.all()) {
             if (cta.supportsProtocol(protocol)) {
@@ -116,10 +119,12 @@ public class CliManagerImpl implements CliEntryPoint, Serializable {
         throw new UnsupportedOperationException("Unsupported authentication protocol: "+protocol);
     }
 
+    @Override
     public boolean hasCommand(String name) {
         return CLICommand.clone(name)!=null;
     }
 
+    @Override
     public int protocolVersion() {
         return VERSION;
     }

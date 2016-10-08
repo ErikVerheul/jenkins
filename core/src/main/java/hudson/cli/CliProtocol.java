@@ -45,6 +45,7 @@ public class CliProtocol extends AgentProtocol {
         protected final Socket socket;
 
         /**
+         * @param socket
          * @deprecated as of 1.559
          *      Use {@link #Handler(NioChannelHub, Socket)}
          */
