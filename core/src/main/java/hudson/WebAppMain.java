@@ -56,6 +56,7 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -67,6 +68,7 @@ import java.security.Security;
 import java.util.logging.LogRecord;
 
 import static java.util.logging.Level.*;
+import org.jvnet.hudson.reactor.ReactorException;
 
 /**
  * Entry point when Hudson is used as a webapp.
@@ -87,7 +89,9 @@ public class WebAppMain implements ServletContextListener {
 
     /**
      * Creates the sole instance of {@link jenkins.model.Jenkins} and register it to the {@link ServletContext}.
+     * @param event
      */
+    @Override
     public void contextInitialized(ServletContextEvent event) {
         final ServletContext context = event.getServletContext();
         File home=null;
@@ -95,6 +99,7 @@ public class WebAppMain implements ServletContextListener {
 
             // use the current request to determine the language
             LocaleProvider.setProvider(new LocaleProvider() {
+                @Override
                 public Locale get() {
                     return Functions.getCurrentLocale();
                 }
@@ -234,7 +239,7 @@ public class WebAppMain implements ServletContextListener {
                     } catch (RuntimeException e) {
                         new HudsonFailedToLoad(e).publish(context,_home);
                         throw e;
-                    } catch (Exception e) {
+                    } catch (IOException | InterruptedException | ReactorException e) {
                         new HudsonFailedToLoad(e).publish(context,_home);
                     } finally {
                         Jenkins instance = Jenkins.getInstance();
@@ -273,7 +278,7 @@ public class WebAppMain implements ServletContextListener {
             Class scc = Class.forName("javax.servlet.SessionCookieConfig");
             Method setHttpOnly = scc.getMethod("setHttpOnly",boolean.class);
             setHttpOnly.invoke(sessionCookieConfig,true);
-        } catch (Exception e) {
+        } catch (SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | ClassNotFoundException | NoSuchMethodException e) {
             LOGGER.log(Level.WARNING, "Failed to set HTTP-only cookie flag", e);
         }
     }
@@ -334,6 +339,7 @@ public class WebAppMain implements ServletContextListener {
      * with those by doing {@link String#trim()}.
      * 
      * <p>
+     * @param event
      * @return the File alongside with some description to help the user troubleshoot issues
      */
     public FileAndDescription getHomeDir(ServletContextEvent event) {
@@ -394,6 +400,7 @@ public class WebAppMain implements ServletContextListener {
         return new FileAndDescription(newHome,"$user.home/.jenkins");
     }
 
+    @Override
     public void contextDestroyed(ServletContextEvent event) {
         terminated = true;
         Jenkins instance = Jenkins.getInstance();
