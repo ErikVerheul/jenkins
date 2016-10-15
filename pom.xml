@@ -107,17 +107,17 @@ THE SOFTWARE.
         <!-- SONAR properties-->
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
         <sonar.language>java</sonar.language>
-        <sonar.sourceEncoding>UTF-8</sonar.sourceEncoding>
-        <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>                
+        <sonar.sourceEncoding>UTF-8</sonar.sourceEncoding>              
         <!-- The Sonar Jacoco Listener for JUnit to extract coverage details per test -->
         <sonar-jacoco-listeners.version>3.2</sonar-jacoco-listeners.version>
         <sonar.jacoco.utReportPath>${project.build.directory}/jacoco.exec</sonar.jacoco.utReportPath>        
         <!-- Tells Sonar where the Jacoco coverage result file is located for Integration Tests -->
         <sonar.jacoco.itReportPath>${project.build.directory}/jacoco-it.exec</sonar.jacoco.itReportPath>
-        <!-- The argLine must be set as a property. See http://docs.sonarqube.org/display/PLUG/JaCoCo+Plugin -->
+        <!-- The argLine must be set as a property. See http://docs.sonarqube.org/display/PLUG/Usage+of+JaCoCo+with+Java+Plugin -->
         <!--some versions of JDK7/8 causes VerifyError during mock tests: http://code.google.com/p/powermock/issues/detail?id=504-->
         <!-- -XX:-UseGCOverheadLimit switches the GC overhead limit exceeded check completely off; this is an issue when Sonar processes the huge IT file-->
-        <argLine>-Xmx2048m -XX:MaxPermSize=256m -XX:-UseGCOverheadLimit -Dfile.encoding=UTF-8 -noverify ${jacoco.agent.arg} </argLine>
+        <!-- ToDo: check if the argline is realy used? -->
+        <argLine>-Xmx3072m -XX:MaxPermSize=256m -XX:-UseGCOverheadLimit -Dfile.encoding=UTF-8 -noverify ${jacoco.agent.arg} </argLine>
 
         <changelog.url>https://jenkins-ci.org/changelog</changelog.url>
     </properties>
