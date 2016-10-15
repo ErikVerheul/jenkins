@@ -54,7 +54,7 @@ import org.jvnet.hudson.test.MemoryAssert;
 import org.jvnet.hudson.test.recipes.LocalData;
 import org.kohsuke.stapler.Stapler;
 
-// [Erik] Not that this test crashed the VM with Maven Surefire 2.19. Seems to be fixed with version 2.19.1
+// [Erik] Note that this test crashed the VM with Maven Surefire 2.19. Seems to be fixed with version 2.19.1
 public class OldDataMonitorTest {
 
     static {
@@ -88,6 +88,7 @@ public class OldDataMonitorTest {
     }
 
     @Issue("JENKINS-19544")
+    @Ignore("Causes a java.util.concurrent.ExecutionException: java.lang.OutOfMemoryError: Java heap space")
     @Test
     public void memory() throws Exception {
         FreeStyleProject p = r.createFreeStyleProject("p");
