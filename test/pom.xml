@@ -206,10 +206,10 @@ THE SOFTWARE.
                 <configuration>
                     <!-- Specific to generate mapping between tests and covered code -->
                     <properties>
-                        <!--property>
+                        <property>
                             <name>listener</name>
                             <value>org.sonar.java.jacoco.JUnitListener</value>
-                        </property-->
+                        </property>
                     </properties>
                     <systemPropertyVariables>
                         <!-- use AntClassLoader that supports predictable file handle release -->
@@ -219,8 +219,7 @@ THE SOFTWARE.
                     </systemPropertyVariables>
                     <reuseForks>true</reuseForks>
                     <forkCount>${concurrency}</forkCount>
-                    <!-- Let's put failsafe reports with surefire to have access to tests 
-                    failures/success reports in sonar -->
+                    <!-- Let's put failsafe reports with surefire to have access to tests failures/success reports in sonar -->
                     <reportsDirectory>
                         ${project.build.directory}/surefire-reports
                     </reportsDirectory>
@@ -317,7 +316,7 @@ THE SOFTWARE.
       </properties>
     </profile>
     <profile>
-      <!-- [Erik ToDo: this is new. Check for comatibility with my Jacoco usage] Obtain code coverage report. This is done by running Unit tests on our own and suppressing surefire. -->
+      <!-- [Erik ToDo: this is new. Check for compatibility with my Jacoco usage] Obtain code coverage report. This is done by running Unit tests on our own and suppressing surefire. -->
       <id>cobertura</id>
       <build>
         <plugins>
@@ -352,7 +351,6 @@ THE SOFTWARE.
           <plugin>
             <groupId>org.jacoco</groupId>
             <artifactId>jacoco-maven-plugin</artifactId>
-            <version>0.6.3.201306030806</version>
             <executions>
               <!--
                 Prepares the property pointing to the JaCoCo runtime agent which
