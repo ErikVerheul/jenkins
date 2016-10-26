@@ -408,7 +408,8 @@ public class WebAppMain implements ServletContextListener {
             instance.cleanUp();
         }
         Thread t = initThread;
-        if (t!=null) {
+        if (t != null && t.isAlive()) {
+            LOGGER.log(Level.INFO, "Shutting down a Jenkins instance that was still starting up", new Throwable("reason"));
             t.interrupt();
         }
 

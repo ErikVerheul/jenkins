@@ -33,7 +33,7 @@ THE SOFTWARE.
 
     <groupId>org.jenkins-ci.main</groupId>
     <artifactId>pom</artifactId>
-    <version>1.643-SNAPSHOT</version>
+    <version>1.651.3-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Jenkins main module</name>
@@ -52,7 +52,6 @@ THE SOFTWARE.
         <module>war</module>
         <module>test</module>
         <module>cli</module>
-        <module>plugins</module>
     </modules>
 
     <scm>
@@ -173,7 +172,7 @@ THE SOFTWARE.
                 <artifactId>mockito-core</artifactId>
                 <version>1.10.19</version>
             </dependency>
-      
+
             <dependency>
                 <groupId>org.powermock</groupId>
                 <artifactId>powermock-module-junit4</artifactId>
@@ -194,7 +193,7 @@ THE SOFTWARE.
             <dependency>
                 <groupId>org.jenkins-ci.main</groupId>
                 <artifactId>remoting</artifactId>
-                <version>2.53.2</version>
+                <version>2.59</version>
             </dependency>
 
             <dependency>
@@ -404,7 +403,9 @@ THE SOFTWARE.
                     <artifactId>maven-surefire-plugin</artifactId>
                     <!-- override version specified in grandparent pom -->
                     <version>2.19.1</version>
-                    <configuration>                           
+                    <!-- ignoring ${maven-surefire-plugin.version} -->
+                    <configuration>
+                        <!--argLine>-noverify</argLine--> <!-- [Erik: do not do this] some versions of JDK7/8 causes VerifyError during mock tests: http://code.google.com/p/powermock/issues/detail?id=504 -->
                         <!-- Specific to generate mapping between tests and covered code -->
                         <properties>
                             <property>

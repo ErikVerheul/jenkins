@@ -31,7 +31,6 @@ import hudson.model.DirectlyModifiableView;
 import hudson.model.View;
 
 import org.kohsuke.args4j.Argument;
-import org.kohsuke.args4j.CmdLineException;
 
 /**
  * @author ogondza
@@ -40,10 +39,10 @@ import org.kohsuke.args4j.CmdLineException;
 @Extension
 public class AddJobToViewCommand extends CLICommand {
 
-    @Argument(usage="Name of the view", required=true, index=0)
+    @Argument(usage = "Name of the view", required = true, index = 0)
     private View view;
 
-    @Argument(usage="Job names", required=true, index=1)
+    @Argument(usage = "Job names", required = true, index = 1)
     private List<TopLevelItem> jobs;
 
     @Override
@@ -56,12 +55,11 @@ public class AddJobToViewCommand extends CLICommand {
         view.checkPermission(View.CONFIGURE);
 
         if (!(view instanceof DirectlyModifiableView)) {
-            throw new CmdLineException(
-                    null, "'" + view.getDisplayName() + "' view can not be modified directly"
-            );
+            throw new IllegalStateException(
+                    "'" + view.getDisplayName() + "' view can not be modified directly");
         }
 
-        for (TopLevelItem job: jobs) {
+        for (TopLevelItem job : jobs) {
             ((DirectlyModifiableView) view).add(job);
         }
 

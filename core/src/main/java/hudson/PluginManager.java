@@ -150,6 +150,13 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
     public final File rootDir;
 
     /**
+     * If non-null, the base directory for all exploded .hpi/.jpi plugins. Controlled by the system property / servlet
+     * context parameter {@literal hudson.PluginManager.workDir}.
+     */
+    @CheckForNull
+    private final File workDir;
+
+    /**
      * @deprecated as of 1.355
      *      {@link PluginManager} can now live longer than {@link jenkins.model.Jenkins} instance, so
      *      use {@code Hudson.getInstance().servletContext} instead.
@@ -199,6 +206,11 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
         this.rootDir = rootDir;
         if(!rootDir.exists())
             rootDir.mkdirs();
+        String workDir = System.getProperty(PluginManager.class.getName()+".workDir");
+        if (workDir == null && context != null) {
+            workDir = context.getInitParameter(PluginManager.class.getName() + ".workDir");
+        }
+        this.workDir = workDir == null ? null : new File(workDir);
 
         strategy = createPluginStrategy();
 
@@ -215,7 +227,17 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
     }
 
     public Api getApi() {
+        Jenkins.getInstance().checkPermission(Jenkins.ADMINISTER);
         return new Api(this);
+    }
+
+    /**
+     * If non-null, the base directory for all exploded .hpi/.jpi plugins.
+     * @return the base directory for all exploded .hpi/.jpi plugins or {@code null} to leave this up to the strategy.
+     */
+    @CheckForNull
+    public File getWorkDir() {
+        return workDir;
     }
 
     /**
@@ -954,20 +976,25 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
 
     @Restricted(NoExternalUse.class)
     @RequirePOST public HttpResponse doCheckUpdatesServer() throws IOException {
-        for (UpdateSite site : Jenkins.getInstance().getUpdateCenter().getSites()) {
-            FormValidation v = site.updateDirectlyNow(DownloadService.signatureCheck);
-            if (v.kind != FormValidation.Kind.OK) {
-                // TODO crude but enough for now
-                return v;
+        Jenkins.getInstance().checkPermission(Jenkins.ADMINISTER);
+        try {
+            for (UpdateSite site : Jenkins.getInstance().getUpdateCenter().getSites()) {
+                FormValidation v = site.updateDirectlyNow(DownloadService.signatureCheck);
+                if (v.kind != FormValidation.Kind.OK) {
+                    // TODO crude but enough for now
+                    return v;
+                }
             }
-        }
-        for (DownloadService.Downloadable d : DownloadService.Downloadable.all()) {
-            FormValidation v = d.updateNow();
-            if (v.kind != FormValidation.Kind.OK) {
-                return v;
+            for (DownloadService.Downloadable d : DownloadService.Downloadable.all()) {
+                FormValidation v = d.updateNow();
+                if (v.kind != FormValidation.Kind.OK) {
+                    return v;
+                }
             }
+            return HttpResponses.forwardToPreviousPage();
+        } catch(RuntimeException ex) {
+            throw new IOException("Unhandled exception during updates server check", ex);
         }
-        return HttpResponses.forwardToPreviousPage();
     }
 
     protected String identifyPluginShortName(File t) {

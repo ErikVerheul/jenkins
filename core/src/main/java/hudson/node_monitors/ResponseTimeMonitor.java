@@ -23,7 +23,6 @@
  */
 package hudson.node_monitors;
 
-import hudson.Util;
 import hudson.Extension;
 import hudson.model.Computer;
 import hudson.remoting.Callable;
