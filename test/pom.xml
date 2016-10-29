@@ -216,6 +216,7 @@ THE SOFTWARE.
                         <hudson.ClassicPluginStrategy.useAntClassLoader>true</hudson.ClassicPluginStrategy.useAntClassLoader>
                         <hudson.maven.debug>${mavenDebug}</hudson.maven.debug>
                         <buildDirectory>${project.build.directory}</buildDirectory>
+                        <sonar.java.binaries>${project.basedir}/../target/classes</sonar.java.binaries>
                     </systemPropertyVariables>
                     <reuseForks>true</reuseForks>
                     <forkCount>${concurrency}</forkCount>
