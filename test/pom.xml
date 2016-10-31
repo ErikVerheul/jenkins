@@ -216,7 +216,6 @@ THE SOFTWARE.
                         <hudson.ClassicPluginStrategy.useAntClassLoader>true</hudson.ClassicPluginStrategy.useAntClassLoader>
                         <hudson.maven.debug>${mavenDebug}</hudson.maven.debug>
                         <buildDirectory>${project.build.directory}</buildDirectory>
-                        <sonar.java.binaries>${project.basedir}/../target/classes</sonar.java.binaries>
                     </systemPropertyVariables>
                     <reuseForks>true</reuseForks>
                     <forkCount>${concurrency}</forkCount>
@@ -248,7 +247,7 @@ THE SOFTWARE.
                         <id>prepare-it-agent</id>
                         <phase>process-test-classes</phase>
                         <goals>
-                            <goal>prepare-agent</goal>
+                            <goal>prepare-agent-integration</goal>
                         </goals>
                         <configuration>                                  
                             <destFile>${sonar.jacoco.itReportPath}</destFile>
