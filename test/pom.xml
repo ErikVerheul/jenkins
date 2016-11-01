@@ -220,34 +220,34 @@ THE SOFTWARE.
                     <skipTests>true</skipTests>
                 </configuration>
             </plugin>
-            <plugin>
+            <!--plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <configuration>
-                    <!-- Specific to generate mapping between tests and covered code >
-                    <properties>
+                <configuration-->
+                    <!-- Specific to generate mapping between tests and covered code -->
+                    <!--properties>
                         <property>
                             <name>listener</name>
                             <value>org.sonar.java.jacoco.JUnitListener</value>
                         </property>
-                    </properties-->
-                    <systemPropertyVariables>
+                    </properties>
+                    <systemPropertyVariables-->
                         <!-- use AntClassLoader that supports predictable file handle release -->
-                        <hudson.ClassicPluginStrategy.useAntClassLoader>true</hudson.ClassicPluginStrategy.useAntClassLoader>
+                        <!--hudson.ClassicPluginStrategy.useAntClassLoader>true</hudson.ClassicPluginStrategy.useAntClassLoader>
                         <hudson.maven.debug>${mavenDebug}</hudson.maven.debug>
                         <buildDirectory>${project.build.directory}</buildDirectory>
                     </systemPropertyVariables>
                     <reuseForks>true</reuseForks>
-                    <forkCount>${concurrency}</forkCount>
+                    <forkCount>${concurrency}</forkCount-->
                     <!-- Let's put failsafe reports with surefire to have access to tests failures/success reports in sonar -->
-                    <reportsDirectory>
+                    <!--reportsDirectory>
                         ${project.build.directory}/surefire-reports
                     </reportsDirectory>
                     <includes>
                         <include>**/*.java</include>
-                    </includes>                    
+                    </includes-->                    
                     <!-- test failure ignore -->
-                    <testFailureIgnore>true</testFailureIgnore>
+                    <!--testFailureIgnore>true</testFailureIgnore>
                 </configuration>
                 <executions>
                     <execution>
@@ -256,7 +256,7 @@ THE SOFTWARE.
                         </goals>
                     </execution>
                 </executions>                                
-            </plugin>
+            </plugin-->
             <!--plugin>
             <groupId>org.jacoco</groupId>
             <artifactId>jacoco-maven-plugin</artifactId>
