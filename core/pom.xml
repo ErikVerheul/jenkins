@@ -624,13 +624,13 @@ THE SOFTWARE.
                     </excludes>
                 </configuration>            
             </plugin>
-            <plugin>
+            <!--plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <executions>
+                <executions-->
                     <!-- Prepares a variable, jacoco.agent.arg, that contains the info 
                     to be passed to the JVM hosting the code being tested. -->
-                    <execution>
+                    <!--execution>
                         <id>prepare-ut-agent</id>
                         <phase>process-test-classes</phase>
                         <goals>
@@ -643,7 +643,7 @@ THE SOFTWARE.
                         </configuration>                              
                     </execution>
                 </executions>
-            </plugin>
+            </plugin-->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>

@@ -57,13 +57,13 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>                
             </plugin>
-            <plugin>
+            <!--plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <executions>
+                <executions-->
                     <!-- Prepares a variable, jacoco.agent.arg, that contains the info 
                     to be passed to the JVM hosting the code being tested. -->
-                    <execution>
+                    <!--execution>
                         <id>prepare-ut-agent</id>
                         <phase>process-test-classes</phase>
                         <goals>
@@ -76,7 +76,7 @@
                         </configuration>                               
                     </execution>
                 </executions>
-            </plugin>
+            </plugin-->
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <!-- version specified in grandparent pom -->

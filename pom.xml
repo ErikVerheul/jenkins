@@ -107,8 +107,8 @@ THE SOFTWARE.
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
         <sonar.language>java</sonar.language>
         <sonar.sourceEncoding>UTF-8</sonar.sourceEncoding>              
-        <!-- The Sonar Jacoco Listener for JUnit to extract coverage details per test -->
-        <sonar-jacoco-listeners.version>3.2</sonar-jacoco-listeners.version>
+        <!-- The Sonar Jacoco Listener for JUnit to extract coverage details per test >
+        <sonar-jacoco-listeners.version>3.2</sonar-jacoco-listeners.version-->
         <sonar.jacoco.utReportPath>${project.basedir}/../target/jacoco.exec</sonar.jacoco.utReportPath>        
         <!-- Tells Sonar where the Jacoco coverage result file is located for Integration Tests -->
         <sonar.jacoco.itReportPath>${project.basedir}/../target/jacoco-it.exec</sonar.jacoco.itReportPath>
@@ -116,7 +116,7 @@ THE SOFTWARE.
         <!-- some versions of JDK7/8 causes VerifyError during mock tests: http://code.google.com/p/powermock/issues/detail?id=504-->
         <!-- -XX:-UseGCOverheadLimit switches the GC overhead limit exceeded check completely off; this is an issue when Sonar processes the huge IT file-->
         <!-- ToDo: check if the argline is realy used? -->
-        <argLine>-Xmx3072m -XX:MaxPermSize=256m -XX:-UseGCOverheadLimit -Dfile.encoding=UTF-8 -noverify ${jacoco.agent.arg} </argLine>
+        <!--argLine>-Xmx3072m -XX:MaxPermSize=256m -XX:-UseGCOverheadLimit -Dfile.encoding=UTF-8 -noverify ${jacoco.agent.arg} </argLine-->
         
         <changelog.url>https://jenkins-ci.org/changelog</changelog.url>
     </properties>
@@ -269,12 +269,12 @@ THE SOFTWARE.
             <version>${test-annotations.version}</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>org.codehaus.sonar-plugins.java</groupId>
             <artifactId>sonar-jacoco-listeners</artifactId>
             <version>${sonar-jacoco-listeners.version}</version>
             <scope>test</scope>
-        </dependency>
+        </dependency-->
     </dependencies>
 
     <build>
@@ -406,13 +406,13 @@ THE SOFTWARE.
                     <!-- ignoring ${maven-surefire-plugin.version} -->
                     <configuration>
                         <!--argLine>-noverify</argLine [Erik: do not do this]-->
-                        <!-- Specific to generate mapping between tests and covered code -->
+                        <!-- Specific to generate mapping between tests and covered code >
                         <properties>
                             <property>
                                 <name>listener</name>
                                 <value>org.sonar.java.jacoco.JUnitListener</value>
                             </property>
-                        </properties>
+                        </properties-->
                         <systemPropertyVariables>
                             <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
                             <forkedProcessTimeoutInSeconds>3600</forkedProcessTimeoutInSeconds>
@@ -601,11 +601,11 @@ THE SOFTWARE.
                     <artifactId>animal-sniffer-maven-plugin</artifactId>
                     <version>1.9</version>
                 </plugin>
-                <plugin>
+                <!--plugin>
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
-                    <version>0.7.7.201606060606</version>                                       
-                </plugin>
+                    <version>0.7.7.201606060606</version>                                     
+                </plugin-->
                 <plugin>
                     <!-- [Erik] see http://docs.sonarqube.org/display/SONAR/Analyzing+with+SonarQube+Scanner+for+Maven -->
                     <groupId>org.sonarsource.scanner.maven</groupId>
@@ -615,7 +615,35 @@ THE SOFTWARE.
             </plugins>           
         </pluginManagement>
 
-        <plugins>                     
+        <plugins>
+            <!-- build/plugins (not build/pluginManagement/plugins!) -->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.7.7.201606060606</version>
+                <executions>
+                    <execution>
+                        <id>agent-for-ut</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                        <configuration>
+                            <append>true</append>
+                            <destFile>${sonar.jacoco.reportPath}</destFile>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>agent-for-it</id>
+                        <goals>
+                            <goal>prepare-agent-integration</goal>
+                        </goals>
+                        <configuration>
+                            <append>true</append>
+                            <destFile>${sonar.jacoco.itReportPath}</destFile>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>                   
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
