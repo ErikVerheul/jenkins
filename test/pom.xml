@@ -38,7 +38,7 @@ THE SOFTWARE.
 
     <properties>       
         <!--Jacoco can/cannot handle parallel executions?-->
-        <concurrency>2C</concurrency> <!-- may use e.g. 2C for 2 × (number of cores) -->
+        <concurrency>2</concurrency> <!-- may use e.g. 2C for 2 × (number of cores) -->
         <mavenDebug>false</mavenDebug>
         <ignore.random.failures>false</ignore.random.failures>
         <!-- [Erik: Do not do this] jacocoSurefireArgs /--><!-- empty by default -->
@@ -220,7 +220,7 @@ THE SOFTWARE.
                     <systemPropertyVariables>
                         <!-- use AntClassLoader that supports predictable file handle release -->
                         <hudson.ClassicPluginStrategy.useAntClassLoader>true</hudson.ClassicPluginStrategy.useAntClassLoader>
-                        <hudson.maven.debug>${mavenDebug}</hudson.maven.debug>
+                        <hudson.maven.debug>true</hudson.maven.debug>
                         <buildDirectory>${project.build.directory}</buildDirectory>
                     </systemPropertyVariables>
                     <reuseForks>true</reuseForks>

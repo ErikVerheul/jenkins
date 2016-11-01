@@ -116,7 +116,7 @@ THE SOFTWARE.
         <!-- some versions of JDK7/8 causes VerifyError during mock tests: http://code.google.com/p/powermock/issues/detail?id=504-->
         <!-- -XX:-UseGCOverheadLimit switches the GC overhead limit exceeded check completely off; this is an issue when Sonar processes the huge IT file-->
         <!-- ToDo: check if the argline is realy used? -->
-        <!--argLine>-Xmx3072m -XX:MaxPermSize=256m -XX:-UseGCOverheadLimit -Dfile.encoding=UTF-8 -noverify ${jacoco.agent.arg} </argLine-->
+        <argLine>-Xmx3000m -XX:MaxPermSize=256m -XX:-UseGCOverheadLimit -Dfile.encoding=UTF-8 -noverify ${jacoco.agent.arg} </argLine>
         
         <changelog.url>https://jenkins-ci.org/changelog</changelog.url>
     </properties>
@@ -602,6 +602,8 @@ THE SOFTWARE.
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.7.7.201606060606</version>
+                <!-- Prepares a variable, jacoco.agent.arg, that contains the info 
+                to be passed to the JVM hosting the code being tested. -->
                 <executions>
                     <execution>
                         <id>agent-for-ut</id>
