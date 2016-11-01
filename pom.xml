@@ -290,21 +290,7 @@ THE SOFTWARE.
             </resource>
         </resources>
         <pluginManagement>
-            <plugins>                
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-failsafe-plugin</artifactId>
-                    <version>2.19.1</version>
-                    <executions>
-                        <execution>
-                            <id>integration-test</id>
-                            <goals>
-                                <goal>integration-test</goal>
-                                <goal>verify</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
+            <plugins>                                
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>build-helper-maven-plugin</artifactId>
@@ -600,14 +586,9 @@ THE SOFTWARE.
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>animal-sniffer-maven-plugin</artifactId>
                     <version>1.9</version>
-                </plugin>
-                <!--plugin>
-                    <groupId>org.jacoco</groupId>
-                    <artifactId>jacoco-maven-plugin</artifactId>
-                    <version>0.7.7.201606060606</version>                                     
-                </plugin-->
+                </plugin>                
                 <plugin>
-                    <!-- [Erik] see http://docs.sonarqube.org/display/SONAR/Analyzing+with+SonarQube+Scanner+for+Maven -->
+                    <!-- [Erik] see http://docs.sonarqube.org/display/SCAN/Analyzing+with+SonarQube+Scanner+for+Maven -->
                     <groupId>org.sonarsource.scanner.maven</groupId>
                     <artifactId>sonar-maven-plugin</artifactId>
                     <version>3.0.1</version>

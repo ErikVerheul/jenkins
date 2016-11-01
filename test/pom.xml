@@ -36,9 +36,9 @@ THE SOFTWARE.
     <name>Tests for Jenkins core</name>
     <description>Functional tests for Jenkins core</description>
 
-    <properties>
-        <!--Jacoco cannot handle parallel executions-->
-        <concurrency>1</concurrency> <!-- may use e.g. 2C for 2 × (number of cores) -->
+    <properties>       
+        <!--Jacoco can/cannot handle parallel executions?-->
+        <concurrency>2C</concurrency> <!-- may use e.g. 2C for 2 × (number of cores) -->
         <mavenDebug>false</mavenDebug>
         <ignore.random.failures>false</ignore.random.failures>
         <!-- [Erik: Do not do this] jacocoSurefireArgs /--><!-- empty by default -->
@@ -187,26 +187,6 @@ THE SOFTWARE.
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <version>2.19.1</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>integration-test</goal>
-                            <goal>verify</goal>
-                        </goals>
-                        <configuration>
-                            <skipTests>${skip.tests}</skipTests>
-                            <argLine>${argLine} -Duser.timezone=UTC -Xmx3072m -XX:MaxPermSize=256m -XX:-UseGCOverheadLimit</argLine>
-                            <includes>
-                                <includes>**/*Test*</includes>
-                            </includes>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.kohsuke.stapler</groupId>
                 <artifactId>maven-stapler-plugin</artifactId>
                 <!-- version specified in grandparent pom -->
@@ -220,63 +200,51 @@ THE SOFTWARE.
                     <skipTests>true</skipTests>
                 </configuration>
             </plugin>
-            <!--plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <configuration-->
+                <version>2.19.1</version>
+                <configuration>
+                    <skipTests>${skip.tests}</skipTests>
+                    <argLine>${argLine} -Duser.timezone=UTC -Xmx3072m -XX:MaxPermSize=256m -XX:-UseGCOverheadLimit</argLine>
+                    <includes>
+                        <includes>**/*Test*</includes>
+                    </includes>
                     <!-- Specific to generate mapping between tests and covered code -->
                     <!--properties>
                         <property>
                             <name>listener</name>
                             <value>org.sonar.java.jacoco.JUnitListener</value>
                         </property>
-                    </properties>
-                    <systemPropertyVariables-->
+                    </properties-->
+                    <systemPropertyVariables>
                         <!-- use AntClassLoader that supports predictable file handle release -->
-                        <!--hudson.ClassicPluginStrategy.useAntClassLoader>true</hudson.ClassicPluginStrategy.useAntClassLoader>
+                        <hudson.ClassicPluginStrategy.useAntClassLoader>true</hudson.ClassicPluginStrategy.useAntClassLoader>
                         <hudson.maven.debug>${mavenDebug}</hudson.maven.debug>
                         <buildDirectory>${project.build.directory}</buildDirectory>
                     </systemPropertyVariables>
                     <reuseForks>true</reuseForks>
-                    <forkCount>${concurrency}</forkCount-->
+                    <forkCount>${concurrency}</forkCount>
                     <!-- Let's put failsafe reports with surefire to have access to tests failures/success reports in sonar -->
-                    <!--reportsDirectory>
+                    <reportsDirectory>
                         ${project.build.directory}/surefire-reports
                     </reportsDirectory>
                     <includes>
                         <include>**/*.java</include>
-                    </includes-->                    
+                    </includes>                    
                     <!-- test failure ignore -->
-                    <!--testFailureIgnore>true</testFailureIgnore>
+                    <testFailureIgnore>true</testFailureIgnore>
                 </configuration>
                 <executions>
                     <execution>
+                        <id>integration-test</id>
                         <goals>
                             <goal>integration-test</goal>
+                            <goal>verify</goal>
                         </goals>
-                    </execution>
-                </executions>                                
-            </plugin-->
-            <!--plugin>
-            <groupId>org.jacoco</groupId>
-            <artifactId>jacoco-maven-plugin</artifactId>
-            <executions-->
-            <!-- Prepares a variable, jacoco.agent.arg, that contains the info 
-            to be passed to the JVM hosting the code being tested. -->
-            <!--execution>
-                        <id>prepare-it-agent</id>
-                        <phase>process-test-classes</phase>
-                        <goals>
-                            <goal>prepare-agent-integration</goal>
-                        </goals>
-                        <configuration>                                  
-                            <destFile>${sonar.jacoco.itReportPath}</destFile>
-                            <propertyName>jacoco.agent.arg</propertyName>
-                            <append>true</append>
-                        </configuration>                               
                     </execution>
                 </executions>
-            </plugin-->
+            </plugin>
             <plugin>
                 <groupId>org.codehaus.gmaven</groupId>
                 <artifactId>gmaven-plugin</artifactId>
@@ -334,37 +302,9 @@ THE SOFTWARE.
                 <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
                 <surefire.rerunFailingTestsCount>4</surefire.rerunFailingTestsCount>
             </properties>
-        </profile>
+        </profile>   
         <profile>
-            <!-- [Erik ToDo: this is new. Check for compatibility with my Jacoco usage] Obtain code coverage report. This is done by running Unit tests on our own and suppressing surefire. -->
-            <id>cobertura</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.codehaus.gmaven</groupId>
-                        <artifactId>gmaven-plugin</artifactId>
-                        <!-- version specified in grandparent pom -->
-                        <executions>
-                            <!-- run unit test -->
-                            <execution>
-                                <phase>test</phase>
-                                <goals>
-                                    <goal>execute</goal>
-                                </goals>
-                                <configuration>
-                                    <scriptpath>
-                                        <!-- load helpers from hg core -->
-                                        <element>${project.basedir}/../core/src/build-script</element>
-                                    </scriptpath>
-                                    <source>${project.basedir}/src/build-script/unitTest.groovy</source>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>    
-        <profile>
+            <!--[Erik] this is new; ToDo: see if using a profile is a good idea-->
             <id>jacoco</id>
             <build>
                 <plugins>

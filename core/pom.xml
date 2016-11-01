@@ -623,27 +623,7 @@ THE SOFTWARE.
                         <exclude>**/LazyBuildMixIn*</exclude>
                     </excludes>
                 </configuration>            
-            </plugin>
-            <!--plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <executions-->
-                    <!-- Prepares a variable, jacoco.agent.arg, that contains the info 
-                    to be passed to the JVM hosting the code being tested. -->
-                    <!--execution>
-                        <id>prepare-ut-agent</id>
-                        <phase>process-test-classes</phase>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                        <configuration>                                  
-                            <destFile>${sonar.jacoco.utReportPath}</destFile>
-                            <propertyName>jacoco.agent.arg</propertyName>
-                            <append>true</append>                                                                                   
-                        </configuration>                              
-                    </execution>
-                </executions>
-            </plugin-->
+            </plugin>            
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
