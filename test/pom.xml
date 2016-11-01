@@ -41,7 +41,6 @@ THE SOFTWARE.
         <concurrency>2</concurrency> <!-- may use e.g. 2C for 2 × (number of cores) -->
         <mavenDebug>false</mavenDebug>
         <ignore.random.failures>false</ignore.random.failures>
-        <!-- [Erik: Do not do this] jacocoSurefireArgs /--><!-- empty by default -->
     </properties>
 
     <dependencies>
@@ -205,8 +204,7 @@ THE SOFTWARE.
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>2.19.1</version>
                 <configuration>
-                    <skipTests>${skip.tests}</skipTests>
-                    <argLine>${argLine} -Duser.timezone=UTC -Xmx3072m -XX:MaxPermSize=256m -XX:-UseGCOverheadLimit</argLine>
+                    <skipTests>${skipTests}</skipTests>
                     <includes>
                         <includes>**/*Test*</includes>
                     </includes>
@@ -324,7 +322,6 @@ THE SOFTWARE.
                                 <configuration>
                                     <!-- Sets the path to the file which contains the execution data. -->
                                     <destFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</destFile>
-                                    <propertyName>jacocoSurefireArgs</propertyName>
                                 </configuration>
                             </execution>
                             <!--

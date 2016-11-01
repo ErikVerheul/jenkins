@@ -108,3 +108,4 @@ war/node_modules/
 /test/nb-configuration.xml
 /war/nb-configuration.xml
 /core/nbproject/
+/nbactions.xml
