@@ -185,6 +185,16 @@ THE SOFTWARE.
     <build>
         <plugins>
             <plugin>
+                <!-- [Erik] avoid the creation of an empty jar-->
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-jar</id>
+                        <phase>none</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.kohsuke.stapler</groupId>
                 <artifactId>maven-stapler-plugin</artifactId>
                 <!-- version specified in grandparent pom -->
