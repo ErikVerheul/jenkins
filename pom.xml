@@ -749,19 +749,7 @@ THE SOFTWARE.
                 -->
                 <groupId>org.jenkins-ci.tools</groupId>
                 <artifactId>maven-jenkins-dev-plugin</artifactId>
-            </plugin>
-
-            <!--<plugin>
-              <groupId>org.jvnet.fix1600</groupId>
-              <artifactId>fix1600</artifactId>
-              <executions>
-                <execution>
-                  <goals>
-                    <goal>fix</goal>
-                  </goals>
-                </execution>
-              </executions>
-            </plugin>-->
+            </plugin>           
             <plugin>
                 <groupId>org.codehaus.gmaven</groupId>
                 <artifactId>gmaven-plugin</artifactId>
