@@ -28,7 +28,7 @@ THE SOFTWARE.
     <parent>
         <groupId>org.jenkins-ci</groupId>
         <artifactId>jenkins</artifactId>
-        <version>1.35</version>
+        <version>1.37</version>
     </parent>
 
     <groupId>org.jenkins-ci.main</groupId>
@@ -115,7 +115,7 @@ THE SOFTWARE.
         <!-- The argLine must be set as a property. See http://docs.sonarqube.org/display/PLUG/Usage+of+JaCoCo+with+Java+Plugin -->
         <!-- some versions of JDK7/8 causes VerifyError during mock tests: http://code.google.com/p/powermock/issues/detail?id=504-->
         <!-- -XX:-UseGCOverheadLimit switches the GC overhead limit exceeded check completely off; this is an issue when Sonar processes the huge IT file-->
-        <argLine>-Xmx2048m -XX:MaxPermSize=256m -XX:-UseGCOverheadLimit -Dfile.encoding=UTF-8 -noverify</argLine>
+        <argLine>-Xmx2048m -XX:-UseGCOverheadLimit -Dfile.encoding=UTF-8 -noverify</argLine>
         
         <changelog.url>https://jenkins-ci.org/changelog</changelog.url>
     </properties>
