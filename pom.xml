@@ -611,6 +611,14 @@ THE SOFTWARE.
                         </goals>
                         <configuration>
                             <destFile>${sonar.jacoco.reportPath}</destFile>
+                            <includes>
+                                <include>**/*.java</include>
+                                <!--
+                                *   Match zero or more characters
+                                **  Match zero or more directories
+                                ?   Match a single character
+                                -->
+                            </includes>
                         </configuration>
                     </execution>
                     <execution>
