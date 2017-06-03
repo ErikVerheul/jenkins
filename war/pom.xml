@@ -41,6 +41,7 @@ THE SOFTWARE.
     <JENKINS_HOME>${basedir}/work</JENKINS_HOME>
     <contextPath>/jenkins</contextPath><!-- context path during test -->
     <port>8080</port><!-- HTTP listener port -->
+    <sonar.skip>true</sonar.skip>
   </properties>
 
   <dependencies>
