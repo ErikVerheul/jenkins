@@ -35,6 +35,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
 import static org.junit.Assert.*;
 import org.junit.Rule;
 import org.junit.Test;
@@ -86,8 +87,7 @@ public class NodeProvisionerTest {
      */
     // TODO fragile
     @Test public void autoProvision() throws Exception {
-        BulkChange bc = new BulkChange(r.jenkins);
-        try {
+        try (BulkChange bc = new BulkChange(r.jenkins)) {
             DummyCloudImpl cloud = initHudson(10);
 
 
@@ -98,8 +98,6 @@ public class NodeProvisionerTest {
 
             // since there's only one job, we expect there to be just one slave
             assertEquals(1,cloud.numProvisioned);
-        } finally {
-            bc.abort();
         }
     }
 
@@ -108,8 +106,7 @@ public class NodeProvisionerTest {
      */
     // TODO fragile
     @Test public void loadSpike() throws Exception {
-        BulkChange bc = new BulkChange(r.jenkins);
-        try {
+        try (BulkChange bc = new BulkChange(r.jenkins)) {
             DummyCloudImpl cloud = initHudson(0);
 
             verifySuccessfulCompletion(buildAll(create5SlowJobs(new Latch(5))));
@@ -117,8 +114,6 @@ public class NodeProvisionerTest {
             // the time it takes to complete a job is eternally long compared to the time it takes to launch
             // a new slave, so in this scenario we end up allocating 5 slaves for 5 jobs.
             assertEquals(5,cloud.numProvisioned);
-        } finally {
-            bc.abort();
         }
     }
 
@@ -127,8 +122,7 @@ public class NodeProvisionerTest {
      */
     // TODO fragile
     @Test public void baselineSlaveUsage() throws Exception {
-        BulkChange bc = new BulkChange(r.jenkins);
-        try {
+        try (BulkChange bc = new BulkChange(r.jenkins)) {
             DummyCloudImpl cloud = initHudson(0);
             // add slaves statically upfront
             r.createSlave().toComputer().connect(false).get();
@@ -138,8 +132,6 @@ public class NodeProvisionerTest {
 
             // we should have used two static slaves, thus only 3 slaves should have been provisioned
             assertEquals(3,cloud.numProvisioned);
-        } finally {
-            bc.abort();
         }
     }
 
@@ -148,8 +140,7 @@ public class NodeProvisionerTest {
      */
     // TODO fragile
     @Test public void labels() throws Exception {
-        BulkChange bc = new BulkChange(r.jenkins);
-        try {
+        try (BulkChange bc = new BulkChange(r.jenkins)) {
             DummyCloudImpl cloud = initHudson(0);
             Label blue = r.jenkins.getLabel("blue");
             Label red = r.jenkins.getLabel("red");
@@ -157,15 +148,13 @@ public class NodeProvisionerTest {
 
             // red jobs
             List<FreeStyleProject> redJobs = create5SlowJobs(new Latch(5));
-            for (FreeStyleProject p : redJobs) {
+            for (FreeStyleProject p : redJobs)
                 p.setAssignedLabel(red);
-            }
 
             // blue jobs
             List<FreeStyleProject> blueJobs = create5SlowJobs(new Latch(5));
-            for (FreeStyleProject p : blueJobs) {
+            for (FreeStyleProject p : blueJobs)
                 p.setAssignedLabel(blue);
-            }
 
             // build all
             List<Future<FreeStyleBuild>> blueBuilds = buildAll(blueJobs);
@@ -175,11 +164,8 @@ public class NodeProvisionerTest {
             assertEquals(5,cloud.numProvisioned);
 
             // and all blue jobs should be still stuck in the queue
-            for (Future<FreeStyleBuild> bb : blueBuilds) {
+            for (Future<FreeStyleBuild> bb : blueBuilds)
                 assertFalse(bb.isDone());
-            }
-        } finally {
-            bc.abort();
         }
     }
 
@@ -204,11 +190,10 @@ public class NodeProvisionerTest {
 
     private List<FreeStyleProject> create5SlowJobs(Latch l) throws IOException {
         List<FreeStyleProject> jobs = new ArrayList<FreeStyleProject>();
-        for( int i=0; i<l.init; i++) {
+        for( int i=0; i<l.init; i++)
             //set a large delay, to simulate the situation where we need to provision more slaves
             // to keep up with the load
             jobs.add(createJob(l.createBuilder()));
-        }
         return jobs;
     }
 
@@ -218,9 +203,8 @@ public class NodeProvisionerTest {
     private List<Future<FreeStyleBuild>> buildAll(List<FreeStyleProject> jobs) {
         System.out.println("Scheduling builds for "+jobs.size()+" jobs");
         List<Future<FreeStyleBuild>> builds = new ArrayList<Future<FreeStyleBuild>>();
-        for (FreeStyleProject job : jobs) {
+        for (FreeStyleProject job : jobs)
             builds.add(job.scheduleBuild2(0));
-        }
         return builds;
     }
 

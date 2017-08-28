@@ -36,7 +36,9 @@ import java.io.IOException;
  * Base class for those commands that are valid only during a build.
  *
  * @author Kohsuke Kawaguchi
+ * @deprecated Limited to Remoting-based protocol.
  */
+@Deprecated
 public abstract class CommandDuringBuild extends CLICommand {
     /**
      * This method makes sense only when called from within the build kicked by Jenkins.
@@ -77,9 +79,7 @@ public abstract class CommandDuringBuild extends CLICommand {
             } catch (NumberFormatException e) {
                 throw new IllegalArgumentException("Invalid build number: "+envs[1]);
             }
-        } catch (IOException e) {
-            throw new IllegalArgumentException("Failed to identify the build being executed",e);
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             throw new IllegalArgumentException("Failed to identify the build being executed",e);
         }
     }

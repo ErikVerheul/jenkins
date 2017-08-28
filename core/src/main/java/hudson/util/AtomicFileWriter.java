@@ -32,6 +32,8 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 
 /**
  * Buffered {@link FileWriter} that supports atomic operations.
@@ -68,10 +70,13 @@ public class AtomicFileWriter extends Writer {
             throw new IOException("Failed to create a temporary file in "+ dir,e);
         }
         destFile = f;
-        if (encoding==null) {
+        if (encoding==null)
             encoding = Charset.defaultCharset().name();
+        try {
+            core = new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(tmpFile.toPath()), encoding));
+        } catch (InvalidPathException e) {
+            throw new IOException(e);
         }
-        core = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(tmpFile),encoding));
     }
 
     @Override
@@ -125,7 +130,6 @@ public class AtomicFileWriter extends Writer {
         // one way or the other, temporary file should be deleted.
         close();
         tmpFile.delete();
-        super.finalize();
     }
 
     /**

@@ -21,13 +21,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
 package hudson.diagnosis;
 
 import hudson.XmlFile;
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
 import hudson.model.InvisibleAction;
-
+import hudson.model.Saveable;
 import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -38,13 +39,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-
-import hudson.model.Saveable;
-import jenkins.model.Jenkins;
 import jenkins.model.lazy.BuildReference;
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
@@ -61,14 +57,12 @@ public class OldDataMonitorTest {
         System.setProperty(BuildReference.DefaultHolderFactory.MODE_PROPERTY, "weak");
     }
 
-    @Rule
-    public JenkinsRule r = new JenkinsRule();
+    @Rule public JenkinsRule r = new JenkinsRule();
 
     @Ignore("constantly failing on CI builders, makes problems for memory()")
     @Issue("JENKINS-19544")
     @LocalData
-    @Test
-    public void robustness() throws Exception {
+    @Test public void robustness() throws Exception {
         OldDataMonitor odm = OldDataMonitor.get(r.jenkins);
         FreeStyleProject p = r.jenkins.getItemByFullName("busted", FreeStyleProject.class);
         assertNotNull(p);
@@ -79,7 +73,7 @@ public class OldDataMonitorTest {
             System.err.println(entry.getValue());
             System.err.println(entry.getValue().extra);
         }
-         */
+        */
         assertEquals(Collections.singleton(p), odm.getData().keySet());
         odm.doDiscard(null, null);
         assertEquals(Collections.emptySet(), odm.getData().keySet());
@@ -87,9 +81,7 @@ public class OldDataMonitorTest {
     }
 
     @Issue("JENKINS-19544")
-    @Ignore("Causes a java.util.concurrent.ExecutionException: java.lang.OutOfMemoryError: Java heap space")
-    @Test
-    public void memory() throws Exception {
+    @Test public void memory() throws Exception {
         FreeStyleProject p = r.createFreeStyleProject("p");
         FreeStyleBuild b = r.assertBuildStatusSuccess(p.scheduleBuild2(0));
         b.addAction(new BadAction2());
@@ -98,27 +90,23 @@ public class OldDataMonitorTest {
         p._getRuns().purgeCache();
         b = p.getBuildByNumber(1);
         assertEquals(Collections.singleton(b), OldDataMonitor.get(r.jenkins).getData().keySet());
-        WeakReference<?> ref = new WeakReference<>(b);
+        WeakReference<?> ref = new WeakReference<Object>(b);
         b = null;
         MemoryAssert.assertGC(ref);
     }
 
     /**
-     * Note that this doesn't actually run slowly, it just ensures that the
-     * {@link OldDataMonitor#changeListener's onChange()} can complete while
-     * {@link OldDataMonitor#doDiscard(org.kohsuke.stapler.StaplerRequest, org.kohsuke.stapler.StaplerResponse)}
+     * Note that this doesn't actually run slowly, it just ensures that
+     * the {@link OldDataMonitor#changeListener's onChange()} can complete
+     * while {@link OldDataMonitor#doDiscard(org.kohsuke.stapler.StaplerRequest, org.kohsuke.stapler.StaplerResponse)}
      * is still running.
      *
-     * @throws java.lang.InterruptedException
-     * @throws java.util.concurrent.ExecutionException
-     * @throws java.io.IOException
      */
     // Test timeout indicates JENKINS-24763 exists
     @Issue("JENKINS-24763")
-    @Test
-    public void slowDiscard() throws InterruptedException, IOException, ExecutionException {
+    @Test public void slowDiscard() throws InterruptedException, IOException, ExecutionException {
         final OldDataMonitor oldDataMonitor = OldDataMonitor.get(r.jenkins);
-        final CountDownLatch ensureEntry = new CountDownLatch(1);
+        final CountDownLatch ensureEntry= new CountDownLatch(1);
         final CountDownLatch preventExit = new CountDownLatch(1);
         Saveable slowSavable = new Saveable() {
             @Override
@@ -131,7 +119,7 @@ public class OldDataMonitorTest {
             }
         };
 
-        OldDataMonitor.report(slowSavable, (String) null);
+        OldDataMonitor.report(slowSavable,(String)null);
         ExecutorService executors = Executors.newSingleThreadExecutor();
 
         Future<Void> discardFuture = executors.submit(new Callable<Void>() {
@@ -144,14 +132,10 @@ public class OldDataMonitorTest {
 
         ensureEntry.await();
         // test will hang here due to JENKINS-24763
-        File xml = File.createTempFile("OldDataMontiorTest.slowDiscard", "xml");
+        File xml = File.createTempFile("OldDataMonitorTest.slowDiscard", "xml");
         xml.deleteOnExit();
         OldDataMonitor.changeListener
-                .onChange(new Saveable() {
-                    @Override
-                    public void save() throws IOException {
-                    }
-                },
+                .onChange(new Saveable() {public void save() throws IOException {}},
                         new XmlFile(xml));
 
         preventExit.countDown();
@@ -160,13 +144,11 @@ public class OldDataMonitorTest {
     }
 
     @Issue("JENKINS-26718")
-    @Test
-    public void unlocatableRun() throws Exception {
+    @Test public void unlocatableRun() throws Exception {
         OldDataMonitor odm = OldDataMonitor.get(r.jenkins);
-        FreeStyleProject p = mock(FreeStyleProject.class);
-        when(p.getParent()).thenReturn(Jenkins.getInstance());
-        when(p.getFullName()).thenReturn("notfound");
-        FreeStyleBuild build = new FreeStyleBuild(p);
+        FreeStyleProject p = r.createFreeStyleProject();
+        FreeStyleBuild build = r.buildAndAssertSuccess(p);
+        p.delete();
         OldDataMonitor.report(build, (String) null);
 
         assertEquals(Collections.singleton(build), odm.getData().keySet());
@@ -176,14 +158,12 @@ public class OldDataMonitorTest {
     }
 
     public static final class BadAction extends InvisibleAction {
-
         private Object writeReplace() {
             throw new IllegalStateException("broken");
         }
     }
 
     public static final class BadAction2 extends InvisibleAction {
-
         private Object readResolve() {
             throw new IllegalStateException("broken");
         }

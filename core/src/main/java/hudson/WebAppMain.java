@@ -23,10 +23,17 @@
  */
 package hudson;
 
+import hudson.security.ACLContext;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
+import java.nio.file.StandardOpenOption;
+import jenkins.util.SystemProperties;
 import com.thoughtworks.xstream.converters.reflection.PureJavaReflectionProvider;
 import com.thoughtworks.xstream.core.JVM;
 import com.trilead.ssh2.util.IOUtils;
 import hudson.model.Hudson;
+import hudson.security.ACL;
 import hudson.util.BootFailure;
 import jenkins.model.Jenkins;
 import hudson.util.HudsonIsLoading;
@@ -40,6 +47,7 @@ import hudson.util.IncompatibleAntVersionDetected;
 import hudson.util.HudsonFailedToLoad;
 import hudson.util.ChartUtil;
 import hudson.util.AWTProblem;
+import jenkins.util.JenkinsJVM;
 import org.jvnet.localizer.LocaleProvider;
 import org.kohsuke.stapler.jelly.JellyFacet;
 import org.apache.tools.ant.types.FileSet;
@@ -56,8 +64,6 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Date;
@@ -68,7 +74,6 @@ import java.security.Security;
 import java.util.logging.LogRecord;
 
 import static java.util.logging.Level.*;
-import org.jvnet.hudson.reactor.ReactorException;
 
 /**
  * Entry point when Hudson is used as a webapp.
@@ -76,7 +81,11 @@ import org.jvnet.hudson.reactor.ReactorException;
  * @author Kohsuke Kawaguchi
  */
 public class WebAppMain implements ServletContextListener {
-    private final RingBufferLogHandler handler = new RingBufferLogHandler() {
+
+    // use RingBufferLogHandler class name to configure for backward compatibility
+    private static final int DEFAULT_RING_BUFFER_SIZE = SystemProperties.getInteger(RingBufferLogHandler.class.getName() + ".defaultSize", 256);
+
+    private final RingBufferLogHandler handler = new RingBufferLogHandler(DEFAULT_RING_BUFFER_SIZE) {
         @Override public synchronized void publish(LogRecord record) {
             if (record.getLevel().intValue() >= Level.INFO.intValue()) {
                 super.publish(record);
@@ -89,17 +98,15 @@ public class WebAppMain implements ServletContextListener {
 
     /**
      * Creates the sole instance of {@link jenkins.model.Jenkins} and register it to the {@link ServletContext}.
-     * @param event
      */
-    @Override
     public void contextInitialized(ServletContextEvent event) {
+        JenkinsJVMAccess._setJenkinsJVM(true);
         final ServletContext context = event.getServletContext();
         File home=null;
         try {
 
             // use the current request to determine the language
             LocaleProvider.setProvider(new LocaleProvider() {
-                @Override
                 public Locale get() {
                     return Functions.getCurrentLocale();
                 }
@@ -122,17 +129,14 @@ public class WebAppMain implements ServletContextListener {
 
             installLogger();
 
-            markCookieAsHttpOnly(context);
-
             final FileAndDescription describedHomeDir = getHomeDir(event);
             home = describedHomeDir.file.getAbsoluteFile();
             home.mkdirs();
             System.out.println("Jenkins home directory: "+home+" found at: "+describedHomeDir.description);
 
             // check that home exists (as mkdirs could have failed silently), otherwise throw a meaningful error
-            if (!home.exists()) {
+            if (!home.exists())
                 throw new NoHomeDir(home);
-            }
 
             recordBootAttempt(home);
 
@@ -229,6 +233,11 @@ public class WebAppMain implements ServletContextListener {
                     boolean success = false;
                     try {
                         Jenkins instance = new Hudson(_home, context);
+
+                        // one last check to make sure everything is in order before we go live
+                        if (Thread.interrupted())
+                            throw new InterruptedException();
+
                         context.setAttribute(APP, instance);
 
                         BootFailure.getBootFailureFile(_home).delete();
@@ -236,50 +245,24 @@ public class WebAppMain implements ServletContextListener {
                         // at this point we are open for business and serving requests normally
                         LOGGER.info("Jenkins is fully up and running");
                         success = true;
-                    } catch (RuntimeException e) {
+                    } catch (Error e) {
                         new HudsonFailedToLoad(e).publish(context,_home);
                         throw e;
-                    } catch (IOException | InterruptedException | ReactorException e) {
+                    } catch (Exception e) {
                         new HudsonFailedToLoad(e).publish(context,_home);
                     } finally {
-                        Jenkins instance = Jenkins.getInstance();
-                        if(!success && instance!=null) {
+                        Jenkins instance = Jenkins.getInstanceOrNull();
+                        if(!success && instance!=null)
                             instance.cleanUp();
-                        }
                     }
                 }
             };
             initThread.start();
         } catch (BootFailure e) {
-            e.publish(context,home);
-        } catch (RuntimeException e) {
+            e.publish(context, home);
+        } catch (Error | RuntimeException e) {
             LOGGER.log(SEVERE, "Failed to initialize Jenkins",e);
             throw e;
-        }
-    }
-
-    /**
-     * Set the session cookie as HTTP only.
-     *
-     * @see <a href="https://www.owasp.org/index.php/HttpOnly">discussion of this topic in OWASP</a>
-     */
-    private void markCookieAsHttpOnly(ServletContext context) {
-        try {
-            Method m;
-            try {
-                m = context.getClass().getMethod("getSessionCookieConfig");
-            } catch (NoSuchMethodException x) { // 3.0+
-                LOGGER.log(Level.FINE, "Failed to set secure cookie flag", x);
-                return;
-            }
-            Object sessionCookieConfig = m.invoke(context);
-
-            // not exposing session cookie to JavaScript to mitigate damage caused by XSS
-            Class scc = Class.forName("javax.servlet.SessionCookieConfig");
-            Method setHttpOnly = scc.getMethod("setHttpOnly",boolean.class);
-            setHttpOnly.invoke(sessionCookieConfig,true);
-        } catch (SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | ClassNotFoundException | NoSuchMethodException e) {
-            LOGGER.log(Level.WARNING, "Failed to set HTTP-only cookie flag", e);
         }
     }
 
@@ -294,14 +277,10 @@ public class WebAppMain implements ServletContextListener {
      * @see BootFailure
      */
     private void recordBootAttempt(File home) {
-        FileOutputStream o=null;
-        try {
-            o = new FileOutputStream(BootFailure.getBootFailureFile(home), true);
-            o.write((new Date().toString() + System.getProperty("line.separator", "\n")).getBytes());
-        } catch (IOException e) {
+        try (OutputStream o=Files.newOutputStream(BootFailure.getBootFailureFile(home).toPath(), StandardOpenOption.CREATE, StandardOpenOption.APPEND)) {
+            o.write((new Date().toString() + System.getProperty("line.separator", "\n")).toString().getBytes());
+        } catch (IOException | InvalidPathException e) {
             LOGGER.log(WARNING, "Failed to record boot attempts",e);
-        } finally {
-            IOUtils.closeQuietly(o);
         }
     }
 
@@ -312,7 +291,7 @@ public class WebAppMain implements ServletContextListener {
 	/**
      * Installs log handler to monitor all Hudson logs.
      */
-    @edu.umd.cs.findbugs.annotations.SuppressWarnings("LG_LOST_LOGGER_DUE_TO_WEAK_REFERENCE")
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings("LG_LOST_LOGGER_DUE_TO_WEAK_REFERENCE")
     private void installLogger() {
         Jenkins.logRecords = handler.getView();
         Logger.getLogger("").addHandler(handler);
@@ -339,7 +318,6 @@ public class WebAppMain implements ServletContextListener {
      * with those by doing {@link String#trim()}.
      * 
      * <p>
-     * @param event
      * @return the File alongside with some description to help the user troubleshoot issues
      */
     public FileAndDescription getHomeDir(ServletContextEvent event) {
@@ -349,14 +327,12 @@ public class WebAppMain implements ServletContextListener {
                 InitialContext iniCtxt = new InitialContext();
                 Context env = (Context) iniCtxt.lookup("java:comp/env");
                 String value = (String) env.lookup(name);
-                if(value!=null && value.trim().length()>0) {
+                if(value!=null && value.trim().length()>0)
                     return new FileAndDescription(new File(value.trim()),"JNDI/java:comp/env/"+name);
-                }
                 // look at one more place. See issue #1314
                 value = (String) iniCtxt.lookup(name);
-                if(value!=null && value.trim().length()>0) {
+                if(value!=null && value.trim().length()>0)
                     return new FileAndDescription(new File(value.trim()),"JNDI/"+name);
-                }
             } catch (NamingException e) {
                 // ignore
             }
@@ -364,18 +340,16 @@ public class WebAppMain implements ServletContextListener {
 
         // next the system property
         for (String name : HOME_NAMES) {
-            String sysProp = System.getProperty(name);
-            if(sysProp!=null) {
-                return new FileAndDescription(new File(sysProp.trim()),"System.getProperty(\""+name+"\")");
-            }
+            String sysProp = SystemProperties.getString(name);
+            if(sysProp!=null)
+                return new FileAndDescription(new File(sysProp.trim()),"SystemProperties.getProperty(\""+name+"\")");
         }
 
         // look at the env var next
         for (String name : HOME_NAMES) {
             String env = EnvVars.masterEnvVars.get(name);
-            if(env!=null) {
+            if(env!=null)
                 return new FileAndDescription(new File(env.trim()).getAbsoluteFile(),"EnvVars.masterEnvVars.get(\""+name+"\")");
-            }
         }
 
         // otherwise pick a place by ourselves
@@ -383,12 +357,11 @@ public class WebAppMain implements ServletContextListener {
         String root = event.getServletContext().getRealPath("/WEB-INF/workspace");
         if(root!=null) {
             File ws = new File(root.trim());
-            if(ws.exists()) {
+            if(ws.exists())
                 // Hudson <1.42 used to prefer this before ~/.hudson, so
                 // check the existence and if it's there, use it.
                 // otherwise if this is a new installation, prefer ~/.hudson
                 return new FileAndDescription(ws,"getServletContext().getRealPath(\"/WEB-INF/workspace\")");
-            }
         }
 
         File legacyHome = new File(new File(System.getProperty("user.home")),".hudson");
@@ -400,26 +373,39 @@ public class WebAppMain implements ServletContextListener {
         return new FileAndDescription(newHome,"$user.home/.jenkins");
     }
 
-    @Override
     public void contextDestroyed(ServletContextEvent event) {
-        terminated = true;
-        Jenkins instance = Jenkins.getInstance();
-        if(instance!=null) {
-            instance.cleanUp();
-        }
-        Thread t = initThread;
-        if (t != null && t.isAlive()) {
-            LOGGER.log(Level.INFO, "Shutting down a Jenkins instance that was still starting up", new Throwable("reason"));
-            t.interrupt();
-        }
+        try (ACLContext old = ACL.as(ACL.SYSTEM)) {
+            Jenkins instance = Jenkins.getInstanceOrNull();
+            try {
+                if (instance != null) {
+                    instance.cleanUp();
+                }
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, "Failed to clean up. Restart will continue.", e);
+            }
 
-        // Logger is in the system classloader, so if we don't do this
-        // the whole web app will never be undepoyed.
-        Logger.getLogger("").removeHandler(handler);
+            terminated = true;
+            Thread t = initThread;
+            if (t != null && t.isAlive()) {
+                LOGGER.log(Level.INFO, "Shutting down a Jenkins instance that was still starting up", new Throwable("reason"));
+                t.interrupt();
+            }
+
+            // Logger is in the system classloader, so if we don't do this
+            // the whole web app will never be undeployed.
+            Logger.getLogger("").removeHandler(handler);
+        } finally {
+            JenkinsJVMAccess._setJenkinsJVM(false);
+        }
     }
 
     private static final Logger LOGGER = Logger.getLogger(WebAppMain.class.getName());
 
+    private static final class JenkinsJVMAccess extends JenkinsJVM {
+        private static void _setJenkinsJVM(boolean jenkinsJVM) {
+            JenkinsJVM.setJenkinsJVM(jenkinsJVM);
+        }
+    }
 
     private static final String[] HOME_NAMES = {"JENKINS_HOME","HUDSON_HOME"};
 }

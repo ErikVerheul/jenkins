@@ -1,5 +1,6 @@
 package hudson.model;
 
+import hudson.Functions;
 import hudson.security.ACL;
 import hudson.util.StreamTaskListener;
 import java.io.File;
@@ -9,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import jenkins.model.Jenkins;
-import java.util.logging.Logger;
+import jenkins.util.SystemProperties;
 
 /**
  * {@link PeriodicWork} that takes a long time to run.
@@ -22,9 +23,6 @@ import java.util.logging.Logger;
  * @author Kohsuke Kawaguchi
  */
 public abstract class AsyncPeriodicWork extends PeriodicWork {
-    
-    private static final Logger LOGGER = Logger.getLogger(AsyncPeriodicWork.class.getName());
-    
     /**
      * The default number of minutes after which to try and rotate the log file used by {@link #createListener()}.
      * This value is controlled by the system property {@code hudson.model.AsyncPeriodicWork.logRotateMinutes}.
@@ -33,7 +31,7 @@ public abstract class AsyncPeriodicWork extends PeriodicWork {
      *
      * @since 1.651
      */
-    private static final long LOG_ROTATE_MINUTES = Long.getLong(AsyncPeriodicWork.class.getName() + ".logRotateMinutes",
+    private static final long LOG_ROTATE_MINUTES = SystemProperties.getLong(AsyncPeriodicWork.class.getName() + ".logRotateMinutes",
             TimeUnit.DAYS.toMinutes(1));
     /**
      * The default file size after which to try and rotate the log file used by {@link #createListener()}.
@@ -44,7 +42,7 @@ public abstract class AsyncPeriodicWork extends PeriodicWork {
      *
      * @since 1.651
      */
-    private static final long LOG_ROTATE_SIZE = Long.getLong(AsyncPeriodicWork.class.getName() + ".logRotateSize", -1L);
+    private static final long LOG_ROTATE_SIZE = SystemProperties.getLong(AsyncPeriodicWork.class.getName() + ".logRotateSize", -1L);
     /**
      * The number of milliseconds (since startup or previous rotation) after which to try and rotate the log file.
      *
@@ -75,8 +73,8 @@ public abstract class AsyncPeriodicWork extends PeriodicWork {
     protected AsyncPeriodicWork(String name) {
         this.name = name;
         this.logRotateMillis = TimeUnit.MINUTES.toMillis(
-                Long.getLong(getClass().getName() + ".logRotateMinutes", LOG_ROTATE_MINUTES));
-        this.logRotateSize = Long.getLong(getClass().getName() + ".logRotateSize", LOG_ROTATE_SIZE);
+                SystemProperties.getLong(getClass().getName() + ".logRotateMinutes", LOG_ROTATE_MINUTES));
+        this.logRotateSize = SystemProperties.getLong(getClass().getName() + ".logRotateSize", LOG_ROTATE_SIZE);
     }
 
     /**
@@ -86,12 +84,12 @@ public abstract class AsyncPeriodicWork extends PeriodicWork {
     public final void doRun() {
         try {
             if(thread!=null && thread.isAlive()) {
-                LOGGER.log(this.getSlowLoggingLevel(), "{0} thread is still running. Execution aborted.", name);
+                logger.log(this.getSlowLoggingLevel(), "{0} thread is still running. Execution aborted.", name);
                 return;
             }
             thread = new Thread(new Runnable() {
                 public void run() {
-                    LOGGER.log(getNormalLoggingLevel(), "Started {0}", name);
+                    logger.log(getNormalLoggingLevel(), "Started {0}", name);
                     long startTime = System.currentTimeMillis();
                     long stopTime;
 
@@ -102,9 +100,9 @@ public abstract class AsyncPeriodicWork extends PeriodicWork {
 
                         execute(l);
                     } catch (IOException e) {
-                        LOGGER.log(Level.SEVERE, e.getMessage(), e);
+                        Functions.printStackTrace(e, l.fatalError(e.getMessage()));
                     } catch (InterruptedException e) {
-                        LOGGER.log(Level.SEVERE, "aborted", e);
+                        Functions.printStackTrace(e, l.fatalError("aborted"));
                     } finally {
                         stopTime = System.currentTimeMillis();
                         try {
@@ -114,16 +112,16 @@ public abstract class AsyncPeriodicWork extends PeriodicWork {
                         }
                     }
 
-                    LOGGER.log(getNormalLoggingLevel(), "Finished {0}. {1,number} ms",
+                    logger.log(getNormalLoggingLevel(), "Finished {0}. {1,number} ms",
                             new Object[]{name, stopTime - startTime});
                 }
             },name+" thread");
             thread.start();
-        } catch (Exception t) {
+        } catch (Throwable t) {
             LogRecord lr = new LogRecord(this.getErrorLoggingLevel(), "{0} thread failed with error");
             lr.setThrown(t);
             lr.setParameters(new Object[]{name});
-            LOGGER.log(lr);
+            logger.log(lr);
         }
     }
 

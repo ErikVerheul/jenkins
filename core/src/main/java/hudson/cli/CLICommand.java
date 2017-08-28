@@ -29,6 +29,8 @@ import hudson.ExtensionList;
 import hudson.ExtensionPoint;
 import hudson.cli.declarative.CLIMethod;
 import hudson.ExtensionPoint.LegacyInstancesAreScopedToHudson;
+import hudson.Functions;
+import jenkins.util.SystemProperties;
 import hudson.cli.declarative.OptionHandlerExtension;
 import jenkins.model.Jenkins;
 import hudson.remoting.Callable;
@@ -69,6 +71,8 @@ import java.util.Locale;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 
 /**
  * Base class for Hudson CLI.
@@ -124,6 +128,13 @@ public abstract class CLICommand implements ExtensionPoint, Cloneable {
     public transient PrintStream stdout,stderr;
 
     /**
+     * Shared text, which is reported back to CLI if an error happens in commands 
+     * taking lists of parameters.
+     * @since 2.26
+     */
+    static final String CLI_LISTPARAM_SUMMARY_ERROR_TEXT = "Error occurred while performing this command, see previous stderr output.";
+    
+    /**
      * Connected to stdin of the CLI agent.
      *
      * <p>
@@ -142,13 +153,20 @@ public abstract class CLICommand implements ExtensionPoint, Cloneable {
      * <p>
      * See {@link #checkChannel()} to get a channel and throw an user-friendly
      * exception
+     * @deprecated Specific to Remoting-based protocol.
      */
+    @Deprecated
     public transient Channel channel;
 
     /**
      * The locale of the client. Messages should be formatted with this resource.
      */
     public transient Locale locale;
+
+    /**
+     * The encoding of the client, if defined.
+     */
+    private transient @CheckForNull Charset encoding;
 
     /**
      * Set by the caller of the CLI system if the transport already provides
@@ -167,15 +185,13 @@ public abstract class CLICommand implements ExtensionPoint, Cloneable {
      *
      * <p>
      * By default, this method creates "foo-bar-zot" from "FooBarZotCommand".
-     * @return name in lowercase
      */
     public String getName() {
         String name = getClass().getName();
         name = name.substring(name.lastIndexOf('.') + 1); // short name
         name = name.substring(name.lastIndexOf('$')+1);
-        if(name.endsWith("Command")) {
+        if(name.endsWith("Command"))
             name = name.substring(0,name.length()-7); // trim off the command
-        }
 
         // convert "FooBarZot" into "foo-bar-zot"
         // Locale is fixed so that "CreateInstance" always become "create-instance" no matter where this is run.
@@ -185,7 +201,6 @@ public abstract class CLICommand implements ExtensionPoint, Cloneable {
     /**
      * Gets the quick summary of what this command does.
      * Used by the help command to generate the list of commands.
-     * @return 
      */
     public abstract String getShortDescription();
 
@@ -251,13 +266,11 @@ public abstract class CLICommand implements ExtensionPoint, Cloneable {
 
             p.parseArgument(args.toArray(new String[args.size()]));
             Authentication auth = authenticator.authenticate();
-            if (auth==Jenkins.ANONYMOUS) {
+            if (auth==Jenkins.ANONYMOUS)
                 auth = loadStoredAuthentication();
-            }
             sc.setAuthentication(auth); // run the CLI with the right credential
-            if (!(this instanceof LoginCommand || this instanceof HelpCommand)) {
+            if (!(this instanceof LoginCommand || this instanceof HelpCommand))
                 Jenkins.getActiveInstance().checkPermission(Jenkins.READ);
-            }
             return run();
         } catch (CmdLineException e) {
             stderr.println("");
@@ -295,7 +308,7 @@ public abstract class CLICommand implements ExtensionPoint, Cloneable {
             stderr.println("");
             stderr.println("ERROR: " + errorMsg);
             LOGGER.log(Level.WARNING, errorMsg, e);
-            e.printStackTrace(stderr);
+            Functions.printStackTrace(e, stderr);
             return 1;
         } finally {
             if(sc != null)
@@ -307,39 +320,35 @@ public abstract class CLICommand implements ExtensionPoint, Cloneable {
      * Get parser for this command.
      *
      * Exposed to be overridden by {@link hudson.cli.declarative.CLIRegisterer}.
-     * @return 
      * @since 1.538
      */
     protected CmdLineParser getCmdLineParser() {
         return new CmdLineParser(this);
     }
-    
+
+    /**
+     * @deprecated Specific to Remoting-based protocol.
+     */
+    @Deprecated
     public Channel checkChannel() throws AbortException {
-        if (channel==null) {
-            throw new AbortException("This command can only run with Jenkins CLI. See https://wiki.jenkins-ci.org/display/JENKINS/Jenkins+CLI");
-        }
+        if (channel==null)
+            throw new AbortException("This command is requesting the deprecated -remoting mode. See https://jenkins.io/redirect/cli-command-requires-channel");
         return channel;
     }
 
     /**
      * Loads the persisted authentication information from {@link ClientAuthenticationCache}
      * if the current transport provides {@link Channel}.
-     * @return 
-     * @throws java.lang.InterruptedException
+     * @deprecated Assumes Remoting, and vulnerable to JENKINS-12543.
      */
+    @Deprecated
     protected Authentication loadStoredAuthentication() throws InterruptedException {
         try {
-            if (channel!=null) {
+            if (channel!=null)
                 return new ClientAuthenticationCache(channel).get();
-            }
         } catch (IOException e) {
-            // recover
-            stderr.println("Failed to access the stored credential");          
-            stderr.println(this.getClass().getName());
-            stderr.println("WARNING: " + e.getMessage() + e);
-            for (StackTraceElement ste: e.getStackTrace()) {
-                stderr.println(ste);
-            }
+            stderr.println("Failed to access the stored credential");
+            Functions.printStackTrace(e, stderr);  // recover
         }
         return Jenkins.ANONYMOUS;
     }
@@ -359,8 +368,9 @@ public abstract class CLICommand implements ExtensionPoint, Cloneable {
      *      Always non-null.
      *      If the underlying transport had already performed authentication, this object is something other than
      *      {@link jenkins.model.Jenkins#ANONYMOUS}.
-     * @return boolean
+     * @deprecated Unused.
      */
+    @Deprecated
     protected boolean shouldPerformAuthentication(Authentication auth) {
         return auth== Jenkins.ANONYMOUS;
     }
@@ -379,13 +389,11 @@ public abstract class CLICommand implements ExtensionPoint, Cloneable {
      * then this method can return a valid identity of the client.
      *
      * <p>
-     * @return If the transport doesn't do authentication, this method returns {@link jenkins.model.Jenkins#ANONYMOUS}.
+     * If the transport doesn't do authentication, this method returns {@link jenkins.model.Jenkins#ANONYMOUS}.
      */
     public Authentication getTransportAuthentication() {
         Authentication a = transportAuth; 
-        if (a==null) {
-            a = Jenkins.ANONYMOUS;
-        }
+        if (a==null)    a = Jenkins.ANONYMOUS;
         return a;
     }
 
@@ -410,11 +418,11 @@ public abstract class CLICommand implements ExtensionPoint, Cloneable {
      * @throws IllegalArgumentException
      *      If the execution can't continue due to wrong input parameter (job doesn't exist etc.)
      * @throws IllegalStateException
-     *      If the execution can't continue due to an incorect state of Jenkins, job, build etc.
+     *      If the execution can't continue due to an incorrect state of Jenkins, job, build etc.
      * @throws AbortException
      *      If the execution can't continue due to an other (rare, but foreseeable) issue
      * @throws AccessDeniedException
-     *      If the caller doesn't have sufficent rights for requested action
+     *      If the caller doesn't have sufficient rights for requested action
      * @throws BadCredentialsException
      *      If bad credentials were provided to CLI
      */
@@ -430,7 +438,6 @@ public abstract class CLICommand implements ExtensionPoint, Cloneable {
 
     /**
      * Get single line summary as a string.
-     * @return 
      */
     @Restricted(NoExternalUse.class)
     public final String getSingleLineSummary() {
@@ -441,7 +448,6 @@ public abstract class CLICommand implements ExtensionPoint, Cloneable {
 
     /**
      * Get usage as a string.
-     * @return 
      */
     @Restricted(NoExternalUse.class)
     public final String getUsage() {
@@ -452,14 +458,14 @@ public abstract class CLICommand implements ExtensionPoint, Cloneable {
 
     /**
      * Get long description as a string.
-     * @return 
      */
     @Restricted(NoExternalUse.class)
     public final String getLongDescription() {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        try (PrintStream ps = new PrintStream(out)) {
-            printUsageSummary(ps);
-        }
+        PrintStream ps = new PrintStream(out);
+
+        printUsageSummary(ps);
+        ps.close();
         return out.toString();
     }
 
@@ -467,7 +473,6 @@ public abstract class CLICommand implements ExtensionPoint, Cloneable {
      * Called while producing usage. This is a good method to override
      * to render the general description of the command that goes beyond
      * a single-line summary. 
-     * @param stderr
      */
     protected void printUsageSummary(PrintStream stderr) {
         stderr.println(getShortDescription());
@@ -475,11 +480,9 @@ public abstract class CLICommand implements ExtensionPoint, Cloneable {
 
     /**
      * Convenience method for subtypes to obtain the system property of the client.
-     * @param name
-     * @return 
-     * @throws java.io.IOException
-     * @throws java.lang.InterruptedException
+     * @deprecated Specific to Remoting-based protocol.
      */
+    @Deprecated
     protected String getClientSystemProperty(String name) throws IOException, InterruptedException {
         return checkChannel().call(new GetSystemProperty(name));
     }
@@ -491,32 +494,40 @@ public abstract class CLICommand implements ExtensionPoint, Cloneable {
             this.name = name;
         }
 
-        @Override
         public String call() throws IOException {
-            return System.getProperty(name);
+            return SystemProperties.getString(name);
         }
 
         private static final long serialVersionUID = 1L;
     }
 
-    protected Charset getClientCharset() throws IOException, InterruptedException {
-        if (channel==null) {
+    /**
+     * Define the encoding for the command.
+     * @since 2.54
+     */
+    public void setClientCharset(@Nonnull Charset encoding) {
+        this.encoding = encoding;
+    }
+
+    protected @Nonnull Charset getClientCharset() throws IOException, InterruptedException {
+        if (encoding != null) {
+            return encoding;
+        }
+        if (channel==null)
             // for SSH, assume the platform default encoding
             // this is in-line with the standard SSH behavior
             return Charset.defaultCharset();
-        }
 
         String charsetName = checkChannel().call(new GetCharset());
         try {
             return Charset.forName(charsetName);
         } catch (UnsupportedCharsetException e) {
-            LOGGER.log(Level.FINE, "Server doesn''t have charset {0}", charsetName);
+            LOGGER.log(Level.FINE,"Server doesn't have charset "+charsetName);
             return Charset.defaultCharset();
         }
     }
 
     private static final class GetCharset extends MasterToSlaveCallable<String, IOException> {
-        @Override
         public String call() throws IOException {
             return Charset.defaultCharset().name();
         }
@@ -526,11 +537,9 @@ public abstract class CLICommand implements ExtensionPoint, Cloneable {
 
     /**
      * Convenience method for subtypes to obtain environment variables of the client.
-     * @param name
-     * @return 
-     * @throws java.io.IOException
-     * @throws java.lang.InterruptedException
+     * @deprecated Specific to Remoting-based protocol.
      */
+    @Deprecated
     protected String getClientEnvironmentVariable(String name) throws IOException, InterruptedException {
         return checkChannel().call(new GetEnvironmentVariable(name));
     }
@@ -542,7 +551,6 @@ public abstract class CLICommand implements ExtensionPoint, Cloneable {
             this.name = name;
         }
 
-        @Override
         public String call() throws IOException {
             return System.getenv(name);
         }
@@ -552,7 +560,6 @@ public abstract class CLICommand implements ExtensionPoint, Cloneable {
 
     /**
      * Creates a clone to be used to execute a command.
-     * @return 
      */
     protected CLICommand createClone() {
         try {
@@ -578,7 +585,6 @@ public abstract class CLICommand implements ExtensionPoint, Cloneable {
 
     /**
      * Returns all the registered {@link CLICommand}s.
-     * @return 
      */
     public static ExtensionList<CLICommand> all() {
         return ExtensionList.lookup(CLICommand.class);
@@ -586,15 +592,11 @@ public abstract class CLICommand implements ExtensionPoint, Cloneable {
 
     /**
      * Obtains a copy of the command for invocation.
-     * @param name
-     * @return 
      */
     public static CLICommand clone(String name) {
-        for (CLICommand cmd : all()) {
-            if(name.equals(cmd.getName())) {
+        for (CLICommand cmd : all())
+            if(name.equals(cmd.getName()))
                 return cmd.createClone();
-            }
-        }
         return null;
     }
 
@@ -604,9 +606,9 @@ public abstract class CLICommand implements ExtensionPoint, Cloneable {
      * Key for {@link Channel#getProperty(Object)} that links to the {@link Authentication} object
      * which captures the identity of the client given by the transport layer.
      */
-    public static final ChannelProperty<Authentication> TRANSPORT_AUTHENTICATION = new ChannelProperty<>(Authentication.class,"transportAuthentication");
+    public static final ChannelProperty<Authentication> TRANSPORT_AUTHENTICATION = new ChannelProperty<Authentication>(Authentication.class,"transportAuthentication");
 
-    private static final ThreadLocal<CLICommand> CURRENT_COMMAND = new ThreadLocal<>();
+    private static final ThreadLocal<CLICommand> CURRENT_COMMAND = new ThreadLocal<CLICommand>();
 
     /*package*/ static CLICommand setCurrent(CLICommand cmd) {
         CLICommand old = getCurrent();
@@ -616,7 +618,6 @@ public abstract class CLICommand implements ExtensionPoint, Cloneable {
 
     /**
      * If the calling thread is in the middle of executing a CLI command, return it. Otherwise null.
-     * @return 
      */
     public static CLICommand getCurrent() {
         return CURRENT_COMMAND.get();

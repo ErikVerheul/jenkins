@@ -131,7 +131,7 @@ public abstract class ItemGroupMixIn {
     }
 
     /**
-     * {@link Item} -> name function.
+     * {@link Item} → name function.
      */
     public static final Function1<String,Item> KEYED_BY_NAME = new Function1<String, Item>() {
         public String call(Item item) {
@@ -140,7 +140,7 @@ public abstract class ItemGroupMixIn {
     };
 
     /**
-     * Creates a {@link TopLevelItem} from the submission of the '/lib/hudson/newFromList/formList'
+     * Creates a {@link TopLevelItem} for example from the submission of the {@code /lib/hudson/newFromList/form} tag
      * or throws an exception if it fails.
      */
     public synchronized TopLevelItem createTopLevelItem( StaplerRequest req, StaplerResponse rsp ) throws IOException, ServletException {
@@ -173,12 +173,7 @@ public abstract class ItemGroupMixIn {
             String from = req.getParameter("from");
 
             // resolve a name to Item
-            Item src = null;
-            if (!from.startsWith("/"))
-                src = parent.getItem(from);
-            if (src==null)
-                src = Jenkins.getInstance().getItemByFullName(from);
-
+            Item src = Jenkins.getInstance().getItem(from, parent);
             if(src==null) {
                 if(Util.fixEmpty(from)==null)
                     throw new Failure("Specify which job to copy");
@@ -239,6 +234,7 @@ public abstract class ItemGroupMixIn {
         }
         src.getDescriptor().checkApplicableIn(parent);
         acl.getACL().checkCreatePermission(parent, src.getDescriptor());
+        ItemListener.checkBeforeCopy(src, parent);
 
         T result = (T)createProject(src.getDescriptor(),name,false);
 
@@ -265,10 +261,7 @@ public abstract class ItemGroupMixIn {
         acl.checkPermission(Item.CREATE);
 
         Jenkins.getInstance().getProjectNamingStrategy().checkName(name);
-        if (parent.getItem(name) != null) {
-            throw new IllegalArgumentException(parent.getDisplayName() + " already contains an item '" + name + "'");
-        }
-        // TODO what if we have no DISCOVER permission on the existing job?
+        Items.verifyItemDoesNotAlreadyExist(parent, name, null);
 
         // place it as config.xml
         File configXml = Items.getConfigFile(getRootDirFor(name)).getFile();
@@ -321,16 +314,10 @@ public abstract class ItemGroupMixIn {
         acl.getACL().checkCreatePermission(parent, type);
 
         Jenkins.getInstance().getProjectNamingStrategy().checkName(name);
-        if(parent.getItem(name)!=null)
-            throw new IllegalArgumentException("Project of the name "+name+" already exists");
-        // TODO problem with DISCOVER as noted above
+        Items.verifyItemDoesNotAlreadyExist(parent, name, null);
 
         TopLevelItem item = type.newInstance(parent, name);
-        try {
-            callOnCreatedFromScratch(item);
-        } catch (AbstractMethodError e) {
-            // ignore this error. Must be older plugin that doesn't have this method
-        }
+        item.onCreatedFromScratch();
         item.save();
         add(item);
         Jenkins.getInstance().rebuildDependencyGraphAsync();
@@ -341,10 +328,4 @@ public abstract class ItemGroupMixIn {
         return item;
     }
 
-    /**
-     * Pointless wrapper to avoid HotSpot problem. See JENKINS-5756
-     */
-    private void callOnCreatedFromScratch(TopLevelItem item) {
-        item.onCreatedFromScratch();
-    }
 }

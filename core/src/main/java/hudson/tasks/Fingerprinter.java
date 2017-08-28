@@ -27,8 +27,10 @@ import com.google.common.collect.ImmutableMap;
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.FilePath;
+import hudson.Functions;
 import jenkins.MasterToSlaveFileCallable;
 import hudson.Launcher;
+import jenkins.util.SystemProperties;
 import hudson.Util;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
@@ -52,6 +54,7 @@ import net.sf.json.JSONObject;
 import org.acegisecurity.AccessDeniedException;
 import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.types.FileSet;
+import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
@@ -82,7 +85,7 @@ import jenkins.tasks.SimpleBuildStep;
  * @author Kohsuke Kawaguchi
  */
 public class Fingerprinter extends Recorder implements Serializable, DependencyDeclarer, SimpleBuildStep {
-    public static boolean enableFingerprintsInDependencyGraph = Boolean.getBoolean(Fingerprinter.class.getName() + ".enableFingerprintsInDependencyGraph");
+    public static boolean enableFingerprintsInDependencyGraph = SystemProperties.getBoolean(Fingerprinter.class.getName() + ".enableFingerprintsInDependencyGraph");
     
     /**
      * Comma-separated list of files/directories to be fingerprinted.
@@ -135,7 +138,7 @@ public class Fingerprinter extends Recorder implements Serializable, DependencyD
                 Jenkins.getInstance().rebuildDependencyGraphAsync();
             }
         } catch (IOException e) {
-            e.printStackTrace(listener.error(Messages.Fingerprinter_Failed())); //NOSONAR
+            Functions.printStackTrace(e, listener.error(Messages.Fingerprinter_Failed()));
             build.setResult(Result.FAILURE);
         }
 
@@ -248,7 +251,7 @@ public class Fingerprinter extends Recorder implements Serializable, DependencyD
         }
     }
 
-    @Extension
+    @Extension @Symbol("fingerprint")
     public static class DescriptorImpl extends BuildStepDescriptor<Publisher> {
         public String getDisplayName() {
             return Messages.Fingerprinter_DisplayName();
@@ -361,9 +364,8 @@ public class Fingerprinter extends Recorder implements Serializable, DependencyD
         public synchronized Map<String,Fingerprint> getFingerprints() {
             if(ref!=null) {
                 Map<String,Fingerprint> m = ref.get();
-                if(m!=null) {
+                if(m!=null)
                     return m;
-                }
             }
 
             Jenkins h = Jenkins.getInstance();
@@ -372,11 +374,10 @@ public class Fingerprinter extends Recorder implements Serializable, DependencyD
             for (Entry<String, String> r : record.entrySet()) {
                 try {
                     Fingerprint fp = h._getFingerprint(r.getValue());
-                    if(fp!=null) {
+                    if(fp!=null)
                         m.put(r.getKey(), fp);
-                    }
                 } catch (IOException e) {
-                    LOGGER.log(Level.WARNING,e.getMessage(),e);
+                    logger.log(Level.WARNING,e.getMessage(),e);
                 }
             }
 
@@ -404,34 +405,25 @@ public class Fingerprinter extends Recorder implements Serializable, DependencyD
 
             for (Fingerprint fp : getFingerprints().values()) {
                 BuildPtr bp = fp.getOriginal();
-                if(bp==null) {
-                    continue;       // outside Hudson
-                }
-                if(bp.is(build)) {
-                    continue;   // we are the owner
-                }
+                if(bp==null)    continue;       // outside Hudson
+                if(bp.is(build))    continue;   // we are the owner
 
                 try {
                     Job job = bp.getJob();
-                    if (job==null) {
-                        continue;   // project no longer exists
-                    }
+                    if (job==null)  continue;   // project no longer exists
                     if (!(job instanceof AbstractProject)) {
                         // Ignoring this for now. In the future we may want a dependency map function not limited to AbstractProject.
                         // (Could be used by getDependencyChanges if pulled up from AbstractBuild into Run, for example.)
                         continue;
                     }
-                    if (job.getParent()==build.getParent()) {
+                    if (job.getParent()==build.getParent())
                         continue;   // we are the parent of the build owner, that is almost like we are the owner
-                    }
-                    if(!includeMissing && job.getBuildByNumber(bp.getNumber())==null) {
+                    if(!includeMissing && job.getBuildByNumber(bp.getNumber())==null)
                         continue;               // build no longer exists
-                    }
 
                     Integer existing = r.get(job);
-                    if(existing!=null && existing>bp.getNumber()) {
+                    if(existing!=null && existing>bp.getNumber())
                         continue;   // the record in the map is already up to date
-                    }
                     r.put((AbstractProject) job, bp.getNumber());
                 } catch (AccessDeniedException e) {
                     // Need to log in to access this job, so ignore
@@ -444,7 +436,7 @@ public class Fingerprinter extends Recorder implements Serializable, DependencyD
         }
     }
 
-    private static final Logger LOGGER = Logger.getLogger(Fingerprinter.class.getName());
+    private static final Logger logger = Logger.getLogger(Fingerprinter.class.getName());
 
     private static final long serialVersionUID = 1L;
 }

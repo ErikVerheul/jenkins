@@ -43,7 +43,7 @@ import com.thoughtworks.xstream.io.HierarchicalStreamDriver;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.thoughtworks.xstream.mapper.CannotResolveClassException;
-import edu.umd.cs.findbugs.annotations.SuppressWarnings;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.PluginManager;
 import hudson.PluginWrapper;
 import hudson.diagnosis.OldDataMonitor;
@@ -106,7 +106,7 @@ public class XStream2 extends XStream {
     public Object unmarshal(HierarchicalStreamReader reader, Object root, DataHolder dataHolder) {
         // init() is too early to do this
         // defensive because some use of XStream happens before plugins are initialized.
-        Jenkins h = Jenkins.getInstance();
+        Jenkins h = Jenkins.getInstanceOrNull();
         if(h!=null && h.pluginManager!=null && h.pluginManager.uberClassLoader!=null) {
             setClassLoader(h.pluginManager.uberClassLoader);
         }
@@ -114,9 +114,7 @@ public class XStream2 extends XStream {
         Object o = super.unmarshal(reader,root,dataHolder);
         if (oldData.get()!=null) {
             oldData.remove();
-            if (o instanceof Saveable) {
-                OldDataMonitor.report((Saveable)o, "1.106");
-            }
+            if (o instanceof Saveable) OldDataMonitor.report((Saveable)o, "1.106");
         }
         return o;
     }
@@ -147,13 +145,15 @@ public class XStream2 extends XStream {
         // list up types that should be marshalled out like a value, without referential integrity tracking.
         addImmutableType(Result.class);
 
+        // http://www.openwall.com/lists/oss-security/2017/04/03/4
+        denyTypes(new Class[] { void.class, Void.class });
+
         registerConverter(new RobustCollectionConverter(getMapper(),getReflectionProvider()),10);
         registerConverter(new RobustMapConverter(getMapper()), 10);
         registerConverter(new ImmutableMapConverter(getMapper(),getReflectionProvider()),10);
         registerConverter(new ImmutableSortedSetConverter(getMapper(),getReflectionProvider()),10);
         registerConverter(new ImmutableSetConverter(getMapper(),getReflectionProvider()),10);
         registerConverter(new ImmutableListConverter(getMapper(),getReflectionProvider()),10);
-        registerConverter(new ConcurrentHashMapConverter(getMapper(),getReflectionProvider()),10);
         registerConverter(new CopyOnWriteMap.Tree.ConverterImpl(getMapper()),10); // needs to override MapConverter
         registerConverter(new DescribableList.ConverterImpl(getMapper()),10); // explicitly added to handle subtypes
         registerConverter(new Label.ConverterImpl(),10);
@@ -179,13 +179,12 @@ public class XStream2 extends XStream {
         Mapper m = new CompatibilityMapper(new MapperWrapper(next) {
             @Override
             public String serializedClass(Class type) {
-                if (type != null && ImmutableMap.class.isAssignableFrom(type)) {
+                if (type != null && ImmutableMap.class.isAssignableFrom(type))
                     return super.serializedClass(ImmutableMap.class);
-                } else if (type != null && ImmutableList.class.isAssignableFrom(type)) {
+                else if (type != null && ImmutableList.class.isAssignableFrom(type))
                     return super.serializedClass(ImmutableList.class);
-                } else {
+                else
                     return super.serializedClass(type);
-                }
             }
         });
         AnnotationMapper a = new AnnotationMapper(m, getConverterRegistry(), getConverterLookup(), getClassLoader(), getReflectionProvider(), getJvm());
@@ -280,21 +279,17 @@ public class XStream2 extends XStream {
         @Override
         public Class realClass(String elementName) {
             Class s = compatibilityAliases.get(elementName);
-            if (s!=null) {
-                return s;
-            }
+            if (s!=null)    return s;
 
             try {
                 return super.realClass(elementName);
             } catch (CannotResolveClassException e) {
                 // If a "-" is found, retry with mapping this to "$"
-                if (elementName.indexOf('-') >= 0) {
-                    try {
-                        Class c = super.realClass(elementName.replace('-', '$'));
-                        oldData.set(Boolean.TRUE);
-                        return c;
-                    } catch (CannotResolveClassException e2) { }
-                }
+                if (elementName.indexOf('-') >= 0) try {
+                    Class c = super.realClass(elementName.replace('-', '$'));
+                    oldData.set(Boolean.TRUE);
+                    return c;
+                } catch (CannotResolveClassException e2) { }
                 // Throw original exception
                 throw e;
             }
@@ -314,29 +309,33 @@ public class XStream2 extends XStream {
             this.xstream = xstream;
         }
 
-        private Converter findConverter(Class<?> t) {
+        @CheckForNull
+        private Converter findConverter(@CheckForNull Class<?> t) {
+            if (t == null) {
+                return null;
+            }
+            
             Converter result = cache.get(t);
-            if (result != null) {
+            if (result != null)
                 // ConcurrentHashMap does not allow null, so use this object to represent null
                 return result == this ? null : result;
-            }
             try {
-                if(t==null || t.getClassLoader()==null) {
+                final ClassLoader classLoader = t.getClassLoader();
+                if(classLoader == null) {
                     return null;
                 }
-                Class<?> cl = t.getClassLoader().loadClass(t.getName() + "$ConverterImpl");
+                Class<?> cl = classLoader.loadClass(t.getName() + "$ConverterImpl");
                 Constructor<?> c = cl.getConstructors()[0];
 
                 Class<?>[] p = c.getParameterTypes();
                 Object[] args = new Object[p.length];
                 for (int i = 0; i < p.length; i++) {
-                    if(p[i]==XStream.class || p[i]==XStream2.class) {
+                    if(p[i]==XStream.class || p[i]==XStream2.class)
                         args[i] = xstream;
-                    } else if(p[i]== Mapper.class) {
+                    else if(p[i]== Mapper.class)
                         args[i] = xstream.getMapper();
-                    } else {
+                    else
                         throw new InstantiationError("Unrecognized constructor parameter: "+p[i]);
-                    }
 
                 }
                 ConverterMatcher cm = (ConverterMatcher)c.newInstance(args);
@@ -426,13 +425,13 @@ public class XStream2 extends XStream {
 
         private PluginManager pm;
 
-        @SuppressWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE") // classOwnership checked for null so why does FB complain?
+        @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE") // classOwnership checked for null so why does FB complain?
         @Override public String ownerOf(Class<?> clazz) {
             if (classOwnership != null) {
                 return classOwnership.ownerOf(clazz);
             }
             if (pm == null) {
-                Jenkins j = Jenkins.getInstance();
+                Jenkins j = Jenkins.getInstanceOrNull();
                 if (j != null) {
                     pm = j.getPluginManager();
                 }

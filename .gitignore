@@ -109,3 +109,4 @@ war/node_modules/
 /war/nb-configuration.xml
 /core/nbproject/
 /nbactions.xml
+/war/nbproject/private/

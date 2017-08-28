@@ -27,6 +27,7 @@ import hudson.model.Descriptor.FormException;
 import hudson.util.CaseInsensitiveComparator;
 import hudson.Indenter;
 import hudson.Extension;
+import jenkins.util.SystemProperties;
 import hudson.views.ViewsTabBar;
 import jenkins.model.Jenkins;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -109,7 +110,7 @@ public class TreeView extends View implements ViewGroup {
 
     @RequirePOST
     public TopLevelItem doCreateItem(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException {
-        ItemGroup<? extends TopLevelItem> ig = getOwnerItemGroup();
+        ItemGroup<? extends TopLevelItem> ig = getOwner().getItemGroup();
         if (ig instanceof ModifiableItemGroup) {
             TopLevelItem item = ((ModifiableItemGroup<? extends TopLevelItem>)ig).doCreateItem(req, rsp);
             if(item!=null) {
@@ -139,15 +140,9 @@ public class TreeView extends View implements ViewGroup {
     }
 
     public View getView(String name) {
-        for (View v : views) {
-            if(v.getViewName().equals(name)) {
+        for (View v : views)
+            if(v.getViewName().equals(name))
                 return v;
-            }
-        }
-        return null;
-    }
-
-    public View getPrimaryView() {
         return null;
     }
 
@@ -155,6 +150,7 @@ public class TreeView extends View implements ViewGroup {
         // noop
     }
 
+    @RequirePOST
     public void doCreateView( StaplerRequest req, StaplerResponse rsp ) throws IOException, ServletException, FormException {
         checkPermission(View.CREATE);
         views.add(View.create(req,rsp,this));
@@ -164,11 +160,10 @@ public class TreeView extends View implements ViewGroup {
     // this feature is not public yet
     @Extension
     public static ViewDescriptor register() {
-        if(Boolean.getBoolean("hudson.TreeView")) {
+        if(SystemProperties.getBoolean("hudson.TreeView"))
             return new DescriptorImpl();
-        } else {
+        else
             return null;
-        }
     }
 
     public static final class DescriptorImpl extends ViewDescriptor {
@@ -182,7 +177,7 @@ public class TreeView extends View implements ViewGroup {
     }
 
     public ItemGroup<? extends TopLevelItem> getItemGroup() {
-        return getOwnerItemGroup();
+        return getOwner().getItemGroup();
     }
 
     public List<Action> getViewActions() {

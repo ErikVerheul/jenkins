@@ -25,7 +25,9 @@ package hudson.model;
 
 import hudson.Extension;
 import hudson.ExtensionList;
+import hudson.Functions;
 import jenkins.model.Jenkins;
+import org.jenkinsci.Symbol;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -42,7 +44,7 @@ import java.util.regex.Pattern;
  *
  * @author Kohsuke Kawaguchi
  */
-@Extension
+@Extension @Symbol("fingerprintCleanup")
 public final class FingerprintCleanupThread extends AsyncPeriodicWork {
 
     public FingerprintCleanupThread() {
@@ -52,9 +54,7 @@ public final class FingerprintCleanupThread extends AsyncPeriodicWork {
     public long getRecurrencePeriod() {
         return DAY;
     }
-    
-    // False positive for squid:S1217 "Thread.run() and Runnable.run() should not be called directly". Thread.run() is called in an ancestor.
-    @SuppressWarnings("all")
+
     public static void invoke() {
         getInstance().run();
     }
@@ -74,9 +74,8 @@ public final class FingerprintCleanupThread extends AsyncPeriodicWork {
                 for(File file2 : files2) {
                     File[] files3 = file2.listFiles(FINGERPRINTFILE_FILTER);
                     for(File file3 : files3) {
-                        if(check(file3, listener)) {
+                        if(check(file3, listener))
                             numFiles++;
-                        }
                     }
                     deleteIfEmpty(file2);
                 }
@@ -92,12 +91,9 @@ public final class FingerprintCleanupThread extends AsyncPeriodicWork {
      */
     private void deleteIfEmpty(File dir) {
         String[] r = dir.list();
-        if(r==null) {
-            return; // can happen in a rare occasion
-        }
-        if(r.length==0) {
+        if(r==null)     return; // can happen in a rare occasion
+        if(r.length==0)
             dir.delete();
-        }
     }
 
     /**
@@ -118,7 +114,7 @@ public final class FingerprintCleanupThread extends AsyncPeriodicWork {
                 return fp.trim();
             }
         } catch (IOException e) {
-            e.printStackTrace(listener.error("Failed to process " + fingerprintFile)); //NOSONAR
+            Functions.printStackTrace(e, listener.error("Failed to process " + fingerprintFile));
             return false;
         }
     }

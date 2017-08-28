@@ -31,9 +31,13 @@ import hudson.model.TaskListener;
 import hudson.util.jna.Kernel32Utils;
 import hudson.util.jna.SHELLEXECUTEINFO;
 import hudson.util.jna.Shell32;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import jenkins.model.Jenkins;
 import hudson.AbortException;
 import hudson.Extension;
+import jenkins.util.SystemProperties;
 import hudson.util.StreamTaskListener;
 import hudson.util.jna.DotNet;
 import org.apache.commons.io.IOUtils;
@@ -46,6 +50,7 @@ import org.apache.tools.ant.taskdefs.Move;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.DefaultLogger;
 import org.apache.tools.ant.types.FileSet;
+import org.kohsuke.stapler.interceptor.RequirePOST;
 
 import javax.servlet.ServletException;
 import java.io.File;
@@ -105,6 +110,7 @@ public class WindowsInstallerLink extends ManagementLink {
     /**
      * Performs installation.
      */
+    @RequirePOST
     public void doDoInstall(StaplerRequest req, StaplerResponse rsp, @QueryParameter("dir") String _dir) throws IOException, ServletException {
         if(installationDir!=null) {
             // installation already complete
@@ -130,9 +136,8 @@ public class WindowsInstallerLink extends ManagementLink {
             copy(req, rsp, dir, getClass().getResource("/windows-service/jenkins.exe"),         "jenkins.exe");
             copy(req, rsp, dir, getClass().getResource("/windows-service/jenkins.exe.config"),  "jenkins.exe.config");
             copy(req, rsp, dir, getClass().getResource("/windows-service/jenkins.xml"),         "jenkins.xml");
-            if(!hudsonWar.getCanonicalFile().equals(new File(dir,"jenkins.war").getCanonicalFile())) {
+            if(!hudsonWar.getCanonicalFile().equals(new File(dir,"jenkins.war").getCanonicalFile()))
                 copy(req, rsp, dir, hudsonWar.toURI().toURL(), "jenkins.war");
-            }
 
             // install as a service
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -167,6 +172,7 @@ public class WindowsInstallerLink extends ManagementLink {
         }
     }
 
+    @RequirePOST
     public void doRestart(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException {
         if(installationDir==null) {
             // if the user reloads the page after Hudson has restarted,
@@ -210,11 +216,9 @@ public class WindowsInstallerLink extends ManagementLink {
                                         new File(installationDir, "jenkins.exe"), "start", task, installationDir);
                                 task.getLogger().println(r==0?"Successfully started":"start service failed. Exit code="+r);
                             } catch (IOException e) {
-                                //we might not have a logger available
-                                e.printStackTrace(); //NOSONAR
+                                e.printStackTrace();
                             } catch (InterruptedException e) {
-                                //we might not have a logger available
-                                e.printStackTrace(); //NOSONAR
+                                e.printStackTrace();
                             }
                         }
 
@@ -226,10 +230,10 @@ public class WindowsInstallerLink extends ManagementLink {
                         }
                     });
 
-                    System.exit(0); //NOSONAR
+                    Jenkins.getInstance().cleanUp();
+                    System.exit(0);
                 } catch (InterruptedException e) {
-                    //we might not have a logger available
-                    e.printStackTrace(); //NOSONAR
+                    e.printStackTrace();
                 }
             }
         }.start();
@@ -253,26 +257,23 @@ public class WindowsInstallerLink extends ManagementLink {
      */
     @Extension
     public static WindowsInstallerLink registerIfApplicable() {
-        if(!Functions.isWindows()) {
+        if(!Functions.isWindows())
             return null; // this is a Windows only feature
-        }
 
-        if(Lifecycle.get() instanceof WindowsServiceLifecycle) {
+        if(Lifecycle.get() instanceof WindowsServiceLifecycle)
             return null; // already installed as Windows service
-        }
 
         // this system property is set by the launcher when we run "java -jar jenkins.war"
         // and this is how we know where is jenkins.war.
-        String war = System.getProperty("executable-war");
+        String war = SystemProperties.getString("executable-war");
         if(war!=null && new File(war).exists()) {
             WindowsInstallerLink link = new WindowsInstallerLink(new File(war));
 
             // in certain situations where we know the user is just trying Jenkins (like when Jenkins is launched
             // from JNLP), also put this link on the navigation bar to increase
             // visibility
-            if(System.getProperty(WindowsInstallerLink.class.getName()+".prominent")!=null) {
+            if(SystemProperties.getString(WindowsInstallerLink.class.getName()+".prominent")!=null)
                 Jenkins.getInstance().getActions().add(link);
-            }
 
             return link;
         }
@@ -306,16 +307,17 @@ public class WindowsInstallerLink extends ManagementLink {
         sei.lpParameters = "/redirect redirect.log "+command;
         sei.lpDirectory = pwd.getAbsolutePath();
         sei.nShow = SW_HIDE;
-        if (!Shell32.INSTANCE.ShellExecuteEx(sei)) {
+        if (!Shell32.INSTANCE.ShellExecuteEx(sei))
             throw new IOException("Failed to shellExecute: "+ Native.getLastError());
-        }
 
         try {
             return Kernel32Utils.waitForExitProcess(sei.hProcess);
         } finally {
-            FileInputStream fin = new FileInputStream(new File(pwd,"redirect.log"));
-            IOUtils.copy(fin, out.getLogger());
-            fin.close();
+            try (InputStream fin = Files.newInputStream(new File(pwd,"redirect.log").toPath())) {
+                IOUtils.copy(fin, out.getLogger());
+            } catch (InvalidPathException e) {
+                // ignore;
+            }
         }
     }
 
