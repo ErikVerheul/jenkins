@@ -212,7 +212,8 @@ THE SOFTWARE.
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <!-- version specified in grandparent pom -->
+                <!-- [Erik] override version specified in grandparent pom -->
+                <version>2.20</version>
                 <configuration>
                     <skipTests>true</skipTests>
                 </configuration>
