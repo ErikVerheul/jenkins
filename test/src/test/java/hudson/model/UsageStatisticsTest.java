@@ -56,7 +56,6 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import org.jvnet.hudson.test.TestPluginManager;
 
 /**
  * @author Kohsuke Kawaguchi
@@ -68,10 +67,10 @@ public class UsageStatisticsTest {
 
     /**
      * Makes sure that the stat data can be decrypted safely.
+     * @throws java.lang.Exception
      */
     @Test
     public void roundtrip() throws Exception {
-        ((TestPluginManager) j.jenkins.pluginManager).installDetachedPlugin("credentials");
 
         j.createOnlineSlave();
         warmUpNodeMonitorCache();
@@ -135,13 +134,13 @@ public class UsageStatisticsTest {
      * @throws InterruptedException
      */
     private void warmUpNodeMonitorCache() throws InterruptedException {
-        Jenkins j = Jenkins.getActiveInstance();
-        ArchitectureMonitor.DescriptorImpl descriptor = j.getDescriptorByType(ArchitectureMonitor.DescriptorImpl.class);
+        Jenkins jj = Jenkins.getActiveInstance();
+        ArchitectureMonitor.DescriptorImpl descriptor = jj.getDescriptorByType(ArchitectureMonitor.DescriptorImpl.class);
         String value = null;
         int count = 1;
         while (value == null && count++ <= 5)  // If for some reason the cache doesn't get populated, don't loop forever
         {
-            final Computer master = j.getComputers()[0];
+            final Computer master = jj.getComputers()[0];
             value = descriptor.get(master);
             Thread.sleep(200);
         }
@@ -151,6 +150,7 @@ public class UsageStatisticsTest {
     private List<JSONObject> sortPlugins(List<JSONObject> list) {
         List<JSONObject> sorted = new ArrayList<>(list);
         Collections.sort(sorted, new Comparator<JSONObject>() {
+            @Override
             public int compare(JSONObject j1, JSONObject j2) {
                 return j1.getString("name").compareTo(j2.getString("name"));
             }
