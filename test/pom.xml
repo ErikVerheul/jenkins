@@ -214,6 +214,7 @@ THE SOFTWARE.
                 <artifactId>maven-surefire-plugin</artifactId>
                 <!-- version specified in grandparent pom -->
                 <configuration>
+                    <!-- set to false for executing single tests -->
                     <skipTests>true</skipTests>
                 </configuration>
             </plugin>
