@@ -56,6 +56,7 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import org.jvnet.hudson.test.TestPluginManager;
 
 /**
  * @author Kohsuke Kawaguchi
@@ -71,6 +72,7 @@ public class UsageStatisticsTest {
      */
     @Test
     public void roundtrip() throws Exception {
+        ((TestPluginManager) j.jenkins.pluginManager).installDetachedPlugin("credentials");
 
         j.createOnlineSlave();
         warmUpNodeMonitorCache();
