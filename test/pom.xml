@@ -307,7 +307,7 @@ THE SOFTWARE.
       </activation>
       <properties>
         <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
-        <surefire.rerunFailingTestsCount>4</surefire.rerunFailingTestsCount>
+        <surefire.rerunFailingTestsCount>1</surefire.rerunFailingTestsCount>
       </properties>
     </profile>
     <profile>

@@ -50,3 +50,10 @@ jenkins_*.changes
 push-build.sh
 war/node_modules/
 .java-version
+/test/nb-configuration.xml
+/core/nb-configuration.xml
+/nb-configuration.xml
+/cli/nb-configuration.xml
+/war/nb-configuration.xml
+/nbactions.xml
+/desktop.ini
