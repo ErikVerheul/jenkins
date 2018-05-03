@@ -285,9 +285,9 @@ THE SOFTWARE.
       <version>1.8.3</version>
     </dependency>
     <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-compress</artifactId>
-        <version>1.10</version>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-compress</artifactId>
+      <version>1.10</version>
     </dependency>
     <dependency>
       <groupId>javax.mail</groupId>
@@ -629,25 +629,29 @@ THE SOFTWARE.
 
   <build>
     <plugins>
-        <plugin>
-         <groupId>org.codehaus.mojo</groupId>
-         <artifactId>build-helper-maven-plugin</artifactId>
-         <executions>
-             <execution>
-                 <id>add-source</id>
-                 <phase>generate-sources</phase>
-                 <goals>
-                     <goal>add-source</goal>
-                 </goals>
-                 <configuration>
-                     <sources>
-                         <source>${project.build.directory}/generated-sources/antlr</source>
-                         <source>${project.build.directory}/generated-sources/localizer</source>
-                         <source>${project.build.directory}/generated-sources/taglib-interface</source>
-                     </sources>
-                 </configuration>
-             </execution>
-         </executions>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>add-source</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>${project.build.directory}/generated-sources/antlr</source>
+                <source>${project.build.directory}/generated-sources/localizer</source>
+                <source>${project.build.directory}/generated-sources/taglib-interface</source>
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>org.jenkins-ci.tools</groupId>
@@ -780,7 +784,6 @@ THE SOFTWARE.
         <configuration>
           <forkCount>0.5C</forkCount>
           <reuseForks>true</reuseForks>
-          <argLine>-Dfile.encoding=UTF-8 -noverify</argLine> <!-- some versions of JDK7/8 causes VerifyError during mock tests: http://code.google.com/p/powermock/issues/detail?id=504 -->
         </configuration>
       </plugin>
       <plugin><!-- set main class -->
