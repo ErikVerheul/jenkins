@@ -630,10 +630,6 @@ THE SOFTWARE.
   <build>
     <plugins>
       <plugin>
-        <groupId>org.jacoco</groupId>
-        <artifactId>jacoco-maven-plugin</artifactId>
-      </plugin>
-      <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
         <executions>
@@ -928,5 +924,18 @@ THE SOFTWARE.
         </plugins>
       </build>
     </profile>
+    <profiles>
+      <profile>
+        <id>jacoco</id>
+        <build>
+          <plugins>
+            <plugin>
+              <groupId>org.jacoco</groupId>
+              <artifactId>jacoco-maven-plugin</artifactId>
+            </plugin>
+          </plugins>
+        </build>
+      </profile>
+    </profiles>
   </profiles>
 </project>

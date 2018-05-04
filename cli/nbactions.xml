@@ -9,7 +9,6 @@
                 <goal>clean</goal>
                 <goal>install</goal>
                 <goal>-Pjacoco</goal>
-                
             </goals>
         </action>
     </actions>

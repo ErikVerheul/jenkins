@@ -25,8 +25,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-        <groupId>org.kohsuke</groupId>
-        <artifactId>access-modifier-annotation</artifactId>
+      <groupId>org.kohsuke</groupId>
+      <artifactId>access-modifier-annotation</artifactId>
     </dependency>
     <dependency>
       <groupId>commons-codec</groupId>
@@ -71,10 +71,6 @@
 
   <build>
     <plugins>
-      <plugin>
-        <groupId>org.jacoco</groupId>
-        <artifactId>jacoco-maven-plugin</artifactId>
-      </plugin>
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <!-- version specified in grandparent pom -->
@@ -123,4 +119,17 @@
       </plugin>
     </plugins>
   </build>
+  <profiles>
+    <profile>
+      <id>jacoco</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>
