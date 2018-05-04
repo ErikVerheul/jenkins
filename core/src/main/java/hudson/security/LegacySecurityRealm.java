@@ -53,11 +53,10 @@ public final class LegacySecurityRealm extends SecurityRealm implements Authenti
     }
 
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        if(authentication instanceof ContainerAuthentication) {
+        if(authentication instanceof ContainerAuthentication)
             return authentication;
-        } else {
+        else
             return null;
-        }
     }
 
     /**

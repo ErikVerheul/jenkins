@@ -88,4 +88,5 @@ public abstract class BootFailure extends ErrorObject {
     public static File getBootFailureFile(File home) {
         return new File(home, "failed-boot-attempts.txt");
     }
+
 }

@@ -79,9 +79,8 @@ public class MarkFindingOutputStreamTest {
     }
 
     private void writeOneByOne(String s) throws IOException {
-        for (int i=0; i< s.length(); i++) {
+        for (int i=0; i< s.length(); i++)
             m.write(s.charAt(i));
-        }
     }
 
     class MarkCountingOutputStream extends MarkFindingOutputStream {

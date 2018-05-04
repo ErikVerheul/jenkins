@@ -41,6 +41,7 @@ import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.jvnet.hudson.test.Issue;
+import org.jvnet.hudson.test.Issue;
 
 /**
  * Tests for XML serialization of java objects.

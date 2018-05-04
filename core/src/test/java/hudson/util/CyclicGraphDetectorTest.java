@@ -43,9 +43,8 @@ public class CyclicGraphDetectorTest {
         Set<String> edges(String from) {
             Set<String> edges = new LinkedHashSet<String>();
             for (Edge e : this) {
-                if (e.src.equals(from)) {
+                if (e.src.equals(from))
                     edges.add(e.dst);
-                }
             }
             return edges;
         }
@@ -67,9 +66,8 @@ public class CyclicGraphDetectorTest {
                 fail("Cycle expected");
             } catch (CycleDetectedException e) {
                 String msg = "Expected cycle of " + Arrays.asList(members) + " but found " + e.cycle;
-                for (String s : members) {
+                for (String s : members)
                     assertTrue(msg, e.cycle.contains(s));
-                }
             }
         }
     }

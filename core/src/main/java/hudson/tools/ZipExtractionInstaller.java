@@ -121,9 +121,8 @@ public class ZipExtractionInstaller extends ToolInstaller {
     static class ChmodRecAPlusX extends MasterToSlaveFileCallable<Void> {
         private static final long serialVersionUID = 1L;
         public Void invoke(File d, VirtualChannel channel) throws IOException {
-            if(!Functions.isWindows()) {
+            if(!Functions.isWindows())
                 process(d);
-            }
             return null;
         }
         private void process(File f) {

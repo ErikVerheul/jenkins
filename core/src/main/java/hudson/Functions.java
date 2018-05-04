@@ -471,6 +471,16 @@ public class Functions {
         return new TreeMap<Object,Object>(System.getProperties());
     }
 
+    /**
+     * Gets the system property indicated by the specified key.
+     * 
+     * Delegates to {@link SystemProperties#getString(java.lang.String)}.
+     */
+    @Restricted(DoNotUse.class)
+    public static String getSystemProperty(String key) {
+        return SystemProperties.getString(key);
+    }
+
     public static Map getEnvVars() {
         return new TreeMap<String,String>(EnvVars.masterEnvVars);
     }
@@ -2024,7 +2034,7 @@ public class Functions {
             rsp.setHeader("X-Jenkins-Session", Jenkins.SESSION_HASH);
 
             TcpSlaveAgentListener tal = j.tcpSlaveAgentListener;
-            if (tal !=null) {
+            if (tal != null) { // headers used only by deprecated Remoting-based CLI
                 int p = tal.getAdvertisedPort();
                 rsp.setIntHeader("X-Hudson-CLI-Port", p);
                 rsp.setIntHeader("X-Jenkins-CLI-Port", p);
@@ -2040,6 +2050,15 @@ public class Functions {
             return ((ModelObjectWithContextMenu.ContextMenuVisibility) a).isVisible();
         } else {
             return true;
+        }
+    }
+
+    @Restricted(NoExternalUse.class) // for cc.xml.jelly
+    public static Collection<TopLevelItem> getCCItems(View v) {
+        if (Stapler.getCurrentRequest().getParameter("recursive") != null) {
+            return Items.getAllItems(v.getOwner().getItemGroup(), TopLevelItem.class);
+        } else {
+            return v.getItems();
         }
     }
 

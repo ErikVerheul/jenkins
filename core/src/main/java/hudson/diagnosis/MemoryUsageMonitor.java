@@ -23,7 +23,7 @@
  */
 package hudson.diagnosis;
 
-import hudson.util.TimeUnit2;
+import java.util.concurrent.TimeUnit;
 import hudson.util.ColorPalette;
 import hudson.Extension;
 import hudson.model.PeriodicWork;
@@ -67,9 +67,8 @@ public final class MemoryUsageMonitor extends PeriodicWork {
 
         private MemoryGroup(List<MemoryPoolMXBean> pools, MemoryType type) {
             for (MemoryPoolMXBean pool : pools) {
-                if (pool.getType() == type) {
+                if (pool.getType() == type)
                     this.pools.add(pool);
-                }
             }
         }
 
@@ -79,9 +78,7 @@ public final class MemoryUsageMonitor extends PeriodicWork {
 //            long cur = 0;
             for (MemoryPoolMXBean pool : pools) {
                 MemoryUsage usage = pool.getCollectionUsage();
-                if(usage==null) {
-                    continue;   // not available
-                }
+                if(usage==null) continue;   // not available
                 used += usage.getUsed();
                 max  += usage.getMax();
 
@@ -119,7 +116,7 @@ public final class MemoryUsageMonitor extends PeriodicWork {
     }
 
     public long getRecurrencePeriod() {
-        return TimeUnit2.SECONDS.toMillis(10);
+        return TimeUnit.SECONDS.toMillis(10);
     }
 
     protected void doRun() {

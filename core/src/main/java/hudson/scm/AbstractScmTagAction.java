@@ -110,9 +110,8 @@ public abstract class AbstractScmTagAction extends TaskAction implements BuildBa
     }
 
     protected synchronized String chooseAction() {
-        if(workerThread!=null) {
+        if(workerThread!=null)
             return "inProgress.jelly";
-        }
         return "tagForm.jelly";
     }
 

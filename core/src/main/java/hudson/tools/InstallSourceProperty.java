@@ -54,9 +54,8 @@ public class InstallSourceProperty extends ToolProperty<ToolInstallation> {
     @Override
     public void setTool(ToolInstallation t) {
         super.setTool(t);
-        for (ToolInstaller installer : installers) {
+        for (ToolInstaller installer : installers)
             installer.setTool(t);
-        }
     }
 
     public Class<ToolInstallation> type() {

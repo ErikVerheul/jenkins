@@ -56,9 +56,8 @@ public class HelpCommand extends CLICommand {
                     + hudson.cli.client.Messages.CLI_Usage());
         }
 
-        if (command != null) {
+        if (command != null)
             return showCommandDetails();
-        }
 
         showAllCommands();
 
@@ -67,9 +66,8 @@ public class HelpCommand extends CLICommand {
 
     private int showAllCommands() {
         Map<String,CLICommand> commands = new TreeMap<String,CLICommand>();
-        for (CLICommand c : CLICommand.all()) {
+        for (CLICommand c : CLICommand.all())
             commands.put(c.getName(),c);
-        }
 
         for (CLICommand c : commands.values()) {
             stderr.println("  "+c.getName());

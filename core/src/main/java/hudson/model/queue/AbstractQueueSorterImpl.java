@@ -36,12 +36,8 @@ public abstract class AbstractQueueSorterImpl extends QueueSorter implements Com
      * sign(a-b).
      */
     protected static int compare(long a, long b) {
-        if (a>b) {
-            return 1;
-        }
-        if (a<b) {
-            return -1;
-        }
+        if (a>b)    return 1;
+        if (a<b)    return -1;
         return 0;
     }
 
@@ -49,12 +45,8 @@ public abstract class AbstractQueueSorterImpl extends QueueSorter implements Com
      * sign(a-b).
      */
     protected static int compare(int a, int b) {
-        if (a>b) {
-            return 1;
-        }
-        if (a<b) {
-            return -1;
-        }
+        if (a>b)    return 1;
+        if (a<b)    return -1;
         return 0;
     }
 }

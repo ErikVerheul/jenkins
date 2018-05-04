@@ -93,9 +93,7 @@ public interface VariableResolver<V> {
         public V resolve(String name) {
             for (VariableResolver<? extends V> r : resolvers) {
                 V v = r.resolve(name);
-                if(v!=null) {
-                    return v;
-                }
+                if(v!=null) return v;
             }
             return null;
         }

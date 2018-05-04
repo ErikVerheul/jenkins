@@ -81,7 +81,7 @@ public class HsErrPidList extends AdministrativeMonitor {
             }
         } catch (UnsupportedOperationException e) {
             // ignore
-        } catch (Exception e) {
+        } catch (Throwable e) {
             LOGGER.log(Level.WARNING, "Failed to list up hs_err_pid files", e);
         }
     }
@@ -104,9 +104,9 @@ public class HsErrPidList extends AdministrativeMonitor {
 
         pattern = pattern.replace("%p","*").replace("%%","%");
         File f = new File(pattern).getAbsoluteFile();
-        if (!pattern.contains("*")) {
+        if (!pattern.contains("*"))
             scanFile(f);
-        } else {// GLOB
+        else {// GLOB
             File commonParent = f;
             while (commonParent!=null && commonParent.getPath().contains("*")) {
                 commonParent = commonParent.getParentFile();
@@ -130,9 +130,8 @@ public class HsErrPidList extends AdministrativeMonitor {
         try (Reader rawReader = new FileReader(log);
              BufferedReader r = new BufferedReader(rawReader)) {
 
-            if (!findHeader(r)) {
+            if (!findHeader(r))
                 return;
-            }
 
             // we should find a memory mapped file for secret.key
             String secretKey = getSecretKeyFile().getAbsolutePath();
@@ -158,12 +157,10 @@ public class HsErrPidList extends AdministrativeMonitor {
     private boolean findHeader(BufferedReader r) throws IOException {
         for (int i=0; i<5; i++) {
             String line = r.readLine();
-            if (line==null) {
+            if (line==null)
                 return false;
-            }
-            if (line.startsWith("# A fatal error has been detected by the Java Runtime Environment:")) {
+            if (line.startsWith("# A fatal error has been detected by the Java Runtime Environment:"))
                 return true;
-            }
         }
         return false;
     }

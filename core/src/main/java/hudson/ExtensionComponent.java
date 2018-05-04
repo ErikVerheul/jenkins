@@ -85,16 +85,11 @@ public class ExtensionComponent<T> implements Comparable<ExtensionComponent<T>> 
     /**
      * Sort {@link ExtensionComponent}s in the descending order of {@link #ordinal()}.
      */
-    @Override
     public int compareTo(ExtensionComponent<T> that) {
         double a = this.ordinal();
         double b = that.ordinal();
-        if (a>b) {
-            return -1;
-        }
-        if (a<b) {
-            return 1;
-        }
+        if (a>b)    return -1;
+        if (a<b)    return 1;
 
         // make the order bit more deterministic among extensions of the same ordinal
         if (this.instance instanceof Descriptor && that.instance instanceof Descriptor) {
@@ -107,32 +102,5 @@ public class ExtensionComponent<T> implements Comparable<ExtensionComponent<T>> 
             }
         }
         return this.instance.getClass().getName().compareTo(that.instance.getClass().getName());
-    }
-    
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (obj == this) {
-            return true;
-        }
-        if (!(obj instanceof ExtensionComponent)) {
-            return false;
-        }
-        ExtensionComponent o = (ExtensionComponent) obj;
-        if (this.ordinal() != o.ordinal()) {
-            return false;
-        }
-
-        return this.instance.getClass().getName().compareTo(o.instance.getClass().getName()) == 0;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 5;
-        hash = 89 * hash + (this.instance != null ? this.instance.hashCode() : 0);
-        hash = 89 * hash + (int) (Double.doubleToLongBits(this.ordinal) ^ (Double.doubleToLongBits(this.ordinal) >>> 32));
-        return hash;
     }
 }

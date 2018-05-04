@@ -78,9 +78,8 @@ public interface ModelObjectWithContextMenu extends ModelObject {
         }
 
         public ContextMenu addAll(Collection<? extends Action> actions) {
-            for (Action a : actions) {
+            for (Action a : actions)
                 add(a);
-            }
             return this;
         }
 
@@ -94,9 +93,7 @@ public interface ModelObjectWithContextMenu extends ModelObject {
             StaplerRequest req = Stapler.getCurrentRequest();
             String text = a.getDisplayName();
             String base = Functions.getIconFilePath(a);
-            if (base==null) {
-                return this;
-            }
+            if (base==null)     return this;
             String icon = Stapler.getCurrentRequest().getContextPath()+(base.startsWith("images/")?Functions.getResourcePath():"")+'/'+base;
 
             String url =  Functions.getActionUrl(req.findAncestor(ModelObject.class).getUrl(),a);
@@ -105,9 +102,8 @@ public interface ModelObjectWithContextMenu extends ModelObject {
         }
 
         public ContextMenu add(String url, String icon, String text) {
-            if (text != null && icon != null && url != null) {
+            if (text != null && icon != null && url != null)
                 items.add(new MenuItem(url,icon,text));
-            }
             return this;
         }
 
@@ -289,9 +285,7 @@ public interface ModelObjectWithContextMenu extends ModelObject {
          * Sets the URL by passing in a URL relative to the context path of Jenkins
          */
         public MenuItem withContextRelativeUrl(String url) {
-            if (!url.startsWith("/")) {
-                url = '/'+url;
-            }
+            if (!url.startsWith("/"))   url = '/'+url;
             this.url = Stapler.getCurrentRequest().getContextPath()+url;
             return this;
         }

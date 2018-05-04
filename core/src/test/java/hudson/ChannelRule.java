@@ -94,7 +94,7 @@ public final class ChannelRule extends ExternalResource {
                         at hudson.remoting.Channel$ReaderThread.run(Channel.java:849)
 
              */
-            e.printStackTrace(); //NOSONAR
+            e.printStackTrace();
         } catch (InterruptedException x) {
             throw new AssertionError(x);
         }

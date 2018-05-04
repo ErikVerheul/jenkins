@@ -37,9 +37,7 @@ public enum YesNoMaybe {
     MAYBE;
 
     public static Boolean toBoolean(YesNoMaybe v) {
-        if (v==null) {
-            return null;
-        }
+        if (v==null)    return null;
         return v.toBool();
     }
     

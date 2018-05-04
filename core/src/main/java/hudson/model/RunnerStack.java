@@ -43,9 +43,7 @@ final class RunnerStack {
     synchronized void push(RunExecution r) {
         Executor e = Executor.currentExecutor();
         Stack<RunExecution> s = stack.get(e);
-        if(s==null) {
-            stack.put(e,s=new Stack<RunExecution>());
-        }
+        if(s==null) stack.put(e,s=new Stack<RunExecution>());
         s.push(r);
     }
 
@@ -53,9 +51,7 @@ final class RunnerStack {
         Executor e = Executor.currentExecutor();
         Stack<RunExecution> s = stack.get(e);
         s.pop();
-        if(s.isEmpty()) {
-            stack.remove(e);
-        }
+        if(s.isEmpty()) stack.remove(e);
     }
 
     /**

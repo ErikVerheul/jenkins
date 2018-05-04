@@ -35,21 +35,16 @@ class BuildReferenceMapAdapter<R> implements SortedMap<Integer,R> {
     }
 
     private R unwrap(@Nullable BuildReference<R> ref) {
-        if (ref==null) {
-            return null;
-        }
+        if (ref==null)  return null;
 
         R v = ref.get();
-        if (v==null) {
+        if (v==null)
             v = loader.getById(ref.id);
-        }
         return v;
     }
 
     private BuildReference<R> wrap(@Nullable R value) {
-        if (value==null) {
-            return null;
-        }
+        if (value==null)    return null;
         return loader.createReference(value);
     }
 
@@ -121,9 +116,8 @@ class BuildReferenceMapAdapter<R> implements SortedMap<Integer,R> {
     }
 
     public void putAll(Map<? extends Integer, ? extends R> m) {
-        for (Entry<? extends Integer, ? extends R> e : m.entrySet()) {
+        for (Entry<? extends Integer, ? extends R> e : m.entrySet())
             put(e.getKey(), e.getValue());
-        }
     }
 
     public void clear() {
@@ -176,18 +170,16 @@ class BuildReferenceMapAdapter<R> implements SortedMap<Integer,R> {
 
         public Object[] toArray() {
             List<Object> list = new ArrayList<Object>();
-            for (R r : this) {
+            for (R r : this)
                 list.add(r);
-            }
             return list.toArray();
         }
 
         public <T> T[] toArray(T[] a) {
             int size = size();
             T[] r = a;
-            if (r.length>size) {
+            if (r.length>size)
                 r = (T[]) Array.newInstance(a.getClass().getComponentType(), size);
-            }
 
             Iterator<R> itr = iterator();
             int i=0;
@@ -211,9 +203,8 @@ class BuildReferenceMapAdapter<R> implements SortedMap<Integer,R> {
 
         public boolean containsAll(Collection<?> c) {
             for (Object o : c) {
-                if (!contains(o)) {
+                if (!contains(o))
                     return false;
-                }
             }
             return true;
         }
@@ -284,18 +275,16 @@ class BuildReferenceMapAdapter<R> implements SortedMap<Integer,R> {
 
         public Object[] toArray() {
             List<Object> list = new ArrayList<Object>();
-            for (Entry<Integer, R> r : this) {
+            for (Entry<Integer, R> r : this)
                 list.add(r);
-            }
             return list.toArray();
         }
 
         public <T> T[] toArray(T[] a) {
             int size = size();
             T[] r = a;
-            if (r.length>size) {
+            if (r.length>size)
                 r = (T[]) Array.newInstance(a.getClass().getComponentType(), size);
-            }
 
             Iterator<Entry<Integer, R>> itr = iterator();
             int i=0;
@@ -319,9 +308,8 @@ class BuildReferenceMapAdapter<R> implements SortedMap<Integer,R> {
 
         public boolean containsAll(Collection<?> c) {
             for (Object o : c) {
-                if (!contains(o)) {
+                if (!contains(o))
                     return false;
-                }
             }
             return true;
         }
@@ -366,9 +354,8 @@ class BuildReferenceMapAdapter<R> implements SortedMap<Integer,R> {
         }
         private Entry<Integer, R> _unwrap(Entry<Integer, BuildReference<R>> e) {
             R v = unwrap(e.getValue());
-            if (v==null) {
+            if (v==null)
                 return null;
-            }
             return new MapEntry(e.getKey(), v);
         }
     }

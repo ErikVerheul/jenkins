@@ -43,9 +43,8 @@ public class Kernel32Utils {
      */
     public static int waitForExitProcess(Pointer hProcess) throws InterruptedException {
         while (true) {
-            if (Thread.interrupted()) {
+            if (Thread.interrupted())
                 throw new InterruptedException();
-            }
 
             Kernel32.INSTANCE.WaitForSingleObject(hProcess,1000);
             IntByReference exitCode = new IntByReference();
@@ -111,7 +110,7 @@ public class Kernel32Utils {
     /*package*/ static Kernel32 load() {
         try {
             return (Kernel32) Native.loadLibrary("kernel32", Kernel32.class);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             LOGGER.log(Level.SEVERE, "Failed to load Kernel32", e);
             return InitializationErrorInvocationHandler.create(Kernel32.class,e);
         }

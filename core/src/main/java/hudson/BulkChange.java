@@ -90,9 +90,7 @@ public class BulkChange implements Closeable {
      * Saves the accumulated changes.
      */
     public void commit() throws IOException {
-        if(completed) {
-            return;
-        }
+        if(completed)   return;
         completed = true;
 
         // move this object out of the scope first before save, or otherwise the save() method will do nothing.
@@ -120,17 +118,14 @@ public class BulkChange implements Closeable {
      * This is so that {@link BulkChange} can be used naturally in the try/finally block.
      */
     public void abort() {
-        if(completed) {
-            return;
-        }
+        if(completed)   return;
         completed = true;
         pop();
     }
 
     private void pop() {
-        if(current()!=this) {
+        if(current()!=this)
             throw new AssertionError("Trying to save BulkChange that's not in scope");
-        }
         INSCOPE.set(parent);
     }
 
@@ -154,11 +149,9 @@ public class BulkChange implements Closeable {
      * if the actual persistence should happen now or not.
      */
     public static boolean contains(Saveable s) {
-        for(BulkChange b=current(); b!=null; b=b.parent) {
-            if(b.saveable==s || b.saveable==ALL) {
+        for(BulkChange b=current(); b!=null; b=b.parent)
+            if(b.saveable==s || b.saveable==ALL)
                 return true;
-            }
-        }
         return false;
     }
 

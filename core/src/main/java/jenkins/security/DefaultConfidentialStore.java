@@ -98,9 +98,7 @@ public class DefaultConfidentialStore extends ConfidentialStore {
     protected byte[] load(ConfidentialKey key) throws IOException {
         try {
             File f = getFileFor(key);
-            if (!f.exists()) {
-                return null;
-            }
+            if (!f.exists())    return null;
 
             Cipher sym = Secret.getCipher("AES");
             sym.init(Cipher.DECRYPT_MODE, masterKey);
@@ -127,14 +125,11 @@ public class DefaultConfidentialStore extends ConfidentialStore {
      */
     private byte[] verifyMagic(byte[] payload) {
         int payloadLen = payload.length-MAGIC.length;
-        if (payloadLen<0) {
-            return null;    // obviously broken
-        }
+        if (payloadLen<0)   return null;    // obviously broken
 
         for (int i=0; i<MAGIC.length; i++) {
-            if (payload[payloadLen+i]!=MAGIC[i]) {
+            if (payload[payloadLen+i]!=MAGIC[i])
                 return null;    // broken
-            }
         }
         byte[] truncated = new byte[payloadLen];
         System.arraycopy(payload,0,truncated,0,truncated.length);

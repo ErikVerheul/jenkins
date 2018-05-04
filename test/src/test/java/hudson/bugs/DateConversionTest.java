@@ -52,9 +52,8 @@ public class DateConversionTest {
         for(int i=0;i<10;i++) {
             futures.add(es.submit(new Callable<Object>() {
                 public Object call() throws Exception {
-                    for( int i=0; i<10000; i++ ) {
+                    for( int i=0; i<10000; i++ )
                         dc.fromString("2008-08-26 15:40:14.568 GMT-03:00");
-                    }
                     return null;
                 }
             }));

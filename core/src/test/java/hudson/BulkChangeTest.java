@@ -62,9 +62,7 @@ public class BulkChangeTest {
         }
 
         public void save() throws IOException {
-            if(BulkChange.contains(this)) {
-                return;
-            }
+            if(BulkChange.contains(this))   return;
             saveCount++;
         }
     }

@@ -113,7 +113,6 @@ public class HelpLinkTest {
 
     public static class HelpNotFoundBuilder extends Publisher {
         public static final class DescriptorImpl extends BuildStepDescriptor {
-            @Override
             public boolean isApplicable(Class jobType) {
                 return true;
             }
@@ -124,7 +123,6 @@ public class HelpLinkTest {
             }
         }
 
-        @Override
         public BuildStepMonitor getRequiredMonitorService() {
             return BuildStepMonitor.BUILD;
         }
@@ -133,7 +131,6 @@ public class HelpLinkTest {
     /**
      * Make sure that this test is meaningful.
      * Intentionally put 404 and verify that it's detected.
-     * @throws java.lang.Exception
      */
     @Test
     public void negative() throws Exception {

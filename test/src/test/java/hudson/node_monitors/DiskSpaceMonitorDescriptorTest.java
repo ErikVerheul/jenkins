@@ -30,9 +30,8 @@ public class DiskSpaceMonitorDescriptorTest {
         DumbSlave s = j.createSlave();
         SlaveComputer c = s.getComputer();
         c.connect(false).get(); // wait until it's connected
-        if(c.isOffline()) {
+        if(c.isOffline())
             fail("Slave failed to go online: "+c.getLog());
-        }
 
         DiskSpace du = TemporarySpaceMonitor.DESCRIPTOR.monitor(c);
         du.toHtml();

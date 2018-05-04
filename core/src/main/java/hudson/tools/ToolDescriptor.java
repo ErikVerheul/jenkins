@@ -62,9 +62,8 @@ public abstract class ToolDescriptor<T extends ToolInstallation> extends Descrip
      */
     @SuppressWarnings("unchecked")
     public T[] getInstallations() {
-        if (installations != null) {
+        if (installations != null)
             return installations.clone();
-        }
 
         Type bt = Types.getBaseClass(getClass(), ToolDescriptor.class);
         if (bt instanceof ParameterizedType) {
@@ -129,9 +128,8 @@ public abstract class ToolDescriptor<T extends ToolInstallation> extends Descrip
                 = new DescribableList<ToolProperty<?>, ToolPropertyDescriptor>(NOOP);
 
         List<? extends ToolInstaller> installers = getDefaultInstallers();
-        if(!installers.isEmpty()) {
+        if(!installers.isEmpty())
             r.add(new InstallSourceProperty(installers));
-        }
 
         return r;
     }

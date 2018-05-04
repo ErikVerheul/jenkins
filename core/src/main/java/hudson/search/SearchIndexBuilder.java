@@ -69,9 +69,8 @@ public final class SearchIndexBuilder {
     }
 
     public SearchIndexBuilder add(String url, String... names) {
-        for (String name : names) {
+        for (String name : names)
             add(url,name);
-        }
         return this;
     }
 
@@ -86,9 +85,8 @@ public final class SearchIndexBuilder {
     }
 
     public SearchIndexBuilder add(String url, SearchableModelObject searchable, String... names) {
-        for (String name : names) {
+        for (String name : names)
             add(url,searchable,name);
-        }
         return this;
     }
 
@@ -103,9 +101,8 @@ public final class SearchIndexBuilder {
 
     public SearchIndex make() {
         SearchIndex r = new FixedSet(items);
-        for (SearchIndex index : indices) {
+        for (SearchIndex index : indices)
             r = new UnionSearchIndex(r,index);
-        }
         return r;
     }
 }

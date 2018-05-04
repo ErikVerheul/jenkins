@@ -155,9 +155,7 @@ public class ChunkedOutputStream extends OutputStream {
     public void write(int b) throws IOException {
         cache[cachePosition] = (byte) b;
         cachePosition++;
-        if (cachePosition == cache.length) {
-            flushCache();
-        }
+        if (cachePosition == cache.length) flushCache();
     }
 
     /**

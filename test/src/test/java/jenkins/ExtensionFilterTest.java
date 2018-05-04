@@ -28,12 +28,10 @@ public class ExtensionFilterTest {
     public static class Impl extends ExtensionFilter {
         @Override
         public <T> boolean allows(Class<T> type, ExtensionComponent<T> component) {
-            if (type==ConsoleAnnotatorFactory.class) {
+            if (type==ConsoleAnnotatorFactory.class)
                 return false;
-            }
-            if (component.isDescriptorOf(PageDecorator.class)) {
+            if (component.isDescriptorOf(PageDecorator.class))
                 return false;
-            }
             return true;
         }
     }

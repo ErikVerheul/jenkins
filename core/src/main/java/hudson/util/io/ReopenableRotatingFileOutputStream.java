@@ -45,9 +45,7 @@ import java.io.IOException;
     }
 
     protected File getNumberedFileName(int n) {
-        if (n==0) {
-            return out;
-        }
+        if (n==0)   return out;
         return new File(out.getPath()+"."+n);
     }
 

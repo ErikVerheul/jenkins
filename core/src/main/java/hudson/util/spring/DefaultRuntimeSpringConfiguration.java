@@ -162,11 +162,10 @@ class DefaultRuntimeSpringConfiguration implements RuntimeSpringConfiguration {
 
     public AbstractBeanDefinition createBeanDefinition(String name) {
         if(containsBean(name)) {
-            if(beanDefinitions.containsKey(name)) {
+            if(beanDefinitions.containsKey(name))
                 return (AbstractBeanDefinition)beanDefinitions.get(name);
-            } else if(beanConfigs.containsKey(name)) {
+            else if(beanConfigs.containsKey(name))
                 return beanConfigs.get(name).getBeanDefinition();
-            }
         }
         return null;
     }
@@ -196,9 +195,8 @@ class DefaultRuntimeSpringConfiguration implements RuntimeSpringConfiguration {
             }
 
 
-            if (applicationContext.containsBeanDefinition(bc.getName())) {
+            if (applicationContext.containsBeanDefinition(bc.getName()))
                 applicationContext.removeBeanDefinition(bc.getName());
-            }
 
             applicationContext.registerBeanDefinition(bc.getName(),
                     bc.getBeanDefinition());

@@ -27,9 +27,8 @@ class LazyLoadRunMapEntrySet<R> extends AbstractSet<Entry<Integer,R>> {
     }
 
     private synchronized Set<Entry<Integer,R>> all() {
-        if (all==null) {
+        if (all==null)
             all = new BuildReferenceMapAdapter<R>(owner,owner.all()).entrySet();
-        }
         return all;
     }
 
@@ -73,9 +72,8 @@ class LazyLoadRunMapEntrySet<R> extends AbstractSet<Entry<Integer,R>> {
                 last = next;
                 if (last!=null) {
                     next = owner.search(owner.getNumberOf(last)-1, Direction.DESC);
-                } else {
+                } else
                     throw new NoSuchElementException();
-                }
                 return entryOf(last);
             }
 
@@ -84,9 +82,8 @@ class LazyLoadRunMapEntrySet<R> extends AbstractSet<Entry<Integer,R>> {
             }
 
             public void remove() {
-                if (last==null) {
+                if (last==null)
                     throw new UnsupportedOperationException();
-                }
                 owner.removeValue(last);
             }
         };

@@ -52,11 +52,7 @@ public class FileBoolean {
     public boolean isOff() { return !get(); }
 
     public void set(boolean b) {
-        if (b) {
-            on();
-        } else {
-            off();
-        }
+        if (b) on(); else off();
     }
 
     public void on() {

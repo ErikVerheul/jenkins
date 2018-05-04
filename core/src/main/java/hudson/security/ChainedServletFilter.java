@@ -62,15 +62,12 @@ public class ChainedServletFilter implements Filter {
     }
 
     public void init(FilterConfig filterConfig) throws ServletException {
-        if (LOGGER.isLoggable(Level.FINEST)) {
-            for (Filter f : filters) {
+        if (LOGGER.isLoggable(Level.FINEST))
+            for (Filter f : filters)
                 LOGGER.finest("ChainedServletFilter contains: " + f);
-            }
-        }
 
-        for (Filter f : filters) {
+        for (Filter f : filters)
             f.init(filterConfig);
-        }
     }
 
     public void doFilter(ServletRequest request, ServletResponse response, final FilterChain chain) throws IOException, ServletException {
@@ -94,9 +91,8 @@ public class ChainedServletFilter implements Filter {
     }
 
     public void destroy() {
-        for (Filter f : filters) {
+        for (Filter f : filters)
             f.destroy();
-        }
     }
 
     private static final Logger LOGGER = Logger.getLogger(ChainedServletFilter.class.getName());

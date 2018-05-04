@@ -86,7 +86,7 @@ public abstract class ProgressiveRendering {
     private final SecurityContext securityContext;
     private final RequestImpl request;
     /** just for logging */
-    private String uri;
+    private final String uri;
     private long start;
     private BoundObjectTable.Table boundObjectTable;
     /** Unfortunately we cannot get the {@link Bound} that was created for us; it is thrown out by {@link BindTag}. */

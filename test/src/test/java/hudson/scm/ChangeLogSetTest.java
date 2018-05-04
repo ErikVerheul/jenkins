@@ -26,7 +26,7 @@ public class ChangeLogSetTest {
         boolean notCaught = false;
         try {
             change.getMsgAnnotated();
-        } catch (Exception t) {
+        } catch (Throwable t) {
             notCaught = true;
         }
         assertEquals((new EntryImpl()).getMsg(), change.getMsg());

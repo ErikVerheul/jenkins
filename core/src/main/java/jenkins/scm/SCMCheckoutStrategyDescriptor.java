@@ -36,9 +36,8 @@ public abstract class SCMCheckoutStrategyDescriptor extends Descriptor<SCMChecko
     public static List<SCMCheckoutStrategyDescriptor> _for(AbstractProject p) {
         List<SCMCheckoutStrategyDescriptor> r = Lists.newArrayList();
         for (SCMCheckoutStrategyDescriptor d : all()) {
-            if (d.isApplicable(p)) {
+            if (d.isApplicable(p))
                 r.add(d);
-            }
         }
         return r;
     }

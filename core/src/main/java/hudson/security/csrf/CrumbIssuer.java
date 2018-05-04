@@ -178,9 +178,8 @@ public abstract class CrumbIssuer implements Describable<CrumbIssuer>, Extension
                 if (ci==null) {
                     DEFAULT.validateCrumb(request,submittedCrumb);
                 } else {
-                    if (!ci.validateCrumb(request, ci.getDescriptor().getCrumbSalt(), submittedCrumb)) {
+                    if (!ci.validateCrumb(request, ci.getDescriptor().getCrumbSalt(), submittedCrumb))
                         throw new SecurityException("Crumb didn't match");
-                    }
                 }
             }
         });
@@ -194,6 +193,7 @@ public abstract class CrumbIssuer implements Describable<CrumbIssuer>, Extension
         }
 
         @Override public void doXml(StaplerRequest req, StaplerResponse rsp, @QueryParameter String xpath, @QueryParameter String wrapper, @QueryParameter String tree, @QueryParameter int depth) throws IOException, ServletException {
+            setHeaders(rsp);
             String text;
             CrumbIssuer ci = (CrumbIssuer) bean;
             if ("/*/crumbRequestField/text()".equals(xpath)) { // old FullDuplexHttpStream

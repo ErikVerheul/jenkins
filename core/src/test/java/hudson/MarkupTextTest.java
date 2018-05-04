@@ -50,9 +50,8 @@ public class MarkupTextTest {
     @Test
     public void boundary() {
         MarkupText t = new MarkupText("issue #155---issue #123");
-        for (SubText st : t.findTokens(pattern)) {
+        for (SubText st : t.findTokens(pattern))
             st.surroundWith("<$1>","<$1>");
-        }
 
         assertEquals("<155>issue #155<155>---<123>issue #123<123>", t.toString(false));
     }
@@ -63,9 +62,8 @@ public class MarkupTextTest {
         List<SubText> tokens = t.findTokens(Pattern.compile("issue .*"));
         assertEquals("Expected one token", 1, tokens.size());
         assertEquals("Expected single token was incorrect", "issue 155, 145", tokens.get(0).group(0));
-        for (SubText st : tokens.get(0).findTokens(Pattern.compile("([0-9]+)"))) {
+        for (SubText st : tokens.get(0).findTokens(Pattern.compile("([0-9]+)")))
             st.surroundWith("<$1>","<$1>");
-        }
 
         assertEquals("Fixed 2 issues in this commit, fixing issue <155>155<155>, <145>145<145>", t.toString(false));
     }

@@ -55,9 +55,8 @@ public class ClasspathBuilder implements Serializable {
      * @see FilePath#list(String)  
      */
     public ClasspathBuilder addAll(FilePath base, String glob) throws IOException, InterruptedException {
-        for(FilePath item : base.list(glob)) {
+        for(FilePath item : base.list(glob))
             add(item);
-        }
         return this;
     }
 

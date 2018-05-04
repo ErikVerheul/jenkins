@@ -54,9 +54,7 @@ public final class OneShotEvent {
      */
     public void signal() {
         synchronized (lock) {
-            if(signaled) {
-                return;
-            }
+            if(signaled)        return;
             this.signaled = true;
             lock.notifyAll();
         }
@@ -70,9 +68,8 @@ public final class OneShotEvent {
      */
     public void block() throws InterruptedException {
         synchronized (lock) {
-            while(!signaled) {
+            while(!signaled)
                 lock.wait();
-            }
         }
     }
 
@@ -85,9 +82,8 @@ public final class OneShotEvent {
      */
     public void block(long timeout) throws InterruptedException {
         synchronized (lock) {
-            if(!signaled) {
+            if(!signaled)
                 lock.wait(timeout);
-            }
         }
     }
 

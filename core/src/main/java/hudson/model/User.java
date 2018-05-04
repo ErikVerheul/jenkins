@@ -50,6 +50,10 @@ import hudson.util.XStream2;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -291,7 +295,11 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
      */
     @Exported(name="property",inline=true)
     public List<UserProperty> getAllProperties() {
-        return Collections.unmodifiableList(properties);
+        if (hasPermission(Jenkins.ADMINISTER)) {
+            return Collections.unmodifiableList(properties);
+        }
+
+        return Collections.emptyList();
     }
     
     /**
@@ -424,6 +432,10 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
      *      {@code create} is false.
      */
     private static @Nullable User getOrCreate(@Nonnull String id, @Nonnull String fullName, boolean create) {
+        return getOrCreate(id, fullName, create, getUnsanitizedLegacyConfigFileFor(id));
+    }
+
+    private static @Nullable User getOrCreate(@Nonnull String id, @Nonnull String fullName, boolean create, File unsanitizedLegacyConfigFile) {
         String idkey = idStrategy().keyFor(id);
 
         byNameLock.readLock().lock();
@@ -434,34 +446,43 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
             byNameLock.readLock().unlock();
         }
         final File configFile = getConfigFileFor(id);
-        if (u == null && !configFile.isFile() && !configFile.getParentFile().isDirectory()) {
-            // check for legacy users and migrate if safe to do so.
-            File[] legacy = getLegacyConfigFilesFor(id);
-            if (legacy != null && legacy.length > 0) {
-                for (File legacyUserDir : legacy) {
-                    final XmlFile legacyXml = new XmlFile(XSTREAM, new File(legacyUserDir, "config.xml"));
-                    try {
-                        Object o = legacyXml.read();
-                        if (o instanceof User) {
-                            if (idStrategy().equals(id, legacyUserDir.getName()) && !idStrategy().filenameOf(legacyUserDir.getName())
-                                    .equals(legacyUserDir.getName())) {
-                                if (!legacyUserDir.renameTo(configFile.getParentFile())) {
-                                    LOGGER.log(Level.WARNING, "Failed to migrate user record from {0} to {1}",
-                                            new Object[]{legacyUserDir, configFile.getParentFile()});
-                                }
-                                break;
-                            }
+        if (unsanitizedLegacyConfigFile.exists() && !unsanitizedLegacyConfigFile.equals(configFile)) {
+            File ancestor = unsanitizedLegacyConfigFile.getParentFile();
+            if (!configFile.exists()) {
+                try {
+                    Files.createDirectory(configFile.getParentFile().toPath());
+                    Files.move(unsanitizedLegacyConfigFile.toPath(), configFile.toPath());
+                    LOGGER.log(Level.INFO, "Migrated user record from {0} to {1}", new Object[] {unsanitizedLegacyConfigFile, configFile});
+                } catch (IOException | InvalidPathException e) {
+                    LOGGER.log(
+                            Level.WARNING,
+                            String.format("Failed to migrate user record from %s to %s", unsanitizedLegacyConfigFile, configFile),
+                            e);
+                }
+            }
+
+            // Don't clean up ancestors with other children; the directories should be cleaned up when the last child
+            // is migrated
+            File tmp = ancestor;
+            try {
+                while (!ancestor.equals(getRootDir())) {
+                    try (DirectoryStream<Path> stream = Files.newDirectoryStream(ancestor.toPath())) {
+                        if (!stream.iterator().hasNext()) {
+                            tmp = ancestor;
+                            ancestor = tmp.getParentFile();
+                            Files.deleteIfExists(tmp.toPath());
                         } else {
-                            LOGGER.log(Level.FINE, "Unexpected object loaded from {0}: {1}",
-                                    new Object[]{ legacyUserDir, o });
+                            break;
                         }
-                    } catch (IOException e) {
-                        LOGGER.log(Level.FINE, String.format("Exception trying to load user from %s: %s",
-                                new Object[]{ legacyUserDir, e.getMessage() }), e);
                     }
+                }
+            } catch (IOException | InvalidPathException e) {
+                if (LOGGER.isLoggable(Level.FINE)) {
+                    LOGGER.log(Level.FINE, "Could not delete " + tmp + " when cleaning up legacy user directories", e);
                 }
             }
         }
+
         if (u==null && (create || configFile.exists())) {
             User tmp = new User(id, fullName);
             User prev;
@@ -677,14 +698,8 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
         return new File(getRootDir(), idStrategy().filenameOf(id) +"/config.xml");
     }
 
-    private static final File[] getLegacyConfigFilesFor(final String id) {
-        return getRootDir().listFiles(new FileFilter() {
-            @Override
-            public boolean accept(File pathname) {
-                return pathname.isDirectory() && new File(pathname, "config.xml").isFile() && idStrategy().equals(
-                        pathname.getName(), id);
-            }
-        });
+    private static File getUnsanitizedLegacyConfigFileFor(String id) {
+        return new File(getRootDir(), idStrategy().legacyFilenameOf(id) + "/config.xml");
     }
 
     /**
@@ -733,6 +748,19 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
         if(BulkChange.contains(this))   return;
         getConfigFile().write(this);
         SaveableListener.fireOnChange(this, getConfigFile());
+    }
+
+    private Object writeReplace() {
+        return XmlFile.replaceIfNotAtTopLevel(this, () -> new Replacer(this));
+    }
+    private static class Replacer {
+        private final String id;
+        Replacer(User u) {
+            id = u.getId();
+        }
+        private Object readResolve() {
+            return getById(id, false);
+        }
     }
 
     /**
@@ -881,14 +909,6 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
         };
     }
 
-    public void checkPermission(Permission permission) {
-        getACL().checkPermission(permission);
-    }
-
-    public boolean hasPermission(Permission permission) {
-        return getACL().hasPermission(permission);
-    }
-
     /**
      * With ADMINISTER permission, can delete users with persisted data but can't delete self.
      */
@@ -930,10 +950,6 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
         return r;
     }
 
-    public Descriptor getDescriptorByName(String className) {
-        return Jenkins.getInstance().getDescriptorByName(className);
-    }
-    
     public Object getDynamic(String token) {
         for(Action action: getTransientActions()){
             if(Objects.equals(action.getUrlName(), token))
@@ -1002,9 +1018,10 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
             File[] subdirs = getRootDir().listFiles((FileFilter) DirectoryFileFilter.INSTANCE);
             if (subdirs != null) {
                 for (File subdir : subdirs) {
-                    if (new File(subdir, "config.xml").exists()) {
+                    File configFile = new File(subdir, "config.xml");
+                    if (configFile.exists()) {
                         String name = strategy.idFromFilename(subdir.getName());
-                        getOrCreate(name, /* <init> calls load(), probably clobbering this anyway */name, true);
+                        getOrCreate(name, /* <init> calls load(), probably clobbering this anyway */name, true, configFile);
                     }
                 }
             }
@@ -1021,11 +1038,7 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
          */
         @GuardedBy("User.byNameLock")
         static ConcurrentMap<String,User> byName() {
-            ExtensionList<AllUsers> instances = ExtensionList.lookup(AllUsers.class);
-            if (instances.size() != 1) {
-                throw new IllegalStateException();
-            }
-            return instances.get(0).byName;
+            return ExtensionList.lookupSingleton(AllUsers.class).byName;
         }
 
     }

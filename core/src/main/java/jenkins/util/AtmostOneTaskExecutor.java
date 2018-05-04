@@ -106,7 +106,7 @@ public class AtmostOneTaskExecutor<V> {
 
                     try {
                         inprogress.set(task.call());
-                    } catch (Exception t) {
+                    } catch (Throwable t) {
                         LOGGER.log(Level.WARNING, null, t);
                         inprogress.setException(t);
                     } finally {
