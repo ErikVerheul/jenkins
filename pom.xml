@@ -75,7 +75,6 @@ THE SOFTWARE.
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <sonar.java.binaries>**/target/classes,**/target/test-classes</sonar.java.binaries>
     <!--
     Properties that influence various parts of the IDE, especially code formatting and the like. 
     You can copy and paste the single properties, into the pom.xml file and the IDE will pick them up.
@@ -307,7 +306,7 @@ THE SOFTWARE.
         <plugin>       
           <groupId>org.sonarsource.scanner.maven</groupId>
           <artifactId>sonar-maven-plugin</artifactId>
-          <version>3.1.1</version>
+          <version>3.4.0.905</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
