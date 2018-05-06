@@ -75,6 +75,7 @@ THE SOFTWARE.
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <sonar.jacoco.reportPaths>${project.basedir}/../target/jacoco-it.exec</sonar.jacoco.reportPaths>
     <!--
     Properties that influence various parts of the IDE, especially code formatting and the like. 
     You can copy and paste the single properties, into the pom.xml file and the IDE will pick them up.
@@ -633,22 +634,22 @@ THE SOFTWARE.
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>animal-sniffer-maven-plugin</artifactId>
         </plugin>
+        <plugin>
+          <groupId>org.jacoco</groupId>
+          <artifactId>jacoco-maven-plugin</artifactId>
+          <version>0.8.1</version>
+          <configuration>
+            <!-- The destination file for the code coverage report has to be set 
+            to the same value in the parent pom and in each module pom. Then JaCoCo will 
+            add up information in the same report, so that, it will give the cross-module 
+            code coverage. -->
+            <destFile>${project.basedir}/../target/jacoco-it.exec</destFile>
+          </configuration>
+        </plugin>
       </plugins>
     </pluginManagement>
 
     <plugins>
-      <plugin>
-        <groupId>org.jacoco</groupId>
-        <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.8.1</version>
-        <configuration>
-          <!-- The destination file for the code coverage report has to be set 
-          to the same value in the parent pom and in each module pom. Then JaCoCo will 
-          add up information in the same report, so that, it will give the cross-module 
-          code coverage. -->
-          <destFile>${project.basedir}/../target/jacoco-it.exec</destFile>
-        </configuration>
-      </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
