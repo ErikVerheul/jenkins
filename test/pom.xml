@@ -38,7 +38,7 @@ THE SOFTWARE.
 
   <properties>
     <concurrency>2</concurrency> <!-- may use e.g. 2C for 2 × (number of cores) -->
-    <mavenDebug>false</mavenDebug>
+    <mavenDebug>true</mavenDebug>
   </properties>
 
   <dependencies>
