@@ -75,7 +75,8 @@ THE SOFTWARE.
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <sonar.jacoco.reportPaths>${project.basedir}/../target/jacoco-it.exec</sonar.jacoco.reportPaths>
+    <sonar.jacoco.reportPaths>${project.basedir}/../target</sonar.jacoco.reportPaths>
+    <sonar.junit.reportPaths>${project.basedir}/../target</sonar.junit.reportPaths>
     <!--
     Properties that influence various parts of the IDE, especially code formatting and the like. 
     You can copy and paste the single properties, into the pom.xml file and the IDE will pick them up.
