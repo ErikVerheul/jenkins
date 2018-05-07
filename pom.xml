@@ -77,7 +77,7 @@ THE SOFTWARE.
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <sonar.language>java</sonar.language>
     <sonar.core.codeCoveragePlugin>jacoco</sonar.core.codeCoveragePlugin>
-    <sonar.java.binaries>/home/erik/jenkins/workspace/Jenkins-Sonar/*/target/classes</sonar.java.binaries>
+    <sonar.java.binaries>${basedir}/*/target/classes</sonar.java.binaries>
     <sonar.jacoco.reportPaths>${project.basedir}/target/jacoco.exec</sonar.jacoco.reportPaths>
     
     <!--
