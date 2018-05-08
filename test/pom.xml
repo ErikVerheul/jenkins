@@ -38,7 +38,6 @@ THE SOFTWARE.
 
   <properties>
     <concurrency>2</concurrency> <!-- may use e.g. 2C for 2 × (number of cores) -->
-    <mavenDebug>true</mavenDebug>
   </properties>
 
   <dependencies>
@@ -221,7 +220,6 @@ THE SOFTWARE.
           <systemPropertyVariables>
             <!-- use AntClassLoader that supports predictable file handle release -->
             <hudson.ClassicPluginStrategy.useAntClassLoader>true</hudson.ClassicPluginStrategy.useAntClassLoader>
-            <hudson.maven.debug>${mavenDebug}</hudson.maven.debug>
             <buildDirectory>${project.build.directory}</buildDirectory>
           </systemPropertyVariables>
           <reuseForks>false</reuseForks>
