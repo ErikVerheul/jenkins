@@ -78,7 +78,7 @@ THE SOFTWARE.
     <sonar.language>java</sonar.language>
     <sonar.core.codeCoveragePlugin>jacoco</sonar.core.codeCoveragePlugin>
     <sonar.java.binaries>${basedir}/*/target/classes</sonar.java.binaries>
-    <sonar.jacoco.reportPaths>${project.basedir}/target/jacoco.exec</sonar.jacoco.reportPaths>
+    <sonar.jacoco.reportPaths>${project.basedir}/../*/target/jacoco.exec</sonar.jacoco.reportPaths>
     
     <!--
     Properties that influence various parts of the IDE, especially code formatting and the like. 
