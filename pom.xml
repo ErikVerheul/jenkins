@@ -77,8 +77,8 @@ THE SOFTWARE.
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <sonar.language>java</sonar.language>
     <sonar.core.codeCoveragePlugin>jacoco</sonar.core.codeCoveragePlugin>
-    <sonar.java.binaries>${basedir}/*/target/classes</sonar.java.binaries>
-    <sonar.jacoco.reportPaths>${project.basedir}/../*/target/jacoco.exec</sonar.jacoco.reportPaths>
+    <sonar.java.binaries>${basedir}/../*/target/classes</sonar.java.binaries>
+    <sonar.jacoco.reportPaths>${project.basedir}/target/jacoco.exec</sonar.jacoco.reportPaths>
     
     <!--
     Properties that influence various parts of the IDE, especially code formatting and the like. 
@@ -439,6 +439,7 @@ THE SOFTWARE.
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
           <configuration>
+            <hudson.maven.debug>true</hudson.maven.debug>
             <!-- no argLine here -->
             <systemPropertyVariables>
               <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
