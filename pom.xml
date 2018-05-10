@@ -30,7 +30,7 @@ THE SOFTWARE.
     <artifactId>jenkins</artifactId>
     <version>1.39</version>
   </parent>
-
+  
   <groupId>org.jenkins-ci.main</groupId>
   <artifactId>pom</artifactId>
   <version>2.89.4</version>
@@ -52,6 +52,7 @@ THE SOFTWARE.
     <module>war</module>
     <module>test</module>
     <module>cli</module>
+    <module>reporting</module>
   </modules>
 
   <scm>
@@ -77,8 +78,8 @@ THE SOFTWARE.
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <sonar.language>java</sonar.language>
     <sonar.core.codeCoveragePlugin>jacoco</sonar.core.codeCoveragePlugin>
-    <sonar.java.binaries>${basedir}/../*/target/classes</sonar.java.binaries>
-    <sonar.jacoco.reportPaths>${project.basedir}/target/jacoco.exec</sonar.jacoco.reportPaths>
+    <!--sonar.java.binaries>${basedir}/../*/target/classes</sonar.java.binaries obsolete with the new reporting module -->
+    <!--sonar.jacoco.reportPaths>${project.basedir}/target/jacoco.exec</sonar.jacoco.reportPaths accept the default -->
     
     <!--
     Properties that influence various parts of the IDE, especially code formatting and the like. 
@@ -599,46 +600,6 @@ THE SOFTWARE.
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-enforcer-plugin</artifactId>
-        </plugin>
-        <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-        <plugin>
-          <groupId>org.eclipse.m2e</groupId>
-          <artifactId>lifecycle-mapping</artifactId>
-          <version>1.0.0</version>
-          <configuration>
-            <lifecycleMappingMetadata>
-              <pluginExecutions>
-                <pluginExecution>
-                  <pluginExecutionFilter>
-                    <groupId>org.codehaus.gmaven</groupId>
-                    <artifactId>gmaven-plugin</artifactId>
-                    <versionRange>1.5-jenkins-1</versionRange>
-                    <goals>
-                      <goal>execute</goal>
-                      <goal>testCompile</goal>
-                    </goals>
-                  </pluginExecutionFilter>
-                  <action>
-                    <ignore />
-                  </action>
-                </pluginExecution>
-                <pluginExecution>
-                  <pluginExecutionFilter>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-dependency-plugin</artifactId>
-                    <versionRange>[2.3,)</versionRange>
-                    <goals>
-                      <goal>list</goal>
-                      <goal>unpack-dependencies</goal>
-                    </goals>
-                  </pluginExecutionFilter>
-                  <action>
-                    <ignore />
-                  </action>
-                </pluginExecution>
-              </pluginExecutions>
-            </lifecycleMappingMetadata>
-          </configuration>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
