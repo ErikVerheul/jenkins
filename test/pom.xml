@@ -225,7 +225,8 @@ THE SOFTWARE.
             <hudson.maven.debug>${mavenDebug}</hudson.maven.debug>
             <buildDirectory>${project.build.directory}</buildDirectory>
           </systemPropertyVariables>
-          <reuseForks>false</reuseForks>
+          <!-- Set reuseForks to false if tests fail unexpectedly -->
+          <reuseForks>true</reuseForks>
           <forkCount>${concurrency}</forkCount>
         </configuration>
       </plugin>
