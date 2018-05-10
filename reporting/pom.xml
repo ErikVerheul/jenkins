@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.jenkins-ci.main</groupId>
+    <artifactId>pom</artifactId>
+    <version>2.89.4</version>
+  </parent>
+  <artifactId>reporting</artifactId>
+  <packaging>jar</packaging>
+  <properties>
+    <sonar.skip>true</sonar.skip>
+  </properties>
+
+  <profiles>
+    <profile>
+      <id>aggegrate</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <phase>verify</phase>
+                <goals>
+                  <goal>report-aggregate</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-enforcer-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>do not enforce-versions</id>
+                <goals>
+                  <goal>skip</goal>
+                </goals>              
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>  
+
+      <dependencies>
+        <dependency>
+          <groupId>org.jenkins-ci.main</groupId>
+          <artifactId>cli</artifactId>
+          <version>${project.version}</version>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.jenkins-ci.main</groupId>
+          <artifactId>jenkins-core</artifactId>
+          <version>${project.version}</version>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.jenkins-ci.main</groupId>
+          <artifactId>test</artifactId>
+          <version>${project.version}</version>
+          <scope>test</scope>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
+</project>
