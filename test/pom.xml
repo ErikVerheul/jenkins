@@ -39,7 +39,7 @@ THE SOFTWARE.
   <properties>
     <concurrency>2</concurrency> <!-- may use e.g. 2C for 2 × (number of cores) -->
     <mavenDebug>true</mavenDebug>
-    <sonar.jacoco.reportPaths>${project.basedir}/target/jacoco-it.exec</sonar.jacoco.reportPaths>
+    <!--sonar.jacoco.reportPaths>${project.basedir}/target/jacoco-it.exec</sonar.jacoco.reportPaths use default -->
   </properties>
 
   <dependencies>
@@ -226,7 +226,7 @@ THE SOFTWARE.
             <buildDirectory>${project.build.directory}</buildDirectory>
           </systemPropertyVariables>
           <!-- Set reuseForks to false if tests fail unexpectedly -->
-          <reuseForks>true</reuseForks>
+          <reuseForks>false</reuseForks>
           <forkCount>${concurrency}</forkCount>
         </configuration>
       </plugin>
