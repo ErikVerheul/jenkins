@@ -36,7 +36,7 @@
         "category":"Build Analysis and Reporting",
         "plugins": [
             { "name": "checkstyle" },
-            { "name": "cobertura" },
+            { "name": "jacoco" },
             { "name": "htmlpublisher" },
             { "name": "junit" },
             { "name": "warnings" },

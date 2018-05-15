@@ -371,12 +371,7 @@ THE SOFTWARE.
               <groupId>org.apache.ant</groupId>
               <artifactId>ant-junit</artifactId>
               <version>1.7.0</version>
-            </dependency>
-            <dependency>
-              <groupId>net.sourceforge.cobertura</groupId>
-              <artifactId>cobertura</artifactId>
-              <version>1.9</version>
-            </dependency>
+            </dependency>           
             <dependency>
               <!-- this provided scope dependency doesn't get added to GMaven unless explicitly added here -->
               <groupId>javax.servlet</groupId>
@@ -539,11 +534,7 @@ THE SOFTWARE.
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>antlr-maven-plugin</artifactId>
           <version>2.1</version>
-        </plugin>
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>cobertura-maven-plugin</artifactId>
-        </plugin>
+        </plugin>     
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>findbugs-maven-plugin</artifactId>
