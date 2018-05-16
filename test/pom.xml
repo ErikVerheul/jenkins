@@ -38,8 +38,8 @@ THE SOFTWARE.
 
   <properties>
     <concurrency>2</concurrency> <!-- may use e.g. 2C for 2 × (number of cores) -->
-    <mavenDebug>true</mavenDebug>
-    <!--sonar.jacoco.reportPaths>${project.basedir}/target/jacoco-it.exec</sonar.jacoco.reportPaths use default -->
+    <mavenDebug>false</mavenDebug>
+    <sonar.skip>false</sonar.skip>
   </properties>
 
   <dependencies>
@@ -293,6 +293,30 @@ THE SOFTWARE.
   </build>
 
   <profiles>
+    <profile>
+      <id>jacoco-agent</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>jacoco-initialize</id>
+                <goals>
+                  <goal>prepare-agent</goal>
+                </goals>
+                <configuration>
+                  <!--Place the output in the target directory of the core module so 
+                  that Sonar can find the sources and classes-->
+                  <destFile>${project.basedir}/../core/target/jacoco-it.exec</destFile>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>     
+    </profile>
     <profile>
       <id>light-test</id>
       <properties>
