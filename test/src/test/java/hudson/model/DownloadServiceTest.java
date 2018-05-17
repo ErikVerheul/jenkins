@@ -70,7 +70,7 @@ public class DownloadServiceTest extends HudsonTestCase {
 
     private static void assertRoots(String expected, String file) throws Exception {
         URL resource = DownloadServiceTest.class.getResource(file);
-        assertNotNull(file, resource);
+        assertNotNull(file + " is missing", resource);
         JSONObject json = JSONObject.fromObject(DownloadService.loadJSON(resource));
         @SuppressWarnings("unchecked") Set<String> keySet = json.keySet();
         assertEquals(expected, new TreeSet<String>(keySet).toString());
