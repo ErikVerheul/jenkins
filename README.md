@@ -5,6 +5,12 @@ In a nutshell, Jenkins is the leading open-source automation server.
 Built with Java, it provides over 1000 plugins to support automating virtually anything, 
 so that humans can actually spend their time doing things machines cannot.
 
+This fork enables Sonarqube to do static code analysis in particular the code coverage of the unit and integration tests. 
+Run mvn --batch-mode clean -Pjacoco-agent -Dmaven.test.failure.ignore=true install -Dsonar.host.url=http://localhost:9000
+to prepare the coverage files and initialize the Sonarqube when installed locally.
+Note that the coverage data from the integration tests are placed in ../core/target to enable Sonarqube scanner to find
+the sources and classes.
+
 # What to Use Jenkins for and When to Use It
 
 Use Jenkins to automate your development workflow so you can focus on work that matters most. Jenkins is commonly used for:
