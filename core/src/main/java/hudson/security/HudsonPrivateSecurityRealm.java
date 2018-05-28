@@ -41,6 +41,7 @@ import hudson.util.PluginServletFilter;
 import hudson.util.Protector;
 import hudson.util.Scrambler;
 import hudson.util.XStream2;
+import jenkins.security.SecurityListener;
 import net.sf.json.JSONObject;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.AuthenticationException;
@@ -64,6 +65,7 @@ import org.kohsuke.stapler.interceptor.RequirePOST;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.dao.DataAccessException;
 
+import javax.annotation.Nonnull;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -95,6 +97,15 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
  * @author Kohsuke Kawaguchi
  */
 public class HudsonPrivateSecurityRealm extends AbstractPasswordBasedSecurityRealm implements ModelObject, AccessControlled {
+    private static /* not final */ String ID_REGEX = System.getProperty(HudsonPrivateSecurityRealm.class.getName() + ".ID_REGEX");
+    
+    /**
+     * Default REGEX for the user ID check in case the ID_REGEX is not set
+     * It allows A-Za-z0-9 + "_-"
+     * in Java {@code \w} is equivalent to {@code [A-Za-z0-9_]} (take care of "_")
+     */
+    private static final String DEFAULT_ID_REGEX = "^[\\w-]+$";
+    
     /**
      * If true, sign up is not allowed.
      * <p>
@@ -258,6 +269,8 @@ public class HudsonPrivateSecurityRealm extends AbstractPasswordBasedSecurityRea
         a = this.getSecurityComponents().manager.authenticate(a);
         SecurityContextHolder.getContext().setAuthentication(a);
 
+        SecurityListener.fireLoggedIn(u.getId());
+
         // then back to top
         req.getView(this,"success.jelly").forward(req,rsp);
     }
@@ -338,6 +351,12 @@ public class HudsonPrivateSecurityRealm extends AbstractPasswordBasedSecurityRea
 
         if(si.username==null || si.username.length()==0)
             si.errorMessage = Messages.HudsonPrivateSecurityRealm_CreateAccount_UserNameRequired();
+        else if(!containsOnlyAcceptableCharacters(si.username))
+            if(ID_REGEX == null){
+                si.errorMessage = Messages.HudsonPrivateSecurityRealm_CreateAccount_UserNameInvalidCharacters();
+            }else{
+                si.errorMessage = Messages.HudsonPrivateSecurityRealm_CreateAccount_UserNameInvalidCharactersCustom(ID_REGEX);
+            }
         else {
             // do not create the user - we just want to check if the user already exists but is not a "login" user.
             User user = User.getById(si.username, false); 
@@ -383,6 +402,14 @@ public class HudsonPrivateSecurityRealm extends AbstractPasswordBasedSecurityRea
         }
         user.save();
         return user;
+    }
+    
+    private boolean containsOnlyAcceptableCharacters(@Nonnull String value){
+        if(ID_REGEX == null){
+            return value.matches(DEFAULT_ID_REGEX);
+        }else{
+            return value.matches(ID_REGEX);
+        }
     }
     
     @Restricted(NoExternalUse.class)

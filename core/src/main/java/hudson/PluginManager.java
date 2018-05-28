@@ -120,7 +120,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -144,12 +143,14 @@ import hudson.util.FormValidation;
 import java.io.ByteArrayInputStream;
 import java.net.JarURLConnection;
 import java.net.URLConnection;
+import java.util.ServiceLoader;
 import java.util.jar.JarEntry;
 
 import static java.util.logging.Level.FINE;
 import static java.util.logging.Level.INFO;
 import static java.util.logging.Level.SEVERE;
 import static java.util.logging.Level.WARNING;
+import jenkins.security.CustomClassFilter;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 
@@ -867,6 +868,9 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
                 ((UberClassLoader) uberClassLoader).loaded.clear();
             }
 
+            // TODO antimodular; perhaps should have a PluginListener to complement ExtensionListListener?
+            CustomClassFilter.Contributed.load();
+
             try {
                 p.resolvePluginDependencies();
                 strategy.load(p);
@@ -1204,7 +1208,9 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
     /**
      * Discover all the service provider implementations of the given class,
      * via <tt>META-INF/services</tt>.
+     * @deprecated Use {@link ServiceLoader} instead, or (more commonly) {@link ExtensionList}.
      */
+    @Deprecated
     public <T> Collection<Class<? extends T>> discover( Class<T> spi ) {
         Set<Class<? extends T>> result = new HashSet<Class<? extends T>>();
 
