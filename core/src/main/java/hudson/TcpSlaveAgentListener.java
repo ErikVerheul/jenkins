@@ -232,7 +232,7 @@ public final class TcpSlaveAgentListener extends Thread {
             try {
                 LOGGER.log(Level.FINE, "Accepted connection #{0} from {1}", new Object[] {id, s.getRemoteSocketAddress()});
 
-                DataInputStream in = new DataInputStream(s.getInputStream());
+                DataInputStream in = new DataInputStream(s.getInputStream()); //NOSONAR
                 PrintWriter out = new PrintWriter(
                         new BufferedWriter(new OutputStreamWriter(s.getOutputStream(),"UTF-8")),
                         true); // DEPRECATED: newer protocol shouldn't use PrintWriter but should use DataOutputStream

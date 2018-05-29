@@ -985,8 +985,7 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
     }
 
     /*package*/ static @CheckForNull Manifest parsePluginManifest(URL bundledJpi) {
-        try {
-            URLClassLoader cl = new URLClassLoader(new URL[]{bundledJpi});
+        try (URLClassLoader cl = new URLClassLoader(new URL[]{bundledJpi})) {
             InputStream in=null;
             try {
                 URL res = cl.findResource(PluginWrapper.MANIFEST_FILENAME);
@@ -1310,7 +1309,8 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
 
         if (req.hasParameter("remove")) {
             UpdateCenter uc = Jenkins.getInstance().getUpdateCenter();
-            BulkChange bc = new BulkChange(uc);
+            //[Erik] Cannot be converted to try-with-resources in Java 8
+            BulkChange bc = new BulkChange(uc); //NOSONAR
             try {
                 for (String id : req.getParameterValues("sources"))
                     uc.getSites().remove(uc.getById(id));
@@ -1599,7 +1599,7 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
 
             JSONArray dependencies = new JSONArray();
             try {
-                Manifest m = new JarFile(t).getManifest();
+                Manifest m = new JarFile(t).getManifest(); // NOSONAR
                 String deps = m.getMainAttributes().getValue("Plugin-Dependencies");
 
                 if (StringUtils.isNotBlank(deps)) {

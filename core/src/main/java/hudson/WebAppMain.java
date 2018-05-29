@@ -114,7 +114,8 @@ public class WebAppMain implements ServletContextListener {
             JVM jvm;
             try {
                 jvm = new JVM();
-                new URLClassLoader(new URL[0],getClass().getClassLoader());
+                //[Erik] Cannot be converted to try-with-resources in Java 8
+                new URLClassLoader(new URL[0],getClass().getClassLoader()); //NOSONAR
             } catch(SecurityException e) {
                 throw new InsufficientPermissionDetected(e);
             }

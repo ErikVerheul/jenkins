@@ -287,25 +287,27 @@ public class ClassicPluginStrategy implements PluginStrategy {
         return createClassLoader( paths, parent, null );
     }
 
-    /**
-     * Creates the classloader that can load all the specified jar files and delegate to the given parent.
-     */
-    protected ClassLoader createClassLoader(List<File> paths, ClassLoader parent, Attributes atts) throws IOException {
-        if (atts != null) {
-            String usePluginFirstClassLoader = atts.getValue( "PluginFirstClassLoader" );
-            if (Boolean.valueOf( usePluginFirstClassLoader )) {
-                PluginFirstClassLoader classLoader = new PluginFirstClassLoader();
-                classLoader.setParentFirst( false );
-                classLoader.setParent( parent );
-                classLoader.addPathFiles( paths );
-                return classLoader;
-            }
+  /**
+   * Creates the classloader that can load all the specified jar files and delegate to the given parent.
+   */
+  protected ClassLoader createClassLoader(List<File> paths, ClassLoader parent, Attributes atts) throws IOException {
+    if (atts != null) {
+      String usePluginFirstClassLoader = atts.getValue("PluginFirstClassLoader");
+      if (Boolean.valueOf(usePluginFirstClassLoader)) {
+        try (PluginFirstClassLoader classLoader = new PluginFirstClassLoader()) {
+          classLoader.setParentFirst(false);
+          classLoader.setParent(parent);
+          classLoader.addPathFiles(paths);
+          return classLoader;
         }
-
-        AntClassLoader2 classLoader = new AntClassLoader2(parent);
-        classLoader.addPathFiles(paths);
-        return classLoader;
+      }
     }
+
+    try (AntClassLoader2 classLoader = new AntClassLoader2(parent)) {
+      classLoader.addPathFiles(paths);
+      return classLoader;
+    }
+  }
 
     /**
      * Get the list of all plugins that have ever been {@link DetachedPlugin detached} from Jenkins core.

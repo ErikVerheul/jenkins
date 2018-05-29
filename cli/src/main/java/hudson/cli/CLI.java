@@ -176,6 +176,7 @@ public class CLI implements AutoCloseable {
 
     /**
      * @deprecated Specific to {@link Mode#REMOTING}.
+     * [Erik] Ignore Sonar blocking warnings
      */
     @Deprecated
     private Channel connectViaCliPort(URL jenkins, CliPort clip) throws IOException {
@@ -185,7 +186,7 @@ public class CLI implements AutoCloseable {
             LOGGER.warning("-auth ignored when using JNLP agent port");
         }
 
-        final Socket s = new Socket();
+        final Socket s = new Socket(); //NOSONAR
         // this prevents a connection from silently terminated by the router in between or the other peer
         // and that goes without unnoticed. However, the time out is often very long (for example 2 hours
         // by default in Linux) that this alone is enough to prevent that.
@@ -222,7 +223,7 @@ public class CLI implements AutoCloseable {
             // HTTP proxies (at least the one I tried --- squid) doesn't seem to do half-close very well.
             // So instead of relying on it, we'll just send the close command and then let the server
             // cut their side, then close the socket after the join.
-            out = new SocketOutputStream(s) {
+            out = new SocketOutputStream(s) { //NOSONAR
                 @Override
                 public void close() throws IOException {
                     // ignore

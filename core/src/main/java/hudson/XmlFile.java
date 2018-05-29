@@ -184,7 +184,8 @@ public final class XmlFile {
 
     public void write( Object o ) throws IOException {
         mkdirs();
-        AtomicFileWriter w = new AtomicFileWriter(file);
+        //[Erik] Cannot be converted to try-with-resources in Java 8
+        AtomicFileWriter w = new AtomicFileWriter(file); //NOSONAR
         try {
             w.write("<?xml version='1.1' encoding='UTF-8'?>\n");
             beingWritten.put(o, null);
@@ -245,23 +246,24 @@ public final class XmlFile {
      * Opens a {@link Reader} that loads XML.
      * This method uses {@link #sniffEncoding() the right encoding},
      * not just the system default encoding.
+     * [Erik] leaves the InputStream open at exit.
      * @throws IOException Encoding issues
      * @return Reader for the file. should be close externally once read.
      */
-    public Reader readRaw() throws IOException {
+     public Reader readRaw() throws IOException {
+      try {
+        InputStream fileInputStream = Files.newInputStream(file.toPath()); //NOSONAR
         try {
-            InputStream fileInputStream = Files.newInputStream(file.toPath());
-            try {
-                return new InputStreamReader(fileInputStream, sniffEncoding());
-            } catch (IOException ex) {
-                // Exception may happen if we fail to find encoding or if this encoding is unsupported.
-                // In such case we close the underlying stream and rethrow.
-                Util.closeAndLogFailures(fileInputStream, LOGGER, "FileInputStream", file.toString());
-                throw ex;
-            }
-        } catch (InvalidPathException e) {
-            throw new IOException(e);
+          return new InputStreamReader(fileInputStream, sniffEncoding());
+        } catch (IOException ex) {
+          // Exception may happen if we fail to find encoding or if this encoding is unsupported.
+          // In such case we close the underlying stream and rethrow.
+          Util.closeAndLogFailures(fileInputStream, LOGGER, "FileInputStream", file.toString());
+          throw ex;
         }
+      } catch (InvalidPathException e) {
+        throw new IOException(e);
+      }
     }
 
     /**

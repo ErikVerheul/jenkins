@@ -502,17 +502,22 @@ public final class FilePath implements Serializable {
 
     /**
      * When this {@link FilePath} represents a zip file, extracts that zip file.
+     * [Erik] leaves the RemoteInputStream open at exit.
      *
      * @param target
      *      Target directory to expand files to. All the necessary directories will be created.
+     * @throws java.io.IOException
+     * @throws java.lang.InterruptedException
      * @since 1.248
      * @see #unzipFrom(InputStream)
      */
     public void unzip(final FilePath target) throws IOException, InterruptedException {
         // TODO: post release, re-unite two branches by introducing FileStreamCallable that resolves InputStream
-        if (this.channel!=target.channel) {// local -> remote or remote->local
-            final RemoteInputStream in = new RemoteInputStream(read(), Flag.GREEDY);
+        if (this.channel!=target.channel) {
+            // local -> remote or remote->local
+            final RemoteInputStream in = new RemoteInputStream(read(), Flag.GREEDY); //NOSONAR
             target.act(new SecureFileCallable<Void>() {
+                @Override
                 public Void invoke(File dir, VirtualChannel channel) throws IOException, InterruptedException {
                     unzip(dir, in);
                     return null;
@@ -520,9 +525,11 @@ public final class FilePath implements Serializable {
 
                 private static final long serialVersionUID = 1L;
             });
-        } else {// local -> local or remote->remote
+        } else {
+            // local -> local or remote->remote
             target.act(new SecureFileCallable<Void>() {
 
+                @Override
                 public Void invoke(File dir, VirtualChannel channel) throws IOException, InterruptedException {
                     assert !FilePath.this.isRemote();       // this.channel==target.channel above
                     unzip(dir, reading(new File(FilePath.this.getRemote()))); // shortcut to local file
@@ -535,31 +542,36 @@ public final class FilePath implements Serializable {
     }
 
     /**
-     * When this {@link FilePath} represents a tar file, extracts that tar file.
+     * When this {@link FilePath} represents a tar file, extracts that tar file. 
+     * [Erik] leaves the RemoteInputStream open at exit.
      *
-     * @param target
-     *      Target directory to expand files to. All the necessary directories will be created.
-     * @param compression
-     *      Compression mode of this tar file.
+     * @param target Target directory to expand files to. All the necessary directories will be created.
+     * @param compression Compression mode of this tar file.
+     * @throws java.io.IOException
+     * @throws java.lang.InterruptedException
      * @since 1.292
      * @see #untarFrom(InputStream, TarCompression)
      */
     public void untar(final FilePath target, final TarCompression compression) throws IOException, InterruptedException {
-        // TODO: post release, re-unite two branches by introducing FileStreamCallable that resolves InputStream
-        if (this.channel!=target.channel) {// local -> remote or remote->local
-            final RemoteInputStream in = new RemoteInputStream(read(), Flag.GREEDY);
+        // TODO: post release, re-unite two branches by introducing FileStreamCallable that resolves InputStream       
+        if (this.channel != target.channel) {
+            // local -> remote or remote->local
+            final RemoteInputStream in = new RemoteInputStream(read(), Flag.GREEDY); //NOSONAR
             target.act(new SecureFileCallable<Void>() {
+                @Override
                 public Void invoke(File dir, VirtualChannel channel) throws IOException, InterruptedException {
-                    readFromTar(FilePath.this.getName(),dir,compression.extract(in));
+                    readFromTar(FilePath.this.getName(), dir, compression.extract(in));
                     return null;
                 }
 
                 private static final long serialVersionUID = 1L;
             });
-        } else {// local -> local or remote->remote
+        } else {
+            // local -> local or remote->remote
             target.act(new SecureFileCallable<Void>() {
+                @Override
                 public Void invoke(File dir, VirtualChannel channel) throws IOException, InterruptedException {
-                    readFromTar(FilePath.this.getName(),dir,compression.extract(FilePath.this.read()));
+                    readFromTar(FilePath.this.getName(), dir, compression.extract(FilePath.this.read()));
                     return null;
                 }
                 private static final long serialVersionUID = 1L;
@@ -572,12 +584,15 @@ public final class FilePath implements Serializable {
      *
      * @param _in
      *      The stream will be closed by this method after it's fully read.
+     * @throws java.io.IOException
+     * @throws java.lang.InterruptedException
      * @since 1.283
      * @see #unzip(FilePath)
      */
     public void unzipFrom(InputStream _in) throws IOException, InterruptedException {
         final InputStream in = new RemoteInputStream(_in, Flag.GREEDY);
         act(new SecureFileCallable<Void>() {
+            @Override
             public Void invoke(File dir, VirtualChannel channel) throws IOException {
                 unzip(dir, in);
                 return null;
@@ -1851,40 +1866,35 @@ public final class FilePath implements Serializable {
      * @since 1.586
      */
     public InputStream readFromOffset(final long offset) throws IOException, InterruptedException {
-        if(channel ==null) {
-            final RandomAccessFile raf = new RandomAccessFile(new File(remote), "r");
-            try {
-                raf.seek(offset);
-            } catch (IOException e) {
-                try {
-                    raf.close();
-                } catch (IOException e1) {
-                    // ignore
-                }
-                throw e;
-            }
-            return new InputStream() {
-                @Override
-                public int read() throws IOException {
-                    return raf.read();
-                }
+    if (channel == null) {
+      try (final RandomAccessFile raf = new RandomAccessFile(new File(remote), "r")) {
+        raf.seek(offset);
 
-                @Override
-                public void close() throws IOException {
-                    raf.close();
-                }
+        return new InputStream() {
+          @Override
+          public int read() throws IOException {
+            return raf.read();
+          }
 
-                @Override
-                public int read(byte[] b, int off, int len) throws IOException {
-                    return raf.read(b, off, len);
-                }
+          @Override
+          public void close() throws IOException {
+            raf.close();
+          }
 
-                @Override
-                public int read(byte[] b) throws IOException {
-                    return raf.read(b);
-                }
-            };
-        }
+          @Override
+          public int read(byte[] b, int off, int len) throws IOException {
+            return raf.read(b, off, len);
+          }
+
+          @Override
+          public int read(byte[] b) throws IOException {
+            return raf.read(b);
+          }
+        };
+      } catch (IOException e) {
+        throw e;
+      }
+    }
 
         final Pipe p = Pipe.createRemoteToLocal();
         actAsync(new SecureFileCallable<Void>() {
@@ -1928,7 +1938,7 @@ public final class FilePath implements Serializable {
      * I/O operations also happens asynchronously from the {@link Channel#call(Callable)} operations, so if
      * you write to a remote file and then execute {@link Channel#call(Callable)} and try to access the newly copied
      * file, it might not be fully written yet.
-     *
+     * [Erik] OutputStream is left open.
      * <p>
      *
      */
@@ -1949,7 +1959,7 @@ public final class FilePath implements Serializable {
                 f = f.getAbsoluteFile();
                 mkdirs(f.getParentFile());
                 try {
-                    OutputStream fos = Files.newOutputStream(writing(f).toPath());
+                    OutputStream fos = Files.newOutputStream(writing(f).toPath()); //NOSONAR
                     return new RemoteOutputStream(fos);
                 } catch (InvalidPathException e) {
                     throw new IOException(e);
