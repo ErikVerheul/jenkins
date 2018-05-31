@@ -90,8 +90,8 @@ public class TextFile {
             public Iterator<String> iterator() {
                 try {
                     //[Erik] BufferedReader is closed in a inner try .. finally on return
-                    final BufferedReader in = new BufferedReader(new InputStreamReader(
-                            Files.newInputStream(file.toPath()), "UTF-8")); //NOSONAR
+                    final BufferedReader in = new BufferedReader(new InputStreamReader( //NOSONAR
+                            Files.newInputStream(file.toPath()), "UTF-8"));
 
                     return new AbstractIterator<String>() {
                         @Override
