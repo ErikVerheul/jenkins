@@ -89,21 +89,27 @@ public class TextFile {
             @Override
             public Iterator<String> iterator() {
                 try {
+                    //[Erik] BufferedReader is closed in a inner try .. finally on return
                     final BufferedReader in = new BufferedReader(new InputStreamReader(
-                            Files.newInputStream(file.toPath()),"UTF-8"));
+                            Files.newInputStream(file.toPath()), "UTF-8")); //NOSONAR
 
                     return new AbstractIterator<String>() {
                         @Override
                         protected String computeNext() {
                             try {
                                 String r = in.readLine();
-                                if (r==null) {
-                                    in.close();
+                                if (r == null) {
                                     return endOfData();
                                 }
                                 return r;
                             } catch (IOException e) {
                                 throw new RuntimeException(e);
+                            } finally {
+                                try {
+                                    in.close();
+                                } catch (IOException e) {
+                                    throw new RuntimeException(e);
+                                }
                             }
                         }
                     };
@@ -119,7 +125,8 @@ public class TextFile {
      */
     public void write(String text) throws IOException {
         file.getParentFile().mkdirs();
-        AtomicFileWriter w = new AtomicFileWriter(file);
+        //[Erik] abort does the close
+        AtomicFileWriter w = new AtomicFileWriter(file); //NOSONAR
         try {
             w.write(text);
             w.commit();

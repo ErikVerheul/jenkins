@@ -344,7 +344,8 @@ public final class ComputerSet extends AbstractModelObject implements Describabl
      */
     @RequirePOST
     public synchronized HttpResponse doConfigSubmit( StaplerRequest req) throws IOException, ServletException, FormException {
-        BulkChange bc = new BulkChange(MONITORS_OWNER);
+        //[Erik] commit is taking care of the close
+        BulkChange bc = new BulkChange(MONITORS_OWNER); //NOSONAR
         try {
             Jenkins.getInstance().checkPermission(Jenkins.ADMINISTER);
             monitors.rebuild(req,req.getSubmittedForm(),getNodeMonitorDescriptors());

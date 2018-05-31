@@ -140,13 +140,14 @@ public class WindowsInstallerLink extends ManagementLink {
                 copy(req, rsp, dir, hudsonWar.toURI().toURL(), "jenkins.war");
 
             // install as a service
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            StreamTaskListener task = new StreamTaskListener(baos);
-            task.getLogger().println("Installing a service");
-            int r = runElevated(new File(dir, "jenkins.exe"), "install", task, dir);
-            if(r!=0) {
-                sendError(baos.toString(),req,rsp);
-                return;
+            try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    StreamTaskListener task = new StreamTaskListener(baos)) {
+                task.getLogger().println("Installing a service");
+                int r = runElevated(new File(dir, "jenkins.exe"), "install", task, dir);
+                if (r != 0) {
+                    sendError(baos.toString(), req, rsp);
+                    return;
+                }
             }
 
             // installation was successful

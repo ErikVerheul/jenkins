@@ -108,12 +108,13 @@ public abstract class AsyncAperiodicWork extends AperiodicWork {
                 return;
             }
             thread = new Thread(new Runnable() {
+                @Override
                 public void run() {
                     logger.log(getNormalLoggingLevel(), "Started {0}", name);
                     long startTime = System.currentTimeMillis();
                     long stopTime;
-
-                    StreamTaskListener l = createListener();
+                    //[Erik] l will be closed in the finally clause
+                    StreamTaskListener l = createListener(); //NOSONAR
                     try {
                         l.getLogger().printf("Started at %tc%n", new Date(startTime));
                         ACL.impersonate(ACL.SYSTEM);

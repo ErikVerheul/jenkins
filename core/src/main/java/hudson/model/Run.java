@@ -1366,7 +1366,8 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
     	if (logFile.exists() ) {
     	    // Checking if a ".gz" file was return
             try {
-                InputStream fis = Files.newInputStream(logFile.toPath());
+                //[Erik] fis InputStream should not be closed on return
+                InputStream fis = Files.newInputStream(logFile.toPath()); //NOSONAR
                 if (logFile.getName().endsWith(".gz")) {
                     return new GZIPInputStream(fis);
                 } else {

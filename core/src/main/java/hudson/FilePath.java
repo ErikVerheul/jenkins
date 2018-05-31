@@ -543,7 +543,7 @@ public final class FilePath implements Serializable {
 
     /**
      * When this {@link FilePath} represents a tar file, extracts that tar file. 
-     * [Erik] leaves the RemoteInputStream open at exit.
+     * [Erik] Leaves the RemoteInputStream open on exit.
      *
      * @param target Target directory to expand files to. All the necessary directories will be created.
      * @param compression Compression mode of this tar file.

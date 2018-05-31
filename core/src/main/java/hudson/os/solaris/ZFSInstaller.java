@@ -283,26 +283,30 @@ public class ZFSInstaller extends AdministrativeMonitor implements Serializable 
     @Extension
     public static AdministrativeMonitor init() {
         String migrationTarget = SystemProperties.getString(ZFSInstaller.class.getName() + ".migrate");
-        if(migrationTarget!=null) {
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            StreamTaskListener listener = new StreamTaskListener(new ForkOutputStream(System.out, out));
-            try {
-                if(migrate(listener,migrationTarget)) {
-                    // completed successfully
-                    return new MigrationCompleteNotice();
+        if (migrationTarget != null) {
+            try (ByteArrayOutputStream out = new ByteArrayOutputStream();
+                StreamTaskListener listener = new StreamTaskListener(new ForkOutputStream(System.out, out))) {
+                try {
+                    if (migrate(listener, migrationTarget)) {
+                        // completed successfully
+                        return new MigrationCompleteNotice();
+                    }
+                } catch (IOException | InterruptedException e) {
+                    // if we let any exception from here, it will prevent Hudson from starting.
+                    Functions.printStackTrace(e, listener.error("Migration failed"));
                 }
-            } catch (Exception e) {
-                // if we let any exception from here, it will prevent Hudson from starting.
-                Functions.printStackTrace(e, listener.error("Migration failed"));
+                // migration failed
+                return new MigrationFailedNotice(out);
+            } catch (IOException e) {
+                return new MigrationFailedNotice2();
             }
-            // migration failed
-            return new MigrationFailedNotice(out);
         }
 
         // install the monitor if applicable
         ZFSInstaller zi = new ZFSInstaller();
-        if(zi.isActivated())
+        if (zi.isActivated()) {
             return zi;
+        }
 
         return null;
     }
@@ -428,6 +432,21 @@ public class ZFSInstaller extends AdministrativeMonitor implements Serializable 
         
         public String getLog() {
             return record.toString();
+        }
+    }
+    
+    /**
+     * Used to indicate a failure in the migration.
+     */
+    public static final class MigrationFailedNotice2 extends AdministrativeMonitor {       
+
+        @Override
+        public boolean isActivated() {
+            return true;
+        }
+        
+        public String getLog() {
+            return "Failed to create the ByteArrayOutputStream";
         }
     }
 

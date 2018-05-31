@@ -194,7 +194,8 @@ public abstract class PeepholePermalink extends Permalink implements Predicate<R
         // Avoid calling resolveSymlink on a nonexistent file as it will probably throw an IOException:
         if (!exists(cache) || Util.resolveSymlink(cache)==null) {
           // symlink not supported. use a regular file
-          AtomicFileWriter cw = new AtomicFileWriter(cache);
+          //[Erik] abort does the close
+          AtomicFileWriter cw = new AtomicFileWriter(cache); //NOSONAR
           try {
               cw.write(target);
               cw.commit();

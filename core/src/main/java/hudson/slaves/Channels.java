@@ -205,30 +205,32 @@ public class Channels {
      *
      * @return
      *      never null
+     * @throws java.io.IOException
      * @since 1.361
      */
     public static Channel newJVM(String displayName, TaskListener listener, JVMBuilder vmb, FilePath workDir, ClasspathBuilder classpath) throws IOException {
-        ServerSocket serverSocket = new ServerSocket();
-        serverSocket.bind(new InetSocketAddress("localhost",0));
-        serverSocket.setSoTimeout(10*1000);
+        try (ServerSocket serverSocket = new ServerSocket()) {
+            serverSocket.bind(new InetSocketAddress("localhost", 0));
+            serverSocket.setSoTimeout(10 * 1000);
 
-        // use -cp + FQCN instead of -jar since remoting.jar can be rebundled (like in the case of the swarm plugin.)
-        vmb.classpath().addJarOf(Channel.class);
-        vmb.mainClass(Launcher.class);
+            // use -cp + FQCN instead of -jar since remoting.jar can be rebundled (like in the case of the swarm plugin.)
+            vmb.classpath().addJarOf(Channel.class);
+            vmb.mainClass(Launcher.class);
 
-        if(classpath!=null)
-            vmb.args().add("-cp").add(classpath);
-        vmb.args().add("-connectTo","localhost:"+serverSocket.getLocalPort());
+            if (classpath != null) {
+                vmb.args().add("-cp").add(classpath);
+            }
+            vmb.args().add("-connectTo", "localhost:" + serverSocket.getLocalPort());
 
-        listener.getLogger().println("Starting "+displayName);
-        Proc p = vmb.launch(new LocalLauncher(listener)).stdout(listener).pwd(workDir).start();
+            listener.getLogger().println("Starting " + displayName);
+            Proc p = vmb.launch(new LocalLauncher(listener)).stdout(listener).pwd(workDir).start();
 
-        Socket s = serverSocket.accept();
-        serverSocket.close();
+            Socket s = serverSocket.accept();
 
-        return forProcess("Channel to "+displayName, Computer.threadPoolForRemoting,
+            return forProcess("Channel to " + displayName, Computer.threadPoolForRemoting,
                 new BufferedInputStream(SocketChannelStream.in(s)),
-                new BufferedOutputStream(SocketChannelStream.out(s)),null,p);
+                new BufferedOutputStream(SocketChannelStream.out(s)), null, p);
+        }
     }
 
 

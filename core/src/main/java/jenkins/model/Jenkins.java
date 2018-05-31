@@ -1797,7 +1797,8 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
     // even if we want to offer this atomic operation, CopyOnWriteArrayList
     // offers no such operation
     public void setViews(Collection<View> views) throws IOException {
-        BulkChange bc = new BulkChange(this);
+        //[Erik] No need to close, commit does the job
+        BulkChange bc = new BulkChange(this); //NOSONAR
         try {
             this.views.clear();
             for (View v : views) {
@@ -3630,7 +3631,8 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
      */
     @RequirePOST
     public synchronized void doConfigSubmit( StaplerRequest req, StaplerResponse rsp ) throws IOException, ServletException, FormException {
-        BulkChange bc = new BulkChange(this);
+        //[Erik] commit does the close job
+        BulkChange bc = new BulkChange(this); //NOSONAR
         try {
             checkPermission(ADMINISTER);
 
@@ -3688,8 +3690,8 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
     @RequirePOST
     public synchronized void doConfigExecutorsSubmit( StaplerRequest req, StaplerResponse rsp ) throws IOException, ServletException, FormException {
         checkPermission(ADMINISTER);
-
-        BulkChange bc = new BulkChange(this);
+        //[Erik] commit does the close job
+        BulkChange bc = new BulkChange(this); //NOSONAR
         try {
             JSONObject json = req.getSubmittedForm();
 
@@ -4077,7 +4079,8 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
 
         System.out.println("Creating artificial OutOfMemoryError situation");
         List<Object> args = new ArrayList<Object>();
-        while (true)
+        //[Erik] Creating OutOfMemoryError situation on purpose
+        while (true) //NOSONAR
             args.add(new byte[1024*1024]);
     }
 

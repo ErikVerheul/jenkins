@@ -169,10 +169,10 @@ public class AnnotatedLargeText<T> extends LargeText {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Cipher sym = PASSING_ANNOTATOR.encrypt();
-        ObjectOutputStream oos = new ObjectOutputStream(new GZIPOutputStream(new CipherOutputStream(baos,sym)));
-        oos.writeLong(System.currentTimeMillis()); // send timestamp to prevent a replay attack
-        oos.writeObject(caw.getConsoleAnnotator());
-        oos.close();
+        try (ObjectOutputStream oos = new ObjectOutputStream(new GZIPOutputStream(new CipherOutputStream(baos, sym)))) {
+            oos.writeLong(System.currentTimeMillis()); // send timestamp to prevent a replay attack
+            oos.writeObject(caw.getConsoleAnnotator());
+        }
         StaplerResponse rsp = Stapler.getCurrentResponse();
         if (rsp!=null)
             rsp.setHeader("X-ConsoleAnnotator", new String(Base64.encode(baos.toByteArray())));

@@ -89,7 +89,8 @@ public class NoClientBindProtocolSocketFactory implements ProtocolSocketFactory 
             // ignore the local address/port for binding
             return createSocket(host, port);
         } else {
-            Socket s=new Socket();
+            //[Erik] Open socked should be returned
+            Socket s=new Socket(); //NOSONAR
             s.connect(new InetSocketAddress(host,port),timeout);
             return s;
         }

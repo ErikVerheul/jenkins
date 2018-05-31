@@ -189,7 +189,8 @@ public final class TcpSlaveAgentListener extends Thread {
             SocketAddress localAddress = serverSocket.getLocalAddress();
             if (localAddress instanceof InetSocketAddress) {
                 InetSocketAddress address = (InetSocketAddress) localAddress;
-                Socket client = new Socket(address.getHostName(), address.getPort());
+                //[Erik] Leave the socket open on exit
+                Socket client = new Socket(address.getHostName(), address.getPort()); //NOSONAR
                 client.setSoTimeout(1000); // waking the acceptor loop should be quick
                 new PingAgentProtocol().connect(client);
             }
@@ -199,7 +200,7 @@ public final class TcpSlaveAgentListener extends Thread {
         try {
             serverSocket.close();
         } catch (IOException e) {
-            LOGGER.log(Level.WARNING, "Failed to close down TCP port",e);
+            LOGGER.log(Level.WARNING, "Failed to close down TCP port", e);
         }
     }
 
@@ -230,12 +231,12 @@ public final class TcpSlaveAgentListener extends Thread {
         @Override
         public void run() {
             try {
-                LOGGER.log(Level.FINE, "Accepted connection #{0} from {1}", new Object[] {id, s.getRemoteSocketAddress()});
-
+                LOGGER.log(Level.FINE, "Accepted connection #{0} from {1}", new Object[]{id, s.getRemoteSocketAddress()});
+                //[Erik] Do not close DataInputStream in nor the PrintWriter out
                 DataInputStream in = new DataInputStream(s.getInputStream()); //NOSONAR
                 PrintWriter out = new PrintWriter(
-                        new BufferedWriter(new OutputStreamWriter(s.getOutputStream(),"UTF-8")),
-                        true); // DEPRECATED: newer protocol shouldn't use PrintWriter but should use DataOutputStream
+                    // DEPRECATED: newer protocol shouldn't use PrintWriter but should use DataOutputStream
+                    new BufferedWriter(new OutputStreamWriter(s.getOutputStream(), "UTF-8")), true); //NOSONAR
 
                 // peek the first few bytes to determine what to do with this client
                 byte[] head = new byte[10];
@@ -244,37 +245,39 @@ public final class TcpSlaveAgentListener extends Thread {
                 String header = new String(head, Charsets.US_ASCII);
                 if (header.startsWith("GET ")) {
                     // this looks like an HTTP client
-                    respondHello(header,s);
+                    respondHello(header, s);
                     return;
                 }
 
                 // otherwise assume this is AgentProtocol and start from the beginning
-                String s = new DataInputStream(new SequenceInputStream(new ByteArrayInputStream(head),in)).readUTF();
+                String fullString = new DataInputStream(new SequenceInputStream(new ByteArrayInputStream(head), in)).readUTF();
 
-                if(s.startsWith("Protocol:")) {
-                    String protocol = s.substring(9);
+                if (fullString.startsWith("Protocol:")) {
+                    String protocol = fullString.substring(9);
                     AgentProtocol p = AgentProtocol.of(protocol);
-                    if (p!=null) {
+                    if (p != null) {
                         if (Jenkins.getInstance().getAgentProtocols().contains(protocol)) {
-                            LOGGER.log(p instanceof PingAgentProtocol ? Level.FINE : Level.INFO, "Accepted {0} connection #{1} from {2}", new Object[] {protocol, id, this.s.getRemoteSocketAddress()});
+                            LOGGER.log(p instanceof PingAgentProtocol ? Level.FINE : Level.INFO, "Accepted {0} connection #{1} from {2}", new Object[]{protocol, id, this.s.getRemoteSocketAddress()});
                             p.handle(this.s);
                         } else {
-                            error(out, "Disabled protocol:" + s);
+                            error(out, "Disabled protocol:" + fullString);
                         }
-                    } else
-                        error(out, "Unknown protocol:" + s);
+                    } else {
+                        error(out, "Unknown protocol:" + fullString);
+                    }
                 } else {
-                    error(out, "Unrecognized protocol: "+s);
+                    error(out, "Unrecognized protocol: " + fullString);
                 }
+
             } catch (InterruptedException e) {
-                LOGGER.log(Level.WARNING,"Connection #"+id+" aborted",e);
+                LOGGER.log(Level.WARNING, "Connection #" + id + " aborted", e);
                 try {
                     s.close();
                 } catch (IOException ex) {
                     // try to clean up the socket
                 }
             } catch (IOException e) {
-                LOGGER.log(Level.WARNING,"Connection #"+id+" failed",e);
+                LOGGER.log(Level.WARNING, "Connection #" + id + " failed", e);
                 try {
                     s.close();
                 } catch (IOException ex) {

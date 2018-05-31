@@ -176,9 +176,7 @@ public class UsageStatistics extends PageDecorator {
         }
         o.put("jobs",jobs);
 
-        try {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {            
             // json -> UTF-8 encode -> gzip -> encrypt -> base64 -> string
             try (OutputStream cipheros = new CombinedCipherOutputStream(baos,getKey(),"AES");
                  OutputStream zipos = new GZIPOutputStream(cipheros);
