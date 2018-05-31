@@ -139,7 +139,7 @@ public class DefaultCrumbIssuerTest {
 
     @Issue("JENKINS-34254")
     @Test public void testRequirePostErrorPageCrumb() throws Exception {
-        Jenkins.getInstance().setCrumbIssuer(new DefaultCrumbIssuer(false));
+        Jenkins.get().setCrumbIssuer(new DefaultCrumbIssuer(false));
         WebClient wc = r.createWebClient();
         try {
             wc.goTo("quietDown");

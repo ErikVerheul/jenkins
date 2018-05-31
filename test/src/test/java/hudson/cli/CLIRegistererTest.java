@@ -28,10 +28,10 @@ public class CLIRegistererTest {
         Result invocation = command.invokeWithArgs("--username", "foo", "--password", "invalid");
         assertThat(invocation, failedWith(7));
         assertThat(invocation.stderr(), containsString("ERROR: Bad Credentials. Search the server log for "));
-        assertThat("Unauthorized command was executed", Jenkins.getInstance().isQuietingDown(), is(false));
+        assertThat("Unauthorized command was executed", Jenkins.get().isQuietingDown(), is(false));
 
         invocation = command.invokeWithArgs("--username", "foo", "--password", "foo");
         assertThat(invocation, succeededSilently());
-        assertThat("Authorized command was not executed", Jenkins.getInstance().isQuietingDown(), is(true));
+        assertThat("Authorized command was not executed", Jenkins.get().isQuietingDown(), is(true));
     }
 }

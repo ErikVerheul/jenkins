@@ -191,7 +191,7 @@ public class UserPropertyTest {
         }
 
         private File getUserFile() throws IOException {
-            final File usersRootDir = new File(Jenkins.getInstance().getRootDir(), "users");
+            final File usersRootDir = new File(Jenkins.get().getRootDir(), "users");
             final File userDir = new File(usersRootDir, idStrategy().filenameOf(user.getId()));
             final File userFile = new File(userDir, TEST_FILE);
             if (!userFile.exists()) {

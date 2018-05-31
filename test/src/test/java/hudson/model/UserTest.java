@@ -745,7 +745,7 @@ public class UserTest {
     @Issue("SECURITY-499")
     @LocalData
     public void legacyUserConfigDirsMigrated() {
-        File rootDir = new File(Jenkins.getInstance().getRootDir(), "users");
+        File rootDir = new File(Jenkins.get().getRootDir(), "users");
 
         User admin = User.getById("admin", false);
         assertCorrectConfig(admin, "users/admin/config.xml");
@@ -797,7 +797,7 @@ public class UserTest {
     @Issue("SECURITY-499")
     @LocalData
     public void emptyUsernameConfigMigrated() {
-        File rootDir = new File(Jenkins.getInstance().getRootDir(), "users");
+        File rootDir = new File(Jenkins.get().getRootDir(), "users");
 
         User admin = User.getById("admin", false);
         assertCorrectConfig(admin, "users/admin/config.xml");
@@ -817,7 +817,7 @@ public class UserTest {
     @LocalData
     @Test
     public void shellyUsernameMigrated() {
-        File rootDir = new File(Jenkins.getInstance().getRootDir(), "users");
+        File rootDir = new File(Jenkins.get().getRootDir(), "users");
         User user = User.getById("bla$phem.us", false);
         assertCorrectConfig(user, "users/bla$0024phem.us/config.xml");
         assertFalse(new File(rootDir, "bla$phem.us").exists());

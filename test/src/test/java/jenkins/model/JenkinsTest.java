@@ -128,7 +128,7 @@ public class JenkinsTest {
         FreeStyleProject p = j.createFreeStyleProject(jobName);
         p.setDisplayName("displayName");
         
-        Jenkins jenkins = Jenkins.getInstance();
+        Jenkins jenkins = Jenkins.get();
         assertTrue(jenkins.isDisplayNameUnique("displayName1", curJobName));
         assertTrue(jenkins.isDisplayNameUnique(jobName, curJobName));
     }
@@ -145,7 +145,7 @@ public class JenkinsTest {
         FreeStyleProject p = j.createFreeStyleProject(jobName);
         p.setDisplayName(displayName);
         
-        Jenkins jenkins = Jenkins.getInstance();
+        Jenkins jenkins = Jenkins.get();
         assertFalse(jenkins.isDisplayNameUnique(displayName, curJobName));
     }
     
@@ -157,7 +157,7 @@ public class JenkinsTest {
         FreeStyleProject curProject = j.createFreeStyleProject(curJobName);
         curProject.setDisplayName(displayName);
         
-        Jenkins jenkins = Jenkins.getInstance();
+        Jenkins jenkins = Jenkins.get();
         // should be true as we don't test against the current job
         assertTrue(jenkins.isDisplayNameUnique(displayName, curJobName));
     }
@@ -169,7 +169,7 @@ public class JenkinsTest {
         j.createFreeStyleProject(curJobName);
         j.createFreeStyleProject(jobName);
         
-        Jenkins jenkins = Jenkins.getInstance();
+        Jenkins jenkins = Jenkins.get();
         assertTrue(jenkins.isNameUnique("jobName1", curJobName));
     }
 
@@ -180,7 +180,7 @@ public class JenkinsTest {
         j.createFreeStyleProject(curJobName);
         j.createFreeStyleProject(jobName);
         
-        Jenkins jenkins = Jenkins.getInstance();
+        Jenkins jenkins = Jenkins.get();
         assertFalse(jenkins.isNameUnique(jobName, curJobName));
     }
 
@@ -191,7 +191,7 @@ public class JenkinsTest {
         j.createFreeStyleProject(curJobName);
         j.createFreeStyleProject(jobName);
         
-        Jenkins jenkins = Jenkins.getInstance();
+        Jenkins jenkins = Jenkins.get();
         // true because we don't test against the current job
         assertTrue(jenkins.isNameUnique(curJobName, curJobName));
     }
@@ -206,7 +206,7 @@ public class JenkinsTest {
         FreeStyleProject p = j.createFreeStyleProject(jobName);
         p.setDisplayName("displayName");
         
-        Jenkins jenkins = Jenkins.getInstance();
+        Jenkins jenkins = Jenkins.get();
         FormValidation v = jenkins.doCheckDisplayName("1displayName", curJobName);
         assertEquals(FormValidation.ok(), v);
     }
@@ -222,7 +222,7 @@ public class JenkinsTest {
         FreeStyleProject p = j.createFreeStyleProject(jobName);
         p.setDisplayName(displayName);
         
-        Jenkins jenkins = Jenkins.getInstance();
+        Jenkins jenkins = Jenkins.get();
         FormValidation v = jenkins.doCheckDisplayName(displayName, curJobName);
         assertEquals(FormValidation.Kind.WARNING, v.kind);
     }
@@ -238,7 +238,7 @@ public class JenkinsTest {
         FreeStyleProject p = j.createFreeStyleProject(jobName);
         p.setDisplayName(displayName);
         
-        Jenkins jenkins = Jenkins.getInstance();
+        Jenkins jenkins = Jenkins.get();
         FormValidation v = jenkins.doCheckDisplayName(jobName, curJobName);
         assertEquals(FormValidation.Kind.WARNING, v.kind);
     }
@@ -249,7 +249,7 @@ public class JenkinsTest {
             "", "Jenkins"    
         };
         
-        Jenkins jenkins = Jenkins.getInstance();
+        Jenkins jenkins = Jenkins.get();
         for (String viewName : viewNames) {
             FormValidation v = jenkins.doCheckViewName(viewName);
             assertEquals(FormValidation.Kind.OK, v.kind);
@@ -263,7 +263,7 @@ public class JenkinsTest {
             "Jenkins!", "Jenkins[]", "Jenkin<>s", "^Jenkins", ".."    
         };
         
-        Jenkins jenkins = Jenkins.getInstance();
+        Jenkins jenkins = Jenkins.get();
         
         for (String viewName : viewNames) {
             FormValidation v = jenkins.doCheckViewName(viewName);
@@ -388,7 +388,7 @@ public class JenkinsTest {
         }
 
         public HttpResponse doDynamic() {
-            assertTrue(Jenkins.getInstance().getAuthentication().getName().equals("anonymous"));
+            assertTrue(Jenkins.get().getAuthentication().getName().equals("anonymous"));
             count++;
             return HttpResponses.html("OK");
         }
@@ -423,7 +423,7 @@ public class JenkinsTest {
         j.jenkins.setAuthorizationStrategy(auth);
 
         // no anonymous read access
-        assertTrue(!Jenkins.getInstance().hasPermission(Jenkins.ANONYMOUS,Jenkins.READ));
+        assertTrue(!Jenkins.get().hasPermission(Jenkins.ANONYMOUS,Jenkins.READ));
 
         WebClient wc = j.createWebClient();
         wc.getOptions().setThrowExceptionOnFailingStatusCode(false);
