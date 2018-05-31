@@ -68,7 +68,7 @@ public class InstallState implements ExtensionPoint {
     @Extension
     public static final InstallState INITIAL_SETUP_COMPLETED = new InstallState("INITIAL_SETUP_COMPLETED", true) {
         public void initializeState() {
-            Jenkins j = Jenkins.getInstance();
+            Jenkins j = Jenkins.get();
             try {
                 j.getSetupWizard().completeSetup();
             } catch (Exception e) {
@@ -84,7 +84,7 @@ public class InstallState implements ExtensionPoint {
     @Extension
     public static final InstallState CREATE_ADMIN_USER = new InstallState("CREATE_ADMIN_USER", false) {
         public void initializeState() {
-            Jenkins j = Jenkins.getInstance();
+            Jenkins j = Jenkins.get();
             // Skip this state if not using the security defaults
             // e.g. in an init script set up security already
             if (!j.getSetupWizard().isUsingSecurityDefaults()) {
@@ -107,7 +107,7 @@ public class InstallState implements ExtensionPoint {
     public static final InstallState INITIAL_SECURITY_SETUP = new InstallState("INITIAL_SECURITY_SETUP", false) {
         public void initializeState() {
             try {
-                Jenkins.getInstance().getSetupWizard().init(true);
+                Jenkins.get().getSetupWizard().init(true);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

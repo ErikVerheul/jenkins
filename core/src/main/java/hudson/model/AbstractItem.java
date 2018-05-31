@@ -472,7 +472,7 @@ public abstract class AbstractItem extends Actionable implements Item, HttpDelet
      * Returns the {@link ACL} for this object.
      */
     public ACL getACL() {
-        return Jenkins.getInstance().getAuthorizationStrategy().getACL(this);
+        return Jenkins.get().getAuthorizationStrategy().getACL(this);
     }
 
     /**
@@ -596,7 +596,7 @@ public abstract class AbstractItem extends Actionable implements Item, HttpDelet
                 // the 15 second delay for every child item). This happens after queue cancellation, so will be
                 // a complete set of builds in flight
                 Map<Executor, Queue.Executable> buildsInProgress = new LinkedHashMap<>();
-                for (Computer c : Jenkins.getInstance().getComputers()) {
+                for (Computer c : Jenkins.get().getComputers()) {
                     for (Executor e : c.getAllExecutors()) {
                         final WorkUnit workUnit = e.getCurrentWorkUnit();
                         final Executable executable = workUnit != null ? workUnit.getExecutable() : null;
@@ -663,7 +663,7 @@ public abstract class AbstractItem extends Actionable implements Item, HttpDelet
             }
         }
         getParent().onDeleted(AbstractItem.this);
-        Jenkins.getInstance().rebuildDependencyGraphAsync();
+        Jenkins.get().rebuildDependencyGraphAsync();
     }
 
     /**
@@ -765,7 +765,7 @@ public abstract class AbstractItem extends Actionable implements Item, HttpDelet
                     return null;
                 }
             });
-            Jenkins.getInstance().rebuildDependencyGraphAsync();
+            Jenkins.get().rebuildDependencyGraphAsync();
 
             // if everything went well, commit this new version
             out.commit();
@@ -798,7 +798,7 @@ public abstract class AbstractItem extends Actionable implements Item, HttpDelet
                 return null;
             }
         });
-        Jenkins.getInstance().rebuildDependencyGraphAsync();
+        Jenkins.get().rebuildDependencyGraphAsync();
 
         SaveableListener.fireOnChange(this, getConfigFile());
     }
@@ -826,9 +826,9 @@ public abstract class AbstractItem extends Actionable implements Item, HttpDelet
     public static AbstractItem resolveForCLI(
             @Argument(required=true,metaVar="NAME",usage="Item name") String name) throws CmdLineException {
         // TODO can this (and its pseudo-override in AbstractProject) share code with GenericItemOptionHandler, used for explicit CLICommand’s rather than CLIMethod’s?
-        AbstractItem item = Jenkins.getInstance().getItemByFullName(name, AbstractItem.class);
+        AbstractItem item = Jenkins.get().getItemByFullName(name, AbstractItem.class);
         if (item==null) {
-            AbstractItem project = Items.findNearest(AbstractItem.class, name, Jenkins.getInstance());
+            AbstractItem project = Items.findNearest(AbstractItem.class, name, Jenkins.get());
             throw new CmdLineException(null, project == null ? Messages.AbstractItem_NoSuchJobExistsWithoutSuggestion(name)
                     : Messages.AbstractItem_NoSuchJobExists(name, project.getFullName()));
         }

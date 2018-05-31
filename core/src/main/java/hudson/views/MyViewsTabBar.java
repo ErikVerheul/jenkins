@@ -64,7 +64,7 @@ public abstract class MyViewsTabBar extends AbstractDescribableImpl<MyViewsTabBa
      * Returns all the registered {@link ListViewColumn} descriptors.
      */
     public static DescriptorExtensionList<MyViewsTabBar, Descriptor<MyViewsTabBar>> all() {
-        return Jenkins.getInstance().<MyViewsTabBar, Descriptor<MyViewsTabBar>>getDescriptorList(MyViewsTabBar.class);
+        return Jenkins.get().<MyViewsTabBar, Descriptor<MyViewsTabBar>>getDescriptorList(MyViewsTabBar.class);
     }
 
     public MyViewsTabBarDescriptor getDescriptor() {
@@ -100,13 +100,13 @@ public abstract class MyViewsTabBar extends AbstractDescribableImpl<MyViewsTabBa
     @Extension(ordinal=305) @Symbol("myView")
     public static class GlobalConfigurationImpl extends GlobalConfiguration {
         public MyViewsTabBar getMyViewsTabBar() {
-            return Jenkins.getInstance().getMyViewsTabBar();
+            return Jenkins.get().getMyViewsTabBar();
         }
 
         @Override
         public boolean configure(StaplerRequest req, JSONObject json) throws FormException {
             // for compatibility reasons, the actual value is stored in Jenkins
-            Jenkins j = Jenkins.getInstance();
+            Jenkins j = Jenkins.get();
 
             if (json.has("myViewsTabBar")) {
                 j.setMyViewsTabBar(req.bindJSON(MyViewsTabBar.class,json.getJSONObject("myViewsTabBar")));

@@ -170,7 +170,7 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
      */
     @Nonnull
     public static IdStrategy idStrategy() {
-        Jenkins j = Jenkins.getInstance();
+        Jenkins j = Jenkins.get();
         SecurityRealm realm = j.getSecurityRealm();
         if (realm == null) {
             return IdStrategy.CASE_INSENSITIVE;
@@ -234,7 +234,7 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
      */
     @Exported(visibility=999)
     public @Nonnull String getAbsoluteUrl() {
-        return Jenkins.getInstance().getRootUrl()+getUrl();
+        return Jenkins.get().getRootUrl()+getUrl();
     }
 
     /**
@@ -342,7 +342,7 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
      */
     public @Nonnull UserDetails getUserDetailsForImpersonation() throws UsernameNotFoundException {
         ImpersonatingUserDetailsService userDetailsService = new ImpersonatingUserDetailsService(
-                Jenkins.getInstance().getSecurityRealm().getSecurityComponents().userDetails
+                Jenkins.get().getSecurityRealm().getSecurityComponents().userDetails
         );
         
         try {
@@ -742,7 +742,7 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
     @SuppressWarnings("unchecked")
     @WithBridgeMethods(List.class)
     public @Nonnull RunList getBuilds() {
-        return RunList.fromJobs((Iterable)Jenkins.getInstance().allItems(Job.class)).filter(new Predicate<Run<?,?>>() {
+        return RunList.fromJobs((Iterable)Jenkins.get().allItems(Job.class)).filter(new Predicate<Run<?,?>>() {
             @Override public boolean apply(Run<?,?> r) {
                 return r instanceof AbstractBuild && relatedTo((AbstractBuild<?,?>) r);
             }
@@ -755,7 +755,7 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
      */
     public @Nonnull Set<AbstractProject<?,?>> getProjects() {
         Set<AbstractProject<?,?>> r = new HashSet<AbstractProject<?,?>>();
-        for (AbstractProject<?,?> p : Jenkins.getInstance().allItems(AbstractProject.class))
+        for (AbstractProject<?,?> p : Jenkins.get().allItems(AbstractProject.class))
             if(p.hasParticipant(this))
                 r.add(p);
         return r;
@@ -784,7 +784,7 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
      * Gets the directory where Hudson stores user information.
      */
     private static File getRootDir() {
-        return new File(Jenkins.getInstance().getRootDir(), "users");
+        return new File(Jenkins.get().getRootDir(), "users");
     }
 
     /**
@@ -933,7 +933,7 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
 
     public void doRssLatest(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException {
         final List<Run> lastBuilds = new ArrayList<Run>();
-        for (AbstractProject<?,?> p : Jenkins.getInstance().allItems(AbstractProject.class)) {
+        for (AbstractProject<?,?> p : Jenkins.get().allItems(AbstractProject.class)) {
             for (AbstractBuild<?,?> b = p.getLastBuild(); b != null; b = b.getPreviousBuild()) {
                 if (relatedTo(b)) {
                     lastBuilds.add(b);
@@ -977,7 +977,7 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
     }
 
     public ACL getACL() {
-        ACL base = Jenkins.getInstance().getAuthorizationStrategy().getACL(this);
+        ACL base = Jenkins.get().getAuthorizationStrategy().getACL(this);
         // always allow a non-anonymous user full control of himself.
         return ACL.lambda((a, permission) -> (idStrategy().equals(a.getName(), id) && !(a instanceof AnonymousAuthenticationToken))
                         || base.hasPermission(a, permission));
@@ -1000,7 +1000,7 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
      * @return a possibly empty list
      */
     public @Nonnull List<String> getAuthorities() {
-        if (!Jenkins.getInstance().hasPermission(Jenkins.ADMINISTER)) {
+        if (!Jenkins.get().hasPermission(Jenkins.ADMINISTER)) {
             return Collections.emptyList();
         }
         List<String> r = new ArrayList<String>();

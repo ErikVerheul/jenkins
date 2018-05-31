@@ -120,7 +120,7 @@ public class AnnotatedLargeText<T> extends LargeText {
 
                 ObjectInputStream ois = new ObjectInputStreamEx(new GZIPInputStream(
                         new CipherInputStream(new ByteArrayInputStream(Base64.decode(base64.toCharArray())),sym)),
-                        Jenkins.getInstance().pluginManager.uberClassLoader);
+                        Jenkins.get().pluginManager.uberClassLoader);
                 try {
                     long timestamp = ois.readLong();
                     if (TimeUnit.HOURS.toMillis(1) > abs(System.currentTimeMillis()-timestamp))

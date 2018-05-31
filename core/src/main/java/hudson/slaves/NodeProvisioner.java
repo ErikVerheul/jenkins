@@ -207,7 +207,7 @@ public class NodeProvisioner {
             Queue.withLock(new Runnable() {
                 @Override
                 public void run() {
-                    Jenkins jenkins = Jenkins.getInstance();
+                    Jenkins jenkins = Jenkins.get();
                     // clean up the cancelled launch activity, then count the # of executors that we are about to
                     // bring up.
 
@@ -311,7 +311,7 @@ public class NodeProvisioner {
             });
 
             if (provisioningState != null) {
-                List<Strategy> strategies = Jenkins.getInstance().getExtensionList(Strategy.class);
+                List<Strategy> strategies = Jenkins.get().getExtensionList(Strategy.class);
                 for (Strategy strategy : strategies.isEmpty()
                         ? Arrays.<Strategy>asList(new StandardStrategyImpl())
                         : strategies) {
@@ -687,7 +687,7 @@ public class NodeProvisioner {
                             });
 
                     CLOUD:
-                    for (Cloud c : Jenkins.getInstance().clouds) {
+                    for (Cloud c : Jenkins.get().clouds) {
                         if (excessWorkload < 0) {
                             break;  // enough agents allocated
                         }
@@ -803,7 +803,7 @@ public class NodeProvisioner {
 
         @Override
         protected void doRun() {
-            Jenkins h = Jenkins.getInstance();
+            Jenkins h = Jenkins.get();
             h.unlabeledNodeProvisioner.update();
             for( Label l : h.getLabels() )
                 l.nodeProvisioner.update();

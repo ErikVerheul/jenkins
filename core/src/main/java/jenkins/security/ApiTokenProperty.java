@@ -105,7 +105,7 @@ public class ApiTokenProperty extends UserProperty {
     @Restricted(NoExternalUse.class)
     /*package*/ String getApiTokenInsecure() {
         String p = apiToken.getPlainText();
-        if (p.equals(Util.getDigestOf(Jenkins.getInstance().getSecretKey()+":"+user.getId()))) {
+        if (p.equals(Util.getDigestOf(Jenkins.get().getSecretKey()+":"+user.getId()))) {
             // if the current token is the initial value created by pre SECURITY-49 Jenkins, we can't use that.
             // force using the newer value
             apiToken = Secret.fromString(p=API_KEY_SEED.mac(user.getId()));
@@ -121,7 +121,7 @@ public class ApiTokenProperty extends UserProperty {
     }
     
     private boolean hasPermissionToSeeToken() {
-        final Jenkins jenkins = Jenkins.getInstance();
+        final Jenkins jenkins = Jenkins.get();
 
         // Administrators can do whatever they want
         if (SHOW_TOKEN_TO_ADMINS && jenkins.hasPermission(Jenkins.ADMINISTER)) {

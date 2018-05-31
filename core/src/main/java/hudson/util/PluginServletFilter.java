@@ -166,7 +166,7 @@ public class PluginServletFilter implements Filter, ExtensionPoint {
 
     @Restricted(NoExternalUse.class)
     public static void cleanUp() {
-        PluginServletFilter instance = getInstance(Jenkins.getInstance().servletContext);
+        PluginServletFilter instance = getInstance(Jenkins.get().servletContext);
         if (instance != null) {
             // While we could rely on the current implementation of list being a CopyOnWriteArrayList
             // safer to just take an explicit copy of the list and operate on the copy

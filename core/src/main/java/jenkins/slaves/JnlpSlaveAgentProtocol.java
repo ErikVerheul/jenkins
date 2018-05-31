@@ -111,7 +111,7 @@ public class JnlpSlaveAgentProtocol extends AgentProtocol {
     private static final boolean OPT_IN;
 
     static {
-        byte hash = Util.fromHexString(Jenkins.getInstance().getLegacyInstanceId())[0];
+        byte hash = Util.fromHexString(Jenkins.get().getLegacyInstanceId())[0];
         OPT_IN = (hash % 10) == 0;
     }
 }

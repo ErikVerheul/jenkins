@@ -175,11 +175,11 @@ public final class JDK extends ToolInstallation implements NodeSpecific<JDK>, En
         }
 
         public @Override JDK[] getInstallations() {
-            return Jenkins.getInstance().getJDKs().toArray(new JDK[0]);
+            return Jenkins.get().getJDKs().toArray(new JDK[0]);
         }
 
         public @Override void setInstallations(JDK... jdks) {
-            Jenkins.getInstance().setJDKs(Arrays.asList(jdks));
+            Jenkins.get().setJDKs(Arrays.asList(jdks));
         }
 
         @Override

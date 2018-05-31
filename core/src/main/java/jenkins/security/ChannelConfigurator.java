@@ -39,6 +39,6 @@ public abstract class ChannelConfigurator implements ExtensionPoint {
      * All the registered {@link ChannelConfigurator}s.
      */
     public static ExtensionList<ChannelConfigurator> all() {
-        return Jenkins.getInstance().getExtensionList(ChannelConfigurator.class);
+        return Jenkins.get().getExtensionList(ChannelConfigurator.class);
     }
 }

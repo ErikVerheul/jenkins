@@ -173,7 +173,7 @@ public abstract class ItemGroupMixIn {
             String from = req.getParameter("from");
 
             // resolve a name to Item
-            Item src = Jenkins.getInstance().getItem(from, parent);
+            Item src = Jenkins.get().getItem(from, parent);
             if(src==null) {
                 if(Util.fixEmpty(from)==null)
                     throw new Failure("Specify which job to copy");
@@ -252,7 +252,7 @@ public abstract class ItemGroupMixIn {
 
         add(result);
         ItemListener.fireOnCopied(src,result);
-        Jenkins.getInstance().rebuildDependencyGraphAsync();
+        Jenkins.get().rebuildDependencyGraphAsync();
 
         return result;
     }
@@ -260,7 +260,7 @@ public abstract class ItemGroupMixIn {
     public synchronized TopLevelItem createProjectFromXML(String name, InputStream xml) throws IOException {
         acl.checkPermission(Item.CREATE);
 
-        Jenkins.getInstance().getProjectNamingStrategy().checkName(name);
+        Jenkins.get().getProjectNamingStrategy().checkName(name);
         Items.verifyItemDoesNotAlreadyExist(parent, name, null);
 
         // place it as config.xml
@@ -284,7 +284,7 @@ public abstract class ItemGroupMixIn {
             add(result);
 
             ItemListener.fireOnCreated(result);
-            Jenkins.getInstance().rebuildDependencyGraphAsync();
+            Jenkins.get().rebuildDependencyGraphAsync();
 
             return result;
         } catch (TransformerException e) {
@@ -313,14 +313,14 @@ public abstract class ItemGroupMixIn {
         type.checkApplicableIn(parent);
         acl.getACL().checkCreatePermission(parent, type);
 
-        Jenkins.getInstance().getProjectNamingStrategy().checkName(name);
+        Jenkins.get().getProjectNamingStrategy().checkName(name);
         Items.verifyItemDoesNotAlreadyExist(parent, name, null);
 
         TopLevelItem item = type.newInstance(parent, name);
         item.onCreatedFromScratch();
         item.save();
         add(item);
-        Jenkins.getInstance().rebuildDependencyGraphAsync();
+        Jenkins.get().rebuildDependencyGraphAsync();
 
         if (notify)
             ItemListener.fireOnCreated(item);

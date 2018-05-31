@@ -195,7 +195,7 @@ public abstract class Descriptor<T extends Describable<T>> implements Saveable, 
          * Returns {@link Descriptor} whose 'clazz' is the same as {@link #getItemType() the item type}.
          */
         public Descriptor getItemTypeDescriptor() {
-            return Jenkins.getInstance().getDescriptor(getItemType());
+            return Jenkins.get().getDescriptor(getItemType());
         }
 
         public Descriptor getItemTypeDescriptorOrDie() {
@@ -203,7 +203,7 @@ public abstract class Descriptor<T extends Describable<T>> implements Saveable, 
             if (it == null) {
                 throw new AssertionError(clazz + " is not an array/collection type in " + displayName + ". See https://jenkins.io/redirect/developer/class-is-missing-descriptor");
             }
-            Descriptor d = Jenkins.getInstance().getDescriptor(it);
+            Descriptor d = Jenkins.get().getDescriptor(it);
             if (d==null)
                 throw new AssertionError(it +" is missing its descriptor in "+displayName+". See https://jenkins.io/redirect/developer/class-is-missing-descriptor");
             return d;
@@ -213,14 +213,14 @@ public abstract class Descriptor<T extends Describable<T>> implements Saveable, 
          * Returns all the descriptors that produce types assignable to the property type.
          */
         public List<? extends Descriptor> getApplicableDescriptors() {
-            return Jenkins.getInstance().getDescriptorList(clazz);
+            return Jenkins.get().getDescriptorList(clazz);
         }
 
         /**
          * Returns all the descriptors that produce types assignable to the item type for a collection property.
          */
         public List<? extends Descriptor> getApplicableItemDescriptors() {
-            return Jenkins.getInstance().getDescriptorList(getItemType());
+            return Jenkins.get().getDescriptorList(getItemType());
         }
     }
 
@@ -242,7 +242,7 @@ public abstract class Descriptor<T extends Describable<T>> implements Saveable, 
 
         private String resolve() {
             // the resolution has to be deferred to avoid ordering issue among descriptor registrations.
-            return Jenkins.getInstance().getDescriptor(owner).getHelpFile(fieldNameToRedirectTo);
+            return Jenkins.get().getDescriptor(owner).getHelpFile(fieldNameToRedirectTo);
         }
     }
 
@@ -852,7 +852,7 @@ public abstract class Descriptor<T extends Describable<T>> implements Saveable, 
 
     protected List<String> getPossibleViewNames(String baseName) {
         List<String> names = new ArrayList<String>();
-        for (Facet f : WebApp.get(Jenkins.getInstance().servletContext).facets) {
+        for (Facet f : WebApp.get(Jenkins.get().servletContext).facets) {
             if (f instanceof JellyCompatibleFacet) {
                 JellyCompatibleFacet jcf = (JellyCompatibleFacet) f;
                 for (String ext : jcf.getScriptExtensions())
@@ -897,7 +897,7 @@ public abstract class Descriptor<T extends Describable<T>> implements Saveable, 
     }
 
     protected XmlFile getConfigFile() {
-        return new XmlFile(new File(Jenkins.getInstance().getRootDir(),getId()+".xml"));
+        return new XmlFile(new File(Jenkins.get().getRootDir(),getId()+".xml"));
     }
 
     /**
@@ -907,7 +907,7 @@ public abstract class Descriptor<T extends Describable<T>> implements Saveable, 
      *      null to indicate that this descriptor came from the core.
      */
     protected PluginWrapper getPlugin() {
-        return Jenkins.getInstance().getPluginManager().whichPlugin(clazz);
+        return Jenkins.get().getPluginManager().whichPlugin(clazz);
     }
 
     /**

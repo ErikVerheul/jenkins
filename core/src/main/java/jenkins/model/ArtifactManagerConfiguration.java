@@ -39,7 +39,7 @@ import org.kohsuke.stapler.StaplerRequest;
 public class ArtifactManagerConfiguration extends GlobalConfiguration {
     
     public static ArtifactManagerConfiguration get() {
-        return Jenkins.getInstance().getInjector().getInstance(ArtifactManagerConfiguration.class);
+        return Jenkins.get().getInjector().getInstance(ArtifactManagerConfiguration.class);
     }
 
     private final DescribableList<ArtifactManagerFactory,ArtifactManagerFactoryDescriptor> artifactManagerFactories = new DescribableList<ArtifactManagerFactory,ArtifactManagerFactoryDescriptor>(this);

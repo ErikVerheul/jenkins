@@ -403,7 +403,7 @@ public class JDKInstaller extends ToolInstaller {
      * This is where we locally cache this JDK.
      */
     private File getLocalCacheFile(Platform platform, CPU cpu) {
-        return new File(Jenkins.getInstance().getRootDir(),"cache/jdks/"+platform+"/"+cpu+"/"+id);
+        return new File(Jenkins.get().getRootDir(),"cache/jdks/"+platform+"/"+cpu+"/"+id);
     }
 
     /**
@@ -447,7 +447,7 @@ public class JDKInstaller extends ToolInstaller {
 
         HttpClient hc = new HttpClient();
         hc.getParams().setParameter("http.useragent","Mozilla/5.0 (Windows; U; MSIE 9.0; Windows NT 9.0; en-US)");
-        ProxyConfiguration jpc = Jenkins.getInstance().proxy;
+        ProxyConfiguration jpc = Jenkins.get().proxy;
         if(jpc != null) {
             hc.getHostConfiguration().setProxy(jpc.name, jpc.port);
             if(jpc.getUserName() != null)
@@ -822,7 +822,7 @@ public class JDKInstaller extends ToolInstaller {
          */
         @RequirePOST
         public HttpResponse doPostCredential(@QueryParameter String username, @QueryParameter String password) throws IOException, ServletException {
-            Jenkins.getInstance().checkPermission(Jenkins.ADMINISTER);
+            Jenkins.get().checkPermission(Jenkins.ADMINISTER);
             this.username = username;
             this.password = Secret.fromString(password);
             save();

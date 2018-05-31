@@ -175,7 +175,7 @@ public class UpdateSite {
      */
     public @CheckForNull Future<FormValidation> updateDirectly(final boolean signatureCheck) {
         if (! getDataFile().exists() || isDue()) {
-            return Jenkins.getInstance().getUpdateCenter().updateService.submit(new Callable<FormValidation>() {
+            return Jenkins.get().getUpdateCenter().updateService.submit(new Callable<FormValidation>() {
                 @Override public FormValidation call() throws Exception {
                     return updateDirectlyNow(signatureCheck);
                 }
@@ -307,7 +307,7 @@ public class UpdateSite {
      */
     @RequirePOST
     public HttpResponse doInvalidateData() {
-        Jenkins.getInstance().checkPermission(Jenkins.ADMINISTER);
+        Jenkins.get().checkPermission(Jenkins.ADMINISTER);
         dataTimestamp = 0;
         return HttpResponses.ok();
     }
@@ -404,7 +404,7 @@ public class UpdateSite {
      * This is where we store the update center data.
      */
     private TextFile getDataFile() {
-        return new TextFile(new File(Jenkins.getInstance().getRootDir(),
+        return new TextFile(new File(Jenkins.get().getRootDir(),
                                      "updates/" + getId()+".json"));
     }
     
@@ -420,7 +420,7 @@ public class UpdateSite {
         if(data==null)      return Collections.emptyList(); // fail to determine
         
         List<Plugin> r = new ArrayList<Plugin>();
-        for (PluginWrapper pw : Jenkins.getInstance().getPluginManager().getPlugins()) {
+        for (PluginWrapper pw : Jenkins.get().getPluginManager().getPlugins()) {
             Plugin p = pw.getUpdateInfo();
             if(p!=null) r.add(p);
         }
@@ -436,7 +436,7 @@ public class UpdateSite {
         Data data = getData();
         if(data==null)      return false;
         
-        for (PluginWrapper pw : Jenkins.getInstance().getPluginManager().getPlugins()) {
+        for (PluginWrapper pw : Jenkins.get().getPluginManager().getPlugins()) {
             if(!pw.isBundled() && pw.getUpdateInfo()!=null)
                 // do not advertize updates to bundled plugins, since we generally want users to get them
                 // as a part of jenkins.war updates. This also avoids unnecessary pinning of plugins. 
@@ -867,7 +867,7 @@ public class UpdateSite {
                 case PLUGIN:
 
                     // check whether plugin is installed
-                    PluginWrapper plugin = Jenkins.getInstance().getPluginManager().getPlugin(this.component);
+                    PluginWrapper plugin = Jenkins.get().getPluginManager().getPlugin(this.component);
                     if (plugin == null) {
                         return false;
                     }
@@ -994,7 +994,7 @@ public class UpdateSite {
          */
         @Exported
         public PluginWrapper getInstalled() {
-            PluginManager pm = Jenkins.getInstance().getPluginManager();
+            PluginManager pm = Jenkins.get().getPluginManager();
             return pm.getPlugin(name);
         }
 
@@ -1027,7 +1027,7 @@ public class UpdateSite {
             List<Plugin> deps = new ArrayList<Plugin>();
 
             for(Map.Entry<String,String> e : dependencies.entrySet()) {
-                Plugin depPlugin = Jenkins.getInstance().getUpdateCenter().getPlugin(e.getKey());
+                Plugin depPlugin = Jenkins.get().getUpdateCenter().getPlugin(e.getKey());
                 if (depPlugin == null) {
                     LOGGER.log(Level.WARNING, "Could not find dependency {0} of {1}", new Object[] {e.getKey(), name});
                     continue;
@@ -1052,7 +1052,7 @@ public class UpdateSite {
             }
 
             for(Map.Entry<String,String> e : optionalDependencies.entrySet()) {
-                Plugin depPlugin = Jenkins.getInstance().getUpdateCenter().getPlugin(e.getKey());
+                Plugin depPlugin = Jenkins.get().getUpdateCenter().getPlugin(e.getKey());
                 if (depPlugin == null) {
                     continue;
                 }
@@ -1197,8 +1197,8 @@ public class UpdateSite {
          */
         @Restricted(NoExternalUse.class)
         public Future<UpdateCenterJob> deploy(boolean dynamicLoad, @CheckForNull UUID correlationId) {
-            Jenkins.getInstance().checkPermission(Jenkins.ADMINISTER);
-            UpdateCenter uc = Jenkins.getInstance().getUpdateCenter();
+            Jenkins.get().checkPermission(Jenkins.ADMINISTER);
+            UpdateCenter uc = Jenkins.get().getUpdateCenter();
             for (Plugin dep : getNeededDependencies()) {
                 UpdateCenter.InstallationJob job = uc.getJob(dep);
                 if (job == null || job.status instanceof UpdateCenter.DownloadJob.Failure) {
@@ -1229,8 +1229,8 @@ public class UpdateSite {
          * Schedules the downgrade of this plugin.
          */
         public Future<UpdateCenterJob> deployBackup() {
-            Jenkins.getInstance().checkPermission(Jenkins.ADMINISTER);
-            UpdateCenter uc = Jenkins.getInstance().getUpdateCenter();
+            Jenkins.get().checkPermission(Jenkins.ADMINISTER);
+            UpdateCenter uc = Jenkins.get().getUpdateCenter();
             return uc.addJob(uc.new PluginDowngradeJob(this, UpdateSite.this, Jenkins.getAuthentication()));
         }
         /**

@@ -339,7 +339,7 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
     }
 
     public Api getApi() {
-        Jenkins.getInstance().checkPermission(Jenkins.ADMINISTER);
+        Jenkins.get().checkPermission(Jenkins.ADMINISTER);
         return new Api(this);
     }
 
@@ -502,7 +502,7 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
                  * Once the plugins are listed, schedule their initialization.
                  */
                 public void run(Reactor session) throws Exception {
-                    Jenkins.getInstance().lookup.set(PluginInstanceStore.class, new PluginInstanceStore());
+                    Jenkins.get().lookup.set(PluginInstanceStore.class, new PluginInstanceStore());
                     TaskGraphBuilder g = new TaskGraphBuilder();
 
                     // schedule execution of loading plugins
@@ -875,7 +875,7 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
                 p.resolvePluginDependencies();
                 strategy.load(p);
 
-                Jenkins.getInstance().refreshExtensions();
+                Jenkins.get().refreshExtensions();
 
                 p.getPlugin().postInitialize();
             } catch (Exception e) {
@@ -1258,7 +1258,7 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
      */
     @Restricted(DoNotUse.class) // WebOnly
     public HttpResponse doPlugins() {
-        Jenkins.getInstance().checkPermission(Jenkins.ADMINISTER);
+        Jenkins.get().checkPermission(Jenkins.ADMINISTER);
         JSONArray response = new JSONArray();
         Map<String,JSONObject> allPlugins = new HashMap<>();
         for (PluginWrapper plugin : plugins) {
@@ -1305,10 +1305,10 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
 
     @RequirePOST
     public HttpResponse doUpdateSources(StaplerRequest req) throws IOException {
-        Jenkins.getInstance().checkPermission(CONFIGURE_UPDATECENTER);
+        Jenkins.get().checkPermission(CONFIGURE_UPDATECENTER);
 
         if (req.hasParameter("remove")) {
-            UpdateCenter uc = Jenkins.getInstance().getUpdateCenter();
+            UpdateCenter uc = Jenkins.get().getUpdateCenter();
             //[Erik] Cannot be converted to try-with-resources in Java 8
             BulkChange bc = new BulkChange(uc); //NOSONAR
             try {
@@ -1331,7 +1331,7 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
     @RequirePOST
     @Restricted(DoNotUse.class) // WebOnly
     public void doInstallPluginsDone() {
-        Jenkins j = Jenkins.getInstance();
+        Jenkins j = Jenkins.get();
         j.checkPermission(Jenkins.ADMINISTER);
         InstallUtil.proceedToNextStateFrom(InstallState.INITIAL_PLUGINS_INSTALLING);
     }
@@ -1341,7 +1341,7 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
      */
     @RequirePOST
     public void doInstall(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException {
-        Jenkins.getInstance().checkPermission(Jenkins.ADMINISTER);
+        Jenkins.get().checkPermission(Jenkins.ADMINISTER);
         Set<String> plugins = new LinkedHashSet<>();
 
         Enumeration<String> en = req.getParameterNames();
@@ -1370,7 +1370,7 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
     @RequirePOST
     @Restricted(DoNotUse.class) // WebOnly
     public HttpResponse doInstallPlugins(StaplerRequest req) throws IOException {
-        Jenkins.getInstance().checkPermission(Jenkins.ADMINISTER);
+        Jenkins.get().checkPermission(Jenkins.ADMINISTER);
         String payload = IOUtils.toString(req.getInputStream(), req.getCharacterEncoding());
         JSONObject request = JSONObject.fromObject(payload);
         JSONArray pluginListJSON = request.getJSONArray("plugins");
@@ -1452,11 +1452,11 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
     }
 
     private void trackInitialPluginInstall(@Nonnull final List<Future<UpdateCenter.UpdateCenterJob>> installJobs) {
-        final Jenkins jenkins = Jenkins.getInstance();
+        final Jenkins jenkins = Jenkins.get();
         final UpdateCenter updateCenter = jenkins.getUpdateCenter();
         final Authentication currentAuth = Jenkins.getAuthentication();
 
-        if (!Jenkins.getInstance().getInstallState().isSetupComplete()) {
+        if (!Jenkins.get().getInstallState().isSetupComplete()) {
             jenkins.setInstallState(InstallState.INITIAL_PLUGINS_INSTALLING);
             updateCenter.persistInstallStatus();
             new Thread() {
@@ -1520,7 +1520,7 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
     }
 
     private UpdateSite.Plugin getPlugin(String pluginName, String siteName) {
-        UpdateSite updateSite = Jenkins.getInstance().getUpdateCenter().getById(siteName);
+        UpdateSite updateSite = Jenkins.get().getUpdateCenter().getById(siteName);
         if (updateSite == null) {
             throw new Failure("No such update center: " + siteName);
         }
@@ -1532,7 +1532,7 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
      */
     @RequirePOST
     public HttpResponse doSiteConfigure(@QueryParameter String site) throws IOException {
-        Jenkins hudson = Jenkins.getInstance();
+        Jenkins hudson = Jenkins.get();
         hudson.checkPermission(CONFIGURE_UPDATECENTER);
         UpdateCenter uc = hudson.getUpdateCenter();
         PersistedList<UpdateSite> sites = uc.getSites();
@@ -1547,7 +1547,7 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
 
     @RequirePOST
     public HttpResponse doProxyConfigure(StaplerRequest req) throws IOException, ServletException {
-        Jenkins jenkins = Jenkins.getInstance();
+        Jenkins jenkins = Jenkins.get();
         jenkins.checkPermission(CONFIGURE_UPDATECENTER);
 
         ProxyConfiguration pc = req.bindJSON(ProxyConfiguration.class, req.getSubmittedForm());
@@ -1567,7 +1567,7 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
     @RequirePOST
     public HttpResponse doUploadPlugin(StaplerRequest req) throws IOException, ServletException {
         try {
-            Jenkins.getInstance().checkPermission(UPLOAD_PLUGINS);
+            Jenkins.get().checkPermission(UPLOAD_PLUGINS);
 
             ServletFileUpload upload = new ServletFileUpload(new DiskFileItemFactory());
 
@@ -1633,9 +1633,9 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
 
     @Restricted(NoExternalUse.class)
     @RequirePOST public HttpResponse doCheckUpdatesServer() throws IOException {
-        Jenkins.getInstance().checkPermission(Jenkins.ADMINISTER);
+        Jenkins.get().checkPermission(Jenkins.ADMINISTER);
         try {
-            for (UpdateSite site : Jenkins.getInstance().getUpdateCenter().getSites()) {
+            for (UpdateSite site : Jenkins.get().getUpdateCenter().getSites()) {
                 FormValidation v = site.updateDirectlyNow(DownloadService.signatureCheck);
                 if (v.kind != FormValidation.Kind.OK) {
                     // TODO crude but enough for now
@@ -1670,7 +1670,7 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
     }
 
     public Descriptor<ProxyConfiguration> getProxyDescriptor() {
-        return Jenkins.getInstance().getDescriptor(ProxyConfiguration.class);
+        return Jenkins.get().getDescriptor(ProxyConfiguration.class);
     }
 
     /**
@@ -1692,9 +1692,9 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
      * @since 1.483
      */
     public List<Future<UpdateCenter.UpdateCenterJob>> prevalidateConfig(InputStream configXml) throws IOException {
-        Jenkins.getInstance().checkPermission(Jenkins.ADMINISTER);
+        Jenkins.get().checkPermission(Jenkins.ADMINISTER);
         List<Future<UpdateCenter.UpdateCenterJob>> jobs = new ArrayList<Future<UpdateCenter.UpdateCenterJob>>();
-        UpdateCenter uc = Jenkins.getInstance().getUpdateCenter();
+        UpdateCenter uc = Jenkins.get().getUpdateCenter();
         // TODO call uc.updateAllSites() when available? perhaps not, since we should not block on network here
         for (Map.Entry<String,VersionNumber> requestedPlugin : parseRequestedPlugins(configXml).entrySet()) {
             PluginWrapper pw = getPlugin(requestedPlugin.getKey());
@@ -1748,7 +1748,7 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
      */
     @RequirePOST
     public JSONArray doPrevalidateConfig(StaplerRequest req) throws IOException {
-        Jenkins.getInstance().checkPermission(Jenkins.ADMINISTER);
+        Jenkins.get().checkPermission(Jenkins.ADMINISTER);
 
         JSONArray response = new JSONArray();
 
@@ -1982,7 +1982,7 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
         public boolean isActivated() {
             if(pluginsWithCycle == null){
                 pluginsWithCycle = new ArrayList<>();
-                for (PluginWrapper p : Jenkins.getInstance().getPluginManager().getPlugins()) {
+                for (PluginWrapper p : Jenkins.get().getPluginManager().getPlugins()) {
                     if(p.hasCycleDependency()){
                         pluginsWithCycle.add(p);
                         isActive = true;
@@ -2022,7 +2022,7 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
          * @param message the message to show (plain text)
          */
         public void ifPluginOlderThenReport(String pluginName, String requiredVersion, String message){
-            Plugin plugin = Jenkins.getInstance().getPlugin(pluginName);
+            Plugin plugin = Jenkins.get().getPlugin(pluginName);
             if(plugin != null){
                 if(plugin.getWrapper().getVersionNumber().isOlderThan(new VersionNumber(requiredVersion))) {
                     pluginsToBeUpdated.put(pluginName, new PluginUpdateInfo(pluginName, message));

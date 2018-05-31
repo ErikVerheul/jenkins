@@ -57,7 +57,7 @@ public class AdminWhitelistRule implements StaplerProxy {
     private boolean masterKillSwitch;
 
     public AdminWhitelistRule() throws IOException, InterruptedException {
-        this.jenkins = Jenkins.getInstance();
+        this.jenkins = Jenkins.get();
 
         // while this file is not a secret, write access to this file is dangerous,
         // so put this in the better-protected part of $JENKINS_HOME, which is in secrets/

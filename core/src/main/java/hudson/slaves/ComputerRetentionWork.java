@@ -59,7 +59,7 @@ public class ComputerRetentionWork extends PeriodicWork {
     @Override
     protected void doRun() {
         final long startRun = System.currentTimeMillis();
-        for (final Computer c : Jenkins.getInstance().getComputers()) {
+        for (final Computer c : Jenkins.get().getComputers()) {
             Queue.withLock(new Runnable() {
                 @Override
                 public void run() {

@@ -160,7 +160,7 @@ public abstract class IdStrategy extends AbstractDescribableImpl<IdStrategy> imp
      * Returns all the registered {@link IdStrategy} descriptors.
      */
     public static DescriptorExtensionList<IdStrategy, IdStrategyDescriptor> all() {
-        return Jenkins.getInstance().getDescriptorList(IdStrategy.class);
+        return Jenkins.get().getDescriptorList(IdStrategy.class);
     }
 
     /**

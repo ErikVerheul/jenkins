@@ -66,7 +66,7 @@ public final class FingerprintCleanupThread extends AsyncPeriodicWork {
     public void execute(TaskListener listener) {
         int numFiles = 0;
 
-        File root = new File(Jenkins.getInstance().getRootDir(),"fingerprints");
+        File root = new File(Jenkins.get().getRootDir(),"fingerprints");
         File[] files1 = root.listFiles(LENGTH2DIR_FILTER);
         if(files1!=null) {
             for (File file1 : files1) {
@@ -110,7 +110,7 @@ public final class FingerprintCleanupThread extends AsyncPeriodicWork {
                 // get the fingerprint in the official map so have the changes visible to Jenkins
                 // otherwise the mutation made in FingerprintMap can override our trimming.
                 listener.getLogger().println("possibly trimming " + fingerprintFile);
-                fp = Jenkins.getInstance()._getFingerprint(fp.getHashString());
+                fp = Jenkins.get()._getFingerprint(fp.getHashString());
                 return fp.trim();
             }
         } catch (IOException e) {

@@ -2838,7 +2838,7 @@ public final class FilePath implements Serializable {
     private static void checkPermissionForValidate() {
         AccessControlled subject = Stapler.getCurrentRequest().findAncestorObject(AbstractProject.class);
         if (subject == null) {
-            Jenkins.getInstance().checkPermission(Jenkins.ADMINISTER);
+            Jenkins.get().checkPermission(Jenkins.ADMINISTER);
         } else {
             subject.checkPermission(Item.CONFIGURE);
         }

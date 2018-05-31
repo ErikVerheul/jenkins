@@ -83,7 +83,7 @@ public abstract class ToolInstaller implements Describable<ToolInstaller>, Exten
      * (By default, just checks the label.)
      */
     public boolean appliesTo(Node node) {
-        Label l = Jenkins.getInstance().getLabel(label);
+        Label l = Jenkins.get().getLabel(label);
         return l == null || l.contains(node);
     }
 
@@ -129,7 +129,7 @@ public abstract class ToolInstaller implements Describable<ToolInstaller>, Exten
     }
 
     public ToolInstallerDescriptor<?> getDescriptor() {
-        return (ToolInstallerDescriptor) Jenkins.getInstance().getDescriptorOrDie(getClass());
+        return (ToolInstallerDescriptor) Jenkins.get().getDescriptorOrDie(getClass());
     }
 
     @Restricted(NoExternalUse.class)

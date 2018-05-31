@@ -125,7 +125,7 @@ public abstract class Cloud extends Actionable implements ExtensionPoint, Descri
     }
 
     public ACL getACL() {
-        return Jenkins.getInstance().getAuthorizationStrategy().getACL(this);
+        return Jenkins.get().getAuthorizationStrategy().getACL(this);
     }
 
     /**
@@ -169,7 +169,7 @@ public abstract class Cloud extends Actionable implements ExtensionPoint, Descri
     public abstract boolean canProvision(Label label);
 
     public Descriptor<Cloud> getDescriptor() {
-        return Jenkins.getInstance().getDescriptorOrDie(getClass());
+        return Jenkins.get().getDescriptorOrDie(getClass());
     }
 
     /**
@@ -185,7 +185,7 @@ public abstract class Cloud extends Actionable implements ExtensionPoint, Descri
      * Returns all the registered {@link Cloud} descriptors.
      */
     public static DescriptorExtensionList<Cloud,Descriptor<Cloud>> all() {
-        return Jenkins.getInstance().<Cloud,Descriptor<Cloud>>getDescriptorList(Cloud.class);
+        return Jenkins.get().<Cloud,Descriptor<Cloud>>getDescriptorList(Cloud.class);
     }
 
     private static final PermissionScope PERMISSION_SCOPE = new PermissionScope(Cloud.class);

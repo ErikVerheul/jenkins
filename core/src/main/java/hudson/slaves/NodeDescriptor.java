@@ -112,7 +112,7 @@ public abstract class NodeDescriptor extends Descriptor<Node> {
      * Returns all the registered {@link NodeDescriptor} descriptors.
      */
     public static DescriptorExtensionList<Node,NodeDescriptor> all() {
-        return Jenkins.getInstance().<Node,NodeDescriptor>getDescriptorList(Node.class);
+        return Jenkins.get().<Node,NodeDescriptor>getDescriptorList(Node.class);
     }
 
     /**

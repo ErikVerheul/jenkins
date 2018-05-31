@@ -194,7 +194,7 @@ public class JNLPLauncher extends ComputerLauncher {
          */
         @Override
         public boolean filter(@CheckForNull Object context, @Nonnull Descriptor descriptor) {
-            return descriptor.clazz != JNLPLauncher.class || Jenkins.getInstance().getTcpSlaveAgentListener() != null;
+            return descriptor.clazz != JNLPLauncher.class || Jenkins.get().getTcpSlaveAgentListener() != null;
         }
 
         /**
@@ -202,7 +202,7 @@ public class JNLPLauncher extends ComputerLauncher {
          */
         @Override
         public boolean filterType(@Nonnull Class<?> contextClass, @Nonnull Descriptor descriptor) {
-            return descriptor.clazz != JNLPLauncher.class || Jenkins.getInstance().getTcpSlaveAgentListener() != null;
+            return descriptor.clazz != JNLPLauncher.class || Jenkins.get().getTcpSlaveAgentListener() != null;
         }
     }
 

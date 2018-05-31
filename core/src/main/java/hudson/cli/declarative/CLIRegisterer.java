@@ -90,7 +90,7 @@ public class CLIRegisterer extends ExtensionFinder {
      * Finds a resolved method annotated with {@link CLIResolver}.
      */
     private Method findResolver(Class type) throws IOException {
-        List<Method> resolvers = Util.filter(Index.list(CLIResolver.class, Jenkins.getInstance().getPluginManager().uberClassLoader), Method.class);
+        List<Method> resolvers = Util.filter(Index.list(CLIResolver.class, Jenkins.get().getPluginManager().uberClassLoader), Method.class);
         for ( ; type!=null; type=type.getSuperclass())
             for (Method m : resolvers)
                 if (m.getReturnType()==type)
@@ -207,7 +207,7 @@ public class CLIRegisterer extends ExtensionFinder {
                                 Authentication old = sc.getAuthentication();
                                 try {
                                     // authentication
-                                    CliAuthenticator authenticator = Jenkins.getInstance().getSecurityRealm().createCliAuthenticator(this);
+                                    CliAuthenticator authenticator = Jenkins.get().getSecurityRealm().createCliAuthenticator(this);
                                     new ClassParser().parse(authenticator, parser);
 
                                     // fill up all the binders

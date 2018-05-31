@@ -66,7 +66,7 @@ public class JenkinsDescriptorTest {
     @PrepareForTest(Jenkins.class)
     public void testBuildDirValidation() {
         PowerMockito.mockStatic(Jenkins.class);
-        PowerMockito.when(Jenkins.getInstance()).thenReturn(jenkins);
+        PowerMockito.when(Jenkins.get()).thenReturn(jenkins);
         PowerMockito.when(Jenkins.expandVariablesForDirectory(anyString(), anyString(), anyString())).thenCallRealMethod();
         when(jenkins.getRootDir()).thenReturn(new File(".").getAbsoluteFile());
 

@@ -623,7 +623,7 @@ public class SlaveComputer extends Computer {
             SecurityContextHolder.setContext(old);
         }
         log.println("Agent successfully connected and online");
-        Jenkins.getInstance().getQueue().scheduleMaintenance();
+        Jenkins.get().getQueue().scheduleMaintenance();
     }
 
     @Override

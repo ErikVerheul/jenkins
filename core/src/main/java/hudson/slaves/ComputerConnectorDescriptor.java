@@ -12,7 +12,7 @@ import jenkins.model.Jenkins;
  */
 public abstract class ComputerConnectorDescriptor extends Descriptor<ComputerConnector> {
     public static DescriptorExtensionList<ComputerConnector,ComputerConnectorDescriptor> all() {
-        return Jenkins.getInstance().<ComputerConnector,ComputerConnectorDescriptor>
+        return Jenkins.get().<ComputerConnector,ComputerConnectorDescriptor>
                                     getDescriptorList(ComputerConnector.class);
     }
 }

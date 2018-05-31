@@ -183,7 +183,7 @@ public abstract class AuthorizationStrategy extends AbstractDescribableImpl<Auth
      * Returns all the registered {@link AuthorizationStrategy} descriptors.
      */
     public static @Nonnull DescriptorExtensionList<AuthorizationStrategy,Descriptor<AuthorizationStrategy>> all() {
-        return Jenkins.getInstance().<AuthorizationStrategy,Descriptor<AuthorizationStrategy>>getDescriptorList(AuthorizationStrategy.class);
+        return Jenkins.get().<AuthorizationStrategy,Descriptor<AuthorizationStrategy>>getDescriptorList(AuthorizationStrategy.class);
     }
 
     /**

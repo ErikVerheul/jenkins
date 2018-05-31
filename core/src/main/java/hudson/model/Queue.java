@@ -384,7 +384,7 @@ public class Queue extends ResourceController implements Saveable {
                 try (BufferedReader in = Files.newBufferedReader(Util.fileToPath(queueFile), Charset.defaultCharset())) {
                     String line;
                     while ((line = in.readLine()) != null) {
-                        AbstractProject j = Jenkins.getInstance().getItemByFullName(line, AbstractProject.class);
+                        AbstractProject j = Jenkins.get().getItemByFullName(line, AbstractProject.class);
                         if (j != null)
                             j.scheduleBuild();
                     }
@@ -488,7 +488,7 @@ public class Queue extends ResourceController implements Saveable {
      * Wipes out all the items currently in the queue, as if all of them are cancelled at once.
      */
     public void clear() {
-        Jenkins.getInstance().checkPermission(Jenkins.ADMINISTER);
+        Jenkins.get().checkPermission(Jenkins.ADMINISTER);
         lock.lock();
         try { try {
             for (WaitingItem i : new ArrayList<WaitingItem>(
@@ -504,11 +504,11 @@ public class Queue extends ResourceController implements Saveable {
     }
 
     private File getQueueFile() {
-        return new File(Jenkins.getInstance().getRootDir(), "queue.txt");
+        return new File(Jenkins.get().getRootDir(), "queue.txt");
     }
 
     /*package*/ File getXMLQueueFile() {
-        return new File(Jenkins.getInstance().getRootDir(), "queue.xml");
+        return new File(Jenkins.get().getRootDir(), "queue.xml");
     }
 
     /**
@@ -1460,7 +1460,7 @@ public class Queue extends ResourceController implements Saveable {
 
             {// update parked (and identify any pending items whose executor has disappeared)
                 List<BuildableItem> lostPendings = new ArrayList<BuildableItem>(pendings);
-                for (Computer c : Jenkins.getInstance().getComputers()) {
+                for (Computer c : Jenkins.get().getComputers()) {
                     for (Executor e : c.getExecutors()) {
                         if (e.isInterrupted()) {
                             // JENKINS-28840 we will deadlock if we try to touch this executor while interrupt flag set
@@ -1692,7 +1692,7 @@ public class Queue extends ResourceController implements Saveable {
     private Runnable makeFlyWeightTaskBuildable(final BuildableItem p){
         //we double check if this is a flyweight task
         if (p.task instanceof FlyweightTask) {
-            Jenkins h = Jenkins.getInstance();
+            Jenkins h = Jenkins.get();
 
             Label lbl = p.getAssignedLabel();
 
@@ -1773,7 +1773,7 @@ public class Queue extends ResourceController implements Saveable {
      * @since 1.598
      */
     public static boolean isBlockedByShutdown(Task task) {
-        return Jenkins.getInstance().isQuietingDown() && !(task instanceof NonBlockingTask);
+        return Jenkins.get().isQuietingDown() && !(task instanceof NonBlockingTask);
     }
 
     public Api getApi() {
@@ -2256,7 +2256,7 @@ public class Queue extends ResourceController implements Saveable {
         @Deprecated
         @RequirePOST
         public HttpResponse doCancelQueue() throws IOException, ServletException {
-        	Jenkins.getInstance().getQueue().cancel(this);
+        	Jenkins.get().getQueue().cancel(this);
             return HttpResponses.forwardToPreviousPage();
         }
 
@@ -2604,7 +2604,7 @@ public class Queue extends ResourceController implements Saveable {
         }
 
         public CauseOfBlockage getCauseOfBlockage() {
-            Jenkins jenkins = Jenkins.getInstance();
+            Jenkins jenkins = Jenkins.get();
             if(isBlockedByShutdown(task))
                 return CauseOfBlockage.fromMessage(Messages._Queue_HudsonIsAboutToShutDown());
 
@@ -2773,7 +2773,7 @@ public class Queue extends ResourceController implements Saveable {
 
 			@Override
 			public Object fromString(String string) {
-                Object item = Jenkins.getInstance().getItemByFullName(string);
+                Object item = Jenkins.get().getItemByFullName(string);
                 if(item==null)  throw new NoSuchElementException("No such job exists: "+string);
                 return item;
 			}
@@ -2796,7 +2796,7 @@ public class Queue extends ResourceController implements Saveable {
 				String[] split = string.split("#");
 				String projectName = split[0];
 				int buildNumber = Integer.parseInt(split[1]);
-				Job<?,?> job = (Job<?,?>) Jenkins.getInstance().getItemByFullName(projectName);
+				Job<?,?> job = (Job<?,?>) Jenkins.get().getItemByFullName(projectName);
                 if(job==null)  throw new NoSuchElementException("No such job exists: "+projectName);
 				Run<?,?> run = job.getBuildByNumber(buildNumber);
                 if(run==null)  throw new NoSuchElementException("No such build: "+string);
@@ -2821,7 +2821,7 @@ public class Queue extends ResourceController implements Saveable {
 
 			@Override
 			public Object fromString(String string) {
-                return Jenkins.getInstance().getQueue();
+                return Jenkins.get().getQueue();
 			}
 
 			@Override
@@ -3004,7 +3004,7 @@ public class Queue extends ResourceController implements Saveable {
 
     @CLIResolver
     public static Queue getInstance() {
-        return Jenkins.getInstance().getQueue();
+        return Jenkins.get().getQueue();
     }
 
     /**

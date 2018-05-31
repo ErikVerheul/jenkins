@@ -495,7 +495,7 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
         @Override
         protected void onModified() throws IOException {
             super.onModified();
-            Jenkins.getInstance().trimLabels();
+            Jenkins.get().trimLabels();
         }
     }
 
@@ -1276,7 +1276,7 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
 
         @Override
         public boolean isActivated() {
-            int slaveAgentPort = Jenkins.getInstance().slaveAgentPort;
+            int slaveAgentPort = Jenkins.get().slaveAgentPort;
             return SLAVE_AGENT_PORT_ENFORCE && slaveAgentPort != Jenkins.getSlaveAgentPortInitialValue(slaveAgentPort);
         }
     }
@@ -2140,7 +2140,7 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
             // do essentially what expandVariablesForDirectory does, without an Item
             String replacedValue = expandVariablesForDirectory(value,
                     "doCheckRawBuildsDir-Marker:foo",
-                    Jenkins.getInstance().getRootDir().getPath() + "/jobs/doCheckRawBuildsDir-Marker$foo");
+                    Jenkins.get().getRootDir().getPath() + "/jobs/doCheckRawBuildsDir-Marker$foo");
 
             File replacedFile = new File(replacedValue);
             if (!replacedFile.isAbsolute()) {
@@ -2178,7 +2178,7 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
 
         // to route /descriptor/FQCN/xxx to getDescriptor(FQCN).xxx
         public Object getDynamic(String token) {
-            return Jenkins.getInstance().getDescriptor(token);
+            return Jenkins.get().getDescriptor(token);
         }
     }
 
@@ -2274,7 +2274,7 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
         final JenkinsLocationConfiguration config = JenkinsLocationConfiguration.get();
         if (config == null) {
             // Try to get standard message if possible
-            final Jenkins j = Jenkins.getInstance();
+            final Jenkins j = Jenkins.get();
             throw new IllegalStateException("Jenkins instance " + j + " has been successfully initialized, but JenkinsLocationConfiguration is undefined.");
         }
         String url = config.getUrl();
@@ -2409,8 +2409,7 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
 
     @Restricted(NoExternalUse.class)
     public static String expandVariablesForDirectory(String base, String itemFullName, String itemRootDir) {
-        return Util.replaceMacro(base, ImmutableMap.of(
-                "JENKINS_HOME", Jenkins.getInstance().getRootDir().getPath(),
+        return Util.replaceMacro(base, ImmutableMap.of("JENKINS_HOME", Jenkins.get().getRootDir().getPath(),
                 "ITEM_ROOTDIR", itemRootDir,
                 "ITEM_FULLNAME", itemFullName,   // legacy, deprecated
                 "ITEM_FULL_NAME", itemFullName.replace(':','$'))); // safe, see JENKINS-12251
@@ -4206,7 +4205,7 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
 
         @Override
         public void onRestart() {
-            Computer computer = Jenkins.getInstance().toComputer();
+            Computer computer = Jenkins.get().toComputer();
             if (computer == null) return;
             RestartCause cause = new RestartCause();
             for (ComputerListener listener: ComputerListener.all()) {
@@ -4739,7 +4738,7 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
 
     public static class MasterComputer extends Computer {
         protected MasterComputer() {
-            super(Jenkins.getInstance());
+            super(Jenkins.get());
         }
 
         /**
@@ -4799,7 +4798,7 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
         @Override
         @RequirePOST
         public void doConfigSubmit(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException, FormException {
-            Jenkins.getInstance().doConfigExecutorsSubmit(req, rsp);
+            Jenkins.get().doConfigExecutorsSubmit(req, rsp);
         }
 
         @WebMethod(name="config.xml")

@@ -266,7 +266,7 @@ public abstract class TopLevelItemDescriptor extends Descriptor<TopLevelItem> im
      */
     @Deprecated
     public TopLevelItem newInstance(String name) {
-        return newInstance(Jenkins.getInstance(), name);
+        return newInstance(Jenkins.get(), name);
     }
 
     /**

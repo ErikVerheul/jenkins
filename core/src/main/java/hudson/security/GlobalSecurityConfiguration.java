@@ -69,11 +69,11 @@ public class GlobalSecurityConfiguration extends ManagementLink implements Descr
     private static final Logger LOGGER = Logger.getLogger(GlobalSecurityConfiguration.class.getName());
 
     public MarkupFormatter getMarkupFormatter() {
-        return Jenkins.getInstance().getMarkupFormatter();
+        return Jenkins.get().getMarkupFormatter();
     }
 
     public int getSlaveAgentPort() {
-        return Jenkins.getInstance().getSlaveAgentPort();
+        return Jenkins.get().getSlaveAgentPort();
     }
 
     /**
@@ -82,26 +82,26 @@ public class GlobalSecurityConfiguration extends ManagementLink implements Descr
      */
     @Restricted(NoExternalUse.class)
     public boolean isSlaveAgentPortEnforced() {
-        return Jenkins.getInstance().isSlaveAgentPortEnforced();
+        return Jenkins.get().isSlaveAgentPortEnforced();
     }
 
     public Set<String> getAgentProtocols() {
-        return Jenkins.getInstance().getAgentProtocols();
+        return Jenkins.get().getAgentProtocols();
     }
 
     public boolean isDisableRememberMe() {
-        return Jenkins.getInstance().isDisableRememberMe();
+        return Jenkins.get().isDisableRememberMe();
     }
 
     @RequirePOST
     public synchronized void doConfigure(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException, FormException {
         // for compatibility reasons, the actual value is stored in Jenkins
         //[Erik] commit covers the close
-        BulkChange bc = new BulkChange(Jenkins.getInstance()); //NOSONAR
+        BulkChange bc = new BulkChange(Jenkins.get()); //NOSONAR
         try{
             boolean result = configure(req, req.getSubmittedForm());
             LOGGER.log(Level.FINE, "security saved: "+result);
-            Jenkins.getInstance().save();
+            Jenkins.get().save();
             FormApply.success(req.getContextPath()+"/manage").generateResponse(req, rsp, null);
         } finally {
             bc.commit();
@@ -110,7 +110,7 @@ public class GlobalSecurityConfiguration extends ManagementLink implements Descr
 
     public boolean configure(StaplerRequest req, JSONObject json) throws hudson.model.Descriptor.FormException {
         // for compatibility reasons, the actual value is stored in Jenkins
-        Jenkins j = Jenkins.getInstance();
+        Jenkins j = Jenkins.get();
         j.checkPermission(Jenkins.ADMINISTER);
         if (json.has("useSecurity")) {
             JSONObject security = json.getJSONObject("useSecurity");
@@ -203,7 +203,7 @@ public class GlobalSecurityConfiguration extends ManagementLink implements Descr
     @SuppressWarnings("unchecked")
     @Override
     public Descriptor<GlobalSecurityConfiguration> getDescriptor() {
-        return Jenkins.getInstance().getDescriptorOrDie(getClass());
+        return Jenkins.get().getDescriptorOrDie(getClass());
     }
     
     @Extension @Symbol("security")

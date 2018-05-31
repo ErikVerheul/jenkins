@@ -62,7 +62,7 @@ public class QueueItemAuthenticatorConfiguration extends GlobalConfiguration {
     }
 
     public static QueueItemAuthenticatorConfiguration get() {
-        return Jenkins.getInstance().getInjector().getInstance(QueueItemAuthenticatorConfiguration.class);
+        return Jenkins.get().getInjector().getInstance(QueueItemAuthenticatorConfiguration.class);
     }
 
     @Extension(ordinal = 100)

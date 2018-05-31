@@ -200,7 +200,7 @@ public abstract class Node extends AbstractModelObject implements Reconfigurable
      */
     @CheckForNull
     public final Computer toComputer() {
-        AbstractCIBase ciBase = Jenkins.getInstance();
+        AbstractCIBase ciBase = Jenkins.get();
         return ciBase.getComputer(this);
     }
 
@@ -386,8 +386,8 @@ public abstract class Node extends AbstractModelObject implements Reconfigurable
             // flyweight tasks need to get executed somewhere, if every node
             if (!(item.task instanceof Queue.FlyweightTask && (
                     this instanceof Jenkins
-                            || Jenkins.getInstance().getNumExecutors() < 1
-                            || Jenkins.getInstance().getMode() == Mode.EXCLUSIVE)
+                            || Jenkins.get().getNumExecutors() < 1
+                            || Jenkins.get().getMode() == Mode.EXCLUSIVE)
             )) {
                 return CauseOfBlockage.fromMessage(Messages._Node_BecauseNodeIsReserved(getDisplayName()));   // this node is reserved for tasks that are tied to it
             }
@@ -506,7 +506,7 @@ public abstract class Node extends AbstractModelObject implements Reconfigurable
     }
 
     public ACL getACL() {
-        return Jenkins.getInstance().getAuthorizationStrategy().getACL(this);
+        return Jenkins.get().getAuthorizationStrategy().getACL(this);
     }
 
     public Node reconfigure(final StaplerRequest req, JSONObject form) throws FormException {

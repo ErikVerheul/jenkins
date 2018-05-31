@@ -210,7 +210,7 @@ public abstract class Job<JobT extends Job<JobT, RunT>, RunT extends Run<JobT, R
 
         File buildDir = getBuildDir();
         runIdMigrator = new RunIdMigrator();
-        runIdMigrator.migrate(buildDir, Jenkins.getInstance().getRootDir());
+        runIdMigrator.migrate(buildDir, Jenkins.get().getRootDir());
 
         TextFile f = getNextBuildNumberFile();
         if (f.exists()) {
@@ -687,7 +687,7 @@ public abstract class Job<JobT extends Job<JobT, RunT>, RunT extends Run<JobT, R
     public static class SubItemBuildsLocationImpl extends ItemListener {
         @Override
         public void onLocationChanged(Item item, String oldFullName, String newFullName) {
-            final Jenkins jenkins = Jenkins.getInstance();
+            final Jenkins jenkins = Jenkins.get();
             if (!jenkins.isDefaultBuildDir() && item instanceof Job) {
                 File newBuildDir = ((Job)item).getBuildDir();
                 try {
@@ -1357,7 +1357,7 @@ public abstract class Job<JobT extends Job<JobT, RunT>, RunT extends Run<JobT, R
             ItemListener.fireOnUpdated(this);
 
             String newName = req.getParameter("name");
-            final ProjectNamingStrategy namingStrategy = Jenkins.getInstance().getProjectNamingStrategy();
+            final ProjectNamingStrategy namingStrategy = Jenkins.get().getProjectNamingStrategy();
             if (validRename(name, newName)) {
                 newName = newName.trim();
                 // check this error early to avoid HTTP response splitting.
@@ -1637,7 +1637,7 @@ public abstract class Job<JobT extends Job<JobT, RunT>, RunT extends Run<JobT, R
      */
     @Override
     public ACL getACL() {
-        return Jenkins.getInstance().getAuthorizationStrategy().getACL(this);
+        return Jenkins.get().getAuthorizationStrategy().getACL(this);
     }
 
     public BuildTimelineWidget getTimeline() {

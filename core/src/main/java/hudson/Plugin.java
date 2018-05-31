@@ -136,7 +136,7 @@ public abstract class Plugin implements Saveable {
      *
      * <p>
      * This method is called after {@link #setServletContext(ServletContext)} is invoked.
-     * You can also use {@link jenkins.model.Jenkins#getInstance()} to access the singleton hudson instance,
+     * You can also use {@link jenkins.model.Jenkins#get()} to access the singleton hudson instance,
      * although the plugin start up happens relatively early in the initialization
      * stage and not all the data are loaded in Hudson.
      *
@@ -286,7 +286,7 @@ public abstract class Plugin implements Saveable {
      */
     protected XmlFile getConfigXml() {
         return new XmlFile(Jenkins.XSTREAM,
-                new File(Jenkins.getInstance().getRootDir(),wrapper.getShortName()+".xml"));
+                new File(Jenkins.get().getRootDir(),wrapper.getShortName()+".xml"));
     }
 
 

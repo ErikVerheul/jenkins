@@ -65,7 +65,7 @@ public abstract class AbstractAsyncNodeMonitorDescriptor<T> extends AbstractNode
     protected Map<Computer, T> monitor() throws InterruptedException {
         Map<Computer,Future<T>> futures = new HashMap<Computer,Future<T>>();
 
-        for (Computer c : Jenkins.getInstance().getComputers()) {
+        for (Computer c : Jenkins.get().getComputers()) {
             try {
                 VirtualChannel ch = c.getChannel();
                 futures.put(c,null);    // sentinel value
