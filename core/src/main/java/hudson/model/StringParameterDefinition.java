@@ -123,16 +123,19 @@ public class StringParameterDefinition extends SimpleParameterDefinition {
     @Override
     public ParameterValue createValue(StaplerRequest req, JSONObject jo) {
         StringParameterValue value = req.bindJSON(StringParameterValue.class, jo);
-        if (isTrim() && value!=null) {
+        if (isTrim() && value != null) {
             value.doTrim();
         }
-        value.setDescription(getDescription());
+        if (value != null) {
+            value.setDescription(getDescription());
+        }
         return value;
     }
 
+    @Override
     public ParameterValue createValue(String str) {
         StringParameterValue value = new StringParameterValue(getName(), str, getDescription());
-        if (isTrim() && value!=null) {
+        if (isTrim()) {
             value.doTrim();
         }
         return value;

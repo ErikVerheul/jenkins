@@ -49,7 +49,8 @@ public class RemotingVersionInfo {
     @Nonnull
     private static VersionNumber MINIMUM_SUPPORTED_VERSION;
 
-    private RemotingVersionInfo() {}
+    //[Erik] EMBEDDED_VERSION and MINIMUM_SUPPORTED_VERSION are assigned a non null value in the static block below
+    private RemotingVersionInfo() {} //NOSONAR
 
     static {
         Properties props = new Properties();

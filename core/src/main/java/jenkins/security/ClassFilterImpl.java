@@ -162,7 +162,8 @@ public class ClassFilterImpl extends ClassFilter {
                 }
             } else {
                 ClassLoader loader = c.getClassLoader();
-                if (loader != null && loader.getClass().getName().equals("hudson.remoting.RemoteClassLoader")) {
+                //[Erik] Trust "hudson.remoting.RemoteClassLoader" to be unique
+                if (loader != null && loader.getClass().getName().equals("hudson.remoting.RemoteClassLoader")) { //NOSONAR
                     LOGGER.log(Level.FINE, "permitting {0} since it was loaded by a remote class loader", name);
                     return false;
                 }
