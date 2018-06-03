@@ -48,6 +48,8 @@ import org.jvnet.localizer.Localizable;
  * @see <a href="https://wiki.jenkins-ci.org/display/JENKINS/Making+your+plugin+behave+in+secured+Jenkins">Plugins in secured Jenkins</a>
  */
 public final class Permission implements Serializable {
+    
+    private static final long serialVersionUID = 1;
 
     /**
      * Comparator that orders {@link Permission} objects based on their ID.
