@@ -78,15 +78,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import java.security.DigestInputStream;
-
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
-import org.apache.commons.codec.digest.DigestUtils;
-
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 
@@ -227,7 +222,7 @@ public class Util {
             return FileUtils.readFileToString(logfile, charset);
         } catch (FileNotFoundException e) {
             return "";
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new IOException("Failed to fully read " + logfile, e);
         }
     }
@@ -595,7 +590,7 @@ public class Util {
         return tmp;
     }
 
-    private static final Pattern errorCodeParser = Pattern.compile(".*CreateProcess.*error=([0-9]+).*");
+    private static final Pattern ERRORCODEPARSER = Pattern.compile(".*CreateProcess.*error=([0-9]+).*");
 
     /**
      * On Windows, error messages for IOException aren't very helpful.
@@ -622,7 +617,7 @@ public class Util {
     public static String getWin32ErrorMessage(Throwable e) {
         String msg = e.getMessage();
         if(msg!=null) {
-            Matcher m = errorCodeParser.matcher(msg);
+            Matcher m = ERRORCODEPARSER.matcher(msg);
             if(m.matches()) {
                 try {
                     ResourceBundle rb = ResourceBundle.getBundle("/hudson/win32errors");
@@ -853,9 +848,7 @@ public class Util {
 
             // Due to the stupid US export restriction JDK only ships 128bit version.
             return new SecretKeySpec(digest.digest(),0,128/8, "AES");
-        } catch (NoSuchAlgorithmException e) {
-            throw new Error(e);
-        } catch (UnsupportedEncodingException e) {
+        } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
             throw new Error(e);
         }
     }
@@ -1034,7 +1027,7 @@ public class Util {
         }
     }
 
-    private static final boolean[] uriMap = new boolean[123];
+    private static final boolean[] URIMAP = new boolean[123];
     static {
         String raw =
     "!  $ &'()*+,-. 0123456789   =  @ABCDEFGHIJKLMNOPQRSTUVWXYZ    _ abcdefghijklmnopqrstuvwxyz";
@@ -1042,9 +1035,9 @@ public class Util {
   //  ^--so these are encoded
         int i;
         // Encode control chars and space
-        for (i = 0; i < 33; i++) uriMap[i] = true;
+        for (i = 0; i < 33; i++) URIMAP[i] = true;
         for (int j = 0; j < raw.length(); i++, j++)
-            uriMap[i] = (raw.charAt(j) == ' ');
+            URIMAP[i] = (raw.charAt(j) == ' ');
         // If we add encodeQuery() just add a 2nd map to encode &+=
         // queryMap[38] = queryMap[43] = queryMap[61] = true;
     }
@@ -1067,7 +1060,7 @@ public class Util {
         char c;
         for (int i = 0, m = s.length(); i < m; i++) {
             c = s.charAt(i);
-            if (c > 122 || uriMap[c]) {
+            if (c > 122 || URIMAP[c]) {
                 if (!escaped) {
                     out = new StringBuilder(i + (m - i) * 3);
                     out.append(s.substring(0, i));
@@ -1373,9 +1366,9 @@ public class Util {
         }
     }
 
-    private static final AtomicBoolean warnedSymlinks = new AtomicBoolean();
+    private static final AtomicBoolean WARNEDSYMLINKS = new AtomicBoolean();
     private static void warnWindowsSymlink() {
-        if (warnedSymlinks.compareAndSet(false, true)) {
+        if (WARNEDSYMLINKS.compareAndSet(false, true)) {
             LOGGER.warning("Symbolic links enabled on this platform but disabled for this user; run as administrator or use Local Security Policy > Security Settings > Local Policies > User Rights Assignment > Create symbolic links");
         }
     }
@@ -1429,7 +1422,7 @@ public class Util {
         } catch (IOException x) {
             throw x;
         } catch (Exception x) {
-            throw (IOException) new IOException(x.toString()).initCause(x);
+            throw new IOException(x);
         }
     }
 
@@ -1616,9 +1609,9 @@ public class Util {
     public static int permissionsToMode(Set<PosixFilePermission> permissions) {
         PosixFilePermission[] allPermissions = PosixFilePermission.values();
         int result = 0;
-        for (int i = 0; i < allPermissions.length; i++) {
+        for (PosixFilePermission allPermission : allPermissions) {
             result <<= 1;
-            result |= permissions.contains(allPermissions[i]) ? 1 : 0;
+            result |= permissions.contains(allPermission) ? 1 : 0;
         }
         return result;
     }
@@ -1687,7 +1680,7 @@ public class Util {
      * give up, thus improving build reliability.
      */
     @Restricted(value = NoExternalUse.class)
-    static int DELETION_MAX = Math.max(1, SystemProperties.getInteger(Util.class.getName() + ".maxFileDeletionRetries", 3).intValue());
+    static int DELETION_MAX = Math.max(1, SystemProperties.getInteger(Util.class.getName() + ".maxFileDeletionRetries", 3));
 
     /**
      * The time (in milliseconds) that we will wait between attempts to
@@ -1699,7 +1692,7 @@ public class Util {
      * between attempts.
      */
     @Restricted(value = NoExternalUse.class)
-    static int WAIT_BETWEEN_DELETION_RETRIES = SystemProperties.getInteger(Util.class.getName() + ".deletionRetryWait", 100).intValue();
+    static int WAIT_BETWEEN_DELETION_RETRIES = SystemProperties.getInteger(Util.class.getName() + ".deletionRetryWait", 100);
 
     /**
      * If this flag is set to true then we will request a garbage collection
@@ -1734,5 +1727,5 @@ public class Util {
      * overwritten by Jenkins erroneously.
      */
     @Restricted(value = NoExternalUse.class)
-    public static boolean NATIVE_CHMOD_MODE = SystemProperties.getBoolean(Util.class.getName() + ".useNativeChmodAndMode");
+    public static final boolean NATIVE_CHMOD_MODE = SystemProperties.getBoolean(Util.class.getName() + ".useNativeChmodAndMode");
 }

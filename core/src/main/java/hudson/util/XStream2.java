@@ -161,7 +161,7 @@ public class XStream2 extends XStream {
         } else {
             Set<String> topLevelFields = new HashSet<>();
             o = super.unmarshal(new ReaderWrapper(reader) {
-                int depth;
+                private int depth;
                 @Override
                 public void moveUp() {
                     if (--depth == 0) {
@@ -442,25 +442,24 @@ public class XStream2 extends XStream {
                 IllegalAccessError x = new IllegalAccessError();
                 x.initCause(e);
                 throw x;
-            } catch (InstantiationException e) {
-                InstantiationError x = new InstantiationError();
-                x.initCause(e);
-                throw x;
-            } catch (InvocationTargetException e) {
+            } catch (InstantiationException | InvocationTargetException e) {
                 InstantiationError x = new InstantiationError();
                 x.initCause(e);
                 throw x;
             }
         }
 
+        @Override
         public boolean canConvert(Class type) {
             return findConverter(type)!=null;
         }
 
+        @Override
         public void marshal(Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
             findConverter(source.getClass()).marshal(source,writer,context);
         }
 
+        @Override
         public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
             return findConverter(context.getRequiredType()).unmarshal(reader,context);
         }
@@ -482,15 +481,18 @@ public class XStream2 extends XStream {
             converter = xstream.reflectionConverter;
         }
 
+        @Override
         public boolean canConvert(Class type) {
             // marshal/unmarshal called directly from AssociatedConverterImpl
             return false;
         }
 
+        @Override
         public void marshal(Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
             converter.marshal(source, writer, context);
         }
 
+        @Override
         public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
             Object obj = converter.unmarshal(reader, context);
             callback((T)obj, context);

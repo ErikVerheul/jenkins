@@ -114,6 +114,7 @@ public class ClassFilterImpl extends ClassFilter {
     /** Whether a given code source location is whitelisted. */
     private final Map<String, Boolean> codeSourceCache = Collections.synchronizedMap(new HashMap<>());
     /** Names of classes outside Jenkins core or plugins which have a special serial form but are considered safe. */
+    @VisibleForTesting
     static final Set<String> WHITELISTED_CLASSES;
     static {
         try (InputStream is = ClassFilterImpl.class.getResourceAsStream("whitelisted-classes.txt")) {

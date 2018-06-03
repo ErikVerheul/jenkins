@@ -30,7 +30,7 @@ public class Timer {
      * The scheduled executor thread pool. This is initialized lazily since it may be created/shutdown many times
      * when running the test suite.
      */
-    static ScheduledExecutorService executorService;
+    private static ScheduledExecutorService executorService;
 
 
     /**
