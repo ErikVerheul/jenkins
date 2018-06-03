@@ -66,6 +66,7 @@ public abstract class DirScanner implements Serializable {
             }
         }
 
+        @Override
         public void scan(File dir, FileVisitor visitor) throws IOException {
             scan(dir,"",visitor);
         }
@@ -78,7 +79,7 @@ public abstract class DirScanner implements Serializable {
      * <p>An initial basename is prepended as with {@link Full}.
      */
     public static class Filter extends Full {
-        private final FileFilter filter;
+        private transient final FileFilter filter;
 
         public Filter(FileFilter filter) {
             this.filter = filter;
@@ -114,6 +115,7 @@ public abstract class DirScanner implements Serializable {
             this.useDefaultExcludes = useDefaultExcludes;
         }
 
+        @Override
         public void scan(File dir, FileVisitor visitor) throws IOException {
             if(fixEmpty(includes)==null && excludes==null) {
                 // optimization

@@ -125,6 +125,7 @@ public abstract class RetentionStrategy<T extends Computer> extends AbstractDesc
      */
     public static final RetentionStrategy<Computer> NOOP = new RetentionStrategy<Computer>() {
         @GuardedBy("hudson.model.Queue.lock")
+        @Override
         public long check(Computer c) {
             return 60;
         }
@@ -161,6 +162,7 @@ public abstract class RetentionStrategy<T extends Computer> extends AbstractDesc
         }
 
         @GuardedBy("hudson.model.Queue.lock")
+        @Override
         public long check(SlaveComputer c) {
             if (c.isOffline() && !c.isConnecting() && c.isLaunchSupported())
                 c.tryReconnect();
@@ -169,6 +171,7 @@ public abstract class RetentionStrategy<T extends Computer> extends AbstractDesc
 
         @Extension(ordinal=100) @Symbol("always")
         public static class DescriptorImpl extends Descriptor<RetentionStrategy<?>> {
+            @Override
             public String getDisplayName() {
                 return Messages.RetentionStrategy_Always_displayName();
             }
@@ -180,7 +183,7 @@ public abstract class RetentionStrategy<T extends Computer> extends AbstractDesc
      */
     public static class Demand extends RetentionStrategy<SlaveComputer> {
 
-        private static final Logger logger = Logger.getLogger(Demand.class.getName());
+        private static final Logger LOGGER = Logger.getLogger(Demand.class.getName());
 
         /**
          * The delay (in minutes) for which the agent must be in demand before trying to launch it.
@@ -260,7 +263,7 @@ public abstract class RetentionStrategy<T extends Computer> extends AbstractDesc
 
                 if (needComputer) {
                     // we've been in demand for long enough
-                    logger.log(Level.INFO, "Launching computer {0} as it has been in demand for {1}",
+                    LOGGER.log(Level.INFO, "Launching computer {0} as it has been in demand for {1}",
                             new Object[]{c.getName(), Util.getTimeSpanString(demandMilliseconds)});
                     c.connect(false);
                 }
@@ -268,7 +271,7 @@ public abstract class RetentionStrategy<T extends Computer> extends AbstractDesc
                 final long idleMilliseconds = System.currentTimeMillis() - c.getIdleStartMilliseconds();
                 if (idleMilliseconds > idleDelay * 1000 * 60 /*MINS->MILLIS*/) {
                     // we've been idle for long enough
-                    logger.log(Level.INFO, "Disconnecting computer {0} as it has been idle for {1}",
+                    LOGGER.log(Level.INFO, "Disconnecting computer {0} as it has been idle for {1}",
                             new Object[]{c.getName(), Util.getTimeSpanString(idleMilliseconds)});
                     c.disconnect(new OfflineCause.IdleOfflineCause());
                 } else {

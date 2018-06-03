@@ -25,9 +25,9 @@ package hudson.security;
 
 import com.google.common.collect.ImmutableSet;
 import hudson.model.Hudson;
+import java.io.Serializable;
 import jenkins.model.Jenkins;
 import net.sf.json.util.JSONUtils;
-
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -47,7 +47,7 @@ import org.jvnet.localizer.Localizable;
  * @author Kohsuke Kawaguchi
  * @see <a href="https://wiki.jenkins-ci.org/display/JENKINS/Making+your+plugin+behave+in+secured+Jenkins">Plugins in secured Jenkins</a>
  */
-public final class Permission {
+public final class Permission implements Serializable {
 
     /**
      * Comparator that orders {@link Permission} objects based on their ID.
@@ -59,6 +59,7 @@ public final class Permission {
          */
         // break eclipse compilation 
         //Override
+        @Override
         public int compare(@Nonnull Permission one, @Nonnull Permission two) {
             return one.getId().compareTo(two.getId());
         }
@@ -66,7 +67,7 @@ public final class Permission {
 
     public final @Nonnull Class owner;
 
-    public final @Nonnull PermissionGroup group;
+    public transient final @Nonnull PermissionGroup group;
 
     // if some plugin serialized old version of this class using XStream, `id` can be null
     private final @CheckForNull String id;
@@ -122,7 +123,7 @@ public final class Permission {
     /**
      * Scopes that this permission is directly contained by.
      */
-    private final @Nonnull Set<PermissionScope> scopes;
+    private transient final @Nonnull Set<PermissionScope> scopes;
 
     /**
      * Defines a new permission.

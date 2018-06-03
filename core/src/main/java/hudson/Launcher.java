@@ -1239,9 +1239,11 @@ public abstract class Launcher {
 
     public static class IOTriplet implements Serializable {
         @Nonnull
-        InputStream stdout,stderr;
+        //[Erik] Ignore Sonar S1948 
+        InputStream stdout,stderr; //NOSONAR
         @Nonnull
-        OutputStream stdin;
+        //[Erik] Ignore Sonar S1948
+        OutputStream stdin; //NOSONAR
         private static final long serialVersionUID = 1L;
     }
     /**
@@ -1260,9 +1262,10 @@ public abstract class Launcher {
         private final @Nonnull List<String> cmd;
         private final @CheckForNull boolean[] masks;
         private final @CheckForNull String[] env;
-        private final @CheckForNull InputStream in;
-        private final @CheckForNull OutputStream out;
-        private final @CheckForNull OutputStream err;
+        //[Erik] false positive L1263. MasterToSlaveCallable which implements Callable which extends Serializable
+        private final @CheckForNull InputStream in; //NOSONAR
+        private final @CheckForNull OutputStream out; //NOSONAR
+        private final @CheckForNull OutputStream err; //NOSONAR
         private final @CheckForNull String workDir;
         private final @Nonnull TaskListener listener;
         private final boolean reverseStdin, reverseStdout, reverseStderr;
@@ -1287,6 +1290,7 @@ public abstract class Launcher {
             this.quiet = quiet;
         }
 
+        @Override
         public RemoteProcess call() throws IOException {
             final Channel channel = getOpenChannelOrFail();
             Launcher.ProcStarter ps = new LocalLauncher(listener).launch();
@@ -1299,6 +1303,7 @@ public abstract class Launcher {
             final Proc p = ps.start();
 
             return channel.export(RemoteProcess.class,new RemoteProcess() {
+                @Override
                 public int join() throws InterruptedException, IOException {
                     try {
                         return p.join();
@@ -1313,21 +1318,24 @@ public abstract class Launcher {
                                 throw new IOException("No Remoting channel associated with this thread");
                             }
                             taskChannel.syncIO();
-                        } catch (Throwable t) {
+                        } catch (IOException | InterruptedException t) {
                             // this includes a failure to sync, agent.jar too old, etc
                             LOGGER.log(Level.INFO, "Failed to synchronize IO streams on the channel " + taskChannel, t);
                         }
                     }
                 }
 
+                @Override
                 public void kill() throws IOException, InterruptedException {
                     p.kill();
                 }
 
+                @Override
                 public boolean isAlive() throws IOException, InterruptedException {
                     return p.isAlive();
                 }
 
+                @Override
                 public IOTriplet getIOtriplet() {
                     IOTriplet r = new IOTriplet();
                     if (reverseStdout)  r.stdout = new RemoteInputStream(p.getStdout());
@@ -1349,7 +1357,8 @@ public abstract class Launcher {
         @CheckForNull
         private final String workDir;
         @Nonnull
-        private final OutputStream err;
+        //[Erik] RemoteOutputStream is Serializable, OutputStream is not
+        private final RemoteOutputStream err;
         @Nonnull
         private final Map<String,String> envOverrides;
 
@@ -1362,6 +1371,7 @@ public abstract class Launcher {
             this.envOverrides = envOverrides;
         }
 
+        @Override
         public OutputStream call() throws IOException {
             Process p = Runtime.getRuntime().exec(cmd,
                 Util.mapToEnv(inherit(envOverrides)),

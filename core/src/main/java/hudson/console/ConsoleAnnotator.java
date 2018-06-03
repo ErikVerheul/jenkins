@@ -101,12 +101,14 @@ public abstract class ConsoleAnnotator<T> implements Serializable {
         }
 
         class Aggregator extends ConsoleAnnotator<T> {
-            List<ConsoleAnnotator<T>> list;
+            //[Erik] ignore Sonar S1948, cannot make list Serializable nor make list transient
+            List<ConsoleAnnotator<T>> list; //NOSONAR
 
             Aggregator(Collection list) {
                 this.list = new ArrayList<ConsoleAnnotator<T>>(list);
             }
 
+            @Override
             public ConsoleAnnotator annotate(T context, MarkupText text) {
                 ListIterator<ConsoleAnnotator<T>> itr = list.listIterator();
                 while (itr.hasNext()) {

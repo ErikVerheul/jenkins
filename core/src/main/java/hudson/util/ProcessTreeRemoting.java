@@ -4,6 +4,7 @@ import hudson.EnvVars;
 import hudson.util.ProcessTree.ProcessCallable;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.lang.reflect.Proxy;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +21,7 @@ public class ProcessTreeRemoting {
         void killAll(Map<String, String> modelEnvVars) throws InterruptedException;
     }
 
-    public interface IOSProcess {
+    public interface IOSProcess extends Serializable {
         int getPid();
         IOSProcess getParent();
         void kill() throws InterruptedException;

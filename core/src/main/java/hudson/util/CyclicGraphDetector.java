@@ -75,7 +75,7 @@ public abstract class CyclicGraphDetector<N> {
     }    
 
     public static final class CycleDetectedException extends Exception {
-        public final List cycle;
+        public transient final List cycle;
 
         public CycleDetectedException(List cycle) {
             super("Cycle detected: "+Util.join(cycle," -> "));

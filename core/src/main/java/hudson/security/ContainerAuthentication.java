@@ -45,7 +45,7 @@ import java.util.ArrayList;
  * @author Kohsuke Kawaguchi
  */
 public final class ContainerAuthentication implements Authentication {
-    private final Principal principal;
+    private transient final Principal principal;
     private GrantedAuthority[] authorities;
 
     /**
@@ -69,30 +69,37 @@ public final class ContainerAuthentication implements Authentication {
         authorities = l.toArray(new GrantedAuthority[l.size()]);
     }
 
+    @Override
     public GrantedAuthority[] getAuthorities() {
         return authorities;
     }
 
+    @Override
     public Object getCredentials() {
         return null;
     }
 
+    @Override
     public Object getDetails() {
         return null;
     }
 
+    @Override
     public String getPrincipal() {
         return principal.getName();
     }
 
+    @Override
     public boolean isAuthenticated() {
         return true;
     }
 
+    @Override
     public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {
         // noop
     }
 
+    @Override
     public String getName() {
         return getPrincipal();
     }

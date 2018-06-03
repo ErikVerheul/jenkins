@@ -57,7 +57,7 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
 public abstract class AsynchronousExecution extends RuntimeException {
 
     @GuardedBy("this")
-    private Executor executor;
+    private transient Executor executor;
 
     /**
      * Initially null, and usually stays null.

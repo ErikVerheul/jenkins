@@ -29,7 +29,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import java.util.Locale;
 
 public class JobParameterValue extends ParameterValue {
-    public final Job job;
+    public transient final Job job;
 
     @DataBoundConstructor
     public JobParameterValue(String name, Job job) {

@@ -25,13 +25,13 @@ public final class PollingResult implements Serializable {
      * (This comes from either the workspace, or from the remote repository as of the last polling.
      * Can be null.
      */
-    public final @CheckForNull SCMRevisionState baseline;
+    public transient final @CheckForNull SCMRevisionState baseline;
 
     /**
      * Current state of the remote repository. To be passed to the next invocation of the polling method.
      * Can be null.
      */
-    public final @CheckForNull SCMRevisionState remote;
+    public transient final @CheckForNull SCMRevisionState remote;
 
     /**
      * Degree of the change between baseline and remote. Never null.
@@ -80,7 +80,9 @@ public final class PollingResult implements Serializable {
     }
 
     public PollingResult(@CheckForNull SCMRevisionState baseline, @CheckForNull SCMRevisionState remote, @Nonnull Change change) {
-        if (change==null)   throw new IllegalArgumentException();
+        if (change == null) {
+            throw new IllegalArgumentException();
+        }
         this.baseline = baseline;
         this.remote = remote;
         this.change = change;

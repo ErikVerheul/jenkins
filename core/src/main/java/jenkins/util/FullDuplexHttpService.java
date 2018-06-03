@@ -148,7 +148,7 @@ public abstract class FullDuplexHttpService {
      */
     public static abstract class Response extends HttpResponses.HttpResponseException {
 
-        private final Map<UUID, FullDuplexHttpService> services;
+        private transient final Map<UUID, FullDuplexHttpService> services;
 
         /**
          * @param services a cross-request cache of services, to correlate the

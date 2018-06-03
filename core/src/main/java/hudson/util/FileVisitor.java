@@ -53,20 +53,22 @@ public abstract class FileVisitor {
     }
 
     private static final class FilterFileVisitor extends FileVisitor implements Serializable {
-        private final FileFilter filter;
-        private final FileVisitor visitor;
+        private transient final FileFilter filter;
+        private transient final FileVisitor visitor;
 
         private FilterFileVisitor(FileFilter filter, FileVisitor visitor) {
             this.filter = filter!=null ? filter : PASS_THROUGH;
             this.visitor = visitor;
         }
 
+        @Override
         public void visit(File f, String relativePath) throws IOException {
             if(f.isDirectory() || filter.accept(f))
                 visitor.visit(f,relativePath);
         }
 
         private static final FileFilter PASS_THROUGH = new FileFilter() {
+            @Override
             public boolean accept(File pathname) {
                 return true;
             }

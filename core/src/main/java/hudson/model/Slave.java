@@ -52,6 +52,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -134,19 +135,19 @@ public abstract class Slave extends Node implements Serializable {
     /**
      * Agent availability strategy.
      */
-    private RetentionStrategy retentionStrategy;
+    private transient RetentionStrategy retentionStrategy;
 
     /**
      * The starter that will startup this agent.
      */
-    private ComputerLauncher launcher;
+    private transient ComputerLauncher launcher;
 
     /**
      * Whitespace-separated labels.
      */
     private String label="";
 
-    private /*almost final*/ DescribableList<NodeProperty<?>,NodePropertyDescriptor> nodeProperties = 
+    private transient /*almost final*/ DescribableList<NodeProperty<?>,NodePropertyDescriptor> nodeProperties = 
                                     new DescribableList<NodeProperty<?>,NodePropertyDescriptor>(Jenkins.get().getNodesObject());
 
     /**
@@ -234,7 +235,7 @@ public abstract class Slave extends Node implements Serializable {
                 launcher = (ComputerLauncher) Jenkins.get().getPluginManager().uberClassLoader.loadClass("hudson.slaves.CommandLauncher").getConstructor(String.class, EnvVars.class).newInstance(agentCommand, null);
                 agentCommand = null;
                 save();
-            } catch (Exception x) {
+            } catch (IOException | ClassNotFoundException | IllegalAccessException | IllegalArgumentException | IllegalStateException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException x) {
                 LOGGER.log(Level.WARNING, "could not update historical agentCommand setting to CommandLauncher", x);
             }
         }
@@ -250,14 +251,17 @@ public abstract class Slave extends Node implements Serializable {
         return remoteFS;
     }
 
+    @Override
     public String getNodeName() {
         return name;
     }
 
-    @Override public String toString() {
+    @Override 
+    public String toString() {
         return getClass().getName() + "[" + name + "]";
     }
 
+    @Override
     public void setNodeName(String name) {
         this.name = name;
     }
@@ -267,10 +271,12 @@ public abstract class Slave extends Node implements Serializable {
         this.description = value;
     }
 
+    @Override
     public String getNodeDescription() {
         return description;
     }
 
+    @Override
     public int getNumExecutors() {
         return numExecutors;
     }
@@ -280,6 +286,7 @@ public abstract class Slave extends Node implements Serializable {
         this.numExecutors = n;
     }
 
+    @Override
     public Mode getMode() {
         return mode;
     }
@@ -289,6 +296,7 @@ public abstract class Slave extends Node implements Serializable {
         this.mode = mode;
     }
 
+    @Override
     public DescribableList<NodeProperty<?>, NodePropertyDescriptor> getNodeProperties() {
         assert nodeProperties != null;
     	return nodeProperties;
@@ -308,6 +316,7 @@ public abstract class Slave extends Node implements Serializable {
         this.retentionStrategy = availabilityStrategy;
     }
 
+    @Override
     public String getLabelString() {
         return Util.fixNull(label).trim();
     }
@@ -325,10 +334,12 @@ public abstract class Slave extends Node implements Serializable {
         return new GetClockDifference1();
     }
 
+    @Override
     public Computer createComputer() {
         return new SlaveComputer(this);
     }
 
+    @Override
     public FilePath getWorkspaceFor(TopLevelItem item) {
         for (WorkspaceLocator l : WorkspaceLocator.all()) {
             FilePath workspace = l.locate(item, this);
@@ -343,6 +354,7 @@ public abstract class Slave extends Node implements Serializable {
     }
 
     @CheckForNull
+    @Override
     public FilePath getRootPath() {
         final SlaveComputer computer = getComputer();
         if (computer == null) {
@@ -380,11 +392,12 @@ public abstract class Slave extends Node implements Serializable {
             // so that browsers can download them in the right file name.
             // see http://support.microsoft.com/kb/260519 and http://www.boutell.com/newfaq/creating/forcedownload.html
             rsp.setHeader("Content-Disposition", "attachment; filename=" + fileName);
-            InputStream in = con.getInputStream();
-            rsp.serveFile(req, in, con.getLastModified(), con.getContentLength(), "*.jar" );
-            in.close();
+            try (InputStream in = con.getInputStream()) {
+                rsp.serveFile(req, in, con.getLastModified(), con.getContentLength(), "*.jar" );
+            }
         }
 
+        @Override
         public void generateResponse(StaplerRequest req, StaplerResponse rsp, Object node) throws IOException, ServletException {
             doIndex(req,rsp);
         }
@@ -470,6 +483,7 @@ public abstract class Slave extends Node implements Serializable {
      *      will return a {@link hudson.Launcher.RemoteLauncher} instead.
      */
     @Nonnull
+    @Override
     public Launcher createLauncher(TaskListener listener) {
         SlaveComputer c = getComputer();
         if (c == null) {
@@ -558,6 +572,7 @@ public abstract class Slave extends Node implements Serializable {
         return this;
     }
 
+    @Override
     public SlaveDescriptor getDescriptor() {
         Descriptor d = Jenkins.get().getDescriptorOrDie(getClass());
         if (d instanceof SlaveDescriptor)
@@ -671,6 +686,7 @@ public abstract class Slave extends Node implements Serializable {
      * </ol>
      */
     private static final class GetClockDifference1 extends MasterToSlaveCallable<ClockDifference,IOException> {
+        @Override
         public ClockDifference call() {
             // this method must be being invoked locally, which means the clock is in sync
             return new ClockDifference(0);
@@ -690,6 +706,7 @@ public abstract class Slave extends Node implements Serializable {
          */
         private final long startTime = System.currentTimeMillis();
 
+        @Override
         public GetClockDifference3 call() {
             return new GetClockDifference3(startTime);
         }

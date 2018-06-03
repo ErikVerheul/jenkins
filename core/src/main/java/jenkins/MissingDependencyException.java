@@ -39,8 +39,8 @@ import hudson.Util;
  */
 public class MissingDependencyException extends IOException {
 
-    private String pluginShortName;
-    private List<Dependency> missingDependencies;
+    private final String pluginShortName;
+    private transient final List<Dependency> missingDependencies;
 
     public MissingDependencyException(String pluginShortName, List<Dependency> missingDependencies) {
         super("One or more dependencies could not be resolved for " + pluginShortName + " : "

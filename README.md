@@ -11,6 +11,10 @@ to prepare the coverage files and initialize the Sonarqube when installed locall
 Note that the coverage data from the integration tests are placed in ../core/target to enable Sonarqube scanner to find
 the sources and classes.
 
+The blocking and critical bugs have been resolved. WARNING: As not all changed code is covered by automatic tests 
+functional errors may be introduced. If you encounter such an error run the official version of Jenkins to verify. 
+If the bug does not replicate please inform me at tech@verheulconsultants.nl. Thanks, Erik.
+
 # What to Use Jenkins for and When to Use It
 
 Use Jenkins to automate your development workflow so you can focus on work that matters most. Jenkins is commonly used for:
