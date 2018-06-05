@@ -479,6 +479,7 @@ public abstract class Job<JobT extends Job<JobT, RunT>, RunT extends Run<JobT, R
     @Override
     protected SearchIndexBuilder makeSearchIndex() {
         return super.makeSearchIndex().add(new SearchIndex() {
+            @Override
             public void find(String token, List<SearchItem> result) {
                 try {
                     if (token.startsWith("#"))
@@ -493,12 +494,14 @@ public abstract class Job<JobT extends Job<JobT, RunT>, RunT extends Run<JobT, R
                 }
             }
 
+            @Override
             public void suggest(String token, List<SearchItem> result) {
                 find(token, result);
             }
         }).add("configure", "config", "configure");
     }
 
+    @Override
     public Collection<? extends Job> getAllJobs() {
         return Collections.<Job> singleton(this);
     }
@@ -548,7 +551,7 @@ public abstract class Job<JobT extends Job<JobT, RunT>, RunT extends Run<JobT, R
     public Map<JobPropertyDescriptor, JobProperty<? super JobT>> getProperties() {
         Map result = Descriptor.toMap((Iterable) properties);
         if (logRotator != null) {
-            result.put(Jenkins.getActiveInstance().getDescriptorByType(BuildDiscarderProperty.DescriptorImpl.class), new BuildDiscarderProperty(logRotator));
+            result.put(Jenkins.get().getDescriptorByType(BuildDiscarderProperty.DescriptorImpl.class), new BuildDiscarderProperty(logRotator));
         }
         return result;
     }
@@ -597,6 +600,7 @@ public abstract class Job<JobT extends Job<JobT, RunT>, RunT extends Run<JobT, R
      * Overrides from job properties.
      * @see JobProperty#getJobOverrides
      */
+    @Override
     public Collection<?> getOverrides() {
         List<Object> r = new ArrayList<Object>();
         for (JobProperty<? super JobT> p : properties)
@@ -618,6 +622,7 @@ public abstract class Job<JobT extends Job<JobT, RunT>, RunT extends Run<JobT, R
     }
 
     public static final HistoryWidget.Adapter<Run> HISTORY_ADAPTER = new Adapter<Run>() {
+        @Override
         public int compare(Run record, String key) {
             try {
                 int k = Integer.parseInt(key);
@@ -627,14 +632,17 @@ public abstract class Job<JobT extends Job<JobT, RunT>, RunT extends Run<JobT, R
             }
         }
 
+        @Override
         public String getKey(Run record) {
             return String.valueOf(record.getNumber());
         }
 
+        @Override
         public boolean isBuilding(Run record) {
             return record.isBuilding();
         }
 
+        @Override
         public String getNextKey(String key) {
             try {
                 int k = Integer.parseInt(key);
@@ -1006,8 +1014,8 @@ public abstract class Job<JobT extends Job<JobT, RunT>, RunT extends Run<JobT, R
         while (r != null && result.size() < numberOfBuilds) {
             if (!r.isBuilding() && 
                  (r.getResult() != null && r.getResult().isBetterOrEqualTo(threshold))) {
-                result.add(r);
-            }
+                    result.add(r);
+                }
             r = r.getPreviousBuild();
         }
         
@@ -1656,16 +1664,23 @@ public abstract class Job<JobT extends Job<JobT, RunT>, RunT extends Run<JobT, R
     @Restricted(NoExternalUse.class)
     public Boolean checkIfNameIsUsed(@Nonnull String newName) throws Failure{
         
-        Item item = null;
+        Item item;
         Jenkins.checkGoodName(newName);
         
         try {
             item = getParent().getItem(newName);
         } catch(AccessDeniedException ex) {  
             if (LOGGER.isLoggable(Level.FINE)) {
+                User u = User.current();
+                String fullName;
+                if (u != null) {
+                    fullName = u.getFullName();
+                } else {
+                    fullName = "anonymous user";
+                }
                 LOGGER.log(Level.FINE, "Unable to rename the job {0}: name {1} is already in use. " +
                         "User {2} has {3} permission, but no {4} for existing job with the same name", 
-                        new Object[] {this.getFullName(), newName, User.current().getFullName(), Item.DISCOVER.name, Item.READ.name} );
+                        new Object[] {this.getFullName(), newName, fullName, Item.DISCOVER.name, Item.READ.name} );
             }
             return true;
         }

@@ -203,7 +203,7 @@ public class SlaveComputer extends Computer {
         if (node == null || node instanceof Slave) {
             return (Slave)node;
         } else {
-            logger.log(Level.WARNING, "found an unexpected kind of node {0} from {1} with nodeName={2}", new Object[] {node, this, nodeName});
+            LOGGER.log(Level.WARNING, "found an unexpected kind of node {0} from {1} with nodeName={2}", new Object[] {node, this, nodeName});
             return null;
         }
     }
@@ -264,15 +264,17 @@ public class SlaveComputer extends Computer {
         return l;
     }
 
+    @Override
     protected Future<?> _connect(boolean forceReconnect) {
         if(channel!=null)   return Futures.precomputed(null);
         if(!forceReconnect && isConnecting())
             return lastConnectActivity;
         if(forceReconnect && isConnecting())
-            logger.fine("Forcing a reconnect on "+getName());
+            LOGGER.fine("Forcing a reconnect on "+getName());
 
         closeChannel();
         return lastConnectActivity = Computer.threadPoolForRemoting.submit(new java.util.concurrent.Callable<Object>() {
+            @Override
             public Object call() throws Exception {
                 // do this on another thread so that the lengthy launch operation
                 // (which is typical) won't block UI thread.
@@ -373,7 +375,7 @@ public class SlaveComputer extends Computer {
             log.rewind();
             return log;
         } catch (IOException e) {
-            logger.log(Level.SEVERE, "Failed to create log file "+getLogFile(),e);
+            LOGGER.log(Level.SEVERE, "Failed to create log file "+getLogFile(),e);
             return new NullStream();
         }
     }
@@ -521,7 +523,7 @@ public class SlaveComputer extends Computer {
 
         channel.setProperty(SlaveComputer.class, this);
 
-        channel.addListener(new LoggingChannelListener(logger, Level.FINEST) {
+        channel.addListener(new LoggingChannelListener(LOGGER, Level.FINEST) {
             @Override
             public void onClosed(Channel c, IOException cause) {
                 // Orderly shutdown will have null exception
@@ -539,7 +541,7 @@ public class SlaveComputer extends Computer {
                             "Launcher {0}'s afterDisconnect method propagated an exception when {1}'s connection was closed: {2}");
                     lr.setThrown(t);
                     lr.setParameters(new Object[]{launcher, SlaveComputer.this.getName(), t.getMessage()});
-                    logger.log(lr);
+                    LOGGER.log(lr);
                 }
             }
         });
@@ -631,10 +633,12 @@ public class SlaveComputer extends Computer {
         return channel;
     }
 
+    @Override
     public Charset getDefaultCharset() {
         return defaultCharset;
     }
 
+    @Override
     public List<LogRecord> getLogRecords() throws IOException, InterruptedException {
         if(channel==null)
             return Collections.emptyList();
@@ -657,6 +661,7 @@ public class SlaveComputer extends Computer {
     public Future<?> disconnect(OfflineCause cause) {
         super.disconnect(cause);
         return Computer.threadPoolForRemoting.submit(new Runnable() {
+            @Override
             public void run() {
                 // do this on another thread so that any lengthy disconnect operation
                 // (which could be typical) won't block UI thread.
@@ -668,6 +673,7 @@ public class SlaveComputer extends Computer {
     }
 
     @RequirePOST
+    @Override
     public void doLaunchSlaveAgent(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException {
         if(channel!=null) {
             req.getView(this,"already-launched.jelly").forward(req, rsp);
@@ -685,7 +691,7 @@ public class SlaveComputer extends Computer {
         numRetryAttempt++;
         if(numRetryAttempt<6 || (numRetryAttempt%12)==0) {
             // initially retry several times quickly, and after that, do it infrequently.
-            logger.info("Attempting to reconnect "+nodeName);
+            LOGGER.info("Attempting to reconnect "+nodeName);
             connect(true);
         }
     }
@@ -720,10 +726,11 @@ public class SlaveComputer extends Computer {
         try {
             Util.deleteRecursive(getLogDir());
         } catch (IOException ex) {
-            logger.log(Level.WARNING, "Unable to delete agent logs", ex);
+            LOGGER.log(Level.WARNING, "Unable to delete agent logs", ex);
         }
     }
 
+    @Override
     public RetentionStrategy getRetentionStrategy() {
         Slave n = getNode();
         return n==null ? RetentionStrategy.INSTANCE : n.getRetentionStrategy();
@@ -745,7 +752,7 @@ public class SlaveComputer extends Computer {
             try {
                 c.close();
             } catch (IOException e) {
-                logger.log(Level.SEVERE, "Failed to terminate channel to " + getDisplayName(), e);
+                LOGGER.log(Level.SEVERE, "Failed to terminate channel to " + getDisplayName(), e);
             }
             for (ComputerListener cl : ComputerListener.all())
                 cl.onOffline(this, offlineCause);
@@ -804,15 +811,15 @@ public class SlaveComputer extends Computer {
         return channel.call(new DetectOS()) ? "Unix" : "Windows";
     }
 
-    private static final Logger logger = Logger.getLogger(SlaveComputer.class.getName());
-
     private static final class SlaveVersion extends MasterToSlaveCallable<String,IOException> {
+        @Override
         public String call() throws IOException {
             try { return Launcher.VERSION; }
             catch (Throwable ex) { return "< 1.335"; } // Older slave.jar won't have VERSION
         }
     }
     private static final class DetectOS extends MasterToSlaveCallable<Boolean,IOException> {
+        @Override
         public Boolean call() throws IOException {
             return File.pathSeparatorChar==':';
         }
@@ -828,12 +835,14 @@ public class SlaveComputer extends Computer {
             this.relativePath = relativePath;
         }
 
+        @Override
         public String call() throws IOException {
             return new File(relativePath).getAbsolutePath();
         }
     }
 
     private static final class DetectDefaultCharset extends MasterToSlaveCallable<String,IOException> {
+        @Override
         public String call() throws IOException {
             return Charset.defaultCharset().name();
         }
@@ -857,6 +866,7 @@ public class SlaveComputer extends Computer {
             this.ringBufferSize = ringBufferSize;
         }
 
+        @Override
         public Void call() {
             SLAVE_LOG_HANDLER = new RingBufferLogHandler(ringBufferSize);
 
@@ -917,6 +927,7 @@ public class SlaveComputer extends Computer {
     }
 
     private static class SlaveLogFetcher extends MasterToSlaveCallable<List<LogRecord>,RuntimeException> {
+        @Override
         public List<LogRecord> call() {
             return new ArrayList<LogRecord>(SLAVE_LOG_HANDLER.getView());
         }

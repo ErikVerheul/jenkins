@@ -622,7 +622,7 @@ public class Util {
                 try {
                     ResourceBundle rb = ResourceBundle.getBundle("/hudson/win32errors");
                     return rb.getString("error"+m.group(1));
-                } catch (Exception _) {
+                } catch (Exception _ignore) {
                     // silently recover from resource related failures
                 }
             }
@@ -1027,7 +1027,9 @@ public class Util {
         }
     }
 
-    private static final boolean[] URIMAP = new boolean[123];
+    private static final int ASCIINUMBER = 123;
+    
+    private static final boolean[] URIMAP = new boolean[ASCIINUMBER];
     static {
         String raw =
     "!  $ &'()*+,-. 0123456789   =  @ABCDEFGHIJKLMNOPQRSTUVWXYZ    _ abcdefghijklmnopqrstuvwxyz";
@@ -1054,9 +1056,8 @@ public class Util {
     @Nonnull
     public static String rawEncode(@Nonnull String s) {
         boolean escaped = false;
-        StringBuilder out = null;
-        CharsetEncoder enc = null;
-        CharBuffer buf = null;
+        StringBuilder out = new StringBuilder();        
+        CharBuffer buf = CharBuffer.allocate(0);
         char c;
         for (int i = 0, m = s.length(); i < m; i++) {
             c = s.charAt(i);
@@ -1064,14 +1065,14 @@ public class Util {
                 if (!escaped) {
                     out = new StringBuilder(i + (m - i) * 3);
                     out.append(s.substring(0, i));
-                    enc = Charset.forName("UTF-8").newEncoder();
                     buf = CharBuffer.allocate(1);
                     escaped = true;
                 }
                 // 1 char -> UTF8
-                buf.put(0,c);
+                buf.put(0, c);
                 buf.rewind();
                 try {
+                    CharsetEncoder enc = Charset.forName("UTF-8").newEncoder();
                     ByteBuffer bytes = enc.encode(buf);
                     while (bytes.hasRemaining()) {
                         byte b = bytes.get();
@@ -1079,7 +1080,8 @@ public class Util {
                         out.append(toDigit((b >> 4) & 0xF));
                         out.append(toDigit(b & 0xF));
                     }
-                } catch (CharacterCodingException ex) { }
+                } catch (CharacterCodingException ex) {
+                }
             } else if (escaped) {
                 out.append(c);
             }
@@ -1103,37 +1105,39 @@ public class Util {
      */
     @Nonnull
     public static String escape(@Nonnull String text) {
-        if (text==null)     return null;
         StringBuilder buf = new StringBuilder(text.length()+64);
         for( int i=0; i<text.length(); i++ ) {
             char ch = text.charAt(i);
-            if(ch=='\n')
-                buf.append("<br>");
-            else
-            if(ch=='<')
-                buf.append("&lt;");
-            else
-            if(ch=='>')
-                buf.append("&gt;");
-            else
-            if(ch=='&')
-                buf.append("&amp;");
-            else
-            if(ch=='"')
-                buf.append("&quot;");
-            else
-            if(ch=='\'')
-                buf.append("&#039;");
-            else
-            if(ch==' ') {
-                // All spaces in a block of consecutive spaces are converted to
-                // non-breaking space (&nbsp;) except for the last one.  This allows
-                // significant whitespace to be retained without prohibiting wrapping.
-                char nextCh = i+1 < text.length() ? text.charAt(i+1) : 0;
-                buf.append(nextCh==' ' ? "&nbsp;" : " ");
+            switch (ch) {
+                case '\n':
+                    buf.append("<br>");
+                    break;
+                case '<':
+                    buf.append("&lt;");
+                    break;
+                case '>':
+                    buf.append("&gt;");
+                    break;
+                case '&':
+                    buf.append("&amp;");
+                    break;
+                case '"':
+                    buf.append("&quot;");
+                    break;
+                case '\'':
+                    buf.append("&#039;");
+                    break;
+                case ' ':
+                    // All spaces in a block of consecutive spaces are converted to
+                    // non-breaking space (&nbsp;) except for the last one.  This allows
+                    // significant whitespace to be retained without prohibiting wrapping.
+                    char nextCh = i+1 < text.length() ? text.charAt(i+1) : 0;
+                    buf.append(nextCh==' ' ? "&nbsp;" : " ");
+                    break;
+                default:
+                    buf.append(ch);
+                    break;
             }
-            else
-                buf.append(ch);
         }
         return buf.toString();
     }
@@ -1143,16 +1147,20 @@ public class Util {
         StringBuilder buf = new StringBuilder(text.length()+64);
         for( int i=0; i<text.length(); i++ ) {
             char ch = text.charAt(i);
-            if(ch=='<')
-                buf.append("&lt;");
-            else
-            if(ch=='>')
-                buf.append("&gt;");
-            else
-            if(ch=='&')
-                buf.append("&amp;");
-            else
-                buf.append(ch);
+            switch (ch) {
+                case '<':
+                    buf.append("&lt;");
+                    break;
+                case '>':
+                    buf.append("&gt;");
+                    break;
+                case '&':
+                    buf.append("&amp;");
+                    break;
+                default:
+                    buf.append(ch);
+                    break;
+            }
         }
         return buf.toString();
     }
@@ -1692,7 +1700,8 @@ public class Util {
      * between attempts.
      */
     @Restricted(value = NoExternalUse.class)
-    static int WAIT_BETWEEN_DELETION_RETRIES = SystemProperties.getInteger(Util.class.getName() + ".deletionRetryWait", 100);
+    private static final int DEFAULT_VALUE = 100;
+    static int WAIT_BETWEEN_DELETION_RETRIES = SystemProperties.getInteger(Util.class.getName() + ".deletionRetryWait", DEFAULT_VALUE);
 
     /**
      * If this flag is set to true then we will request a garbage collection

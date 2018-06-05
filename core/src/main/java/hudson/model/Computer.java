@@ -1071,7 +1071,7 @@ public /*transient*/ abstract class Computer extends Actionable implements Acces
     @Exported
     public @Nonnull String getDescription() {
         Node node = getNode();
-        return (node != null) ? node.getNodeDescription() : null;
+        return (node != null) ? node.getNodeDescription() : "";
     }
 
 
@@ -1127,6 +1127,7 @@ public /*transient*/ abstract class Computer extends Actionable implements Acces
         });
     }
 
+    @Override
     public String getSearchUrl() {
         return getUrl();
     }
@@ -1175,14 +1176,14 @@ public /*transient*/ abstract class Computer extends Actionable implements Acces
      * If this is the master, it returns the system property of the master computer.
      */
     public EnvVars getEnvironment() throws IOException, InterruptedException {
-        EnvVars cachedEnvironment = this.cachedEnvironment;
-        if (cachedEnvironment != null) {
-            return new EnvVars(cachedEnvironment);
+        EnvVars _cachedEnvironment = this.cachedEnvironment;
+        if (_cachedEnvironment != null) {
+            return new EnvVars(_cachedEnvironment);
         }
 
-        cachedEnvironment = EnvVars.getRemote(getChannel());
-        this.cachedEnvironment = cachedEnvironment;
-        return new EnvVars(cachedEnvironment);
+        _cachedEnvironment = EnvVars.getRemote(getChannel());
+        this.cachedEnvironment = _cachedEnvironment;
+        return new EnvVars(_cachedEnvironment);
     }
 
     /**
@@ -1315,6 +1316,7 @@ public /*transient*/ abstract class Computer extends Actionable implements Acces
          */
         private static final Logger LOGGER = Logger.getLogger(ListPossibleNames.class.getName());
         
+        @Override
         public List<String> call() throws IOException {
             List<String> names = new ArrayList<String>();
 
@@ -1345,6 +1347,7 @@ public /*transient*/ abstract class Computer extends Actionable implements Acces
     }
 
     private static class GetFallbackName extends MasterToSlaveCallable<String,IOException> {
+        @Override
         public String call() throws IOException {
             return SystemProperties.getString("host.name");
         }
@@ -1424,6 +1427,7 @@ public /*transient*/ abstract class Computer extends Actionable implements Acces
     }
 
     private static final class DumpExportTableTask extends MasterToSlaveCallable<String,IOException> {
+        @Override
         public String call() throws IOException {
             final Channel ch = getChannelOrFail();
             StringWriter sw = new StringWriter();
@@ -1468,8 +1472,9 @@ public /*transient*/ abstract class Computer extends Actionable implements Acces
             throw new ServletException("No such node " + nodeName);
         }
 
-        if ((!proposedName.equals(nodeName))
-                && Jenkins.getActiveInstance().getNode(proposedName) != null) {
+        //[Erik] Jenkins.checkGoodName(proposedName) catches null
+        if ((!proposedName.equals(nodeName)) //NOSONAR
+                && Jenkins.get().getNode(proposedName) != null) {
             throw new FormException(Messages.ComputerSet_SlaveAlreadyExists(proposedName), "name");
         }
 

@@ -178,7 +178,7 @@ public abstract class ProcessTree implements Iterable<OSProcess>, IProcessTree, 
     /**
      * Represents a process.
      */
-    public abstract class OSProcess implements IOSProcess, Serializable {
+    public abstract class OSProcess implements IOSProcess {
         final int pid;
 
         // instantiation only allowed for subtypes in this class
@@ -383,17 +383,21 @@ public abstract class ProcessTree implements Iterable<OSProcess>, IProcessTree, 
      * Empty process list as a default value if the platform doesn't support it.
      */
     /*package*/ static final ProcessTree DEFAULT = new Local() {
+        @Override
         public OSProcess get(final Process proc) {
             return new OSProcess(-1) {
+                @Override
                 public OSProcess getParent() {
                     return null;
                 }
 
+                @Override
                 public void killRecursively() {
                     // fall back to a single process killer
                     proc.destroy();
                 }
 
+                @Override
                 public void kill() throws InterruptedException {
                     if (getVeto() != null) 
                         return;
@@ -401,16 +405,19 @@ public abstract class ProcessTree implements Iterable<OSProcess>, IProcessTree, 
                     killByKiller();
                 }
 
+                @Override
                 public List<String> getArguments() {
                     return Collections.emptyList();
                 }
 
+                @Override
                 public EnvVars getEnvironmentVariables() {
                     return new EnvVars();
                 }
             };
         }
 
+        @Override
         public void killAll(Map<String, String> modelEnvVars) {
             // no-op
         }
@@ -604,18 +611,20 @@ public abstract class ProcessTree implements Iterable<OSProcess>, IProcessTree, 
      */
     static abstract class ProcfsUnix extends Unix {
         ProcfsUnix() {
-            File[] processes = new File("/proc").listFiles(new FileFilter() {
-                @Override
-                public boolean accept(File f) {
-                    return f.isDirectory();
-                }
-            });
-            if(processes==null) {
+            File[] _processes = new File("/proc").listFiles(File::isDirectory);
+            //[Erik] Short for:
+//            File[] processes = new File("/proc").listFiles(new FileFilter() {
+//                @Override
+//                public boolean accept(File f) {
+//                    return f.isDirectory();
+//                }
+//            });
+            if(_processes==null) {
                 LOGGER.info("No /proc");
                 return;
             }
 
-            for (File p : processes) {
+            for (File p : _processes) {
                 int pid;
                 try {
                     pid = Integer.parseInt(p.getName());

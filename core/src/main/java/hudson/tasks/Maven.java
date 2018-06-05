@@ -257,6 +257,7 @@ public class Maven extends Builder {
             this.arguments = arguments;
         }
 
+        @Override
         public String invoke(File ws, VirtualChannel channel) throws IOException {
             String seed=null;
 
@@ -291,20 +292,20 @@ public class Maven extends Builder {
 
         EnvVars env = build.getEnvironment(listener);
 
-        String targets = Util.replaceMacro(this.targets,vr);
-        targets = env.expand(targets);
-        String pom = env.expand(this.pom);
+        String _targets = Util.replaceMacro(this.targets,vr);
+        _targets = env.expand(_targets);
+        String _pom = env.expand(this.pom);
 
         int startIndex = 0;
         int endIndex;
         do {
             // split targets into multiple invocations of maven separated by |
-            endIndex = targets.indexOf('|', startIndex);
+            endIndex = _targets.indexOf('|', startIndex);
             if (-1 == endIndex) {
-                endIndex = targets.length();
+                endIndex = _targets.length();
             }
 
-            String normalizedTarget = targets
+            String normalizedTarget = _targets
                     .substring(startIndex, endIndex)
                     .replaceAll("[\t\r\n]+"," ");
 
@@ -323,17 +324,17 @@ public class Maven extends Builder {
                 }
                 args.add(exec);
             }
-            if(pom!=null)
-                args.add("-f",pom);
+            if(_pom!=null)
+                args.add("-f",_pom);
             
             
-            if(!S_PATTERN.matcher(targets).find()){ // check the given target/goals do not contain settings parameter already
+            if(!S_PATTERN.matcher(_targets).find()){ // check the given target/goals do not contain settings parameter already
                 String settingsPath = SettingsProvider.getSettingsRemotePath(getSettings(), build, listener);
                 if(StringUtils.isNotBlank(settingsPath)){
                     args.add("-s", settingsPath);
                 }
             }
-            if(!GS_PATTERN.matcher(targets).find()){
+            if(!GS_PATTERN.matcher(_targets).find()){
                 String settingsPath = GlobalSettingsProvider.getSettingsRemotePath(getGlobalSettings(), build, listener);
                 if(StringUtils.isNotBlank(settingsPath)){
                     args.add("-gs", settingsPath);
@@ -374,7 +375,7 @@ public class Maven extends Builder {
                 return false;
             }
             startIndex = endIndex + 1;
-        } while (startIndex < targets.length());
+        } while (startIndex < _targets.length());
         return true;
     }
 
@@ -404,9 +405,9 @@ public class Maven extends Builder {
         // see http://maven.apache.org/continuum/faqs.html#how-does-continuum-detect-a-successful-build
         env.put("MAVEN_TERMINATE_CMD","on");
 
-        String jvmOptions = env.expand(this.jvmOptions);
-        if(jvmOptions!=null)
-            env.put("MAVEN_OPTS",jvmOptions.replaceAll("[\t\r\n]+"," "));
+        String _jvmOptions = env.expand(this.jvmOptions);
+        if(_jvmOptions!=null)
+            env.put("MAVEN_OPTS",_jvmOptions.replaceAll("[\t\r\n]+"," "));
     }
 
     @Override
@@ -426,13 +427,15 @@ public class Maven extends Builder {
     @Extension @Symbol("maven")
     public static final class DescriptorImpl extends BuildStepDescriptor<Builder> {
         @CopyOnWrite
-        private volatile MavenInstallation[] installations = new MavenInstallation[0];
+        private volatile MavenInstallation[] installations;
 
         public DescriptorImpl() {
+            this.installations = new MavenInstallation[0];
             DESCRIPTOR = this;
             load();
         }
 
+        @Override
         public boolean isApplicable(Class<? extends AbstractProject> jobType) {
             return true;
         }
@@ -443,6 +446,7 @@ public class Maven extends Builder {
             return super.getHelpFile(fieldName);
         }
 
+        @Override
         public String getDisplayName() {
             return Messages.Maven_DisplayName();
         }
@@ -553,43 +557,46 @@ public class Maven extends Builder {
         public boolean meetsMavenReqVersion(Launcher launcher, int mavenReqVersion) throws IOException, InterruptedException {
             // FIXME using similar stuff as in the maven plugin could be better 
             // olamy : but will add a dependency on maven in core -> so not so good 
-            String mavenVersion = launcher.getChannel().call(new MasterToSlaveCallable<String,IOException>() {
-                    private static final long serialVersionUID = -4143159957567745621L;
+            String mavenVersion = launcher.getChannel().call(new MasterToSlaveCallable<String, IOException>() {
+                private static final long serialVersionUID = -4143159957567745621L;
 
-                    public String call() throws IOException {
-                        File[] jars = new File(getHomeDir(),"lib").listFiles();
-                        if(jars!=null) { // be defensive
-                            for (File jar : jars) {
-                                if (jar.getName().startsWith("maven-")) {
-                                    JarFile jf = null;
-                                    try {
-                                        jf = new JarFile(jar);
-                                        Manifest manifest = jf.getManifest();
-                                        String version = manifest.getMainAttributes().getValue(Attributes.Name.IMPLEMENTATION_VERSION);
-                                        if(version != null) return version;
-                                    } finally {
-                                        if(jf != null) jf.close();
+                @Override
+                public String call() throws IOException {
+                    File[] jars = new File(getHomeDir(), "lib").listFiles();
+                    if (jars != null) { // be defensive
+                        for (File jar : jars) {
+                            if (jar.getName().startsWith("maven-")) {
+                                try (JarFile jf = new JarFile(jar)) {
+                                    Manifest manifest = jf.getManifest();
+                                    String version = manifest.getMainAttributes().getValue(Attributes.Name.IMPLEMENTATION_VERSION);
+                                    if (version != null) {
+                                        return version;
                                     }
                                 }
                             }
                         }
-                        return "";
                     }
-                });
+                    return "";
+                }
+            });
 
             if (!mavenVersion.equals("")) {
-                if (mavenReqVersion == MAVEN_20) {
-                    if(mavenVersion.startsWith("2."))
-                        return true;
+                switch (mavenReqVersion) {
+                    case MAVEN_20:
+                        if(mavenVersion.startsWith("2."))
+                            return true;
+                        break;
+                    case MAVEN_21:
+                        if(mavenVersion.startsWith("2.") && !mavenVersion.startsWith("2.0"))
+                            return true;
+                        break;
+                    case MAVEN_30:
+                        if(mavenVersion.startsWith("3."))
+                            return true;
+                        break;
+                    default:
+                        break;
                 }
-                else if (mavenReqVersion == MAVEN_21) {
-                    if(mavenVersion.startsWith("2.") && !mavenVersion.startsWith("2.0"))
-                        return true;
-                }
-                else if (mavenReqVersion == MAVEN_30) {
-                    if(mavenVersion.startsWith("3."))
-                        return true;
-                }                
             }
             return false;
             
@@ -612,6 +619,7 @@ public class Maven extends Builder {
             return launcher.getChannel().call(new MasterToSlaveCallable<String,IOException>() {
                 private static final long serialVersionUID = 2373163112639943768L;
 
+                @Override
                 public String call() throws IOException {
                     File exe = getExeFile("mvn");
                     if(exe.exists())
@@ -654,10 +662,12 @@ public class Maven extends Builder {
 
         private static final long serialVersionUID = 1L;
 
+        @Override
         public MavenInstallation forEnvironment(EnvVars environment) {
             return new MavenInstallation(getName(), environment.expand(getHome()), getProperties().toList());
         }
 
+        @Override
         public MavenInstallation forNode(Node node, TaskListener log) throws IOException, InterruptedException {
             return new MavenInstallation(getName(), translateFor(node, log), getProperties().toList());
         }
@@ -743,6 +753,7 @@ public class Maven extends Builder {
 
         @Extension @Symbol("maven")
         public static final class DescriptorImpl extends DownloadFromUrlInstaller.DescriptorImpl<MavenInstaller> {
+            @Override
             public String getDisplayName() {
                 return Messages.InstallFromApache();
             }

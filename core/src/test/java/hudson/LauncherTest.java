@@ -77,6 +77,7 @@ public class LauncherTest {
     }
 
     private static final Callable<Object,RuntimeException> NOOP = new MasterToSlaveCallable<Object,RuntimeException>() {
+        @Override
         public Object call() throws RuntimeException {
             return null;
         }

@@ -141,9 +141,11 @@ import static hudson.init.InitMilestone.*;
 import hudson.model.DownloadService;
 import hudson.util.FormValidation;
 import java.io.ByteArrayInputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.net.JarURLConnection;
 import java.net.URLConnection;
 import java.util.ServiceLoader;
+import java.util.concurrent.ExecutionException;
 import java.util.jar.JarEntry;
 
 import static java.util.logging.Level.FINE;
@@ -245,7 +247,7 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
                 LOGGER.log(WARNING, String.format("Unable to instantiate custom plugin manager [%s]. Using default.", pmClassName));
             } catch(ClassCastException e) {
                 LOGGER.log(WARNING, String.format("Provided class [%s] does not extend PluginManager. Using default.", pmClassName));
-            } catch(Exception e) {
+            } catch(ReflectiveOperationException e) {
                 LOGGER.log(WARNING, String.format("Unable to instantiate custom plugin manager [%s]. Using default.", pmClassName), e);
             }
         }
@@ -376,18 +378,21 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
 
                 {
                     Handle loadBundledPlugins = add("Loading bundled plugins", new Executable() {
+                        @Override
                         public void run(Reactor session) throws Exception {
                             bundledPlugins = loadBundledPlugins();
                         }
                     });
 
                     Handle listUpPlugins = requires(loadBundledPlugins).add("Listing up plugins", new Executable() {
+                        @Override
                         public void run(Reactor session) throws Exception {
                             archives = initStrategy.listPluginArchives(PluginManager.this);
                         }
                     });
 
                     requires(listUpPlugins).attains(PLUGINS_LISTED).add("Preparing plugins",new Executable() {
+                        @Override
                         public void run(Reactor session) throws Exception {
                             // once we've listed plugins, we can fill in the reactor with plugin-specific initialization tasks
                             TaskGraphBuilder g = new TaskGraphBuilder();
@@ -396,6 +401,7 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
 
                             for( final File arc : archives ) {
                                 g.followedBy().notFatal().attains(PLUGINS_LISTED).add("Inspecting plugin " + arc, new Executable() {
+                                    @Override
                                     public void run(Reactor session1) throws Exception {
                                         try {
                                             PluginWrapper p = strategy.createPluginWrapper(arc);
@@ -429,6 +435,7 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
                                 /**
                                  * Makes sure there's no cycle in dependencies.
                                  */
+                                @Override
                                 public void run(Reactor reactor) throws Exception {
                                     try {
                                         CyclicGraphDetector<PluginWrapper> cgd = new CyclicGraphDetector<PluginWrapper>() {
@@ -501,6 +508,7 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
                 /**
                  * Once the plugins are listed, schedule their initialization.
                  */
+                @Override
                 public void run(Reactor session) throws Exception {
                     Jenkins.get().lookup.set(PluginInstanceStore.class, new PluginInstanceStore());
                     TaskGraphBuilder g = new TaskGraphBuilder();
@@ -508,6 +516,7 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
                     // schedule execution of loading plugins
                     for (final PluginWrapper p : activePlugins.toArray(new PluginWrapper[activePlugins.size()])) {
                         g.followedBy().notFatal().attains(PLUGINS_PREPARED).add(String.format("Loading plugin %s v%s (%s)", p.getLongName(), p.getVersion(), p.getShortName()), new Executable() {
+                            @Override
                             public void run(Reactor session) throws Exception {
                                 try {
                                     p.resolvePluginDependencies();
@@ -517,7 +526,6 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
                                     activePlugins.remove(p);
                                     plugins.remove(p);
                                     LOGGER.log(Level.SEVERE, "Failed to install {0}: {1}", new Object[] { p.getShortName(), e.getMessage() });
-                                    return;
                                 } catch (IOException e) {
                                     failedPlugins.add(new FailedPlugin(p.getShortName(), e));
                                     activePlugins.remove(p);
@@ -531,6 +539,7 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
                     // schedule execution of initializing plugins
                     for (final PluginWrapper p : activePlugins.toArray(new PluginWrapper[activePlugins.size()])) {
                         g.followedBy().notFatal().attains(PLUGINS_STARTED).add("Initializing plugin " + p.getShortName(), new Executable() {
+                            @Override
                             public void run(Reactor session) throws Exception {
                                 if (!activePlugins.contains(p)) {
                                     return;
@@ -548,6 +557,7 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
                     }
 
                     g.followedBy().attains(PLUGINS_STARTED).add("Discovering plugin initialization tasks", new Executable() {
+                        @Override
                         public void run(Reactor reactor) throws Exception {
                             // rescan to find plugin-contributed @Initializer
                             reactor.addAll(initializerFinder.discoverTasks(reactor));
@@ -642,7 +652,7 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
         String dependencySpec = manifest.getMainAttributes().getValue("Plugin-Dependencies");
         if (dependencySpec != null) {
             String[] dependencyTokens = dependencySpec.split(",");
-            ServletContext context = Jenkins.getActiveInstance().servletContext;
+            ServletContext context = Jenkins.get().servletContext;
 
             for (String dependencyToken : dependencyTokens) {
                 if (dependencyToken.endsWith(";resolution:=optional")) {
@@ -654,7 +664,7 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
                 String artifactId = artifactIdVersionPair[0];
                 VersionNumber dependencyVersion = new VersionNumber(artifactIdVersionPair[1]);
 
-                PluginManager manager = Jenkins.getActiveInstance().getPluginManager();
+                PluginManager manager = Jenkins.get().getPluginManager();
                 VersionNumber installedVersion = manager.getPluginVersion(manager.rootDir, artifactId);
                 if (installedVersion != null && !installedVersion.isOlderThan(dependencyVersion)) {
                     // Do not downgrade dependencies that are already installed.
@@ -1114,7 +1124,8 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
 			} catch (ClassNotFoundException e) {
 				LOGGER.warning("Plugin strategy class not found: "
 						+ strategyName);
-			} catch (Exception e) {
+			} catch (IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException 
+                | SecurityException | InvocationTargetException e) {
 				LOGGER.log(WARNING, "Could not instantiate plugin strategy: "
 						+ strategyName + ". Falling back to ClassicPluginStrategy", e);
 			}
@@ -1196,10 +1207,12 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
         return Collections.unmodifiableList(result);
     }
 
+    @Override
     public String getDisplayName() {
         return Messages.PluginManager_DisplayName();
     }
 
+    @Override
     public String getSearchUrl() {
         return "pluginManager";
     }
@@ -1284,7 +1297,7 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
             }
             response.add(pluginInfo);
         }
-        for (UpdateSite site : Jenkins.getActiveInstance().getUpdateCenter().getSiteList()) {
+        for (UpdateSite site : Jenkins.get().getUpdateCenter().getSiteList()) {
             for (UpdateSite.Plugin plugin: site.getAvailables()) {
                 JSONObject pluginInfo = allPlugins.get(plugin.name);
                 if(pluginInfo == null) {
@@ -1312,18 +1325,19 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
             //[Erik] Cannot be converted to try-with-resources in Java 8
             BulkChange bc = new BulkChange(uc); //NOSONAR
             try {
-                for (String id : req.getParameterValues("sources"))
+                for (String id : req.getParameterValues("sources")) {
                     uc.getSites().remove(uc.getById(id));
+                }
             } finally {
                 bc.commit();
             }
-        } else
-        if (req.hasParameter("add"))
+        } else if (req.hasParameter("add")) {
             return new HttpRedirect("addSite");
+        }
 
         return new HttpRedirect("./sites");
     }
-    
+
     /**
      * Called to progress status beyond installing plugins, e.g. if 
      * there were failures that prevented installation from naturally proceeding
@@ -1477,7 +1491,7 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
                                     failures = true;
                                 }
                             }
-                        } catch (Exception e) {
+                        } catch (InterruptedException | ExecutionException e) {
                             LOGGER.log(WARNING, "Unexpected error while waiting for initial plugin set to install.", e);
                         }
                         break;
@@ -1599,6 +1613,7 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
 
             JSONArray dependencies = new JSONArray();
             try {
+                //[Erik] no resources to close
                 Manifest m = new JarFile(t).getManifest(); // NOSONAR
                 String deps = m.getMainAttributes().getValue("Plugin-Dependencies");
 
@@ -1609,12 +1624,12 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
                         // should have name:version[;resolution:=optional]
                         String[] attrs = p.split("[:;]");
                         dependencies.add(new JSONObject()
-                                .element("name", attrs[0])
-                                .element("version", attrs[1])
-                                .element("optional", p.contains("resolution:=optional")));
+                            .element("name", attrs[0])
+                            .element("version", attrs[1])
+                            .element("optional", p.contains("resolution:=optional")));
                     }
                 }
-            } catch(IOException e) {
+            } catch (IOException e) {
                 LOGGER.log(WARNING, "Unable to setup dependency list for plugin upload", e);
             }
 
@@ -1656,12 +1671,9 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
 
     protected String identifyPluginShortName(File t) {
         try {
-            JarFile j = new JarFile(t);
-            try {
+            try (JarFile j = new JarFile(t)) {
                 String name = j.getManifest().getMainAttributes().getValue("Short-Name");
                 if (name!=null) return name;
-            } finally {
-                j.close();
             }
         } catch (IOException e) {
             LOGGER.log(WARNING, "Failed to identify the short name from "+t,e);
@@ -1979,6 +1991,7 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
 
         private transient volatile List<PluginWrapper> pluginsWithCycle;
 
+        @Override
         public boolean isActivated() {
             if(pluginsWithCycle == null){
                 pluginsWithCycle = new ArrayList<>();
@@ -2030,6 +2043,7 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
             }
         }
 
+        @Override
         public boolean isActivated() {
             return !pluginsToBeUpdated.isEmpty();
         }
