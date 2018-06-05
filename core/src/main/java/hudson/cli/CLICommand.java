@@ -264,19 +264,19 @@ public abstract class CLICommand implements ExtensionPoint, Cloneable {
             sc = SecurityContextHolder.getContext();
             old = sc.getAuthentication();
 
-            CliAuthenticator authenticator = Jenkins.getActiveInstance().getSecurityRealm().createCliAuthenticator(this);
+            CliAuthenticator authenticator = Jenkins.get().getSecurityRealm().createCliAuthenticator(this);
             sc.setAuthentication(getTransportAuthentication());
             new ClassParser().parse(authenticator,p);
 
             if (!(this instanceof LoginCommand || this instanceof LogoutCommand || this instanceof HelpCommand || this instanceof WhoAmICommand))
-                Jenkins.getActiveInstance().checkPermission(Jenkins.READ);
+                Jenkins.get().checkPermission(Jenkins.READ);
             p.parseArgument(args.toArray(new String[args.size()]));
             Authentication auth = authenticator.authenticate();
             if (auth==Jenkins.ANONYMOUS)
                 auth = loadStoredAuthentication();
             sc.setAuthentication(auth); // run the CLI with the right credential
             if (!(this instanceof LoginCommand || this instanceof LogoutCommand || this instanceof HelpCommand || this instanceof WhoAmICommand))
-                Jenkins.getActiveInstance().checkPermission(Jenkins.READ);
+                Jenkins.get().checkPermission(Jenkins.READ);
             return run();
         } catch (CmdLineException e) {
             stderr.println("");
@@ -308,7 +308,7 @@ public abstract class CLICommand implements ExtensionPoint, Cloneable {
             stderr.println("");
             stderr.println("ERROR: Bad Credentials. Search the server log for " + id + " for more details.");
             return 7;
-        } catch (Throwable e) {
+        } catch (Exception e) {
             final String errorMsg = String.format("Unexpected exception occurred while performing %s command.",
                     getName());
             stderr.println("");
@@ -476,10 +476,9 @@ public abstract class CLICommand implements ExtensionPoint, Cloneable {
     @Restricted(NoExternalUse.class)
     public final String getLongDescription() {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        PrintStream ps = new PrintStream(out);
-
-        printUsageSummary(ps);
-        ps.close();
+        try (PrintStream ps = new PrintStream(out)) {
+            printUsageSummary(ps);
+        }
         return out.toString();
     }
 
@@ -508,6 +507,7 @@ public abstract class CLICommand implements ExtensionPoint, Cloneable {
             this.name = name;
         }
 
+        @Override
         public String call() throws IOException {
             return SystemProperties.getString(name);
         }
@@ -542,6 +542,7 @@ public abstract class CLICommand implements ExtensionPoint, Cloneable {
     }
 
     private static final class GetCharset extends MasterToSlaveCallable<String, IOException> {
+        @Override
         public String call() throws IOException {
             return Charset.defaultCharset().name();
         }
@@ -565,6 +566,7 @@ public abstract class CLICommand implements ExtensionPoint, Cloneable {
             this.name = name;
         }
 
+        @Override
         public String call() throws IOException {
             return System.getenv(name);
         }
@@ -588,7 +590,7 @@ public abstract class CLICommand implements ExtensionPoint, Cloneable {
      */
     protected void registerOptionHandlers() {
         try {
-            for (Class c : Index.list(OptionHandlerExtension.class, Jenkins.getActiveInstance().pluginManager.uberClassLoader,Class.class)) {
+            for (Class c : Index.list(OptionHandlerExtension.class, Jenkins.get().pluginManager.uberClassLoader,Class.class)) {
                 Type t = Types.getBaseClass(c, OptionHandler.class);
                 CmdLineParser.registerHandler(Types.erasure(Types.getTypeArgument(t,0)), c);
             }
@@ -640,20 +642,19 @@ public abstract class CLICommand implements ExtensionPoint, Cloneable {
     static {
         // register option handlers that are defined
         ClassLoaders cls = new ClassLoaders();
-        Jenkins j = Jenkins.getActiveInstance();
-        if (j!=null) {// only when running on the master
-            cls.put(j.getPluginManager().uberClassLoader);
+        Jenkins j = Jenkins.get();
+        // only when running on the master
+        cls.put(j.getPluginManager().uberClassLoader);
 
-            ResourceNameIterator servicesIter =
-                new DiscoverServiceNames(cls).findResourceNames(OptionHandler.class.getName());
-            final ResourceClassIterator itr =
-                new DiscoverClasses(cls).findResourceClasses(servicesIter);
+        ResourceNameIterator servicesIter
+            = new DiscoverServiceNames(cls).findResourceNames(OptionHandler.class.getName());
+        final ResourceClassIterator itr
+            = new DiscoverClasses(cls).findResourceClasses(servicesIter);
 
-            while(itr.hasNext()) {
-                Class h = itr.nextResourceClass().loadClass();
-                Class c = Types.erasure(Types.getTypeArgument(Types.getBaseClass(h, OptionHandler.class), 0));
-                CmdLineParser.registerHandler(c,h);
-            }
+        while (itr.hasNext()) {
+            Class h = itr.nextResourceClass().loadClass();
+            Class c = Types.erasure(Types.getTypeArgument(Types.getBaseClass(h, OptionHandler.class), 0));
+            CmdLineParser.registerHandler(c, h);
         }
     }
 

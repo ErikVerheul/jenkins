@@ -1697,7 +1697,7 @@ public class Queue extends ResourceController implements Saveable {
             Label lbl = p.getAssignedLabel();
 
             if (lbl != null && lbl.equals(h.getSelfLabel())) {
-                if (h.canTake(p) == null) {
+                if (h.canTake(p) == null && h.toComputer() != null) {
                     return createFlyWeightTaskRunnable(p, h.toComputer());
                 } else {
                     return null;

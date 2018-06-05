@@ -38,7 +38,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Callable;
-import java.util.logging.Logger;
 
 /**
  * {@link CliEntryPoint} implementation exposed to the remote CLI.
@@ -88,13 +87,17 @@ public class CliManagerImpl implements CliEntryPoint, Serializable {
 
         String subCmd = args.get(0);
         CLICommand cmd = CLICommand.clone(subCmd);
-        if(cmd!=null) {
+        if (cmd != null) {
             cmd.channel = Channel.current();
             final CLICommand old = CLICommand.setCurrent(cmd);
             try {
-                transportAuth = Channel.current().getProperty(CLICommand.TRANSPORT_AUTHENTICATION);
+                Channel c = Channel.current();
+                if (c == null) {
+                    return -1;
+                }
+                transportAuth = c.getProperty(CLICommand.TRANSPORT_AUTHENTICATION); //NOSONAR
                 cmd.setTransportAuth(transportAuth);
-                return cmd.main(args.subList(1,args.size()),locale, stdin, out, err);
+                return cmd.main(args.subList(1, args.size()), locale, stdin, out, err);
             } finally {
                 CLICommand.setCurrent(old);
             }
@@ -131,9 +134,4 @@ public class CliManagerImpl implements CliEntryPoint, Serializable {
         return VERSION;
     }
 
-    private Object writeReplace() {
-        return Channel.current().export(CliEntryPoint.class,this);
-    }
-
-    private static final Logger LOGGER = Logger.getLogger(CliManagerImpl.class.getName());
 }
