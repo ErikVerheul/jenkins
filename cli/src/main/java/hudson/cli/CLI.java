@@ -166,6 +166,7 @@ public class CLI implements AutoCloseable {
         final long interval = 15*1000;
         final long timeout = (interval * 3) / 4;
         new PingThread(ch,timeout,interval) {
+            @Override
             protected void onDead() {
                 // noop. the point of ping is to keep the connection alive
                 // as most HTTP servers have a rather short read time out
@@ -235,6 +236,7 @@ public class CLI implements AutoCloseable {
         }
 
         closables.add(new Closeable() {
+            @Override
             public void close() throws IOException {
                 s.close();
             }
@@ -273,7 +275,7 @@ public class CLI implements AutoCloseable {
                 }
 
             } catch (GeneralSecurityException e) {
-                throw (IOException)new IOException("Failed to negotiate transport security").initCause(e);
+                throw new IOException("Failed to negotiate transport security", e);
             }
         }
 
@@ -368,6 +370,7 @@ public class CLI implements AutoCloseable {
     /**
      * Shuts down the channel and closes the underlying connection.
      */
+    @Override
     public void close() throws IOException, InterruptedException {
         channel.close();
         channel.join();
@@ -428,9 +431,9 @@ public class CLI implements AutoCloseable {
         } catch (NotTalkingToJenkinsException ex) {
             System.err.println(ex.getMessage());
             System.exit(3);
-        } catch (Throwable t) {
+        } catch (Exception t) {
             // if the CLI main thread die, make sure to kill the JVM.
-            t.printStackTrace();
+            LOGGER.log(Level.SEVERE, "CLI main thread died, kill the JVM.");
             System.exit(-1);
         }
     }
@@ -500,6 +503,7 @@ public class CLI implements AutoCloseable {
                 HttpsURLConnection.setDefaultSSLSocketFactory(context.getSocketFactory());
                 // bypass host name check, too.
                 HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
+                    @Override
                     public boolean verify(String s, SSLSession sslSession) {
                         return true;
                     }
@@ -613,18 +617,12 @@ public class CLI implements AutoCloseable {
             return plainHttpConnection(url, args, factory);
         }
 
-        CLI cli = factory.connect();
-        try {
+        try (CLI cli = factory.connect()) {
             if (provider.hasKeys()) {
                 try {
                     // TODO: server verification
                     cli.authenticate(provider.getKeys());
-                } catch (IllegalStateException e) {
-                    if (sshAuthRequestedExplicitly) {
-                        LOGGER.warning("The server doesn't support public key authentication");
-                        return -1;
-                    }
-                } catch (UnsupportedOperationException e) {
+                } catch (IllegalStateException | UnsupportedOperationException e) {
                     if (sshAuthRequestedExplicitly) {
                         LOGGER.warning("The server doesn't support public key authentication");
                         return -1;
@@ -643,8 +641,6 @@ public class CLI implements AutoCloseable {
             // Arrays.asList is not serializable --- see 6835580
             args = new ArrayList<String>(args);
             return cli.execute(args, System.in, System.out, System.err);
-        } finally {
-            cli.close();
         }
     }
 
@@ -742,7 +738,7 @@ public class CLI implements AutoCloseable {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace(); // if the version properties is missing, that's OK.
+            LOGGER.log(FINE, "If the version properties is missing, that's OK.");
         }
         return props.getProperty("version","?");
     }

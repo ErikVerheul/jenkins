@@ -25,4 +25,12 @@
                 
             </goals>
         </action>
+        <action>
+            <actionName>CUSTOM-CLIActionTest</actionName>
+            <displayName>CLIActionTest</displayName>
+            <recursive>false</recursive>
+            <goals>
+                <goal>-Dtest=CLIActionTest</goal>
+            </goals>
+        </action>
     </actions>
