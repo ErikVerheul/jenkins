@@ -414,8 +414,8 @@ public class SlaveComputer extends Computer {
             cc.onChannelBuilding(cb,this);
         }
 
-        Channel channel = cb.build(in,out);
-        setChannel(channel,launchLog,listener);
+        Channel ch = cb.build(in,out);
+        setChannel(ch,launchLog,listener);
     }
 
     /**
@@ -518,8 +518,8 @@ public class SlaveComputer extends Computer {
         if(this.channel!=null)
             throw new IllegalStateException("Already connected");
 
-        final TaskListener taskListener = new StreamTaskListener(launchLog);
-        PrintStream log = taskListener.getLogger();
+        final TaskListener tl = new StreamTaskListener(launchLog);
+        PrintStream logger = tl.getLogger();
 
         channel.setProperty(SlaveComputer.class, this);
 
@@ -529,13 +529,13 @@ public class SlaveComputer extends Computer {
                 // Orderly shutdown will have null exception
                 if (cause!=null) {
                     offlineCause = new ChannelTermination(cause);
-                    Functions.printStackTrace(cause, taskListener.error("Connection terminated"));
+                    Functions.printStackTrace(cause, tl.error("Connection terminated"));
                 } else {
-                    taskListener.getLogger().println("Connection terminated");
+                    tl.getLogger().println("Connection terminated");
                 }
                 closeChannel();
                 try {
-                    launcher.afterDisconnect(SlaveComputer.this, taskListener);
+                    launcher.afterDisconnect(SlaveComputer.this, tl);
                 } catch (Throwable t) {
                     LogRecord lr = new LogRecord(Level.SEVERE,
                             "Launcher {0}'s afterDisconnect method propagated an exception when {1}'s connection was closed: {2}");
@@ -549,16 +549,16 @@ public class SlaveComputer extends Computer {
             channel.addListener(listener);
 
         String slaveVersion = channel.call(new SlaveVersion());
-        log.println("Remoting version: " + slaveVersion);
+        logger.println("Remoting version: " + slaveVersion);
         VersionNumber agentVersion = new VersionNumber(slaveVersion);
         if (agentVersion.isOlderThan(RemotingVersionInfo.getMinimumSupportedVersion())) {
-            log.println(String.format("WARNING: Remoting version is older than a minimum required one (%s). " +
+            logger.println(String.format("WARNING: Remoting version is older than a minimum required one (%s). " +
                     "Connection will not be rejected, but the compatibility is NOT guaranteed",
                     RemotingVersionInfo.getMinimumSupportedVersion()));
         }
 
         boolean _isUnix = channel.call(new DetectOS());
-        log.println(_isUnix? hudson.model.Messages.Slave_UnixSlave():hudson.model.Messages.Slave_WindowsSlave());
+        logger.println(_isUnix? hudson.model.Messages.Slave_UnixSlave():hudson.model.Messages.Slave_WindowsSlave());
 
         String defaultCharsetName = channel.call(new DetectDefaultCharset());
 
@@ -570,10 +570,10 @@ public class SlaveComputer extends Computer {
         String remoteFS = node.getRemoteFS();
         if (Util.isRelativePath(remoteFS)) {
             remoteFS = channel.call(new AbsolutePath(remoteFS));
-            log.println("NOTE: Relative remote path resolved to: "+remoteFS);
+            logger.println("NOTE: Relative remote path resolved to: "+remoteFS);
         }
         if(_isUnix && !remoteFS.contains("/") && remoteFS.contains("\\"))
-            log.println("WARNING: "+remoteFS
+            logger.println("WARNING: "+remoteFS
                     +" looks suspiciously like Windows path. Maybe you meant "+remoteFS.replace('\\','/')+"?");
         FilePath root = new FilePath(channel,remoteFS);
 
@@ -586,7 +586,7 @@ public class SlaveComputer extends Computer {
         SecurityContext old = ACL.impersonate(ACL.SYSTEM);
         try {
             for (ComputerListener cl : ComputerListener.all()) {
-                cl.preOnline(this,channel,root,taskListener);
+                cl.preOnline(this,channel,root,tl);
             }
         } finally {
             SecurityContextHolder.setContext(old);
@@ -619,12 +619,12 @@ public class SlaveComputer extends Computer {
         old = ACL.impersonate(ACL.SYSTEM);
         try {
             for (ComputerListener cl : ComputerListener.all()) {
-                cl.onOnline(this,taskListener);
+                cl.onOnline(this,tl);
             }
         } finally {
             SecurityContextHolder.setContext(old);
         }
-        log.println("Agent successfully connected and online");
+        logger.println("Agent successfully connected and online");
         Jenkins.get().getQueue().scheduleMaintenance();
     }
 
