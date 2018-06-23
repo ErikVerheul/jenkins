@@ -80,6 +80,7 @@ public class ConsoleAnnotationOutputStream<T> extends LineTransformationOutputSt
      * Called after we read the whole line of plain text, which is stored in {@link #buf}.
      * This method performs annotations and send the result to {@link #out}.
      */
+    @Override
     protected void eol(byte[] in, int sz) throws IOException {
         line.reset();
         final StringBuffer strBuf = line.getStringBuffer();
@@ -111,6 +112,7 @@ public class ConsoleAnnotationOutputStream<T> extends LineTransformationOutputSt
                         if (annotators==null)
                             annotators = new ArrayList<ConsoleAnnotator<T>>();
                         annotators.add(new ConsoleAnnotator<T>() {
+                            @Override
                             public ConsoleAnnotator annotate(T context, MarkupText text) {
                                 return a.annotate(context,text,charPos);
                             }

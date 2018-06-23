@@ -166,6 +166,7 @@ public class SimpleScheduledRetentionStrategy extends RetentionStrategy<SlaveCom
     }
 
     @GuardedBy("hudson.model.Queue.lock")
+    @Override
     public synchronized long check(final SlaveComputer c) {
         boolean shouldBeOnline = isOnlineScheduled();
         LOGGER.log(Level.FINE, "Checking computer {0} against schedule. online = {1}, shouldBeOnline = {2}",
@@ -175,6 +176,7 @@ public class SimpleScheduledRetentionStrategy extends RetentionStrategy<SlaveCom
                     + "this point in time", new Object[]{c.getName()});
             if (c.isLaunchSupported()) {
                 Computer.threadPoolForRemoting.submit(new Runnable() {
+                    @Override
                     public void run() {
                         try {
                             c.connect(true).get();
@@ -245,6 +247,7 @@ public class SimpleScheduledRetentionStrategy extends RetentionStrategy<SlaveCom
 
     @Extension @Symbol("schedule")
     public static class DescriptorImpl extends Descriptor<RetentionStrategy<?>> {
+        @Override
         public String getDisplayName() {
             return Messages.SimpleScheduledRetentionStrategy_displayName();
         }

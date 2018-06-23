@@ -89,11 +89,13 @@ public final class FingerprintMap extends KeyedDataStorage<Fingerprint,Fingerpri
         return data;
     }
 
-    protected @Nonnull Fingerprint create(@Nonnull String md5sum, @Nonnull FingerprintParams createParams) throws IOException {
+    protected @Nonnull@Override
+ Fingerprint create(@Nonnull String md5sum, @Nonnull FingerprintParams createParams) throws IOException {
         return new Fingerprint(createParams.build, createParams.fileName, toByteArray(md5sum));
     }
 
-    protected @CheckForNull Fingerprint load(@Nonnull String key) throws IOException {
+    protected @CheckForNull@Override
+ Fingerprint load(@Nonnull String key) throws IOException {
         return Fingerprint.load(toByteArray(key));
     }
 

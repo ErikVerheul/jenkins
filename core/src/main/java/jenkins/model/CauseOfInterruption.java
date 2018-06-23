@@ -118,6 +118,7 @@ public abstract class CauseOfInterruption implements Serializable {
             return User.get(user, false, Collections.emptyMap());
         }
 
+        @Override
         public String getShortDescription() {
             return Messages.CauseOfInterruption_ShortDescription(user);
         }

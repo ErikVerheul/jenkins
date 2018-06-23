@@ -99,8 +99,10 @@ public interface RunWithSCM<JobT extends Job<JobT, RunT>,
         return new AbstractSet<User>() {
             private Set<String> culpritIds = ImmutableSet.copyOf(getCulpritIds());
 
+            @Override
             public Iterator<User> iterator() {
                 return new AdaptedIterator<String,User>(culpritIds.iterator()) {
+                    @Override
                     protected User adapt(String id) {
                         // TODO: Probably it should not auto-create users
                         return User.getById(id, true);
@@ -108,6 +110,7 @@ public interface RunWithSCM<JobT extends Job<JobT, RunT>,
                 };
             }
 
+            @Override
             public int size() {
                 return culpritIds.size();
             }

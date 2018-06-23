@@ -28,6 +28,7 @@ import hudson.model.Descriptor;
 import hudson.model.AbstractProject;
 import jenkins.model.Jenkins;
 import hudson.model.AbstractProject.AbstractProjectDescriptor;
+import hudson.model.TopLevelItemDescriptor;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -76,7 +77,7 @@ public abstract class BuildStepDescriptor<T extends BuildStep & Describable<T>> 
 
         List<Descriptor<T>> r = new ArrayList<Descriptor<T>>(base.size());
         for (Descriptor<T> d : base) {
-            if (pd instanceof AbstractProjectDescriptor && !((AbstractProjectDescriptor)pd).isApplicable(d))
+            if (pd instanceof AbstractProjectDescriptor && !((TopLevelItemDescriptor)pd).isApplicable(d))
                 continue;
 
             if (d instanceof BuildStepDescriptor) {

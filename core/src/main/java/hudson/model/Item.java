@@ -125,6 +125,7 @@ public interface Item extends PersistenceRoot, SearchableModelObject, AccessCont
      * The returned string should not include the display names
      * of {@link #getParent() ancestor items}.
      */
+    @Override
     String getDisplayName();
 
     /**
@@ -243,6 +244,7 @@ public interface Item extends PersistenceRoot, SearchableModelObject, AccessCont
      * or {@link AbstractItem#getConfigFile()} to obtain the file
      * to save the data.
      */
+    @Override
     void save() throws IOException;
 
     /**

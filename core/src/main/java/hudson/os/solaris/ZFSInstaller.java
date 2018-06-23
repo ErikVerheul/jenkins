@@ -84,6 +84,7 @@ public class ZFSInstaller extends AdministrativeMonitor implements Serializable 
      */
     private String prospectiveZfsFileSystemName;
 
+    @Override
     public boolean isActivated() {
         return active;
     }
@@ -172,6 +173,7 @@ public class ZFSInstaller extends AdministrativeMonitor implements Serializable 
         return SU.execute(listener, rootUsername, rootPassword, new MasterToSlaveCallable<String,IOException>() {
             private static final long serialVersionUID = 7731167233498214301L;
 
+            @Override
             public String call() throws IOException {
                 PrintStream out = listener.getLogger();
 
@@ -411,6 +413,7 @@ public class ZFSInstaller extends AdministrativeMonitor implements Serializable 
      * Used to indicate that the migration was completed successfully.
      */
     public static final class MigrationCompleteNotice extends AdministrativeMonitor {
+        @Override
         public boolean isActivated() {
             return true;
         }
@@ -426,6 +429,7 @@ public class ZFSInstaller extends AdministrativeMonitor implements Serializable 
             this.record = record;
         }
 
+        @Override
         public boolean isActivated() {
             return true;
         }

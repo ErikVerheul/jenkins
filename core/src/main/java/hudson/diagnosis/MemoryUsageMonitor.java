@@ -115,10 +115,12 @@ public final class MemoryUsageMonitor extends PeriodicWork {
         nonHeap = new MemoryGroup(pools, MemoryType.NON_HEAP);
     }
 
+    @Override
     public long getRecurrencePeriod() {
         return TimeUnit.SECONDS.toMillis(10);
     }
 
+    @Override
     protected void doRun() {
         heap.update();
         nonHeap.update();

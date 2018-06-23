@@ -178,6 +178,7 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
         return realm.getUserIdStrategy();
     }
 
+    @Override
     public int compareTo(User that) {
         return idStrategy().compare(this.id, that.id);
     }
@@ -225,7 +226,8 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
         return "user/"+Util.rawEncode(idStrategy().keyFor(id));
     }
 
-    public @Nonnull String getSearchUrl() {
+    public @Nonnull@Override
+ String getSearchUrl() {
         return "/user/"+Util.rawEncode(idStrategy().keyFor(id));
     }
 
@@ -650,6 +652,7 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
         }
         Collections.sort(r,new Comparator<User>() {
 
+            @Override
             public int compare(User o1, User o2) {
                 return strategy.compare(o1.getId(), o2.getId());
             }
@@ -715,7 +718,8 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
     /**
      * Returns the user name.
      */
-    public @Nonnull String getDisplayName() {
+    public @Nonnull@Override
+ String getDisplayName() {
         return getFullName();
     }
 
@@ -816,6 +820,7 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
     /**
      * Save the settings to a file.
      */
+    @Override
     public synchronized void save() throws IOException, FormValidation {
         if (! isIdOrFullnameAllowed(id)) {
             throw FormValidation.error(Messages.User_IllegalUsername(id));
@@ -976,6 +981,7 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
         XSTREAM.alias("user",User.class);
     }
 
+    @Override
     public ACL getACL() {
         ACL base = Jenkins.get().getAuthorizationStrategy().getACL(this);
         // always allow a non-anonymous user full control of himself.
@@ -1064,6 +1070,7 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
         return Collections.unmodifiableList(actions);
     }
 
+    @Override
     public ContextMenu doContextMenu(StaplerRequest request, StaplerResponse response) throws Exception {
         return new ContextMenu().from(this,request,response);
     }

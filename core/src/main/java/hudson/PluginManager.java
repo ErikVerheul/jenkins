@@ -589,7 +589,7 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
         Set<String> names = new HashSet();
 
         ServletContext ctext = Jenkins.get().servletContext;
-        Set<String> pins = Util.fixNull((Set<String>) ctext.getResourcePaths(fromPath));
+        Set<String> pins = Util.fixNull(ctext.getResourcePaths(fromPath));
         Set<URL> copiedPlugins = new HashSet<>();
         Set<URL> dependencies = new HashSet<>();
 
@@ -1007,7 +1007,7 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
             } finally {
                 Util.closeAndLogFailures(in, LOGGER, PluginWrapper.MANIFEST_FILENAME, bundledJpi.toString());
                 if (cl instanceof Closeable)
-                    ((Closeable)cl).close();
+                    cl.close();
             }
         } catch (IOException e) {
             LOGGER.log(WARNING, "Failed to parse manifest of "+bundledJpi, e);
@@ -1485,7 +1485,7 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
                                     continue INSTALLING;
                                 }
                                 UpdateCenter.UpdateCenterJob job = jobFuture.get();
-                                if(job instanceof InstallationJob && ((InstallationJob)job).status instanceof DownloadJob.Failure) {
+                                if(job instanceof InstallationJob && ((DownloadJob)job).status instanceof DownloadJob.Failure) {
                                     failures = true;
                                 }
                             }

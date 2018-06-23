@@ -109,15 +109,18 @@ public class CauseAction implements FoldableAction, RunAction2 {
         return null;
     }
 		
+    @Override
 	public String getDisplayName() {
 		return "Cause";
 	}
 
+    @Override
 	public String getIconFileName() {
 		// no icon
 		return null;
 	}
 
+    @Override
 	public String getUrlName() {
 		return "cause";
 	}
@@ -161,6 +164,7 @@ public class CauseAction implements FoldableAction, RunAction2 {
         }
     }
 
+    @Override
     public void foldIntoExisting(hudson.model.Queue.Item item, Task owner, List<Action> otherActions) {
         CauseAction existing = item.getAction(CauseAction.class);
         if (existing!=null) {

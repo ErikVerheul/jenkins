@@ -807,6 +807,7 @@ public abstract class ProcessTree implements Iterable<OSProcess>, IProcessTree, 
                 return arguments;
             }
 
+            @Override
             public synchronized EnvVars getEnvironmentVariables() {
                 if(envVars !=null)
                     return envVars;

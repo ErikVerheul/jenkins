@@ -53,50 +53,62 @@ public class NodeListTest {
 
     static class DummyNode extends Node {
         String nodeName = Long.toString(new Random().nextLong());
+        @Override
         public String getNodeName() {
             return nodeName;
         }
 
+        @Override
         public void setNodeName(String name) {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public String getNodeDescription() {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public Launcher createLauncher(TaskListener listener) {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public int getNumExecutors() {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public Mode getMode() {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public Computer createComputer() {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public Set<LabelAtom> getAssignedLabels() {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public String getLabelString() {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public void setLabelString(String labelString) throws IOException {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public FilePath getWorkspaceFor(TopLevelItem item) {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public FilePath getRootPath() {
             throw new UnsupportedOperationException();
         }
@@ -106,6 +118,7 @@ public class NodeListTest {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public NodeDescriptor getDescriptor() {
             throw new UnsupportedOperationException();
         }
@@ -117,6 +130,7 @@ public class NodeListTest {
     }
 
     static class EphemeralNode extends DummyNode implements hudson.slaves.EphemeralNode {
+        @Override
         public Node asNode() {
             return this;
         }

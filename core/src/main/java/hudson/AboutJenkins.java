@@ -24,6 +24,7 @@ public class AboutJenkins extends ManagementLink {
         return "about";
     }
 
+    @Override
     public String getDisplayName() {
         return Messages.AboutJenkins_DisplayName();
     }

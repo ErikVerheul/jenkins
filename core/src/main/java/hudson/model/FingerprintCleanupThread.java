@@ -51,6 +51,7 @@ public final class FingerprintCleanupThread extends AsyncPeriodicWork {
         super("Fingerprint cleanup");
     }
 
+    @Override
     public long getRecurrencePeriod() {
         return DAY;
     }
@@ -63,6 +64,7 @@ public final class FingerprintCleanupThread extends AsyncPeriodicWork {
         return ExtensionList.lookup(AsyncPeriodicWork.class).get(FingerprintCleanupThread.class);
     }
 
+    @Override
     public void execute(TaskListener listener) {
         int numFiles = 0;
 
@@ -120,6 +122,7 @@ public final class FingerprintCleanupThread extends AsyncPeriodicWork {
     }
 
     private static final FileFilter LENGTH2DIR_FILTER = new FileFilter() {
+        @Override
         public boolean accept(File f) {
             return f.isDirectory() && f.getName().length()==2;
         }
@@ -128,6 +131,7 @@ public final class FingerprintCleanupThread extends AsyncPeriodicWork {
     private static final FileFilter FINGERPRINTFILE_FILTER = new FileFilter() {
         private final Pattern PATTERN = Pattern.compile("[0-9a-f]{28}\\.xml");
 
+        @Override
         public boolean accept(File f) {
             return f.isFile() && PATTERN.matcher(f.getName()).matches();
         }

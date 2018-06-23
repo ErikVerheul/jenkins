@@ -108,6 +108,7 @@ public class ChunkedInputStream extends InputStream {
      * byte
      * @throws IOException If an IO problem occurs
      */
+    @Override
     public int read() throws IOException {
 
         if (closed) {

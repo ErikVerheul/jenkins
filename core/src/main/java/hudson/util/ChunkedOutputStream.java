@@ -152,6 +152,7 @@ public class ChunkedOutputStream extends OutputStream {
      * @param b The byte to be written
      * @throws IOException if an input/output error occurs
      */
+    @Override
     public void write(int b) throws IOException {
         cache[cachePosition] = (byte) b;
         cachePosition++;

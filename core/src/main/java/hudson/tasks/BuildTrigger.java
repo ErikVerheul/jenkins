@@ -166,6 +166,7 @@ public class BuildTrigger extends Recorder implements DependencyDeclarer {
         return Items.fromNameList(owner.getParent(), childProjects, (Class<Job<?, ?>>) (Class) Job.class);
     }
 
+    @Override
     public BuildStepMonitor getRequiredMonitorService() {
         return BuildStepMonitor.NONE;
     }
@@ -221,7 +222,7 @@ public class BuildTrigger extends Recorder implements DependencyDeclarer {
                     logger.println(Messages.BuildTrigger_NotBuildable(ModelHyperlinkNote.encodeTo(downstream)));
                     continue;
                 }
-                boolean scheduled = pj.scheduleBuild(pj.getQuietPeriod(), new UpstreamCause((Run) build));
+                boolean scheduled = pj.scheduleBuild(pj.getQuietPeriod(), new UpstreamCause(build));
                 if (Jenkins.get().getItemByFullName(downstream.getFullName()) == downstream) {
                     String name = ModelHyperlinkNote.encodeTo(downstream);
                     if (scheduled) {
@@ -260,6 +261,7 @@ public class BuildTrigger extends Recorder implements DependencyDeclarer {
                 graph.getDownstreamDependencies(build.getProject()));
         // Sort topologically
         Collections.sort(downstreamProjects, new Comparator<Dependency>() {
+            @Override
             public int compare(Dependency lhs, Dependency rhs) {
                 // Swapping lhs/rhs to get reverse sort:
                 return graph.compare(rhs.getDownstreamProject(), lhs.getDownstreamProject());
@@ -275,7 +277,7 @@ public class BuildTrigger extends Recorder implements DependencyDeclarer {
                     logger.println(Messages.BuildTrigger_Disabled(ModelHyperlinkNote.encodeTo(p)));
                     continue;
                 }
-                boolean scheduled = p.scheduleBuild(p.getQuietPeriod(), new UpstreamCause((Run)build), buildActions.toArray(new Action[buildActions.size()]));
+                boolean scheduled = p.scheduleBuild(p.getQuietPeriod(), new UpstreamCause(build), buildActions.toArray(new Action[buildActions.size()]));
                 if (Jenkins.get().getItemByFullName(p.getFullName()) == p) {
                     String name = ModelHyperlinkNote.encodeTo(p);
                     if (scheduled) {
@@ -290,6 +292,7 @@ public class BuildTrigger extends Recorder implements DependencyDeclarer {
         return true;
     }
 
+    @Override
     public void buildDependencyGraph(AbstractProject owner, DependencyGraph graph) {
         for (AbstractProject p : getChildProjects(owner)) // only care about AbstractProject here
             graph.addDependency(new Dependency(owner, p) {
@@ -356,6 +359,7 @@ public class BuildTrigger extends Recorder implements DependencyDeclarer {
 
     @Extension @Symbol("downstream")
     public static class DescriptorImpl extends BuildStepDescriptor<Publisher> {
+        @Override
         public String getDisplayName() {
             return Messages.BuildTrigger_DisplayName();
         }

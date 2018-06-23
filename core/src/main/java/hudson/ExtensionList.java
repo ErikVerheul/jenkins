@@ -156,6 +156,7 @@ public class ExtensionList<T> extends AbstractList<T> implements OnMaster {
     public Iterator<T> iterator() {
         // we need to intercept mutation, so for now don't allow Iterator.remove 
         return new AdaptedIterator<ExtensionComponent<T>,T>(Iterators.readOnly(ensureLoaded().iterator())) {
+            @Override
             protected T adapt(ExtensionComponent<T> item) {
                 return item.getInstance();
             }
@@ -169,10 +170,12 @@ public class ExtensionList<T> extends AbstractList<T> implements OnMaster {
         return Collections.unmodifiableList(ensureLoaded());
     }
 
+    @Override
     public T get(int index) {
         return ensureLoaded().get(index).getInstance();
     }
     
+    @Override
     public int size() {
         return ensureLoaded().size();
     }

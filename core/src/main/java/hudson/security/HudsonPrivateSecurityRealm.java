@@ -435,18 +435,22 @@ public class HudsonPrivateSecurityRealm extends AbstractPasswordBasedSecurityRea
     /**
      * This is used primarily when the object is listed in the breadcrumb, in the user management screen.
      */
+    @Override
     public String getDisplayName() {
         return Messages.HudsonPrivateSecurityRealm_DisplayName();
     }
 
+    @Override
     public ACL getACL() {
         return Jenkins.get().getACL();
     }
 
+    @Override
     public void checkPermission(Permission permission) {
         Jenkins.get().checkPermission(permission);
     }
 
+    @Override
     public boolean hasPermission(Permission permission) {
         return Jenkins.get().hasPermission(permission);
     }
@@ -536,11 +540,13 @@ public class HudsonPrivateSecurityRealm extends AbstractPasswordBasedSecurityRea
             return new Details(PASSWORD_ENCODER.encodePassword(rawPassword,null));
         }
 
+        @Override
         public GrantedAuthority[] getAuthorities() {
             // TODO
             return TEST_AUTHORITY;
         }
 
+        @Override
         public String getPassword() {
             return passwordHash;
         }
@@ -554,6 +560,7 @@ public class HudsonPrivateSecurityRealm extends AbstractPasswordBasedSecurityRea
             return Protector.protect(Stapler.getCurrentRequest().getSession().getId()+':'+getPassword());
         }
 
+        @Override
         public String getUsername() {
             return user.getId();
         }
@@ -562,22 +569,27 @@ public class HudsonPrivateSecurityRealm extends AbstractPasswordBasedSecurityRea
             return user;
         }
 
+        @Override
         public boolean isAccountNonExpired() {
             return true;
         }
 
+        @Override
         public boolean isAccountNonLocked() {
             return true;
         }
 
+        @Override
         public boolean isCredentialsNonExpired() {
             return true;
         }
 
+        @Override
         public boolean isEnabled() {
             return true;
         }
 
+        @Override
         public boolean isInvalid() {
             return user==null;
         }
@@ -627,6 +639,7 @@ public class HudsonPrivateSecurityRealm extends AbstractPasswordBasedSecurityRea
                 return Jenkins.get().getSecurityRealm() instanceof HudsonPrivateSecurityRealm;
             }
 
+            @Override
             public UserProperty newInstance(User user) {
                 return null;
             }
@@ -639,6 +652,7 @@ public class HudsonPrivateSecurityRealm extends AbstractPasswordBasedSecurityRea
      */
     @Extension @Symbol("localUsers")
     public static final class ManageUserLinks extends ManagementLink {
+        @Override
         public String getIconFileName() {
             if(Jenkins.get().getSecurityRealm() instanceof HudsonPrivateSecurityRealm)
                 return "user.png";
@@ -646,10 +660,12 @@ public class HudsonPrivateSecurityRealm extends AbstractPasswordBasedSecurityRea
                 return null;    // not applicable now
         }
 
+        @Override
         public String getUrlName() {
             return "securityRealm/";
         }
 
+        @Override
         public String getDisplayName() {
             return Messages.HudsonPrivateSecurityRealm_ManageUserLinks_DisplayName();
         }
@@ -674,10 +690,12 @@ public class HudsonPrivateSecurityRealm extends AbstractPasswordBasedSecurityRea
     /*package*/ static final PasswordEncoder CLASSIC = new PasswordEncoder() {
         private final PasswordEncoder passwordEncoder = new ShaPasswordEncoder(256);
 
+        @Override
         public String encodePassword(String rawPass, Object _) throws DataAccessException {
             return hash(rawPass);
         }
 
+        @Override
         public boolean isPasswordValid(String encPass, String rawPass, Object _) throws DataAccessException {
             // pull out the sale from the encoded password
             int i = encPass.indexOf(':');
@@ -714,10 +732,12 @@ public class HudsonPrivateSecurityRealm extends AbstractPasswordBasedSecurityRea
      * {@link PasswordEncoder} that uses jBCrypt.
      */
     private static final PasswordEncoder JBCRYPT_ENCODER = new PasswordEncoder() {
+        @Override
         public String encodePassword(String rawPass, Object _) throws DataAccessException {
             return BCrypt.hashpw(rawPass,BCrypt.gensalt());
         }
 
+        @Override
         public boolean isPasswordValid(String encPass, String rawPass, Object _) throws DataAccessException {
             return BCrypt.checkpw(rawPass,encPass);
         }
@@ -734,10 +754,12 @@ public class HudsonPrivateSecurityRealm extends AbstractPasswordBasedSecurityRea
 
             '#' is neither in base64 nor hex, which makes it a good choice.
          */
+        @Override
         public String encodePassword(String rawPass, Object salt) throws DataAccessException {
             return JBCRYPT_HEADER+JBCRYPT_ENCODER.encodePassword(rawPass,salt);
         }
 
+        @Override
         public boolean isPasswordValid(String encPass, String rawPass, Object salt) throws DataAccessException {
             if (encPass.startsWith(JBCRYPT_HEADER))
                 return JBCRYPT_ENCODER.isPasswordValid(encPass.substring(JBCRYPT_HEADER.length()),rawPass,salt);
@@ -750,15 +772,18 @@ public class HudsonPrivateSecurityRealm extends AbstractPasswordBasedSecurityRea
 
     @Extension @Symbol("local")
     public static final class DescriptorImpl extends Descriptor<SecurityRealm> {
+        @Override
         public String getDisplayName() {
             return Messages.HudsonPrivateSecurityRealm_DisplayName();
         }
     }
 
     private static final Filter CREATE_FIRST_USER_FILTER = new Filter() {
+        @Override
         public void init(FilterConfig config) throws ServletException {
         }
 
+        @Override
         public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
             HttpServletRequest req = (HttpServletRequest) request;
 
@@ -779,6 +804,7 @@ public class HudsonPrivateSecurityRealm extends AbstractPasswordBasedSecurityRea
                 && Jenkins.get().getSecurityRealm() instanceof HudsonPrivateSecurityRealm;
         }
 
+        @Override
         public void destroy() {
         }
     };

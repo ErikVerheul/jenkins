@@ -184,6 +184,7 @@ public class EnvVars extends TreeMap<String,String> {
                 referredVariables = new TreeSet<String>(comparator);
             }
             
+            @Override
             public String resolve(String name) {
                 referredVariables.add(name);
                 return "";
@@ -409,6 +410,7 @@ public class EnvVars extends TreeMap<String,String> {
     }
 
     private static final class GetEnvVars extends MasterToSlaveCallable<EnvVars,RuntimeException> {
+        @Override
         public EnvVars call() {
             return new EnvVars(EnvVars.masterEnvVars);
         }

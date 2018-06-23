@@ -77,44 +77,52 @@ class DefaultRuntimeSpringConfiguration implements RuntimeSpringConfiguration {
 //    }
 
 
+    @Override
     public BeanConfiguration addSingletonBean(String name, Class clazz) {
         BeanConfiguration bc = new DefaultBeanConfiguration(name,clazz);
         registerBeanConfiguration(name, bc);
         return bc;
     }
 
+    @Override
     public BeanConfiguration addPrototypeBean(String name, Class clazz) {
         BeanConfiguration bc = new DefaultBeanConfiguration(name,clazz,true);
         registerBeanConfiguration(name, bc);
         return bc;
     }
 
+    @Override
     public WebApplicationContext getApplicationContext() {
         registerBeansWithContext(context);
         context.refresh();
         return context;
     }
 
+    @Override
     public WebApplicationContext getUnrefreshedApplicationContext() {
         return context;
     }
 
+    @Override
     public BeanConfiguration addSingletonBean(String name) {
         BeanConfiguration bc = new DefaultBeanConfiguration(name);
         registerBeanConfiguration(name, bc);
         return bc;
     }
 
+    @Override
     public BeanConfiguration createSingletonBean(Class clazz) {
         return new DefaultBeanConfiguration(clazz);
     }
 
+    @Override
     public BeanConfiguration addSingletonBean(String name, Class clazz, Collection args) {
         BeanConfiguration bc = new DefaultBeanConfiguration(name,clazz,args);
         registerBeanConfiguration(name, bc);
         return bc;
     }
 
+    @Override
     public BeanConfiguration addPrototypeBean(String name) {
         BeanConfiguration bc = new DefaultBeanConfiguration(name,true);
         registerBeanConfiguration(name, bc);
@@ -126,40 +134,49 @@ class DefaultRuntimeSpringConfiguration implements RuntimeSpringConfiguration {
         beanNames.add(name);
     }
 
+    @Override
     public BeanConfiguration createSingletonBean(Class clazz, Collection constructorArguments) {
         return new DefaultBeanConfiguration(clazz, constructorArguments);
     }
 
+    @Override
     public void setServletContext(ServletContext context) {
         this.context.setServletContext(context);
     }
 
+    @Override
     public BeanConfiguration createPrototypeBean(String name) {
         return new DefaultBeanConfiguration(name,true);
     }
 
+    @Override
     public BeanConfiguration createSingletonBean(String name) {
         return new DefaultBeanConfiguration(name);
     }
 
+    @Override
     public void addBeanConfiguration(String beanName, BeanConfiguration beanConfiguration) {
         beanConfiguration.setName(beanName);
         registerBeanConfiguration(beanName, beanConfiguration);
     }
 
+    @Override
     public void addBeanDefinition(String name, BeanDefinition bd) {
         beanDefinitions.put(name,bd);
         beanNames.add(name);
     }
 
+    @Override
     public boolean containsBean(String name) {
         return beanNames .contains(name);
     }
 
+    @Override
     public BeanConfiguration getBeanConfig(String name) {
         return beanConfigs.get(name);
     }
 
+    @Override
     public AbstractBeanDefinition createBeanDefinition(String name) {
         if(containsBean(name)) {
             if(beanDefinitions.containsKey(name))
@@ -170,16 +187,19 @@ class DefaultRuntimeSpringConfiguration implements RuntimeSpringConfiguration {
         return null;
     }
 
+    @Override
     public void registerPostProcessor(BeanFactoryPostProcessor processor) {
         this.context.addBeanFactoryPostProcessor(processor);
     }
 
 
 
+    @Override
     public List<String> getBeanNames() {
         return beanNames;
     }
 
+    @Override
     public void registerBeansWithContext(StaticApplicationContext applicationContext) {
         for (BeanConfiguration bc : beanConfigs.values()) {
             if (LOGGER.isLoggable(Level.FINER)) {
@@ -226,6 +246,7 @@ class DefaultRuntimeSpringConfiguration implements RuntimeSpringConfiguration {
      * @param name The name of the bean
      * @return The BeanConfiguration object
      */
+    @Override
     public BeanConfiguration addAbstractBean(String name) {
         BeanConfiguration bc = new DefaultBeanConfiguration(name);
         bc.setAbstract(true);

@@ -103,10 +103,12 @@ public abstract class Node extends AbstractModelObject implements Reconfigurable
      */
     protected volatile transient boolean holdOffLaunchUntilSave;
 
+    @Override
     public String getDisplayName() {
         return getNodeName(); // default implementation
     }
 
+    @Override
     public String getSearchUrl() {
         Computer c = toComputer();
         if (c != null) {
@@ -280,6 +282,7 @@ public abstract class Node extends AbstractModelObject implements Reconfigurable
      */
     public TagCloud<LabelAtom> getLabelCloud() {
         return new TagCloud<LabelAtom>(getAssignedLabels(),new WeightFunction<LabelAtom>() {
+            @Override
             public float weight(LabelAtom item) {
                 return item.getTiedJobCount();
             }
@@ -505,10 +508,12 @@ public abstract class Node extends AbstractModelObject implements Reconfigurable
         return NodeProperty.for_(this);
     }
 
+    @Override
     public ACL getACL() {
         return Jenkins.get().getAuthorizationStrategy().getACL(this);
     }
 
+    @Override
     public Node reconfigure(final StaplerRequest req, JSONObject form) throws FormException {
         if (form==null)     return null;
 
@@ -540,6 +545,7 @@ public abstract class Node extends AbstractModelObject implements Reconfigurable
         }
     }
 
+    @Override
     public abstract NodeDescriptor getDescriptor();
 
     /**

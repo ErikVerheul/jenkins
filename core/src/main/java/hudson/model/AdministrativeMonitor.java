@@ -104,10 +104,12 @@ public abstract class AdministrativeMonitor extends AbstractModelObject implemen
         return "administrativeMonitor/"+id;
     }
 
+    @Override
     public String getDisplayName() {
         return id;
     }
 
+    @Override
     public final String getSearchUrl() {
         return getUrl();
     }
@@ -157,6 +159,7 @@ public abstract class AdministrativeMonitor extends AbstractModelObject implemen
      * Requires ADMINISTER permission for any operation in here.
      */
     @Restricted(NoExternalUse.class)
+    @Override
     public Object getTarget() {
         Jenkins.get().checkPermission(Jenkins.ADMINISTER);
         return this;

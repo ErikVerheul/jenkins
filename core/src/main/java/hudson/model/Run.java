@@ -415,6 +415,7 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
      * Ordering based on build numbers.
      * If numbers are equal order based on names of parent projects.
      */
+    @Override
     public int compareTo(@Nonnull RunT that) {
         final int res = this.number - that.number;
         if (res == 0)
@@ -785,6 +786,7 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
     }
 
     @Exported
+    @Override
     public String getDisplayName() {
         return displayName!=null ? displayName : "#"+number;
     }
@@ -1002,7 +1004,8 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
         return project.getAbsoluteUrl()+getNumber()+'/';
     }
 
-    public final @Nonnull String getSearchUrl() {
+    public final @Nonnull@Override
+ String getSearchUrl() {
         return getNumber()+"/";
     }
 
@@ -1919,6 +1922,7 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
     /**
      * Save the settings to a file.
      */
+    @Override
     public synchronized void save() throws IOException {
         if(BulkChange.contains(this))   return;
         getDataFile().write(this);
@@ -2396,6 +2400,7 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
      * Sort by date. Newer ones first. 
      */
     public static final Comparator<Run> ORDER_BY_DATE = new Comparator<Run>() {
+        @Override
         public int compare(@Nonnull Run lhs, @Nonnull Run rhs) {
             long lt = lhs.getTimeInMillis();
             long rt = rhs.getTimeInMillis();
@@ -2429,9 +2434,12 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
      * {@link BuildBadgeAction} that shows the logs are being kept.
      */
     public final class KeepLogBuildBadge implements BuildBadgeAction {
-        public @CheckForNull String getIconFileName() { return null; }
-        public @CheckForNull String getDisplayName() { return null; }
-        public @CheckForNull String getUrlName() { return null; }
+        public @CheckForNull@Override
+ String getIconFileName() { return null; }
+        public @CheckForNull@Override
+ String getDisplayName() { return null; }
+        public @CheckForNull@Override
+ String getUrlName() { return null; }
         public @CheckForNull String getWhyKeepLog() { return Run.this.getWhyKeepLog(); }
     }
 
@@ -2443,28 +2451,34 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
                                                               Functions.isArtifactsPermissionEnabled(), new PermissionScope[]{PermissionScope.RUN});
 
     private static class DefaultFeedAdapter implements FeedAdapter<Run> {
+        @Override
         public String getEntryTitle(Run entry) {
             return entry.getFullDisplayName()+" ("+entry.getBuildStatusSummary().message+")";
         }
 
+        @Override
         public String getEntryUrl(Run entry) {
             return entry.getUrl();
         }
 
+        @Override
         public String getEntryID(Run entry) {
             return "tag:" + "hudson.dev.java.net,"
                 + entry.getTimestamp().get(Calendar.YEAR) + ":"
                 + entry.getParent().getFullName()+':'+entry.getId();
         }
 
+        @Override
         public String getEntryDescription(Run entry) {
             return entry.getDescription();
         }
 
+        @Override
         public Calendar getEntryTimestamp(Run entry) {
             return entry.getTimestamp();
         }
 
+        @Override
         public String getEntryAuthor(Run entry) {
             return JenkinsLocationConfiguration.get().getAdminAddress();
         }

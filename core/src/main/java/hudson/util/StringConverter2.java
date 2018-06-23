@@ -42,10 +42,12 @@ import com.thoughtworks.xstream.converters.basic.StringConverter;
 @Deprecated
 public class StringConverter2 extends AbstractSingleValueConverter {
 
+    @Override
     public boolean canConvert(Class type) {
         return type.equals(String.class);
     }
 
+    @Override
     public Object fromString(String str) {
         return str;
     }

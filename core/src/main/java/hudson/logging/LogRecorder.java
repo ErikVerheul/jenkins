@@ -260,10 +260,12 @@ public class LogRecorder extends AbstractModelObject implements Saveable {
         new WeakLogHandler(handler,Logger.getLogger(""));
     }
 
+    @Override
     public String getDisplayName() {
         return name;
     }
 
+    @Override
     public String getSearchUrl() {
         return Util.rawEncode(name);
     }
@@ -323,6 +325,7 @@ public class LogRecorder extends AbstractModelObject implements Saveable {
     /**
      * Save the settings to a file.
      */
+    @Override
     public synchronized void save() throws IOException {
         if(BulkChange.contains(this))   return;
         getConfigFile().write(this);
@@ -375,6 +378,7 @@ public class LogRecorder extends AbstractModelObject implements Saveable {
     public Map<Computer,List<LogRecord>> getSlaveLogRecords() {
         Map<Computer,List<LogRecord>> result = new TreeMap<Computer,List<LogRecord>>(new Comparator<Computer>() {
             final Collator COLL = Collator.getInstance();
+            @Override
             public int compare(Computer c1, Computer c2) {
                 return COLL.compare(c1.getDisplayName(), c2.getDisplayName());
             }

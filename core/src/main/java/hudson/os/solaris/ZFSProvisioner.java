@@ -56,6 +56,7 @@ public class ZFSProvisioner extends FileSystemProvisioner implements Serializabl
         rootDataset = node.getRootPath().act(new MasterToSlaveFileCallable<String>() {
             private static final long serialVersionUID = -2142349338699797436L;
 
+            @Override
             public String invoke(File f, VirtualChannel channel) throws IOException {
                 ZFSFileSystem fs = libzfs.getFileSystemByMountPoint(f);
                 if(fs!=null)    return fs.getName();
@@ -66,12 +67,14 @@ public class ZFSProvisioner extends FileSystemProvisioner implements Serializabl
         });
     }
 
+    @Override
     public void prepareWorkspace(AbstractBuild<?,?> build, FilePath ws, final TaskListener listener) throws IOException, InterruptedException {
         final String name = build.getProject().getFullName();
         
         ws.act(new MasterToSlaveFileCallable<Void>() {
             private static final long serialVersionUID = 2129531727963121198L;
 
+            @Override
             public Void invoke(File f, VirtualChannel channel) throws IOException {
                 ZFSFileSystem fs = libzfs.getFileSystemByMountPoint(f);
                 if(fs!=null)    return null;    // already on ZFS
@@ -87,10 +90,12 @@ public class ZFSProvisioner extends FileSystemProvisioner implements Serializabl
         });
     }
 
+    @Override
     public void discardWorkspace(AbstractProject<?, ?> project, FilePath ws) throws IOException, InterruptedException {
         ws.act(new MasterToSlaveFileCallable<Void>() {
             private static final long serialVersionUID = 1916618107019257530L;
 
+            @Override
             public Void invoke(File f, VirtualChannel channel) throws IOException {
                 ZFSFileSystem fs = libzfs.getFileSystemByMountPoint(f);
                 if(fs!=null)
@@ -108,17 +113,20 @@ public class ZFSProvisioner extends FileSystemProvisioner implements Serializabl
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public WorkspaceSnapshot snapshot(AbstractBuild<?, ?> build, FilePath ws, String glob, TaskListener listener) throws IOException, InterruptedException {
         throw new UnsupportedOperationException();
     }
 
     @Extension @Symbol("zfs")
     public static final class DescriptorImpl extends FileSystemProvisionerDescriptor {
+        @Override
         public boolean discard(FilePath ws, TaskListener listener) throws IOException, InterruptedException {
             // TODO
             return false;
         }
 
+        @Override
         public String getDisplayName() {
             return "ZFS";
         }

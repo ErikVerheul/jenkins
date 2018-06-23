@@ -49,6 +49,7 @@ public class TooManyJobsButNoView extends AdministrativeMonitor {
         return Messages.TooManyJobsButNoView_DisplayName();
     }
 
+    @Override
     public boolean isActivated() {
         Jenkins h = Jenkins.get();
         return h.getViews().size()==1 && h.getItemMap().size()> THRESHOLD;

@@ -65,7 +65,7 @@ class SortedIntList extends AbstractList<Integer> {
 
     @Override
     public boolean contains(Object o) {
-        return o instanceof Integer && contains(((Integer)o).intValue());
+        return o instanceof Integer && contains(((Number)o).intValue());
     }
 
     public boolean contains(int i) {

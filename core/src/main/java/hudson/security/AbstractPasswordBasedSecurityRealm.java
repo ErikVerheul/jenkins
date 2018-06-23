@@ -63,6 +63,7 @@ public abstract class AbstractPasswordBasedSecurityRealm extends SecurityRealm i
             @Option(name="--password-file",usage="File that contains the password")
             public String passwordFile;
 
+            @Override
             public Authentication authenticate() throws AuthenticationException, IOException, InterruptedException {
                 if (userName==null)
                     return command.getTransportAuthentication();    // no authentication parameter. fallback to the transport
@@ -141,10 +142,12 @@ public abstract class AbstractPasswordBasedSecurityRealm extends SecurityRealm i
     public abstract GroupDetails loadGroupByGroupname(String groupname) throws UsernameNotFoundException, DataAccessException;
 
     class Authenticator extends AbstractUserDetailsAuthenticationProvider {
+        @Override
         protected void additionalAuthenticationChecks(UserDetails userDetails, UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
             // authentication is assumed to be done already in the retrieveUser method
         }
 
+        @Override
         protected UserDetails retrieveUser(String username, UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
             return doAuthenticate(username,authentication.getCredentials().toString());
         }
@@ -154,6 +157,7 @@ public abstract class AbstractPasswordBasedSecurityRealm extends SecurityRealm i
      * Asks for the password.
      */
     private static class InteractivelyAskForPassword extends MasterToSlaveCallable<String,IOException> {
+        @Override
         public String call() throws IOException {
             Console console = System.console();
             if (console == null)    return null;    // no terminal

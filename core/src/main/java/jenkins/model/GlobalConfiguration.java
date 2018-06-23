@@ -46,6 +46,7 @@ public abstract class GlobalConfiguration extends Descriptor<GlobalConfiguration
         super(self());
     }
 
+    @Override
     public final Descriptor<GlobalConfiguration> getDescriptor() {
         return this;
     }

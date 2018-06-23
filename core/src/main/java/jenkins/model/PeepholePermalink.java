@@ -69,6 +69,7 @@ public abstract class PeepholePermalink extends Permalink implements Predicate<R
      *
      * This is the "G(B)" as described in the class javadoc.
      */
+    @Override
     public abstract boolean apply(Run<?,?> run);
 
     /**

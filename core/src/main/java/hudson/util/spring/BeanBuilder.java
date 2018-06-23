@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import org.springframework.beans.factory.config.BeanReference;
 
 /**
  * <p>Runtime bean configuration wrapper. Like a Groovy builder, but more of a DSL for
@@ -242,10 +243,12 @@ public class BeanBuilder extends GroovyObjectSupport {
 			this.metaClass = InvokerHelper.getMetaClass(this);
 		}
 
+        @Override
 		public MetaClass getMetaClass() {
 			return this.metaClass;
 		}
 
+        @Override
 		public Object getProperty(String property) {
 			if(property.equals("beanName"))
 				return getBeanName();
@@ -283,14 +286,17 @@ public class BeanBuilder extends GroovyObjectSupport {
 				}
 			}
 		}
+        @Override
 		public Object invokeMethod(String name, Object args) {
 			return this.metaClass.invokeMethod(this, name, args);
 		}
 
+        @Override
 		public void setMetaClass(MetaClass metaClass) {
 			this.metaClass = metaClass;
 		}
 
+        @Override
 		public void setProperty(String property, Object newValue) {
             if(!addToDeferred(beanConfig,property, newValue)) {
                 beanConfig.setPropertyValue(property, newValue);
@@ -458,7 +464,7 @@ public class BeanBuilder extends GroovyObjectSupport {
             }
             else if(args[0] instanceof RuntimeBeanReference) {
                 currentBeanConfig = springConfig.addSingletonBean(name);
-                currentBeanConfig.setFactoryBean(((RuntimeBeanReference)args[0]).getBeanName());
+                currentBeanConfig.setFactoryBean(((BeanReference)args[0]).getBeanName());
             }
             else if(args[0] instanceof Map) {
                 currentBeanConfig = springConfig.addSingletonBean(name);

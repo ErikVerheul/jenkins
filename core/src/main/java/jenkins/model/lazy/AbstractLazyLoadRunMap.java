@@ -202,6 +202,7 @@ public abstract class AbstractLazyLoadRunMap<R> extends AbstractMap<Integer,R> i
         numberOnDisk = list;
     }
 
+    @Override
     public Comparator<? super Integer> comparator() {
         return Collections.reverseOrder();
     }
@@ -230,6 +231,7 @@ public abstract class AbstractLazyLoadRunMap<R> extends AbstractMap<Integer,R> i
      * @param toKey
      *      Smallest build number-1 to be in the returned set (-1 because this is exclusive)
      */
+    @Override
     public SortedMap<Integer, R> subMap(Integer fromKey, Integer toKey) {
         // TODO: if this method can produce a lazy map, that'd be wonderful
         // because due to the lack of floor/ceil/higher/lower kind of methods
@@ -250,20 +252,24 @@ public abstract class AbstractLazyLoadRunMap<R> extends AbstractMap<Integer,R> i
         return Collections.unmodifiableSortedMap(new BuildReferenceMapAdapter<R>(this, index.byNumber.subMap(fromKey, toKey)));
     }
 
+    @Override
     public SortedMap<Integer, R> headMap(Integer toKey) {
         return subMap(Integer.MAX_VALUE, toKey);
     }
 
+    @Override
     public SortedMap<Integer, R> tailMap(Integer fromKey) {
         return subMap(fromKey, Integer.MIN_VALUE);
     }
 
+    @Override
     public Integer firstKey() {
         R r = newestBuild();
         if (r==null)    throw new NoSuchElementException();
         return getNumberOf(r);
     }
 
+    @Override
     public Integer lastKey() {
         R r = oldestBuild();
         if (r==null)    throw new NoSuchElementException();

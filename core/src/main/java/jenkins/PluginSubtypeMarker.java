@@ -47,6 +47,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Set;
+import javax.lang.model.element.QualifiedNameable;
 
 /**
  * Discovers the subtype of {@link Plugin} and generates service loader index file.
@@ -66,7 +67,7 @@ public class PluginSubtypeMarker extends AbstractProcessor {
                 public Void visitType(TypeElement e, Void aVoid) {
                     if(!e.getModifiers().contains(Modifier.ABSTRACT)) {
                         Element sc = asElement(e.getSuperclass());
-                        if (sc!=null && ((TypeElement)sc).getQualifiedName().contentEquals("hudson.Plugin")) {
+                        if (sc!=null && ((QualifiedNameable)sc).getQualifiedName().contentEquals("hudson.Plugin")) {
                             try {
                                 write(e);
                             } catch (IOException x) {

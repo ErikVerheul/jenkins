@@ -1139,18 +1139,22 @@ public abstract class Job<JobT extends Job<JobT, RunT>, RunT extends Run<JobT, R
                 getDisplayName() + scmDisplayName + " changes",
                 getUrl() + "changes",
                 entries, new FeedAdapter<FeedItem>() {
+                    @Override
                     public String getEntryTitle(FeedItem item) {
                         return "#" + item.getBuild().number + ' ' + item.e.getMsg() + " (" + item.e.getAuthor() + ")";
                     }
 
+                    @Override
                     public String getEntryUrl(FeedItem item) {
                         return item.getBuild().getUrl() + "changes#detail" + item.idx;
                     }
 
+                    @Override
                     public String getEntryID(FeedItem item) {
                             return getEntryUrl(item);
                         }
 
+                    @Override
                     public String getEntryDescription(FeedItem item) {
                         StringBuilder buf = new StringBuilder();
                         for (String path : item.e.getAffectedPaths())
@@ -1158,10 +1162,12 @@ public abstract class Job<JobT extends Job<JobT, RunT>, RunT extends Run<JobT, R
                         return buf.toString();
                     }
 
+                    @Override
                     public Calendar getEntryTimestamp(FeedItem item) {
                             return item.getBuild().getTimestamp();
                         }
 
+                    @Override
                     public String getEntryAuthor(FeedItem entry) {
                         return JenkinsLocationConfiguration.get().getAdminAddress();
                     }
@@ -1455,6 +1461,7 @@ public abstract class Job<JobT extends Job<JobT, RunT>, RunT extends Run<JobT, R
                         this.run = r;
                     }
 
+                    @Override
                     public int compareTo(ChartLabel that) {
                         return this.run.number - that.run.number;
                     }
@@ -1493,7 +1500,7 @@ public abstract class Job<JobT extends Job<JobT, RunT>, RunT extends Run<JobT, R
                     public String toString() {
                         String l = run.getDisplayName();
                         if (run instanceof Build) {
-                            String s = ((Build) run).getBuiltOnStr();
+                            String s = ((AbstractBuild) run).getBuiltOnStr();
                             if (s != null)
                                 l += ' ' + s;
                         }

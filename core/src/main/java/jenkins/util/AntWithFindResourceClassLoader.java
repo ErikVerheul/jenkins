@@ -35,6 +35,7 @@ public class AntWithFindResourceClassLoader extends AntClassLoader implements Cl
             addPathFile(f);
     }
 
+    @Override
     public void close() throws IOException {
         cleanup();
     }

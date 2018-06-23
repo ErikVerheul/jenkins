@@ -933,6 +933,7 @@ public abstract class Launcher {
             return f==null ? null : new File(f.getRemote());
         }
 
+        @Override
         public Channel launchChannel(String[] cmd, OutputStream out, FilePath workDir, Map<String,String> envVars) throws IOException {
             printCommandLine(cmd, workDir);
 
@@ -1040,6 +1041,7 @@ public abstract class Launcher {
             return super.getChannel(); //NOSONAR
         }
 
+        @Override
         public Proc launch(ProcStarter ps) throws IOException {
             final OutputStream out = ps.stdout == null ? null : new RemoteOutputStream(new CloseProofOutputStream(ps.stdout));
             final OutputStream err = ps.stderr==null ? null : new RemoteOutputStream(new CloseProofOutputStream(ps.stderr));
@@ -1085,6 +1087,7 @@ public abstract class Launcher {
                 this.modelEnvVars = modelEnvVars;
             }
 
+            @Override
             public Void call() throws RuntimeException {
                 try {
                     ProcessTree.get().killAll(modelEnvVars);

@@ -69,9 +69,12 @@ public class IsOverriddenTest {
         public T getX() { return null; }
     }
     public abstract class Intermediate extends Base<Integer> {
+        @Override
         protected void method() {}
         private void aPrivateMethod() {}
+        @Override
         public void setX(Integer i) {}
+        @Override
         public Integer getX() { return 0; }
     }
     public class Derived extends Intermediate {}

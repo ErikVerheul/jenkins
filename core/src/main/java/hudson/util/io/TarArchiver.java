@@ -82,6 +82,7 @@ final class TarArchiver extends Archiver {
         return true;
     }
 
+    @Override
     public void visit(File file, String relativePath) throws IOException {
         if(Functions.isWindows())
             relativePath = relativePath.replace('\\','/');
@@ -123,6 +124,7 @@ final class TarArchiver extends Archiver {
         entriesWritten++;
     }
 
+    @Override
     public void close() throws IOException {
         tar.close();
     }

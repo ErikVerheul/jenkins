@@ -90,11 +90,13 @@ import java.net.URLEncoder;
 public class BasicAuthenticationFilter implements Filter {
     private ServletContext servletContext;
 
+    @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         servletContext = filterConfig.getServletContext();
     }
 
     @SuppressWarnings("ACL.impersonate")
+    @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse rsp = (HttpServletResponse) response;
@@ -186,6 +188,7 @@ public class BasicAuthenticationFilter implements Filter {
     //    }
     //}
 
+    @Override
     public void destroy() {
     }
 }

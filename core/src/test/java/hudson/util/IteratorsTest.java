@@ -41,18 +41,18 @@ public class IteratorsTest {
     @Test
     public void reverseSequence() {
         List<Integer> lst = Iterators.reverseSequence(1, 4);
-        assertEquals(3,(int)lst.get(0));
-        assertEquals(2,(int)lst.get(1));
-        assertEquals(1,(int)lst.get(2));
+        assertEquals(3,(long)lst.get(0));
+        assertEquals(2,(long)lst.get(1));
+        assertEquals(1,(long)lst.get(2));
         assertEquals(3,lst.size());
     }
 
     @Test
     public void sequence() {
         List<Integer> lst = Iterators.sequence(1,4);
-        assertEquals(1,(int)lst.get(0));
-        assertEquals(2,(int)lst.get(1));
-        assertEquals(3,(int)lst.get(2));
+        assertEquals(1,(long)lst.get(0));
+        assertEquals(2,(long)lst.get(1));
+        assertEquals(3,(long)lst.get(2));
         assertEquals(3, lst.size());
     }
 
@@ -63,11 +63,11 @@ public class IteratorsTest {
         assertFalse(wrapped instanceof List);
         Iterator<Integer> iter = wrapped.iterator();
         assertTrue(iter.hasNext());
-        assertEquals(1,(int)iter.next());
+        assertEquals(1,(long)iter.next());
         assertTrue(iter.hasNext());
-        assertEquals(2,(int)iter.next());
+        assertEquals(2,(long)iter.next());
         assertTrue(iter.hasNext());
-        assertEquals(3,(int)iter.next());
+        assertEquals(3,(long)iter.next());
         assertFalse(iter.hasNext());
     }
 
@@ -78,6 +78,7 @@ public class IteratorsTest {
     }
 
     public static final CountingPredicate<Integer> EVEN = new CountingPredicate<Integer>() {
+        @Override
         public boolean apply(int index, Integer input) {
             return input % 2 == 0;
         }

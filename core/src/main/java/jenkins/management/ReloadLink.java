@@ -39,6 +39,7 @@ public class ReloadLink extends ManagementLink {
         return "refresh.png";
     }
 
+    @Override
     public String getDisplayName() {
         return Messages.ReloadLink_DisplayName();
     }

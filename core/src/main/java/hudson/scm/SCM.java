@@ -501,7 +501,7 @@ public abstract class SCM implements Describable<SCM>, ExtensionPoint {
     @Deprecated
     public boolean checkout(AbstractBuild<?,?> build, Launcher launcher, FilePath workspace, BuildListener listener, @Nonnull File changelogFile) throws IOException, InterruptedException {
         AbstractBuild<?,?> prev = build.getPreviousBuild();
-        checkout((Run) build, launcher, workspace, listener, changelogFile, prev != null ? prev.getAction(SCMRevisionState.class) : null);
+        checkout(build, launcher, workspace, listener, changelogFile, prev != null ? prev.getAction(SCMRevisionState.class) : null);
         return true;
     }
 
@@ -682,6 +682,7 @@ public abstract class SCM implements Describable<SCM>, ExtensionPoint {
      */
     public abstract ChangeLogParser createChangeLogParser();
 
+    @Override
     public SCMDescriptor<?> getDescriptor() {
         return (SCMDescriptor) Jenkins.get().getDescriptorOrDie(getClass());
     }

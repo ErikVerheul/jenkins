@@ -579,6 +579,7 @@ public class Executor extends Thread implements ModelObject {
     /**
      * Same as {@link #getName()}.
      */
+    @Override
     public String getDisplayName() {
         return "Executor #"+getNumber();
     }
@@ -904,6 +905,7 @@ public class Executor extends Thread implements ModelObject {
      */
     public <T> T newImpersonatingProxy(Class<T> type, T core) {
         return new InterceptingProxy() {
+            @Override
             protected Object call(Object o, Method m, Object[] args) throws Throwable {
                 final Executor old = IMPERSONATION.get();
                 IMPERSONATION.set(Executor.this);

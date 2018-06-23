@@ -194,6 +194,7 @@ public abstract class SecurityRealm extends AbstractDescribableImpl<SecurityReal
     @Deprecated
     public CliAuthenticator createCliAuthenticator(final CLICommand command) {
         return new CliAuthenticator() {
+            @Override
             public Authentication authenticate() {
                 return command.getTransportAuthentication();
             }
@@ -540,12 +541,15 @@ public abstract class SecurityRealm extends AbstractDescribableImpl<SecurityReal
     }
 
     private static class None extends SecurityRealm {
+        @Override
         public SecurityComponents createSecurityComponents() {
             return new SecurityComponents(new AuthenticationManager() {
+                @Override
                 public Authentication authenticate(Authentication authentication) {
                     return authentication;
                 }
             }, new UserDetailsService() {
+                @Override
                 public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException, DataAccessException {
                     throw new UsernameNotFoundException(username);
                 }

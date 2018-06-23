@@ -404,7 +404,7 @@ public class Items {
         return r;
     }
     private static <T extends Item> void getAllItems(final ItemGroup root, Class<T> type, List<T> r) {
-        List<Item> items = new ArrayList<Item>(((ItemGroup<?>) root).getItems());
+        List<Item> items = new ArrayList<Item>(root.getItems());
         // because we add items depth first, we can use the quicker BY_NAME comparison
         Collections.sort(items, BY_NAME);
         for (Item i : items) {

@@ -81,6 +81,7 @@ public class ConsistentHash<T> {
             this.item = item;
         }
 
+        @Override
         public int compareTo(Point that) {
             if(this.hash<that.hash) return -1;
             if(this.hash==that.hash) return 0;
@@ -142,15 +143,18 @@ public class ConsistentHash<T> {
             final int start = index(queryPoint);
             return new DuplicateFilterIterator<T>(new Iterator<T>() {
                 int pos=0;
+                @Override
                 public boolean hasNext() {
                     return pos<owner.length;
                 }
 
+                @Override
                 public T next() {
                     if(!hasNext())  throw new NoSuchElementException();
                     return (T)owner[(start+(pos++))%owner.length];
                 }
 
+                @Override
                 public void remove() {
                     throw new UnsupportedOperationException();
                 }
@@ -193,6 +197,7 @@ public class ConsistentHash<T> {
     }
 
     static final Hash<?> DEFAULT_HASH = new Hash<Object>() {
+        @Override
         public String hash(Object o) {
             return o.toString();
         }
@@ -342,6 +347,7 @@ public class ConsistentHash<T> {
      */
     public Iterable<T> list(final int queryPoint) {
         return new Iterable<T>() {
+            @Override
             public Iterator<T> iterator() {
                 return table.list(queryPoint);
             }

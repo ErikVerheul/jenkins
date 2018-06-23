@@ -61,6 +61,7 @@ public class ChainedServletFilter implements Filter {
         this.filters = filters.toArray(new Filter[filters.size()]);
     }
 
+    @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         if (LOGGER.isLoggable(Level.FINEST))
             for (Filter f : filters)
@@ -70,6 +71,7 @@ public class ChainedServletFilter implements Filter {
             f.init(filterConfig);
     }
 
+    @Override
     public void doFilter(ServletRequest request, ServletResponse response, final FilterChain chain) throws IOException, ServletException {
         LOGGER.entering(ChainedServletFilter.class.getName(), "doFilter");
 
@@ -78,6 +80,7 @@ public class ChainedServletFilter implements Filter {
             // capture the array for thread-safety
             private final Filter[] filters = ChainedServletFilter.this.filters;
 
+            @Override
             public void doFilter(ServletRequest request, ServletResponse response) throws IOException, ServletException {
                 if(position==filters.length) {
                     // reached to the end
@@ -90,6 +93,7 @@ public class ChainedServletFilter implements Filter {
         }.doFilter(request,response);
     }
 
+    @Override
     public void destroy() {
         for (Filter f : filters)
             f.destroy();

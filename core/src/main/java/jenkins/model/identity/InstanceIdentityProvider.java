@@ -158,7 +158,7 @@ public abstract class InstanceIdentityProvider<PUB extends PublicKey, PRIV exten
                     if (keyPair != null
                             && type.pubKeyType.isInstance(keyPair.getPublic())
                             && type.privKeyType.isInstance(keyPair.getPrivate())) {
-                        return (InstanceIdentityProvider<PUB, PRIV>) provider;
+                        return provider;
                     }
                 } catch (RuntimeException e) {
                     LOGGER.log(Level.WARNING,

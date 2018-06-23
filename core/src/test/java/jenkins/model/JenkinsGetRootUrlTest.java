@@ -30,6 +30,7 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 import java.net.URL;
+import javax.servlet.http.HttpServletRequest;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -172,7 +173,7 @@ public class JenkinsGetRootUrlTest {
         when(req.getIntHeader(anyString())).thenAnswer(new Answer<Integer>() {
             @Override public Integer answer(InvocationOnMock invocation) throws Throwable {
                 String name = (String) invocation.getArguments()[0];
-                String value = ((StaplerRequest) invocation.getMock()).getHeader(name);
+                String value = ((HttpServletRequest) invocation.getMock()).getHeader(name);
                 return value != null ? Integer.parseInt(value) : -1;
             }
         });

@@ -140,10 +140,12 @@ public final class JDK extends ToolInstallation implements NodeSpecific<JDK>, En
         buildEnvVars((Map)env);
     }
 
+    @Override
     public JDK forNode(Node node, TaskListener log) throws IOException, InterruptedException {
         return new JDK(getName(), translateFor(node, log));
     }
 
+    @Override
     public JDK forEnvironment(EnvVars environment) {
         return new JDK(getName(), environment.expand(getHome()));
     }
@@ -170,6 +172,7 @@ public final class JDK extends ToolInstallation implements NodeSpecific<JDK>, En
     @Extension @Symbol("jdk")
     public static class DescriptorImpl extends ToolDescriptor<JDK> {
 
+        @Override
         public String getDisplayName() {
             return "JDK"; // TODO I18N
         }

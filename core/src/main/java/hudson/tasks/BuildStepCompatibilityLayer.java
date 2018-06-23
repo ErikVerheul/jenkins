@@ -59,6 +59,7 @@ public abstract class BuildStepCompatibilityLayer implements BuildStep {
 //
 // new definitions >= 1.150
 //
+    @Override
     public boolean prebuild(AbstractBuild<?,?> build, BuildListener listener) {
         if (build instanceof Build)
             return prebuild((Build)build,listener);
@@ -88,6 +89,7 @@ public abstract class BuildStepCompatibilityLayer implements BuildStep {
         }
     }
 
+    @Override
     public Action getProjectAction(AbstractProject<?, ?> project) {
         if (project instanceof Project)
             return getProjectAction((Project) project);
@@ -96,6 +98,7 @@ public abstract class BuildStepCompatibilityLayer implements BuildStep {
     }
 
     @Nonnull
+    @Override
     public Collection<? extends Action> getProjectActions(AbstractProject<?, ?> project) {
         // delegate to getJobAction (singular) for backward compatible behavior
         Action a = getProjectAction(project);

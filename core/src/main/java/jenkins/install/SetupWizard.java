@@ -557,6 +557,7 @@ public class SetupWizard extends PageDecorator {
                 } else if (req.getRequestURI().equals(req.getContextPath() + "/")) {
                     Jenkins.get().checkPermission(Jenkins.ADMINISTER);
                     chain.doFilter(new HttpServletRequestWrapper(req) {
+                        @Override
                         public String getRequestURI() {
                             return getContextPath() + "/setupWizard/";
                         }

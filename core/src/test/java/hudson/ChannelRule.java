@@ -32,11 +32,13 @@ public final class ChannelRule extends ExternalResource {
         final FastPipedOutputStream p2o = new FastPipedOutputStream(p2i);
 
         Future<Channel> f1 = executors.submit(new Callable<Channel>() {
+            @Override
             public Channel call() throws Exception {
                 return new Channel("This side of the channel", executors, p1i, p2o);
             }
         });
         Future<Channel> f2 = executors.submit(new Callable<Channel>() {
+            @Override
             public Channel call() throws Exception {
                 return new Channel("The other side of the channel", executors, p2i, p1o);
             }

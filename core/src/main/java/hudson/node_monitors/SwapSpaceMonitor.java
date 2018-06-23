@@ -98,6 +98,7 @@ public class SwapSpaceMonitor extends NodeMonitor {
             return new MonitorTask();
         }
 
+        @Override
         public String getDisplayName() {
             return Messages.SwapSpaceMonitor_DisplayName();
         }
@@ -112,6 +113,7 @@ public class SwapSpaceMonitor extends NodeMonitor {
      * Obtains the string that represents the architecture.
      */
     private static class MonitorTask extends MasterToSlaveCallable<MemoryUsage,IOException> {
+        @Override
         public MemoryUsage call() throws IOException {
             MemoryMonitor mm;
             try {

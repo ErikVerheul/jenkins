@@ -109,6 +109,7 @@ public class LogRotator extends BuildDiscarder {
     }
 
     @SuppressWarnings("rawtypes")
+    @Override
     public void perform(Job<?,?> job) throws IOException, InterruptedException {
         LOGGER.log(FINE, "Running the log rotation for {0} with numToKeep={1} daysToKeep={2} artifactNumToKeep={3} artifactDaysToKeep={4}", new Object[] {job, numToKeep, daysToKeep, artifactNumToKeep, artifactDaysToKeep});
         
@@ -255,6 +256,7 @@ public class LogRotator extends BuildDiscarder {
 
     @Extension @Symbol("logRotator")
     public static final class LRDescriptor extends BuildDiscarderDescriptor {
+        @Override
         public String getDisplayName() {
             return "Log Rotation";
         }

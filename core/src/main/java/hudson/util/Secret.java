@@ -265,15 +265,18 @@ public final class Secret implements Serializable {
         public ConverterImpl() {
         }
 
+        @Override
         public boolean canConvert(Class type) {
             return type==Secret.class;
         }
 
+        @Override
         public void marshal(Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
             Secret src = (Secret) source;
             writer.setValue(src.getEncryptedValue());
         }
 
+        @Override
         public Object unmarshal(HierarchicalStreamReader reader, final UnmarshallingContext context) {
             return fromString(reader.getValue());
         }
@@ -307,6 +310,7 @@ public final class Secret implements Serializable {
 
     static {
         Stapler.CONVERT_UTILS.register(new org.apache.commons.beanutils.Converter() {
+            @Override
             public Secret convert(Class type, Object value) {
                 return Secret.fromString(value.toString());
             }

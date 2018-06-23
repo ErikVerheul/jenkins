@@ -15,6 +15,7 @@ public class ToolConfigurationCategory extends GlobalConfigurationCategory {
         return jenkins.management.Messages.ConfigureTools_Description();
     }
 
+    @Override
     public String getDisplayName() {
         return jenkins.management.Messages.ConfigureTools_DisplayName();
     }

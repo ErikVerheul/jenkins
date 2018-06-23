@@ -238,7 +238,9 @@ public class ListView extends View implements DirectlyModifiableView {
     public SearchIndexBuilder makeSearchIndex() {
         SearchIndexBuilder sib = new SearchIndexBuilder().addAllAnnotations(this);
         sib.add(new CollectionSearchIndex<TopLevelItem>() {// for jobs in the view
+            @Override
             protected TopLevelItem get(String key) { return getItem(key); }
+            @Override
             protected Collection<TopLevelItem> all() { return getItems(); }
             @Override
             protected String getName(TopLevelItem o) {

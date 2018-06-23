@@ -144,7 +144,7 @@ public class JSONSignatureValidator {
         // which isn't useful at all
         Set<TrustAnchor> anchors = new HashSet<TrustAnchor>(); // CertificateUtil.getDefaultRootCAs();
         Jenkins j = Jenkins.get();
-        for (String cert : (Set<String>) j.servletContext.getResourcePaths("/WEB-INF/update-center-rootCAs")) {
+        for (String cert : j.servletContext.getResourcePaths("/WEB-INF/update-center-rootCAs")) {
             if (cert.endsWith("/") || cert.endsWith(".txt"))  {
                 continue;       // skip directories also any text files that are meant to be documentation
             }

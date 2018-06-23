@@ -118,6 +118,7 @@ public abstract class Publisher extends BuildStepCompatibilityLayer implements D
         return false;
     }
 
+    @Override
     public Descriptor<Publisher> getDescriptor() {
         return Jenkins.get().getDescriptorOrDie(getClass());
     }
@@ -140,6 +141,7 @@ public abstract class Publisher extends BuildStepCompatibilityLayer implements D
             return copy;
         }
 
+        @Override
         public int compare(ExtensionComponent<Descriptor<Publisher>> lhs, ExtensionComponent<Descriptor<Publisher>> rhs) {
             int r = classify(lhs.getInstance())-classify(rhs.getInstance());
             if (r!=0)   return r;

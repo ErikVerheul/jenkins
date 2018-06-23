@@ -101,6 +101,7 @@ public abstract class ItemGroupMixIn {
         modulesDir.mkdirs(); // make sure it exists
 
         File[] subdirs = modulesDir.listFiles(new FileFilter() {
+            @Override
             public boolean accept(File child) {
                 return child.isDirectory();
             }
@@ -134,6 +135,7 @@ public abstract class ItemGroupMixIn {
      * {@link Item} → name function.
      */
     public static final Function1<String,Item> KEYED_BY_NAME = new Function1<String, Item>() {
+        @Override
         public String call(Item item) {
             return item.getName();
         }
@@ -269,7 +271,7 @@ public abstract class ItemGroupMixIn {
         dir.mkdirs();
         boolean success = false;
         try {
-            XMLUtils.safeTransform((Source)new StreamSource(xml), new StreamResult(configXml));
+            XMLUtils.safeTransform(new StreamSource(xml), new StreamResult(configXml));
 
             // load it
             TopLevelItem result = Items.whileUpdatingByXml(new NotReallyRoleSensitiveCallable<TopLevelItem,IOException>() {

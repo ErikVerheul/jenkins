@@ -145,10 +145,12 @@ public class Fingerprinter extends Recorder implements Serializable, DependencyD
         // failing to record fingerprints is an error but not fatal
     }
 
+    @Override
     public BuildStepMonitor getRequiredMonitorService() {
         return BuildStepMonitor.NONE;
     }
 
+    @Override
     public void buildDependencyGraph(AbstractProject owner, DependencyGraph graph) {
         if (enableFingerprintsInDependencyGraph) {
             RunList builds = owner.getBuilds();
@@ -213,6 +215,7 @@ public class Fingerprinter extends Recorder implements Serializable, DependencyD
         final long buildTimestamp = build.getTimeInMillis();
 
         List<Record> records = ws.act(new MasterToSlaveFileCallable<List<Record>>() {
+            @Override
             public List<Record> invoke(File baseDir, VirtualChannel channel) throws IOException {
                 List<Record> results = new ArrayList<Record>();
 
@@ -253,6 +256,7 @@ public class Fingerprinter extends Recorder implements Serializable, DependencyD
 
     @Extension @Symbol("fingerprint")
     public static class DescriptorImpl extends BuildStepDescriptor<Publisher> {
+        @Override
         public String getDisplayName() {
             return Messages.Fingerprinter_DisplayName();
         }
@@ -274,6 +278,7 @@ public class Fingerprinter extends Recorder implements Serializable, DependencyD
             return req.bindJSON(Fingerprinter.class, formData);
         }
 
+        @Override
         public boolean isApplicable(Class<? extends AbstractProject> jobType) {
             return true;
         }
@@ -312,14 +317,17 @@ public class Fingerprinter extends Recorder implements Serializable, DependencyD
             ref = null;
         }
 
+        @Override
         public String getIconFileName() {
             return "fingerprint.png";
         }
 
+        @Override
         public String getDisplayName() {
             return Messages.Fingerprinter_Action_DisplayName();
         }
 
+        @Override
         public String getUrlName() {
             return "fingerprints";
         }

@@ -27,6 +27,7 @@ import org.springframework.beans.factory.support.ChildBeanDefinition;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 
 import java.util.*;
+import org.springframework.beans.factory.config.BeanReference;
 
 /**
  * Default implementation of the BeanConfiguration interface
@@ -167,14 +168,17 @@ class DefaultBeanConfiguration extends GroovyObjectSupport implements BeanConfig
 		this.constructorArgs = constructorArguments;
 	}
 
+    @Override
 	public String getName() {
 		return this.name;
 	}
 
+    @Override
 	public boolean isSingleton() {
 		return this.singleton ;
 	}
 
+    @Override
 	public AbstractBeanDefinition getBeanDefinition() {
 		if (definition == null)
 			definition = createBeanDefinition();
@@ -210,6 +214,7 @@ class DefaultBeanConfiguration extends GroovyObjectSupport implements BeanConfig
 		return bd;
 	}
 
+    @Override
 	public BeanConfiguration addProperty(String propertyName, Object propertyValue) {
 		if(propertyValue instanceof BeanConfiguration) {
 			propertyValue = ((BeanConfiguration)propertyValue).getBeanDefinition();
@@ -221,27 +226,32 @@ class DefaultBeanConfiguration extends GroovyObjectSupport implements BeanConfig
 		return this;
 	}
 
+    @Override
 	public BeanConfiguration setDestroyMethod(String methodName) {
 		getBeanDefinition().setDestroyMethodName(methodName);
 		return this;
 	}
 
+    @Override
 	public BeanConfiguration setDependsOn(String[] dependsOn) {
 		getBeanDefinition().setDependsOn(dependsOn);
 		return this;
 	}
 
+    @Override
 	public BeanConfiguration setFactoryBean(String beanName) {
 		getBeanDefinition().setFactoryBeanName(beanName);
 
 		return this;
 	}
 
+    @Override
 	public BeanConfiguration setFactoryMethod(String methodName) {
 		getBeanDefinition().setFactoryMethodName(methodName);
 		return this;
 	}
 
+    @Override
 	public BeanConfiguration setAutowire(String type) {
 		if("byName".equals(type)) {
 			getBeanDefinition().setAutowireMode(AbstractBeanDefinition.AUTOWIRE_BY_NAME);
@@ -252,10 +262,12 @@ class DefaultBeanConfiguration extends GroovyObjectSupport implements BeanConfig
 		return this;
 	}
 
+    @Override
     public void setName(String beanName) {
         this.name = beanName;
     }
 
+    @Override
 	public Object getPropertyValue(String name) {
 		return getBeanDefinition()
 					.getPropertyValues()
@@ -263,25 +275,29 @@ class DefaultBeanConfiguration extends GroovyObjectSupport implements BeanConfig
 					.getValue();
 	}
 
+    @Override
 	public boolean hasProperty(String name) {
 		return getBeanDefinition().getPropertyValues().contains(name);
 	}
 
+    @Override
 	public void setPropertyValue(String property, Object newValue) {
 		getBeanDefinition().getPropertyValues().addPropertyValue(property, newValue);
 	}
 
+    @Override
     public BeanConfiguration setAbstract(boolean isAbstract) {
         getBeanDefinition().setAbstract(isAbstract);
         return this;
     }
 
+    @Override
     public void setParent(Object obj) {
         if(obj == null) throw new IllegalArgumentException("Parent bean cannot be set to a null runtime bean reference!");
         if(obj instanceof String)
             this.parentName = (String)obj;
         else if(obj instanceof RuntimeBeanReference) {
-            this.parentName = ((RuntimeBeanReference)obj).getBeanName();
+            this.parentName = ((BeanReference)obj).getBeanName();
         }
         else if(obj instanceof BeanConfiguration) {
             this.parentName = ((BeanConfiguration)obj).getName();

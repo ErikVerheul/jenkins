@@ -35,6 +35,7 @@ import hudson.model.ManagementLink;
 import hudson.util.FormApply;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
@@ -45,6 +46,7 @@ import javax.servlet.ServletException;
 import jenkins.model.GlobalConfigurationCategory;
 import jenkins.model.Jenkins;
 import jenkins.util.ServerTcpPort;
+import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
@@ -139,7 +141,7 @@ public class GlobalSecurityConfiguration extends ManagementLink implements Descr
         if (json.has("agentProtocol")) {
             Object protocols = json.get("agentProtocol");
             if (protocols instanceof JSONArray) {
-                for (int i = 0; i < ((JSONArray) protocols).size(); i++) {
+                for (int i = 0; i < ((JSON) protocols).size(); i++) {
                     agentProtocols.add(((JSONArray) protocols).getString(i));
                 }
             } else {
@@ -191,6 +193,7 @@ public class GlobalSecurityConfiguration extends ManagementLink implements Descr
     }
 
     public static Predicate<GlobalConfigurationCategory> FILTER = new Predicate<GlobalConfigurationCategory>() {
+        @Override
         public boolean apply(GlobalConfigurationCategory input) {
             return input instanceof GlobalConfigurationCategory.Security;
         }

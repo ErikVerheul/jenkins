@@ -89,6 +89,7 @@ public abstract class ViewJob<JobT extends ViewJob<JobT,RunT>, RunT extends Run<
         super(parent,name);
     }
 
+    @Override
     public boolean isBuildable() {
         return false;
     }
@@ -99,6 +100,7 @@ public abstract class ViewJob<JobT extends ViewJob<JobT,RunT>, RunT extends Run<
         notLoaded = true;
     }
 
+    @Override
     protected SortedMap<Integer,RunT> _getRuns() {
         if(notLoaded || runs==null) {
             // if none is loaded yet, do so immediately.
@@ -134,6 +136,7 @@ public abstract class ViewJob<JobT extends ViewJob<JobT,RunT>, RunT extends Run<
         return runs;
     }
 
+    @Override
     public void removeRun(RunT run) {
         if (runs != null && !runs.remove(run)) {
             LOGGER.log(Level.WARNING, "{0} did not contain {1} to begin with", new Object[] {this, run});

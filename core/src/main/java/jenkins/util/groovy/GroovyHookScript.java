@@ -99,6 +99,7 @@ public class GroovyHookScript {
         File scriptD = new File(home, hookGroovyD);
         if (scriptD.isDirectory()) {
             File[] scripts = scriptD.listFiles(new FileFilter() {
+                @Override
                 public boolean accept(File f) {
                     return f.getName().endsWith(".groovy");
                 }

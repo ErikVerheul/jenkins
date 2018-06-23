@@ -172,6 +172,7 @@ public class NodeProvisioner {
         if (System.currentTimeMillis() > lastSuggestedReview + TimeUnit.SECONDS.toMillis(1)) {
             lastSuggestedReview = System.currentTimeMillis();
             Computer.threadPoolForRemoting.submit(new Runnable() {
+                @Override
                 public void run() {
                     update();
                 }
@@ -797,6 +798,7 @@ public class NodeProvisioner {
             return INITIALDELAY;
         }
 
+        @Override
         public long getRecurrencePeriod() {
             return RECURRENCEPERIOD;
         }

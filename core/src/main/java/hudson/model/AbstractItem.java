@@ -127,6 +127,7 @@ public abstract class AbstractItem extends Actionable implements Item, HttpDelet
     }
 
     @Exported(visibility=999)
+    @Override
     public String getName() {
         return name;
     }
@@ -153,6 +154,7 @@ public abstract class AbstractItem extends Actionable implements Item, HttpDelet
      * @return The display name of this object, or if it is not set, the name
      * of the object.
      */
+    @Override
     public String getDisplayName() {
         if(null!=displayName) {
             return displayName;
@@ -188,6 +190,7 @@ public abstract class AbstractItem extends Actionable implements Item, HttpDelet
         save();
     }
              
+    @Override
     public File getRootDir() {
         return getParent().getRootDirFor(this);
     }
@@ -344,9 +347,11 @@ public abstract class AbstractItem extends Actionable implements Item, HttpDelet
     /**
      * Gets all the jobs that this {@link Item} contains as descendants.
      */
+    @Override
     public abstract Collection<? extends Job> getAllJobs();
 
     @Exported
+    @Override
     public final String getFullName() {
         String n = getParent().getFullName();
         if(n.length()==0)   return getName();
@@ -354,6 +359,7 @@ public abstract class AbstractItem extends Actionable implements Item, HttpDelet
     }
 
     @Exported
+    @Override
     public final String getFullDisplayName() {
         String n = getParent().getFullDisplayName();
         if(n.length()==0)   return getDisplayName();
@@ -385,6 +391,7 @@ public abstract class AbstractItem extends Actionable implements Item, HttpDelet
      * Called right after when a {@link Item} is loaded from disk.
      * This is an opportunity to do a post load processing.
      */
+    @Override
     public void onLoad(ItemGroup<? extends Item> parent, String name) throws IOException {
         this.parent = parent;
         doSetName(name);
@@ -402,9 +409,11 @@ public abstract class AbstractItem extends Actionable implements Item, HttpDelet
      * @param src
      *      Item from which it's copied from. The same type as {@code this}. Never null.
      */
+    @Override
     public void onCopiedFrom(Item src) {
     }
 
+    @Override
     public final String getUrl() {
         // try to stick to the current view if possible
         StaplerRequest req = Stapler.getCurrentRequest();
@@ -445,12 +454,14 @@ public abstract class AbstractItem extends Actionable implements Item, HttpDelet
         return base + shortUrl;
     }
 
+    @Override
     public String getShortUrl() {
         String prefix = getParent().getUrlChildPrefix();
         String subdir = Util.rawEncode(getName());
         return prefix.equals(".") ? subdir + '/' : prefix + '/' + subdir + '/';
     }
 
+    @Override
     public String getSearchUrl() {
         return getShortUrl();
     }
@@ -471,6 +482,7 @@ public abstract class AbstractItem extends Actionable implements Item, HttpDelet
     /**
      * Returns the {@link ACL} for this object.
      */
+    @Override
     public ACL getACL() {
         return Jenkins.get().getAuthorizationStrategy().getACL(this);
     }
@@ -478,6 +490,7 @@ public abstract class AbstractItem extends Actionable implements Item, HttpDelet
     /**
      * Save the settings to a file.
      */
+    @Override
     public synchronized void save() throws IOException {
         if(BulkChange.contains(this))   return;
         getConfigFile().write(this);
@@ -545,6 +558,7 @@ public abstract class AbstractItem extends Actionable implements Item, HttpDelet
         rsp.sendRedirect2(req.getContextPath() + '/' + url);
     }
 
+    @Override
     public void delete( StaplerRequest req, StaplerResponse rsp ) throws IOException, ServletException {
         try {
             doDoDelete(req,rsp);
@@ -561,6 +575,7 @@ public abstract class AbstractItem extends Actionable implements Item, HttpDelet
      * Any exception indicates the deletion has failed, but {@link AbortException} would prevent the caller
      * from showing the stack trace. This
      */
+    @Override
     public void delete() throws IOException, InterruptedException {
         checkPermission(DELETE);
         boolean responsibleForAbortingBuilds = !ItemDeletion.contains(this);

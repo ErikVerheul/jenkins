@@ -120,7 +120,7 @@ public abstract class LazyBuildMixIn<JobT extends Job<JobT,RunT> & Queue.Task & 
                 current = null;
             }
             if (current != null && current.getClass() == asJob().getClass()) {
-                currentBuilds = (RunMap<RunT>) ((LazyLoadingJob) current).getLazyBuildMixIn().builds;
+                currentBuilds = ((LazyLoadingJob) current).getLazyBuildMixIn().builds;
             }
         }
         if (currentBuilds != null) {

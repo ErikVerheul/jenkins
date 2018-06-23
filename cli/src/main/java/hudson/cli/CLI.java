@@ -296,7 +296,7 @@ public class CLI implements AutoCloseable {
         try {
             head.connect();
         } catch (IOException e) {
-            throw (IOException)new IOException("Failed to connect to "+url).initCause(e);
+            throw new IOException("Failed to connect to "+url, e);
         }
 
         String h = head.getHeaderField("X-Jenkins-CLI-Host");
@@ -347,11 +347,11 @@ public class CLI implements AutoCloseable {
     private void flushURLConnection(URLConnection conn) {
         byte[] buf = new byte[1024];
         try {
-            InputStream is = conn.getInputStream();
-            while (is.read(buf) >= 0) {
-                // Ignore
+            try (InputStream is = conn.getInputStream()) {
+                while (is.read(buf) >= 0) {
+                    // Ignore
+                }
             }
-            is.close();
         } catch (IOException e) {
             try {
                 InputStream es = ((HttpURLConnection)conn).getErrorStream();

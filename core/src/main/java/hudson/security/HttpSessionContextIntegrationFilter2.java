@@ -47,6 +47,7 @@ public class HttpSessionContextIntegrationFilter2 extends HttpSessionContextInte
         setContext(NonSerializableSecurityContext.class);
     }
 
+    @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
         HttpSession session = ((HttpServletRequest) req).getSession(false);
         if(session!=null) {

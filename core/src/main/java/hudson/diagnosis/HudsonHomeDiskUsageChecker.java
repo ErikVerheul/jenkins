@@ -38,10 +38,12 @@ import java.util.logging.Logger;
  */
 @Extension @Symbol("diskUsageCheck")
 public class HudsonHomeDiskUsageChecker extends PeriodicWork {
+    @Override
     public long getRecurrencePeriod() {
         return HOUR;
     }
 
+    @Override
     protected void doRun() {
             long free = Jenkins.get().getRootDir().getUsableSpace();
             long total = Jenkins.get().getRootDir().getTotalSpace();

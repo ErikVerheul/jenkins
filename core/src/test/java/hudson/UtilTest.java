@@ -454,6 +454,7 @@ public class UtilTest {
             Util.DELETION_MAX=4;
             Util.WAIT_BETWEEN_DELETION_RETRIES = 100;
             Thread unlockAfterDelay = new Thread("unlockFileAfterDelay") {
+                @Override
                 public void run() {
                     try {
                         Thread.sleep(Util.WAIT_BETWEEN_DELETION_RETRIES);
@@ -475,6 +476,7 @@ public class UtilTest {
             Util.GC_AFTER_FAILED_DELETE = true;
             final AtomicReference<Throwable> thrown = new AtomicReference<Throwable>();
             Thread deleteToBeInterrupted = new Thread("deleteToBeInterrupted") {
+                @Override
                 public void run() {
                     try { Util.deleteRecursive(dir); }
                     catch( Throwable x ) { thrown.set(x); }
@@ -529,6 +531,7 @@ public class UtilTest {
         assert Functions.isWindows();
         final InputStream s = new FileInputStream(f); // intentional use of FileInputStream
         unlockFileCallables.put(f, new Callable<Void>() {
+            @Override
             public Void call() throws IOException { s.close(); return null; };
         });
     }
@@ -602,6 +605,7 @@ public class UtilTest {
     		this.expectedDigest = expectedDigest;
     	}
 
+        @Override
 		public void run() {
 			for (int i=0; i < 1000; i++) {
 				String digest = Util.getDigestOf(this.string);

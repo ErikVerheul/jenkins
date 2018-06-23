@@ -62,7 +62,8 @@ public abstract class ManagementLink implements ExtensionPoint, Action {
      *      This is useful for defining {@link ManagementLink} that only shows up under
      *      certain circumstances.
      */
-    public abstract @CheckForNull String getIconFileName();
+    public abstract @CheckForNull@Override
+ String getIconFileName();
 
     /**
      * Returns a short description of what this link does. This text

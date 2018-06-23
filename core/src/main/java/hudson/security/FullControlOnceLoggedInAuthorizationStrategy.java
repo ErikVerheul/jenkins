@@ -58,6 +58,7 @@ public class FullControlOnceLoggedInAuthorizationStrategy extends AuthorizationS
         return denyAnonymousReadAccess ? AUTHENTICATED_READ : ANONYMOUS_READ;
     }
 
+    @Override
     public List<String> getGroups() {
         return Collections.emptyList();
     }
@@ -99,6 +100,7 @@ public class FullControlOnceLoggedInAuthorizationStrategy extends AuthorizationS
             DESCRIPTOR = this;
         }
 
+        @Override
         public String getDisplayName() {
             return Messages.FullControlOnceLoggedInAuthorizationStrategy_DisplayName();
         }

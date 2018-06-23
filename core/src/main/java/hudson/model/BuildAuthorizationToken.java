@@ -101,10 +101,12 @@ public final class BuildAuthorizationToken {
     }
 
     public static final class ConverterImpl extends AbstractSingleValueConverter {
+        @Override
         public boolean canConvert(Class type) {
             return type== BuildAuthorizationToken.class;
         }
 
+        @Override
         public Object fromString(String str) {
             return new BuildAuthorizationToken(str);
         }

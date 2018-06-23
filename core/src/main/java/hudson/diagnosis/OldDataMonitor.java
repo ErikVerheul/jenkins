@@ -91,6 +91,7 @@ public class OldDataMonitor extends AdministrativeMonitor {
         return Messages.OldDataMonitor_DisplayName();
     }
 
+    @Override
     public boolean isActivated() {
         return !data.isEmpty();
     }
@@ -449,6 +450,7 @@ public class OldDataMonitor extends AdministrativeMonitor {
             return Messages.OldDataMonitor_Description();
         }
 
+        @Override
         public String getDisplayName() {
             return Messages.OldDataMonitor_DisplayName();
         }

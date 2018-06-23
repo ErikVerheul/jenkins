@@ -177,6 +177,7 @@ public abstract class FileSystemProvisioner implements ExtensionPoint, Describab
      */
     public abstract WorkspaceSnapshot snapshot(AbstractBuild<?,?> build, FilePath ws, String glob, TaskListener listener) throws IOException, InterruptedException;
 
+    @Override
     public FileSystemProvisionerDescriptor getDescriptor() {
         return (FileSystemProvisionerDescriptor) Jenkins.get().getDescriptorOrDie(getClass());
     }
@@ -198,9 +199,11 @@ public abstract class FileSystemProvisioner implements ExtensionPoint, Describab
      * and thus can be used anywhere that Hudson runs.
      */
     public static final class Default extends FileSystemProvisioner {
+        @Override
         public void prepareWorkspace(AbstractBuild<?, ?> build, FilePath ws, TaskListener listener) throws IOException, InterruptedException {
         }
 
+        @Override
         public void discardWorkspace(AbstractProject<?, ?> project, FilePath ws) throws IOException, InterruptedException {
         }
 
@@ -215,6 +218,7 @@ public abstract class FileSystemProvisioner implements ExtensionPoint, Describab
         /**
          * Creates a tar ball.
          */
+        @Override
         public WorkspaceSnapshot snapshot(AbstractBuild<?, ?> build, FilePath ws, String glob, TaskListener listener) throws IOException, InterruptedException {
             File wss = new File(build.getRootDir(),"workspace.tgz");
             try (OutputStream os = new BufferedOutputStream(Files.newOutputStream(wss.toPath()))) {
@@ -226,6 +230,7 @@ public abstract class FileSystemProvisioner implements ExtensionPoint, Describab
         }
 
         public static final class WorkspaceSnapshotImpl extends WorkspaceSnapshot {
+            @Override
             public void restoreTo(AbstractBuild<?,?> owner, FilePath dst, TaskListener listener) throws IOException, InterruptedException {
                 File zip = new File(owner.getRootDir(),"workspace.zip");
                 if (zip.exists()) {// we used to keep it in zip
@@ -239,12 +244,14 @@ public abstract class FileSystemProvisioner implements ExtensionPoint, Describab
 
         @Extension @Symbol("standard")
         public static final class DescriptorImpl extends FileSystemProvisionerDescriptor {
+            @Override
             public boolean discard(FilePath ws, TaskListener listener) throws IOException, InterruptedException {
                 // the default provisioner does not do anything special,
                 // so allow other types to manage it
                 return false;
             }
 
+            @Override
             public String getDisplayName() {
                 return "Default";
             }

@@ -97,6 +97,7 @@ public class WebAppMain implements ServletContextListener {
     /**
      * Creates the sole instance of {@link jenkins.model.Jenkins} and register it to the {@link ServletContext}.
      */
+    @Override
     public void contextInitialized(ServletContextEvent event) {
         JenkinsJVMAccess._setJenkinsJVM(true);
         final ServletContext context = event.getServletContext();
@@ -105,6 +106,7 @@ public class WebAppMain implements ServletContextListener {
 
             // use the current request to determine the language
             LocaleProvider.setProvider(new LocaleProvider() {
+                @Override
                 public Locale get() {
                     return Functions.getCurrentLocale();
                 }
@@ -372,6 +374,7 @@ public class WebAppMain implements ServletContextListener {
         return new FileAndDescription(newHome,"$user.home/.jenkins");
     }
 
+    @Override
     public void contextDestroyed(ServletContextEvent event) {
         try (ACLContext old = ACL.as(ACL.SYSTEM)) {
             Jenkins instance = Jenkins.getInstanceOrNull();

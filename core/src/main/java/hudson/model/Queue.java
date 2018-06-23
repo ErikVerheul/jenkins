@@ -872,7 +872,7 @@ public class Queue extends ResourceController implements Saveable {
 
     private List<StubItem> filterDiscoverableItemListBasedOnPermissions(List<StubItem> r, Item t) {
         if (t.task instanceof hudson.model.Item) {
-            if (!((hudson.model.Item) t.task).hasPermission(hudson.model.Item.READ) && ((hudson.model.Item) t.task).hasPermission(hudson.model.Item.DISCOVER)) {
+            if (!((AccessControlled) t.task).hasPermission(hudson.model.Item.READ) && ((hudson.model.Item) t.task).hasPermission(hudson.model.Item.DISCOVER)) {
                 r.add(new StubItem(new StubTask(t.task)));
             }
         }

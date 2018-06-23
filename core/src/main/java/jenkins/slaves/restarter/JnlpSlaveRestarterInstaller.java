@@ -51,6 +51,7 @@ public class JnlpSlaveRestarterInstaller extends ComputerListener implements Ser
             if (ch==null) return;  // defensive check
 
             List<SlaveRestarter> effective = ch.call(new MasterToSlaveCallable<List<SlaveRestarter>, IOException>() {
+                @Override
                 public List<SlaveRestarter> call() throws IOException {
                     Engine e = Engine.current();
                     if (e == null) return null;    // not running under Engine

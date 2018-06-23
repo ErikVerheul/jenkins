@@ -143,7 +143,8 @@ public final class Result implements Serializable, CustomExportedBean {
         return name;
     }
 
-    public @Nonnull String toExportedObject() {
+    public @Nonnull@Override
+ String toExportedObject() {
         return name;
     }
     
@@ -211,6 +212,7 @@ public final class Result implements Serializable, CustomExportedBean {
     @Initializer
     public static void init() {
         Stapler.CONVERT_UTILS.register(new Converter() {
+            @Override
             public Object convert(Class type, Object value) {
                 return Result.fromString(value.toString());
             }

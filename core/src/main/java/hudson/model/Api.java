@@ -53,6 +53,7 @@ import java.net.HttpURLConnection;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.dom4j.Node;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 
@@ -77,10 +78,12 @@ public class Api extends AbstractModelObject {
         this.bean = bean;
     }
 
+    @Override
     public String getDisplayName() {
         return "API";
     }
 
+    @Override
     public String getSearchUrl() {
         return "api";
     }
@@ -120,7 +123,7 @@ public class Api extends AbstractModelObject {
                 for (String exclude : excludes) {
                     XPath xExclude = dom.createXPath(exclude);
                     xExclude.setFunctionContext(functionContext);
-                    List<org.dom4j.Node> list = (List<org.dom4j.Node>)xExclude.selectNodes(dom);
+                    List<org.dom4j.Node> list = xExclude.selectNodes(dom);
                     for (org.dom4j.Node n : list) {
                         Element parent = n.getParent();
                         if(parent!=null)
@@ -175,7 +178,7 @@ public class Api extends AbstractModelObject {
             if (isSimpleOutput(result)) {
                 // simple output allowed
                 rsp.setContentType("text/plain;charset=UTF-8");
-                String text = result instanceof CharacterData ? ((CharacterData) result).getText() : result.toString();
+                String text = result instanceof CharacterData ? ((Node) result).getText() : result.toString();
                 o.write(text.getBytes("UTF-8"));
                 return;
             }

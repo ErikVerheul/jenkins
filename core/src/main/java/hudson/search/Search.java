@@ -182,6 +182,7 @@ public class Search {
 
         private boolean hasMoreResults = false;
 
+        @Override
         public boolean hasMoreResults() {
             return hasMoreResults;
         }
@@ -205,11 +206,13 @@ public class Search {
 
     private enum Mode {
         FIND {
+            @Override
             void find(SearchIndex index, String token, List<SearchItem> result) {
                 index.find(token, result);
             }
         },
         SUGGEST {
+            @Override
             void find(SearchIndex index, String token, List<SearchItem> result) {
                 index.suggest(token, result);
             }
@@ -299,6 +302,7 @@ public class Search {
                 prefixMatch = i.getPath().startsWith(tokenList)?1:0;
             }
 
+            @Override
             public int compareTo(Tag that) {
                 int r = this.prefixMatch -that.prefixMatch;
                 if(r!=0)    return -r;  // ones with head match should show up earlier
@@ -338,6 +342,7 @@ public class Search {
          */
         public List<String> subSequence(final int start) {
             return new AbstractList<String>() {
+                @Override
                 public String get(int index) {
                     StringBuilder buf = new StringBuilder();
                     for(int i=start; i<=start+index; i++ )
@@ -345,6 +350,7 @@ public class Search {
                     return buf.toString().trim();
                 }
 
+                @Override
                 public int size() {
                     return tokens.length-start;
                 }
@@ -352,6 +358,7 @@ public class Search {
         }
         
         
+        @Override
         public String toString() {
             StringBuilder s = new StringBuilder("TokenList{");
             for(String token : tokens) {

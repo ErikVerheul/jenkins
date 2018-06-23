@@ -117,6 +117,7 @@ interface RuntimeSpringConfiguration extends ServletContextAware {
      *
      * @param context The servlet Context
      */
+    @Override
     void setServletContext(ServletContext context);
 
     /**

@@ -82,6 +82,7 @@ public abstract class LoadBalancer implements ExtensionPoint {
             List<ConsistentHash<ExecutorChunk>> hashes = new ArrayList<ConsistentHash<ExecutorChunk>>(ws.works.size());
             for (int i=0; i<ws.works.size(); i++) {
                 ConsistentHash<ExecutorChunk> hash = new ConsistentHash<ExecutorChunk>(new Hash<ExecutorChunk>() {
+                    @Override
                     public String hash(ExecutorChunk node) {
                         return node.getName();
                     }

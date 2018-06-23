@@ -145,7 +145,7 @@ public final class NodeList extends ArrayList<Node> {
 
         @Override
         public void marshal(Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
-            for (Node o : (NodeList) source) {
+            for (Node o : (Iterable<? extends Node>) source) {
                 if(o instanceof EphemeralNode)
                     continue;   // skip
                 writeItem(o, context, writer);
@@ -159,7 +159,7 @@ public final class NodeList extends ArrayList<Node> {
 
         @Override
         public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
-            return new NodeList((List<Node>)super.unmarshal(reader, context));
+            return new NodeList((Collection<? extends Node>)super.unmarshal(reader, context));
         }
     }
 }

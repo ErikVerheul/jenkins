@@ -1035,6 +1035,7 @@ public class Functions {
      */
     public static Collection<Descriptor> getSortedDescriptorsForGlobalConfigUnclassified() {
         return getSortedDescriptorsForGlobalConfig(new Predicate<GlobalConfigurationCategory>() {
+            @Override
             public boolean apply(GlobalConfigurationCategory cat) {
                 return cat instanceof GlobalConfigurationCategory.Unclassified;
             }
@@ -1058,6 +1059,7 @@ public class Functions {
             return buf.append(c.getName());
         }
 
+        @Override
         public int compareTo(Tag that) {
             int r = Double.compare(this.ordinal, that.ordinal);
             if (r!=0)   return -r; // descending for ordinal
@@ -1282,6 +1284,7 @@ public class Functions {
             return map.get(ti.getThreadId());
         }
 
+        @Override
         public int compare(ThreadInfo a, ThreadInfo b) {
             int result = compare(a.getThreadId(), b.getThreadId());
             if (result == 0)
@@ -1292,6 +1295,7 @@ public class Functions {
 
     private static class ThreadSorter extends ThreadSorterBase implements Comparator<Thread> {
 
+        @Override
         public int compare(Thread a, Thread b) {
             int result = compare(a.getId(), b.getId());
             if (result == 0)
@@ -1957,6 +1961,7 @@ public class Functions {
     public static ArrayList<CLICommand> getCLICommands() {
         ArrayList<CLICommand> all = new ArrayList<CLICommand>(CLICommand.all());
         Collections.sort(all, new Comparator<CLICommand>() {
+            @Override
             public int compare(CLICommand cliCommand, CLICommand cliCommand1) {
                 return cliCommand.getName().compareTo(cliCommand1.getName());
             }

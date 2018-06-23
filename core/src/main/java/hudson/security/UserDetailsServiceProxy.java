@@ -36,6 +36,7 @@ import org.springframework.dao.DataAccessException;
 public class UserDetailsServiceProxy implements UserDetailsService {
     private volatile UserDetailsService delegate;
 
+    @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException, DataAccessException {
         UserDetailsService uds = delegate;  // fix the reference for concurrency support
 

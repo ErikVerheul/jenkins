@@ -50,6 +50,7 @@ public class FileParameterDefinition extends ParameterDefinition {
         super(name, description);
     }
 
+    @Override
     public FileParameterValue createValue(StaplerRequest req, JSONObject jo) {
         FileParameterValue p = req.bindJSON(FileParameterValue.class, jo);
         p.setLocation(getName());

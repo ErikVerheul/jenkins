@@ -39,6 +39,7 @@ public class StatisticsLink extends ManagementLink {
         return "monitor.png";
     }
 
+    @Override
     public String getDisplayName() {
         return Messages.StatisticsLink_DisplayName();
     }

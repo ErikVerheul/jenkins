@@ -33,7 +33,6 @@ import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
 import javax.crypto.KeyAgreement;
 import javax.crypto.SecretKey;
-import javax.crypto.interfaces.DHPublicKey;
 import javax.crypto.spec.DHParameterSpec;
 import javax.crypto.spec.IvParameterSpec;
 import java.io.DataInputStream;
@@ -55,6 +54,7 @@ import java.security.Signature;
 import java.security.interfaces.DSAPublicKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.X509EncodedKeySpec;
+import javax.crypto.interfaces.DHKey;
 
 /**
  * Used by Jenkins core only in deprecated Remoting-based CLI.
@@ -170,7 +170,7 @@ public class Connection {
             otherHalf = KeyFactory.getInstance("DH").generatePublic(readKey());
 
             KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance("DH");
-            keyPairGen.initialize(((DHPublicKey) otherHalf).getParams());
+            keyPairGen.initialize(((DHKey) otherHalf).getParams());
             keyPair = keyPairGen.generateKeyPair();
 
             // send a half and get a half

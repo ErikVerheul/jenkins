@@ -26,6 +26,7 @@ public class ScriptLoader extends MasterToSlaveCallable<String,IOException> {
         this.script = script;
     }
     
+    @Override
     public String call() throws IOException {
         File f = new File(script);
         if(f.exists())

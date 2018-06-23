@@ -82,6 +82,7 @@ public abstract class ParserConfigurator implements ExtensionPoint, Serializable
 
                     private static final long serialVersionUID = -2178106894481500733L;
 
+                    @Override
                     public Collection<ParserConfigurator> call() throws IOException {
                         return new ArrayList<ParserConfigurator>(all());
                     }

@@ -37,6 +37,7 @@ public class StandardOutputSwapper extends ComputerListener {
     }
 
     private static final class ChannelSwapper extends MasterToSlaveCallable<Boolean,Exception> {
+        @Override
         public Boolean call() throws Exception {
             if (File.pathSeparatorChar==';')    return false;   // Windows
             Channel c = getOpenChannelOrFail();

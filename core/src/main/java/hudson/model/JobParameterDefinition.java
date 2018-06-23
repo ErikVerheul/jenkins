@@ -55,6 +55,7 @@ public class JobParameterDefinition extends SimpleParameterDefinition {
         return req.bindJSON(JobParameterValue.class, jo);
     }
 
+    @Override
     public ParameterValue createValue(String value) {
         return new JobParameterValue(getName(), Jenkins.get().getItemByFullName(value,Job.class));
     }

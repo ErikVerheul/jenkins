@@ -48,6 +48,7 @@ public class ComputerRetentionWork extends PeriodicWork {
      */
     private final Map<Computer, Long> nextCheck = new WeakHashMap<Computer, Long>();
 
+    @Override
     public long getRecurrencePeriod() {
         return MIN;
     }

@@ -86,7 +86,7 @@ public class ZipArchiverTest {
         try {
             zipFileVerify = new ZipFile(zipFile);
 
-            zipEntryName = ((ZipEntry) zipFileVerify.entries().nextElement()).getName();
+            zipEntryName = zipFileVerify.entries().nextElement().getName();
         } catch (Exception e) {
             fail("failure enumerating zip entries", e);
         } finally {

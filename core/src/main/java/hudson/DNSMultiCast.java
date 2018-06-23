@@ -28,6 +28,7 @@ public class DNSMultiCast implements Closeable {
         
         // the registerService call can be slow. run these asynchronously
         MasterComputer.threadPoolForRemoting.submit(new Callable<Object>() {
+            @Override
             public Object call() {
                 try {
                     jmdns = JmDNS.create();
@@ -75,6 +76,7 @@ public class DNSMultiCast implements Closeable {
         });
     }
 
+    @Override
     public void close() {
         if (jmdns!=null) {
 //            try {

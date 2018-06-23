@@ -94,23 +94,28 @@ public interface PermalinkProjectAction extends Action {
         public static final List<Permalink> BUILTIN = new CopyOnWriteArrayList<Permalink>();
 
         public static final Permalink LAST_BUILD = new Permalink() {
+            @Override
             public String getDisplayName() {
                 return Messages.Permalink_LastBuild();
             }
 
+            @Override
             public String getId() {
                 return "lastBuild";
             }
 
+            @Override
             public Run<?,?> resolve(Job<?,?> job) {
                 return job.getLastBuild();
             }
         };
         public static final Permalink LAST_STABLE_BUILD = new PeepholePermalink() {
+            @Override
             public String getDisplayName() {
                 return Messages.Permalink_LastStableBuild();
             }
 
+            @Override
             public String getId() {
                 return "lastStableBuild";
             }
@@ -121,10 +126,12 @@ public interface PermalinkProjectAction extends Action {
             }
         };
         public static final Permalink LAST_SUCCESSFUL_BUILD = new PeepholePermalink() {
+            @Override
             public String getDisplayName() {
                 return Messages.Permalink_LastSuccessfulBuild();
             }
 
+            @Override
             public String getId() {
                 return "lastSuccessfulBuild";
             }
@@ -135,10 +142,12 @@ public interface PermalinkProjectAction extends Action {
             }
         };
         public static final Permalink LAST_FAILED_BUILD = new PeepholePermalink() {
+            @Override
             public String getDisplayName() {
                 return Messages.Permalink_LastFailedBuild();
             }
 
+            @Override
             public String getId() {
                 return "lastFailedBuild";
             }
@@ -150,10 +159,12 @@ public interface PermalinkProjectAction extends Action {
         };
 
         public static final Permalink LAST_UNSTABLE_BUILD = new PeepholePermalink() {
+            @Override
             public String getDisplayName() {
                 return Messages.Permalink_LastUnstableBuild();
             }
 
+            @Override
             public String getId() {
                 return "lastUnstableBuild";
             }
@@ -165,10 +176,12 @@ public interface PermalinkProjectAction extends Action {
         };
 
         public static final Permalink LAST_UNSUCCESSFUL_BUILD = new PeepholePermalink() {
+            @Override
             public String getDisplayName() {
                 return Messages.Permalink_LastUnsuccessfulBuild();
             }
 
+            @Override
             public String getId() {
                 return "lastUnsuccessfulBuild";
             }
@@ -179,14 +192,17 @@ public interface PermalinkProjectAction extends Action {
             }
         };
         public static final Permalink LAST_COMPLETED_BUILD = new Permalink() {
+            @Override
             public String getDisplayName() {
                 return Messages.Permalink_LastCompletedBuild();
             }
 
+            @Override
             public String getId() {
                 return "lastCompletedBuild";
             }
 
+            @Override
             public Run<?,?> resolve(Job<?,?> job) {
                 return job.getLastCompletedBuild();
             }

@@ -58,6 +58,7 @@ public abstract class DownloadFromUrlInstaller extends ToolInstaller {
         return null;
     }
 
+    @Override
     public FilePath performInstallation(ToolInstallation tool, Node node, TaskListener log) throws IOException, InterruptedException {
         FilePath expected = preferredLocation(tool, node);
 
@@ -134,8 +135,9 @@ public abstract class DownloadFromUrlInstaller extends ToolInstaller {
          */
         public Downloadable createDownloadable() {
             if (this instanceof DownloadFromUrlInstaller.DescriptorImpl) {
-                final DownloadFromUrlInstaller.DescriptorImpl delegate = (DownloadFromUrlInstaller.DescriptorImpl)this;
+                final DownloadFromUrlInstaller.DescriptorImpl delegate = this;
                 return new Downloadable(getId()) {
+                    @Override
                     public JSONObject reduce(List<JSONObject> jsonList) {
                         if (isDefaultSchema(jsonList)) {
                             return delegate.reduce(jsonList);
@@ -202,6 +204,7 @@ public abstract class DownloadFromUrlInstaller extends ToolInstaller {
          * <p>
          * By default we use the fully-qualified class name of the {@link DownloadFromUrlInstaller} subtype.
          */
+        @Override
         public String getId() {
             return clazz.getName().replace('$','.');
         }

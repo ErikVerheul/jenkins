@@ -67,6 +67,7 @@ public final class PermissionGroup implements Iterable<Permission>, Comparable<P
         return owner.getName();
     }
 
+    @Override
     public Iterator<Permission> iterator() {
         return getPermissions().iterator();
     }
@@ -102,6 +103,7 @@ public final class PermissionGroup implements Iterable<Permission>, Comparable<P
         return null;
     }
 
+    @Override
     public int compareTo(PermissionGroup that) {
         // first, sort by the 'compare order' number. This is so that
         // we can put Hudson.PERMISSIONS first.

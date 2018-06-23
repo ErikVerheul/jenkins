@@ -99,6 +99,7 @@ public class DeferredCreationLdapAuthoritiesPopulator implements LdapAuthorities
         this.setGroupSearchBase(groupSearchBase);
     }
 
+    @Override
     public GrantedAuthority[] getGrantedAuthorities(LdapUserDetails userDetails)
             throws LdapDataAccessException {
         return create().getGrantedAuthorities(userDetails);

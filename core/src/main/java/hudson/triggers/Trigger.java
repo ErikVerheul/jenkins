@@ -60,7 +60,6 @@ import antlr.ANTLRException;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.model.Items;
 import jenkins.model.ParameterizedJobMixIn;
 import org.jenkinsci.Symbol;
@@ -149,6 +148,7 @@ public abstract class Trigger<J extends Item> implements Describable<Trigger<?>>
         return Collections.singletonList(a);
     }
 
+    @Override
     public TriggerDescriptor getDescriptor() {
         return (TriggerDescriptor) Jenkins.get().getDescriptorOrDie(getClass());
     }
@@ -211,14 +211,17 @@ public abstract class Trigger<J extends Item> implements Describable<Trigger<?>>
             cal.set(Calendar.MILLISECOND, 0);
         }
 
+        @Override
         public long getRecurrencePeriod() {
             return MIN;
         }
 
+        @Override
         public long getInitialDelay() {
             return MIN - (Calendar.getInstance().get(Calendar.SECOND) * 1000);
         }
 
+        @Override
         public void doRun() {
             while(new Date().getTime() >= cal.getTimeInMillis()) {
                 LOGGER.log(Level.FINE, "cron checking {0}", cal.getTime());
@@ -251,10 +254,11 @@ public abstract class Trigger<J extends Item> implements Describable<Trigger<?>>
                 // terminated.
                 // FIXME allow to set a global crontab spec
                 previousSynchronousPolling = scmd.getExecutor().submit(new DependencyRunner(new ProjectRunnable() {
+                    @Override
                     public void run(AbstractProject p) {
                         for (Trigger t : (Collection<Trigger>) p.getTriggers().values()) {
                             if (t instanceof SCMTrigger) {
-                                LOGGER.fine("synchronously triggering SCMTrigger for project " + t.job.getName());
+                                LOGGER.log(Level.FINE, "synchronously triggering SCMTrigger for project {0}", t.job.getName());
                                 t.run();
                             }
                         }

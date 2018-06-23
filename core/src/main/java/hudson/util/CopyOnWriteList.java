@@ -95,18 +95,22 @@ public class CopyOnWriteList<E> implements Iterable<E> {
     /**
      * Returns an iterator.
      */
+    @Override
     public Iterator<E> iterator() {
         final Iterator<? extends E> itr = core.iterator();
         return new Iterator<E>() {
             private E last;
+            @Override
             public boolean hasNext() {
                 return itr.hasNext();
             }
 
+            @Override
             public E next() {
                 return last=itr.next();
             }
 
+            @Override
             public void remove() {
                 CopyOnWriteList.this.remove(last);
             }
@@ -178,16 +182,19 @@ public class CopyOnWriteList<E> implements Iterable<E> {
             super(mapper);
         }
 
+        @Override
         public boolean canConvert(Class type) {
             return type==CopyOnWriteList.class;
         }
 
+        @Override
         public void marshal(Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
-            for (Object o : (CopyOnWriteList) source)
+            for (Object o : (Iterable<? extends Object>) source)
                 writeItem(o, context, writer);
         }
 
         @SuppressWarnings("unchecked")
+        @Override
         public CopyOnWriteList unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
             // read the items from xml into a list
             List items = new ArrayList();

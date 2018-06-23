@@ -367,8 +367,10 @@ public class Fingerprint implements ModelObject, Saveable {
         public Iterable<Integer> listNumbers() {
             final List<Range> ranges = getRanges();
             return new Iterable<Integer>() {
+                @Override
                 public Iterator<Integer> iterator() {
                     return new Iterators.FlattenIterator<Integer,Range>(ranges) {
+                        @Override
                         protected Iterator<Integer> expand(Range range) {
                             return Iterators.sequence(range.start,range.end).iterator();
                         }
@@ -402,8 +404,10 @@ public class Fingerprint implements ModelObject, Saveable {
         public Iterable<Integer> listNumbersReverse() {
             final List<Range> ranges = getRanges();
             return new Iterable<Integer>() {
+                @Override
                 public Iterator<Integer> iterator() {
                     return new Iterators.FlattenIterator<Integer,Range>(Iterators.reverse(ranges)) {
+                        @Override
                         protected Iterator<Integer> expand(Range range) {
                             return Iterators.reverseSequence(range.start,range.end).iterator();
                         }
@@ -781,10 +785,12 @@ public class Fingerprint implements ModelObject, Saveable {
                 this.collectionConv = collectionConv;
             }
 
+            @Override
             public boolean canConvert(Class type) {
                 return type==RangeSet.class;
             }
 
+            @Override
             public void marshal(Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
                 RangeSet src = (RangeSet) source;
                 writer.setValue(serialize(src));
@@ -802,6 +808,7 @@ public class Fingerprint implements ModelObject, Saveable {
                 return buf.toString();
             }
 
+            @Override
             public Object unmarshal(HierarchicalStreamReader reader, final UnmarshallingContext context) {
                 if(reader.hasMoreChildren()) {
                     /* old format where <range> elements are nested like
@@ -909,7 +916,8 @@ public class Fingerprint implements ModelObject, Saveable {
         return null;
     }
 
-    public @Nonnull String getDisplayName() {
+    public @Nonnull@Override
+ String getDisplayName() {
         return fileName;
     }
 
@@ -1011,7 +1019,7 @@ public class Fingerprint implements ModelObject, Saveable {
      */
     @Deprecated
     public synchronized void add(@Nonnull AbstractBuild b) throws IOException {
-        addFor((Run) b);
+        addFor(b);
     }
 
     /**
@@ -1195,6 +1203,7 @@ public class Fingerprint implements ModelObject, Saveable {
     public @Nonnull Collection<FingerprintFacet> getSortedFacets() {
         List<FingerprintFacet> r = new ArrayList<FingerprintFacet>(getFacets());
         Collections.sort(r,new Comparator<FingerprintFacet>() {
+            @Override
             public int compare(FingerprintFacet o1, FingerprintFacet o2) {
                 long a = o1.getTimestamp();
                 long b = o2.getTimestamp();
@@ -1234,6 +1243,7 @@ public class Fingerprint implements ModelObject, Saveable {
      * Save the settings to a file.
      * @throws IOException Save error
      */
+    @Override
     public synchronized void save() throws IOException {
         if(BulkChange.contains(this))   return;
 

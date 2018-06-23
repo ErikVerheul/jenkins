@@ -69,6 +69,7 @@ public class ClockMonitor extends NodeMonitor {
             return n.getClockDifferenceCallable();
         }
 
+        @Override
         public String getDisplayName() {
             return Messages.ClockMonitor_DisplayName();
         }

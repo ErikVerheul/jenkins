@@ -66,6 +66,7 @@ public abstract class AbstractCIBase extends Node implements ItemGroup<TopLevelI
     *       You probably want to call {@link Jenkins#getRootUrl()}
      */
     @Deprecated
+    @Override
     public String getUrl() {
         return "";
     }

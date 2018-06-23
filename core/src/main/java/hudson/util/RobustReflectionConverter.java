@@ -133,10 +133,12 @@ public class RobustReflectionConverter implements Converter {
         }
     }
 
+    @Override
     public boolean canConvert(Class type) {
         return true;
     }
 
+    @Override
     public void marshal(Object original, final HierarchicalStreamWriter writer, final MarshallingContext context) {
         final Object source = serializationMethodInvoker.callWriteReplace(original);
 
@@ -189,6 +191,7 @@ public class RobustReflectionConverter implements Converter {
 
         // Attributes might be preferred to child elements ...
          reflectionProvider.visitSerializableFields(source, new ReflectionProvider.Visitor() {
+            @Override
             public void visit(String fieldName, Class type, Class definedIn, Object value) {
                 SingleValueConverter converter = mapper.getConverterFromItemType(fieldName, type, definedIn);
                 if (converter == null) converter = mapper.getConverterFromItemType(fieldName, type);
@@ -207,6 +210,7 @@ public class RobustReflectionConverter implements Converter {
 
         // Child elements not covered already processed as attributes ...
         reflectionProvider.visitSerializableFields(source, new ReflectionProvider.Visitor() {
+            @Override
             public void visit(String fieldName, Class fieldType, Class definedIn, Object newObj) {
                 if (!seenAsAttributes.contains(fieldName) && newObj != null) {
                     Mapper.ImplicitCollectionMapping mapping = mapper.getImplicitCollectionDefForFieldName(source.getClass(), fieldName);
@@ -265,6 +269,7 @@ public class RobustReflectionConverter implements Converter {
         context.convertAnother(newObj, converter);
     }
 
+    @Override
     public Object unmarshal(final HierarchicalStreamReader reader, final UnmarshallingContext context) {
         Object result = instantiateNewInstance(reader, context);
         result = doUnmarshal(result, reader, context);
@@ -368,7 +373,7 @@ public class RobustReflectionConverter implements Converter {
 
         // Report any class/field errors in Saveable objects
         if (context.get("ReadError") != null && context.get("Saveable") == result) {
-            OldDataMonitor.report((Saveable)result, (ArrayList<Throwable>)context.get("ReadError"));
+            OldDataMonitor.report((Saveable)result, (Collection<Throwable>)context.get("ReadError"));
             context.put("ReadError", null);
         }
         return result;

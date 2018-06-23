@@ -28,6 +28,7 @@ import hudson.model.Descriptor;
 import jenkins.model.Jenkins;
 import hudson.model.AbstractProject.AbstractProjectDescriptor;
 import hudson.Extension;
+import hudson.model.TopLevelItemDescriptor;
 import hudson.util.DescriptorList;
 
 import java.util.ArrayList;
@@ -59,7 +60,7 @@ public class BuildWrappers {
         Descriptor pd = Jenkins.get().getDescriptor((Class)project.getClass());
 
         for (Descriptor<BuildWrapper> w : BuildWrapper.all()) {
-            if (pd instanceof AbstractProjectDescriptor && !((AbstractProjectDescriptor)pd).isApplicable(w))
+            if (pd instanceof AbstractProjectDescriptor && !((TopLevelItemDescriptor)pd).isApplicable(w))
                 continue;
             if (w instanceof BuildWrapperDescriptor) {
                 BuildWrapperDescriptor bwd = (BuildWrapperDescriptor) w;

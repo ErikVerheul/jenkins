@@ -322,7 +322,7 @@ public class Util {
         if (!Functions.isWindows()) {
             try {
                 PosixFileAttributes attrs = Files.readAttributes(path, PosixFileAttributes.class);
-                Set<PosixFilePermission> newPermissions = ((PosixFileAttributes)attrs).permissions();
+                Set<PosixFilePermission> newPermissions = attrs.permissions();
                 newPermissions.add(PosixFilePermission.OWNER_WRITE);
                 Files.setPosixFilePermissions(path, newPermissions);
                 return;

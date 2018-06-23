@@ -31,6 +31,7 @@ import jenkins.model.Jenkins;
 import hudson.model.Item;
 import hudson.model.Run;
 import hudson.Extension;
+import hudson.model.Job;
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
 import org.apache.commons.io.IOUtils;
@@ -80,7 +81,7 @@ public class GroovyCommand extends CLICommand {
                 binding.setProperty("currentJob", job);
                 String b = getClientEnvironmentVariable("BUILD_NUMBER");
                 if (b != null && job instanceof AbstractProject) {
-                    Run r = ((AbstractProject) job).getBuildByNumber(Integer.parseInt(b));
+                    Run r = ((Job) job).getBuildByNumber(Integer.parseInt(b));
                     binding.setProperty("currentBuild", r);
                 }
             }

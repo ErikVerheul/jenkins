@@ -210,6 +210,7 @@ public class Nodes implements Saveable {
         if (oldOne == nodes.get(oldOne.getNodeName())) {
             // use the queue lock until Nodes has a way of directly modifying a single node.
             Queue.withLock(new Runnable() {
+                @Override
                 public void run() {
                     Nodes.this.nodes.remove(oldOne.getNodeName());
                     Nodes.this.nodes.put(newOne.getNodeName(), newOne);
@@ -303,6 +304,7 @@ public class Nodes implements Saveable {
     public void load() throws IOException {
         final File nodesDir = getNodesDir();
         final File[] subdirs = nodesDir.listFiles(new FileFilter() {
+            @Override
             public boolean accept(File child) {
                 return child.isDirectory();
             }

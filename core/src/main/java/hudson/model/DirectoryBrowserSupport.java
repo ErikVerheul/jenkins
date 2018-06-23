@@ -122,6 +122,7 @@ public final class DirectoryBrowserSupport implements HttpResponse {
         this.serveDirIndex = serveDirIndex;
     }
 
+    @Override
     public void generateResponse(StaplerRequest req, StaplerResponse rsp, Object node) throws IOException, ServletException {
         try {
             serveFile(req,rsp,base,icon,serveDirIndex);
@@ -458,6 +459,7 @@ public final class DirectoryBrowserSupport implements HttpResponse {
             this.collator = Collator.getInstance(locale);
         }
 
+        @Override
         public int compare(VirtualFile lhs, VirtualFile rhs) {
             // directories first, files next
             int r = dirRank(lhs)-dirRank(rhs);

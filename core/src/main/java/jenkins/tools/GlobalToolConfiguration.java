@@ -102,6 +102,7 @@ public class GlobalToolConfiguration extends ManagementLink {
     }
 
     public static Predicate<GlobalConfigurationCategory> FILTER = new Predicate<GlobalConfigurationCategory>() {
+        @Override
         public boolean apply(GlobalConfigurationCategory input) {
             return input instanceof ToolConfigurationCategory;
         }
