@@ -59,7 +59,7 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
  * @see SecurityRealm
  */
 public class PluginServletFilter implements Filter, ExtensionPoint {
-    private final List<Filter> list = new CopyOnWriteArrayList<Filter>();
+    private final List<Filter> list = new CopyOnWriteArrayList<>();
 
     private /*almost final*/ FilterConfig config;
 

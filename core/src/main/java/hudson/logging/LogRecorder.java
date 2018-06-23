@@ -71,7 +71,7 @@ import org.kohsuke.stapler.interceptor.RequirePOST;
 public class LogRecorder extends AbstractModelObject implements Saveable {
     private volatile String name;
 
-    public final CopyOnWriteList<Target> targets = new CopyOnWriteList<Target>();
+    public final CopyOnWriteList<Target> targets = new CopyOnWriteList<>();
     private final static TargetComparator TARGET_COMPARATOR = new TargetComparator();
     
     @Restricted(NoExternalUse.class)
@@ -386,7 +386,7 @@ public class LogRecorder extends AbstractModelObject implements Saveable {
             if (c.getName().length() == 0) {
                 continue; // master
             }
-            List<LogRecord> recs = new ArrayList<LogRecord>();
+            List<LogRecord> recs = new ArrayList<>();
             try {
                 for (LogRecord rec : c.getLogRecords()) {
                     for (Target t : targets) {

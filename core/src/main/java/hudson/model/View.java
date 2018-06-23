@@ -201,7 +201,7 @@ public abstract class View extends AbstractModelObject implements AccessControll
     public Collection<TopLevelItem> getAllItems() {
 
         if (this instanceof ViewGroup) {
-            final Collection<TopLevelItem> items = new LinkedHashSet<TopLevelItem>(getItems());
+            final Collection<TopLevelItem> items = new LinkedHashSet<>(getItems());
 
             for(View view: ((ViewGroup) this).getViews()) {
                 items.addAll(view.getAllItems());
@@ -313,7 +313,7 @@ public abstract class View extends AbstractModelObject implements AccessControll
      * on this label.
      */
     public List<ViewPropertyDescriptor> getApplicablePropertyDescriptors() {
-        List<ViewPropertyDescriptor> r = new ArrayList<ViewPropertyDescriptor>();
+        List<ViewPropertyDescriptor> r = new ArrayList<>();
         for (ViewPropertyDescriptor pd : ViewProperty.all()) {
             if (pd.isEnabledFor(this))
                 r.add(pd);
@@ -426,9 +426,9 @@ public abstract class View extends AbstractModelObject implements AccessControll
             return Arrays.asList(computers);
         }
 
-        List<Computer> result = new ArrayList<Computer>();
+        List<Computer> result = new ArrayList<>();
 
-        HashSet<Label> labels = new HashSet<Label>();
+        HashSet<Label> labels = new HashSet<>();
         for (Item item : getItems()) {
             if (item instanceof AbstractProject<?, ?>) {
                 labels.addAll(((AbstractProject<?, ?>) item).getRelevantLabels());
@@ -548,7 +548,7 @@ public abstract class View extends AbstractModelObject implements AccessControll
      * @see Jenkins#getActions()
      */
     public List<Action> getActions() {
-    	List<Action> result = new ArrayList<Action>();
+    	List<Action> result = new ArrayList<>();
     	result.addAll(getOwner().getViewActions());
     	synchronized (this) {
     		if (transientActions == null) {
@@ -726,7 +726,7 @@ public abstract class View extends AbstractModelObject implements AccessControll
         }
 
         private Map<User,UserInfo> getUserInfo(Collection<? extends Item> items) {
-            Map<User,UserInfo> users = new HashMap<User,UserInfo>();
+            Map<User,UserInfo> users = new HashMap<>();
             for (Item item : items) {
                 for (Job<?, ?> job : item.getAllJobs()) {
                     RunList<? extends Run<?, ?>> runs = job.getBuilds();
@@ -755,7 +755,7 @@ public abstract class View extends AbstractModelObject implements AccessControll
         }
 
         private List<UserInfo> toList(Map<User,UserInfo> users) {
-            ArrayList<UserInfo> list = new ArrayList<UserInfo>();
+            ArrayList<UserInfo> list = new ArrayList<>();
             list.addAll(users.values());
             Collections.sort(list);
             return Collections.unmodifiableList(list);
@@ -800,8 +800,8 @@ public abstract class View extends AbstractModelObject implements AccessControll
 
         private final Collection<TopLevelItem> items;
         private final User unknown;
-        private final Map<User,UserInfo> users = new HashMap<User,UserInfo>();
-        private final Set<User> modified = new HashSet<User>();
+        private final Map<User,UserInfo> users = new HashMap<>();
+        private final Set<User> modified = new HashSet<>();
         private final String iconSize;
         public final ModelObject parent;
 
@@ -1089,7 +1089,7 @@ public abstract class View extends AbstractModelObject implements AccessControll
         }
         for (TopLevelItemDescriptor descriptor : DescriptorVisibilityFilter.apply(getOwner().getItemGroup(), Items.all(Jenkins.getAuthentication(), getOwner().getItemGroup()))) {
             ItemCategory ic = ItemCategory.getCategory(descriptor);
-            Map<String, Serializable> metadata = new HashMap<String, Serializable>();
+            Map<String, Serializable> metadata = new HashMap<>();
 
             // Information about Item.
             metadata.put("class", descriptor.getId());
@@ -1113,7 +1113,7 @@ public abstract class View extends AbstractModelObject implements AccessControll
             if (category != null) {
                 category.getItems().add(metadata);
             } else {
-                List<Map<String, Serializable>> temp = new ArrayList<Map<String, Serializable>>();
+                List<Map<String, Serializable>> temp = new ArrayList<>();
                 temp.add(metadata);
                 category = new Category(ic.getId(), ic.getDisplayName(), ic.getDescription(), ic.getOrder(), ic.getMinToShow(), temp);
                 categories.getItems().add(category);
@@ -1144,7 +1144,7 @@ public abstract class View extends AbstractModelObject implements AccessControll
     }
 
     public void doRssLatest( StaplerRequest req, StaplerResponse rsp ) throws IOException, ServletException {
-        List<Run> lastBuilds = new ArrayList<Run>();
+        List<Run> lastBuilds = new ArrayList<>();
         for (TopLevelItem item : getItems()) {
             if (item instanceof Job) {
                 Job job = (Job) item;
@@ -1265,7 +1265,7 @@ public abstract class View extends AbstractModelObject implements AccessControll
      */
     @Nonnull
     public static List<ViewDescriptor> allInstantiable() {
-        List<ViewDescriptor> r = new ArrayList<ViewDescriptor>();
+        List<ViewDescriptor> r = new ArrayList<>();
         StaplerRequest request = Stapler.getCurrentRequest();
         if (request == null) {
             throw new IllegalStateException("This method can only be invoked from a stapler request");

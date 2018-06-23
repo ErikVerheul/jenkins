@@ -74,7 +74,7 @@ public abstract class BuildStepDescriptor<T extends BuildStep & Describable<T>> 
         // descriptor of the project
         Descriptor pd = Jenkins.get().getDescriptor((Class) type);
 
-        List<Descriptor<T>> r = new ArrayList<Descriptor<T>>(base.size());
+        List<Descriptor<T>> r = new ArrayList<>(base.size());
         for (Descriptor<T> d : base) {
             if (pd instanceof AbstractProjectDescriptor && !((TopLevelItemDescriptor)pd).isApplicable(d))
                 continue;

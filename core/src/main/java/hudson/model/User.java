@@ -282,7 +282,7 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
      */
     public synchronized void addProperty(@Nonnull UserProperty p) throws IOException {
         UserProperty old = getProperty(p.getClass());
-        List<UserProperty> ps = new ArrayList<UserProperty>(properties);
+        List<UserProperty> ps = new ArrayList<>(properties);
         if(old!=null)
             ps.remove(old);
         ps.add(p);
@@ -645,7 +645,7 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
         byNameLock.readLock().lock();
         ArrayList<User> r;
         try {
-            r = new ArrayList<User>(AllUsers.byName().values());
+            r = new ArrayList<>(AllUsers.byName().values());
         } finally {
             byNameLock.readLock().unlock();
         }
@@ -757,7 +757,7 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
      * @since 1.191
      */
     public @Nonnull Set<AbstractProject<?,?>> getProjects() {
-        Set<AbstractProject<?,?>> r = new HashSet<AbstractProject<?,?>>();
+        Set<AbstractProject<?,?>> r = new HashSet<>();
         for (AbstractProject<?,?> p : Jenkins.get().allItems(AbstractProject.class))
             if(p.hasParticipant(this))
                 r.add(p);
@@ -882,7 +882,7 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
         fullName = json.getString("fullName");
         description = json.getString("description");
 
-        List<UserProperty> props = new ArrayList<UserProperty>();
+        List<UserProperty> props = new ArrayList<>();
         int i = 0;
         for (UserPropertyDescriptor d : UserProperty.all()) {
             UserProperty p = getProperty(d.clazz);
@@ -936,7 +936,7 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
     }
 
     public void doRssLatest(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException {
-        final List<Run> lastBuilds = new ArrayList<Run>();
+        final List<Run> lastBuilds = new ArrayList<>();
         for (AbstractProject<?,?> p : Jenkins.get().allItems(AbstractProject.class)) {
             for (AbstractBuild<?,?> b = p.getLastBuild(); b != null; b = b.getPreviousBuild()) {
                 if (relatedTo(b)) {
@@ -1008,7 +1008,7 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
         if (!Jenkins.get().hasPermission(Jenkins.ADMINISTER)) {
             return Collections.emptyList();
         }
-        List<String> r = new ArrayList<String>();
+        List<String> r = new ArrayList<>();
         Authentication authentication;
         try {
             authentication = impersonate();
@@ -1047,7 +1047,7 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
      * @return the list can be empty but never null. read only.
      */
     public List<Action> getPropertyActions() {
-        List<Action> actions = new ArrayList<Action>();
+        List<Action> actions = new ArrayList<>();
         for (UserProperty userProp : getProperties().values()) {
             if (userProp instanceof Action) {
                 actions.add((Action) userProp);
@@ -1062,7 +1062,7 @@ public class User extends AbstractModelObject implements AccessControlled, Descr
      * @return the list can be empty but never null. read only.
      */
     public List<Action> getTransientActions() {
-        List<Action> actions = new ArrayList<Action>();
+        List<Action> actions = new ArrayList<>();
         for (TransientUserActionFactory factory: TransientUserActionFactory.all()) {
             actions.addAll(factory.createFor(this));
         }

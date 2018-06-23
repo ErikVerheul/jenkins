@@ -935,7 +935,7 @@ public class SlaveComputer extends Computer {
     private static class SlaveLogFetcher extends MasterToSlaveCallable<List<LogRecord>,RuntimeException> {
         @Override
         public List<LogRecord> call() {
-            return new ArrayList<LogRecord>(SLAVE_LOG_HANDLER.getView());
+            return new ArrayList<>(SLAVE_LOG_HANDLER.getView());
         }
     }
 

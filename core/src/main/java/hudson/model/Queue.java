@@ -174,25 +174,25 @@ public class Queue extends ResourceController implements Saveable {
      * <p>
      * This consists of {@link Item}s that cannot be run yet because its time has not yet come.
      */
-    private final Set<WaitingItem> waitingList = new TreeSet<WaitingItem>();
+    private final Set<WaitingItem> waitingList = new TreeSet<>();
 
     /**
      * {@link Task}s that can be built immediately but blocked because another build is in progress, required
      * {@link Resource}s are not available, blocked via {@link QueueTaskDispatcher#canRun(Item)}, or otherwise blocked
      * by {@link Task#isBuildBlocked()}.
      */
-    private final ItemList<BlockedItem> blockedProjects = new ItemList<BlockedItem>();
+    private final ItemList<BlockedItem> blockedProjects = new ItemList<>();
 
     /**
      * {@link Task}s that can be built immediately that are waiting for available {@link Executor}. This list is sorted
      * in such a way that earlier items are built earlier.
      */
-    private final ItemList<BuildableItem> buildables = new ItemList<BuildableItem>();
+    private final ItemList<BuildableItem> buildables = new ItemList<>();
 
     /**
      * {@link Task}s that are being handed over to the executor, but execution has not started yet.
      */
-    private final ItemList<BuildableItem> pendings = new ItemList<BuildableItem>();
+    private final ItemList<BuildableItem> pendings = new ItemList<>();
 
     private transient volatile Snapshot snapshot = new Snapshot(waitingList, blockedProjects, buildables, pendings);
 
@@ -356,7 +356,7 @@ public class Queue extends ResourceController implements Saveable {
     static class State {
 
         public long counter;
-        public List<Item> items = new ArrayList<Item>();
+        public List<Item> items = new ArrayList<>();
     }
 
     /**
@@ -494,7 +494,7 @@ public class Queue extends ResourceController implements Saveable {
         lock.lock();
         try {
             try {
-                for (WaitingItem i : new ArrayList<WaitingItem>(
+                for (WaitingItem i : new ArrayList<>(
                     waitingList)) // copy the list as we'll modify it in the loop
                 {
                     i.cancel(this);
@@ -580,7 +580,7 @@ public class Queue extends ResourceController implements Saveable {
     public @Nonnull
     ScheduleResult schedule2(Task p, int quietPeriod, List<Action> actions) {
         // remove nulls
-        actions = new ArrayList<Action>(actions);
+        actions = new ArrayList<>(actions);
         for (Iterator<Action> itr = actions.iterator(); itr.hasNext();) {
             Action a = itr.next();
             if (a == null) {
@@ -626,14 +626,14 @@ public class Queue extends ResourceController implements Saveable {
                 due.add(Calendar.SECOND, quietPeriod);
 
                 // Do we already have this task in the queue? Because if so, we won't schedule a new one.
-                List<Item> duplicatesInQueue = new ArrayList<Item>();
+                List<Item> duplicatesInQueue = new ArrayList<>();
                 for (Item item : liveGetItems(p)) {
                     boolean shouldScheduleItem = false;
                     for (QueueAction action : item.getActions(QueueAction.class)) {
                         shouldScheduleItem |= action.shouldSchedule(actions);
                     }
                     for (QueueAction action : Util.filter(actions, QueueAction.class)) {
-                        shouldScheduleItem |= action.shouldSchedule((new ArrayList<Action>(item.getAllActions())));
+                        shouldScheduleItem |= action.shouldSchedule((new ArrayList<>(item.getAllActions())));
                     }
                     if (!shouldScheduleItem) {
                         duplicatesInQueue.add(item);
@@ -806,7 +806,7 @@ public class Queue extends ResourceController implements Saveable {
     @Exported(inline = true)
     public Item[] getItems() {
         Snapshot s = this.snapshot;
-        List<Item> r = new ArrayList<Item>();
+        List<Item> r = new ArrayList<>();
 
         for (WaitingItem p : s.waitingList) {
             r = checkPermissionsAndAddToList(r, p);
@@ -844,7 +844,7 @@ public class Queue extends ResourceController implements Saveable {
     @Exported(inline = true)
     public StubItem[] getDiscoverableItems() {
         Snapshot s = this.snapshot;
-        List<StubItem> r = new ArrayList<StubItem>();
+        List<StubItem> r = new ArrayList<>();
 
         for (WaitingItem p : s.waitingList) {
             r = filterDiscoverableItemListBasedOnPermissions(r, p);
@@ -925,7 +925,7 @@ public class Queue extends ResourceController implements Saveable {
      */
     public List<BuildableItem> getBuildableItems(Computer c) {
         Snapshot ss = this.snapshot;
-        List<BuildableItem> result = new ArrayList<BuildableItem>();
+        List<BuildableItem> result = new ArrayList<>();
         _getBuildableItems(c, ss.buildables, result);
         _getBuildableItems(c, ss.pendings, result);
         return result;
@@ -949,7 +949,7 @@ public class Queue extends ResourceController implements Saveable {
      */
     public List<BuildableItem> getBuildableItems() {
         Snapshot ss = this.snapshot;
-        ArrayList<BuildableItem> r = new ArrayList<BuildableItem>(ss.buildables);
+        ArrayList<BuildableItem> r = new ArrayList<>(ss.buildables);
         r.addAll(ss.pendings);
         return r;
     }
@@ -958,14 +958,14 @@ public class Queue extends ResourceController implements Saveable {
      * Gets the snapshot of all {@link BuildableItem}s.
      */
     public List<BuildableItem> getPendingItems() {
-        return new ArrayList<BuildableItem>(snapshot.pendings);
+        return new ArrayList<>(snapshot.pendings);
     }
 
     /**
      * Gets the snapshot of all {@link BlockedItem}s.
      */
     protected List<BlockedItem> getBlockedItems() {
-        return new ArrayList<BlockedItem>(snapshot.blockedProjects);
+        return new ArrayList<>(snapshot.blockedProjects);
     }
 
     /**
@@ -994,7 +994,7 @@ public class Queue extends ResourceController implements Saveable {
      */
     public List<Item> getUnblockedItems() {
         Snapshot ss = this.snapshot;
-        List<Item> queuedNotBlocked = new ArrayList<Item>();
+        List<Item> queuedNotBlocked = new ArrayList<>();
         queuedNotBlocked.addAll(ss.waitingList);
         queuedNotBlocked.addAll(ss.buildables);
         queuedNotBlocked.addAll(ss.pendings);
@@ -1009,7 +1009,7 @@ public class Queue extends ResourceController implements Saveable {
      */
     public Set<Task> getUnblockedTasks() {
         List<Item> items = getUnblockedItems();
-        Set<Task> unblockedTasks = new HashSet<Task>(items.size());
+        Set<Task> unblockedTasks = new HashSet<>(items.size());
         for (Queue.Item t : items) {
             unblockedTasks.add(t.task);
         }
@@ -1134,7 +1134,7 @@ public class Queue extends ResourceController implements Saveable {
     private List<Item> liveGetItems(Task t) {
         lock.lock();
         try {
-            List<Item> result = new ArrayList<Item>();
+            List<Item> result = new ArrayList<>();
             result.addAll(blockedProjects.getAll(t));
             result.addAll(buildables.getAll(t));
             // Do not include pendings—we have already finalized WorkUnitContext.actions.
@@ -1162,7 +1162,7 @@ public class Queue extends ResourceController implements Saveable {
      */
     public List<Item> getItems(Task t) {
         Snapshot ss = this.snapshot;
-        List<Item> result = new ArrayList<Item>();
+        List<Item> result = new ArrayList<>();
         for (Item item : ss.blockedProjects) {
             if (item.task.equals(t)) {
                 result.add(item);
@@ -1410,7 +1410,7 @@ public class Queue extends ResourceController implements Saveable {
         final Jenkins jenkins = Jenkins.getInstanceOrNull();
         // TODO confirm safe to assume non-null and use getInstance()
         final Queue queue = jenkins == null ? null : jenkins.getQueue();
-        return queue == null ? callable : new LockedJUCCallable<V>(callable);
+        return queue == null ? callable : new LockedJUCCallable<>(callable);
     }
 
     @Override
@@ -1521,10 +1521,10 @@ public class Queue extends ResourceController implements Saveable {
                 LOGGER.log(Level.FINE, "Queue maintenance started on {0} with {1}", new Object[]{this, snapshot});
 
                 // The executors that are currently waiting for a job to run.
-                Map<Executor, JobOffer> parked = new HashMap<Executor, JobOffer>();
+                Map<Executor, JobOffer> parked = new HashMap<>();
 
                 {// update parked (and identify any pending items whose executor has disappeared)
-                    List<BuildableItem> lostPendings = new ArrayList<BuildableItem>(pendings);
+                    List<BuildableItem> lostPendings = new ArrayList<>(pendings);
                     for (Computer c : Jenkins.get().getComputers()) {
                         for (Executor e : c.getExecutors()) {
                             if (e.isInterrupted()) {
@@ -1633,7 +1633,7 @@ public class Queue extends ResourceController implements Saveable {
                 updateSnapshot();
 
                 // allocate buildable jobs to executors
-                for (BuildableItem p : new ArrayList<BuildableItem>(
+                for (BuildableItem p : new ArrayList<>(
                     buildables)) {// copy as we'll mutate the list in the loop
                     // one last check to make sure this build is not blocked.
                     CauseOfBlockage causeOfBlockage = getCauseOfBlockageForItem(p);
@@ -1777,7 +1777,7 @@ public class Queue extends ResourceController implements Saveable {
                 }
             }
 
-            Map<Node, Integer> hashSource = new HashMap<Node, Integer>(h.getNodes().size());
+            Map<Node, Integer> hashSource = new HashMap<>(h.getNodes().size());
 
             // Even if master is configured with zero executors, we may need to run a flyweight task like MatrixProject on it.
             hashSource.put(h, Math.max(h.getNumExecutors() * 100, 1));
@@ -1786,7 +1786,7 @@ public class Queue extends ResourceController implements Saveable {
                 hashSource.put(n, n.getNumExecutors() * 100);
             }
 
-            ConsistentHash<Node> hash = new ConsistentHash<Node>(NODE_HASH);
+            ConsistentHash<Node> hash = new ConsistentHash<>(NODE_HASH);
             hash.addAll(hashSource);
 
             String fullDisplayName = p.task.getFullDisplayName();
@@ -2976,7 +2976,7 @@ public class Queue extends ResourceController implements Saveable {
         private final WeakReference<Queue> queue;
 
         MaintainTask(Queue queue) {
-            this.queue = new WeakReference<Queue>(queue);
+            this.queue = new WeakReference<>(queue);
         }
 
         private void periodic() {
@@ -3010,7 +3010,7 @@ public class Queue extends ResourceController implements Saveable {
         }
 
         public List<T> getAll(Task task) {
-            List<T> result = new ArrayList<T>();
+            List<T> result = new ArrayList<>();
             for (T item : this) {
                 if (item.task.equals(task)) {
                     result.add(item);
@@ -3059,7 +3059,7 @@ public class Queue extends ResourceController implements Saveable {
             justification = "It will invoke the inherited clear() method according to Java semantics. "
             + "FindBugs recommends suppressing warnings in such case")
         public void cancelAll() {
-            for (T t : new ArrayList<T>(this)) {
+            for (T t : new ArrayList<>(this)) {
                 t.cancel(Queue.this);
             }
             clear();
@@ -3075,10 +3075,10 @@ public class Queue extends ResourceController implements Saveable {
 
         public Snapshot(Set<WaitingItem> waitingList, List<BlockedItem> blockedProjects, List<BuildableItem> buildables,
             List<BuildableItem> pendings) {
-            this.waitingList = new LinkedHashSet<WaitingItem>(waitingList);
-            this.blockedProjects = new ArrayList<BlockedItem>(blockedProjects);
-            this.buildables = new ArrayList<BuildableItem>(buildables);
-            this.pendings = new ArrayList<BuildableItem>(pendings);
+            this.waitingList = new LinkedHashSet<>(waitingList);
+            this.blockedProjects = new ArrayList<>(blockedProjects);
+            this.buildables = new ArrayList<>(buildables);
+            this.pendings = new ArrayList<>(pendings);
         }
 
         @Override

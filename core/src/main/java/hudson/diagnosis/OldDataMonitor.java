@@ -75,7 +75,7 @@ import org.kohsuke.stapler.interceptor.RequirePOST;
 public class OldDataMonitor extends AdministrativeMonitor {
     private static final Logger LOGGER = Logger.getLogger(OldDataMonitor.class.getName());
 
-    private ConcurrentMap<SaveableReference,VersionRange> data = new ConcurrentHashMap<SaveableReference,VersionRange>();
+    private ConcurrentMap<SaveableReference,VersionRange> data = new ConcurrentHashMap<>();
 
     static OldDataMonitor get(Jenkins j) {
         return (OldDataMonitor) j.getAdministrativeMonitor("OldData");
@@ -96,7 +96,7 @@ public class OldDataMonitor extends AdministrativeMonitor {
     }
 
     public Map<Saveable,VersionRange> getData() {
-        Map<Saveable,VersionRange> r = new HashMap<Saveable,VersionRange>();
+        Map<Saveable,VersionRange> r = new HashMap<>();
         for (Map.Entry<SaveableReference,VersionRange> entry : this.data.entrySet()) {
             Saveable s = entry.getKey().get();
             if (s != null) {
@@ -284,7 +284,7 @@ public class OldDataMonitor extends AdministrativeMonitor {
      */
     @Restricted(NoExternalUse.class)
     public Iterator<VersionNumber> getVersionList() {
-        TreeSet<VersionNumber> set = new TreeSet<VersionNumber>();
+        TreeSet<VersionNumber> set = new TreeSet<>();
         for (VersionRange vr : data.values()) {
             if (vr.max != null) {
                 set.add(vr.max);
@@ -354,7 +354,7 @@ public class OldDataMonitor extends AdministrativeMonitor {
          * does occur: just means the user will be prompted to discard less than they should have been (and
          * would see the warning again after next restart).
          */
-        List<SaveableReference> removed = new ArrayList<SaveableReference>();
+        List<SaveableReference> removed = new ArrayList<>();
         for (Map.Entry<SaveableReference,VersionRange> entry : data.entrySet()) {
             if (matchingPredicate.apply(entry)) {
                 Saveable s = entry.getKey().get();

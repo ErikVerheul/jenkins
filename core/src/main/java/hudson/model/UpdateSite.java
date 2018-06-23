@@ -356,7 +356,7 @@ public class UpdateSite {
      */
     @Exported
     public List<Plugin> getAvailables() {
-        List<Plugin> r = new ArrayList<Plugin>();
+        List<Plugin> r = new ArrayList<>();
         Data d = getData();
         if(d==null)     return Collections.emptyList();
         for (Plugin p : d.plugins.values()) {
@@ -416,7 +416,7 @@ public class UpdateSite {
         Data d = getData();
         if(d==null)      return Collections.emptyList(); // fail to determine
         
-        List<Plugin> r = new ArrayList<Plugin>();
+        List<Plugin> r = new ArrayList<>();
         for (PluginWrapper pw : Jenkins.get().getPluginManager().getPlugins()) {
             Plugin p = pw.getUpdateInfo();
             if(p!=null) r.add(p);
@@ -508,13 +508,13 @@ public class UpdateSite {
         /**
          * Plugins in the repository, keyed by their artifact IDs.
          */
-        public final Map<String,Plugin> plugins = new TreeMap<String,Plugin>(String.CASE_INSENSITIVE_ORDER);
+        public final Map<String,Plugin> plugins = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         /**
          * List of warnings (mostly security) published with the update site.
          *
          * @since 2.40
          */
-        private final Set<Warning> warnings = new HashSet<Warning>();
+        private final Set<Warning> warnings = new HashSet<>();
 
         /**
          * If this is non-null, Jenkins is going to check the connectivity to this URL to make sure
@@ -1021,7 +1021,7 @@ public class UpdateSite {
          */
         @Exported
         public List<Plugin> getNeededDependencies() {
-            List<Plugin> deps = new ArrayList<Plugin>();
+            List<Plugin> deps = new ArrayList<>();
 
             for(Map.Entry<String,String> e : dependencies.entrySet()) {
                 Plugin depPlugin = Jenkins.get().getUpdateCenter().getPlugin(e.getKey());

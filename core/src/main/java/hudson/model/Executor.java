@@ -269,7 +269,7 @@ public class Executor extends Thread implements ModelObject {
         lock.writeLock().lock();
         try {
             if (causes.isEmpty())   return;
-            r = new ArrayList<CauseOfInterruption>(causes);
+            r = new ArrayList<>(causes);
             causes.clear();
         } finally {
             lock.writeLock().unlock();

@@ -141,7 +141,7 @@ public abstract class ConsoleAnnotator<T> implements Serializable {
      * List all the console annotators that can work for the specified context type.
      */
     public static <T> List<ConsoleAnnotator<T>> _for(T context) {
-        List<ConsoleAnnotator<T>> r  = new ArrayList<ConsoleAnnotator<T>>();
+        List<ConsoleAnnotator<T>> r  = new ArrayList<>();
         for (ConsoleAnnotatorFactory f : ConsoleAnnotatorFactory.all()) {
             if (f.type().isInstance(context)) {
                 ConsoleAnnotator ca = f.newInstance(context);

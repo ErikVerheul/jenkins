@@ -55,7 +55,7 @@ public final class WorkUnitContext {
 
     private final Latch startLatch, endLatch;
 
-    private List<WorkUnit> workUnits = new ArrayList<WorkUnit>();
+    private List<WorkUnit> workUnits = new ArrayList<>();
 
     /**
      * If the execution is aborted, set to non-null that indicates where it was aborted.
@@ -66,7 +66,7 @@ public final class WorkUnitContext {
         this.item = item;
         this.task = item.task;
         this.future = (FutureImpl)item.getFuture();
-        this.actions = new ArrayList<Action>(item.getAllActions());
+        this.actions = new ArrayList<>(item.getAllActions());
         
         // +1 for the main task
         int workUnitSize = task.getSubTasks().size();

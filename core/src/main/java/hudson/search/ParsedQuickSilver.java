@@ -48,7 +48,7 @@ final class ParsedQuickSilver {
         return pqs;
     }
 
-    private final List<Getter> getters = new ArrayList<Getter>();
+    private final List<Getter> getters = new ArrayList<>();
 
     private ParsedQuickSilver(Class<? extends SearchableModelObject> clazz) {
         QuickSilver qs;

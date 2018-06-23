@@ -23,6 +23,6 @@ public class ConfidentialStoreRule extends ExternalResource {
     }
 
     static {
-        ConfidentialStore.TEST = new ThreadLocal<ConfidentialStore>();
+        ConfidentialStore.TEST = new ThreadLocal<>();
     }
 }

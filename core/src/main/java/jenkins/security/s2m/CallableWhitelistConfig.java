@@ -19,7 +19,7 @@ class CallableWhitelistConfig extends ConfigDirectory<String,Set<String>> {
 
     @Override
     protected Set<String> create() {
-        return new HashSet<String>();
+        return new HashSet<>();
     }
 
     @Override

@@ -78,7 +78,7 @@ public class TreeStringBuilder {
          */
         private void makeWritable() {
             if (children == NO_CHILDREN) {
-                children = new HashMap<String, Child>();
+                children = new HashMap<>();
             }
         }
 
@@ -143,7 +143,7 @@ public class TreeStringBuilder {
      * multiple {@link TreeString}s.
      */
     public void dedup() {
-        root.dedup(new HashMap<String, char[]>());
+        root.dedup(new HashMap<>());
     }
 
     /**

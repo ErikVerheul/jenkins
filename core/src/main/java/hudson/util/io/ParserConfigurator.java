@@ -83,7 +83,7 @@ public abstract class ParserConfigurator implements ExtensionPoint, Serializable
 
                     @Override
                     public Collection<ParserConfigurator> call() throws IOException {
-                        return new ArrayList<ParserConfigurator>(all());
+                        return new ArrayList<>(all());
                     }
                 });
         } else

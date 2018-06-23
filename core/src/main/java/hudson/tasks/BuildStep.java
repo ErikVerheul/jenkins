@@ -230,7 +230,7 @@ public interface BuildStep {
      *      {@link Extension} for registration.
      */
     @Deprecated
-    List<Descriptor<Builder>> BUILDERS = new DescriptorList<Builder>(Builder.class);
+    List<Descriptor<Builder>> BUILDERS = new DescriptorList<>(Builder.class);
 
     /**
      * List of all installed publishers.
@@ -257,7 +257,7 @@ public interface BuildStep {
          * {@link Descriptor}s are actually stored in here.
          * Since {@link PublisherList} lives longer than {@link jenkins.model.Jenkins} we cannot directly use {@link ExtensionList}.
          */
-        private final DescriptorList<Publisher> core = new DescriptorList<Publisher>(Publisher.class);
+        private final DescriptorList<Publisher> core = new DescriptorList<>(Publisher.class);
 
         /**
          * For descriptors that are manually registered, remember what kind it was since

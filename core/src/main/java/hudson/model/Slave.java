@@ -568,7 +568,7 @@ public abstract class Slave extends Node implements Serializable {
      */
     protected Object readResolve() {
         if(nodeProperties==null)
-            nodeProperties = new DescribableList<NodeProperty<?>,NodePropertyDescriptor>(Jenkins.get().getNodesObject());
+            nodeProperties = new DescribableList<>(Jenkins.get().getNodesObject());
         return this;
     }
 
@@ -645,7 +645,7 @@ public abstract class Slave extends Node implements Serializable {
         @SuppressWarnings("unchecked") // used by Jelly EL only
         @Restricted(NoExternalUse.class) // used by Jelly EL only
         public final List<NodePropertyDescriptor> nodePropertyDescriptors(@CheckForNull Slave it) {
-            List<NodePropertyDescriptor> result = new ArrayList<NodePropertyDescriptor>();
+            List<NodePropertyDescriptor> result = new ArrayList<>();
             Collection<NodePropertyDescriptor> list =
                     (Collection) Jenkins.get().getDescriptorList(NodeProperty.class);
             for (NodePropertyDescriptor npd : it == null

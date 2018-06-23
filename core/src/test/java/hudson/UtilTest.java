@@ -68,7 +68,7 @@ public class UtilTest {
 
     @Test
     public void testReplaceMacro() {
-        Map<String,String> m = new HashMap<String,String>();
+        Map<String,String> m = new HashMap<>();
         m.put("A","a");
         m.put("A.B","a-b");
         m.put("AA","aa");
@@ -469,7 +469,7 @@ public class UtilTest {
             Util.DELETION_MAX=10;
             Util.WAIT_BETWEEN_DELETION_RETRIES = -1000;
             Util.GC_AFTER_FAILED_DELETE = true;
-            final AtomicReference<Throwable> thrown = new AtomicReference<Throwable>();
+            final AtomicReference<Throwable> thrown = new AtomicReference<>();
             Thread deleteToBeInterrupted = new Thread("deleteToBeInterrupted") {
                 @Override
                 public void run() {
@@ -509,7 +509,7 @@ public class UtilTest {
     }
 
     /** Means of unlocking all the files we have locked, indexed by {@link File}. */
-    private final Map<File, Callable<Void>> unlockFileCallables = new HashMap<File, Callable<Void>>();
+    private final Map<File, Callable<Void>> unlockFileCallables = new HashMap<>();
 
     /** Prevents a file from being deleted, so we can stress the deletion code's retries. */
     private void lockFileForDeletion(File f) throws IOException, InterruptedException {

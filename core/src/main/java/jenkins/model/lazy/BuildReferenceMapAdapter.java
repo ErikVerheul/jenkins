@@ -57,17 +57,17 @@ class BuildReferenceMapAdapter<R> implements SortedMap<Integer,R> {
 
     @Override
     public SortedMap<Integer, R> subMap(Integer fromKey, Integer toKey) {
-        return new BuildReferenceMapAdapter<R>(loader,core.subMap(fromKey, toKey));
+        return new BuildReferenceMapAdapter<>(loader,core.subMap(fromKey, toKey));
     }
 
     @Override
     public SortedMap<Integer, R> headMap(Integer toKey) {
-        return new BuildReferenceMapAdapter<R>(loader,core.headMap(toKey));
+        return new BuildReferenceMapAdapter<>(loader,core.headMap(toKey));
     }
 
     @Override
     public SortedMap<Integer, R> tailMap(Integer fromKey) {
-        return new BuildReferenceMapAdapter<R>(loader,core.tailMap(fromKey));
+        return new BuildReferenceMapAdapter<>(loader,core.tailMap(fromKey));
     }
 
     @Override
@@ -152,7 +152,7 @@ class BuildReferenceMapAdapter<R> implements SortedMap<Integer,R> {
     }
 
     @Override public String toString() {
-        return new LinkedHashMap<Integer,R>(this).toString();
+        return new LinkedHashMap<>(this).toString();
     }
 
     private class CollectionAdapter implements Collection<R> {
@@ -192,7 +192,7 @@ class BuildReferenceMapAdapter<R> implements SortedMap<Integer,R> {
 
         @Override
         public Object[] toArray() {
-            List<Object> list = new ArrayList<Object>();
+            List<Object> list = new ArrayList<>();
             for (R r : this)
                 list.add(r);
             return list.toArray();
@@ -311,7 +311,7 @@ class BuildReferenceMapAdapter<R> implements SortedMap<Integer,R> {
 
         @Override
         public Object[] toArray() {
-            List<Object> list = new ArrayList<Object>();
+            List<Object> list = new ArrayList<>();
             for (Entry<Integer, R> r : this)
                 list.add(r);
             return list.toArray();

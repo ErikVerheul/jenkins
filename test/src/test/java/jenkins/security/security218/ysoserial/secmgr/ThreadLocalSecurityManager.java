@@ -29,7 +29,7 @@ import java.util.concurrent.Callable;
 public class ThreadLocalSecurityManager extends DelegateSecurityManager {
 
 	private final ThreadLocal<SecurityManager> threadDelegates
-		= new ThreadLocal<SecurityManager>();
+		= new ThreadLocal<>();
 
 	public void install() {
 		System.setSecurityManager(this);

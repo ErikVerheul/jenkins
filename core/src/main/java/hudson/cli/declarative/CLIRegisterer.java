@@ -99,7 +99,7 @@ public class CLIRegisterer extends ExtensionFinder {
 
     private List<ExtensionComponent<CLICommand>> discover(final Jenkins hudson) {
         LOGGER.fine("Listing up @CLIMethod");
-        List<ExtensionComponent<CLICommand>> r = new ArrayList<ExtensionComponent<CLICommand>>();
+        List<ExtensionComponent<CLICommand>> r = new ArrayList<>();
 
         try {
             for ( final Method m : Util.filter(Index.list(CLIMethod.class, hudson.getPluginManager().uberClassLoader),Method.class)) {
@@ -124,7 +124,7 @@ public class CLIRegisterer extends ExtensionFinder {
 
                         @Override
                         protected CmdLineParser getCmdLineParser() {
-                            return bindMethod(new ArrayList<MethodBinder>());
+                            return bindMethod(new ArrayList<>());
                         }
 
                         private CmdLineParser bindMethod(List<MethodBinder> binders) {
@@ -133,7 +133,7 @@ public class CLIRegisterer extends ExtensionFinder {
                             CmdLineParser parser = new CmdLineParser(null);
 
                             //  build up the call sequence
-                            Stack<Method> chains = new Stack<Method>();
+                            Stack<Method> chains = new Stack<>();
                             Method method = m;
                             while (true) {
                                 chains.push(method);
@@ -198,7 +198,7 @@ public class CLIRegisterer extends ExtensionFinder {
                             this.stderr = stderr;
                             this.locale = locale;
 
-                            List<MethodBinder> binders = new ArrayList<MethodBinder>();
+                            List<MethodBinder> binders = new ArrayList<>();
 
                             CmdLineParser parser = bindMethod(binders);
                             try {

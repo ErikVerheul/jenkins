@@ -121,7 +121,7 @@ public abstract class NodeDescriptor extends Descriptor<Node> {
     public static final DescriptorList<Node> ALL = new DescriptorList<Node>(Node.class);
 
     public static List<NodeDescriptor> allInstantiable() {
-        List<NodeDescriptor> r = new ArrayList<NodeDescriptor>();
+        List<NodeDescriptor> r = new ArrayList<>();
         for (NodeDescriptor d : all())
             if(d.isInstantiable())
                 r.add(d);

@@ -174,8 +174,8 @@ public abstract class Cause {
             upstreamBuild = up.getNumber();
             upstreamProject = up.getParent().getFullName();
             upstreamUrl = up.getParent().getUrl();
-            upstreamCauses = new ArrayList<Cause>();
-            Set<String> traversed = new HashSet<String>();
+            upstreamCauses = new ArrayList<>();
+            Set<String> traversed = new HashSet<>();
             for (Cause c : up.getCauses()) {
                 upstreamCauses.add(trim(c, MAX_DEPTH, traversed));
             }
@@ -233,7 +233,7 @@ public abstract class Cause {
                 return c;
             }
             UpstreamCause uc = (UpstreamCause) c;
-            List<Cause> cs = new ArrayList<Cause>();
+            List<Cause> cs = new ArrayList<>();
             if (depth > 0) {
                 if (traversed.add(uc.upstreamUrl + uc.upstreamBuild)) {
                     for (Cause c2 : uc.upstreamCauses) {

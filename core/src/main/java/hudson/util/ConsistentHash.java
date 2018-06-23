@@ -61,7 +61,7 @@ public class ConsistentHash<T> {
     /**
      * All the items in the hash, to their replication factors.
      */
-    private final Map<T,Point[]> items = new HashMap<T,Point[]>();
+    private final Map<T,Point[]> items = new HashMap<>();
     private int numPoints;
 
     private final int defaultReplication;

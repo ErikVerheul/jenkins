@@ -53,8 +53,8 @@ import org.xml.sax.helpers.XMLFilterImpl;
  */
 public class TableNestChecker extends XMLFilterImpl {
 
-    private final Stack<Checker> elements = new Stack<Checker>();
-    private final Stack<String> tagNames = new Stack<String>();
+    private final Stack<Checker> elements = new Stack<>();
+    private final Stack<String> tagNames = new Stack<>();
 
     public static void applyTo(XMLOutput xo) {
         xo.setContentHandler(new TableNestChecker(xo.getContentHandler()));
@@ -108,7 +108,7 @@ public class TableNestChecker extends XMLFilterImpl {
         private final Set<String> tags;
 
         private InList(String... tags) {
-            this.tags = new HashSet<String>(Arrays.asList(tags));
+            this.tags = new HashSet<>(Arrays.asList(tags));
         }
 
         @Override

@@ -525,7 +525,7 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
     /**
      * {@link View}s.
      */
-    private final CopyOnWriteArrayList<View> views = new CopyOnWriteArrayList<View>();
+    private final CopyOnWriteArrayList<View> views = new CopyOnWriteArrayList<>();
 
     /**
      * Name of the primary view.
@@ -681,12 +681,12 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
     /**
      * List of master node properties
      */
-    private DescribableList<NodeProperty<?>,NodePropertyDescriptor> nodeProperties = new DescribableList<NodeProperty<?>,NodePropertyDescriptor>(this);
+    private DescribableList<NodeProperty<?>,NodePropertyDescriptor> nodeProperties = new DescribableList<>(this);
 
     /**
      * List of global properties
      */
-    private DescribableList<NodeProperty<?>,NodePropertyDescriptor> globalNodeProperties = new DescribableList<NodeProperty<?>,NodePropertyDescriptor>(this);
+    private DescribableList<NodeProperty<?>,NodePropertyDescriptor> globalNodeProperties = new DescribableList<>(this);
 
     /**
      * {@link AdministrativeMonitor}s installed on this system.
@@ -1602,7 +1602,7 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
      * @return The plugin instances.
      */
     public <P extends Plugin> List<P> getPlugins(Class<P> clazz) {
-        List<P> result = new ArrayList<P>();
+        List<P> result = new ArrayList<>();
         for (PluginWrapper w: pluginManager.getPlugins(clazz)) {
             result.add((P)w.getPlugin());
         }
@@ -1701,7 +1701,7 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
     @Exported(name="jobs")
     @Override
     public List<TopLevelItem> getItems() {
-        List<TopLevelItem> viewableItems = new ArrayList<TopLevelItem>();
+        List<TopLevelItem> viewableItems = new ArrayList<>();
         for (TopLevelItem item : items.values()) {
             if (item.hasPermission(Item.READ))
                 viewableItems.add(item);
@@ -1725,7 +1725,7 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
      * Gets just the immediate children of {@link Jenkins} but of the given type.
      */
     public <T> List<T> getItems(Class<T> type) {
-        List<T> r = new ArrayList<T>();
+        List<T> r = new ArrayList<>();
         for (TopLevelItem i : getItems())
             if (type.isInstance(i))
                  r.add(type.cast(i));
@@ -1750,7 +1750,7 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
      * Gets the names of all the {@link Job}s.
      */
     public Collection<String> getJobNames() {
-        List<String> names = new ArrayList<String>();
+        List<String> names = new ArrayList<>();
         for (Job j : allItems(Job.class))
             names.add(j.getFullName());
         Collections.sort(names, String.CASE_INSENSITIVE_ORDER);
@@ -1766,7 +1766,7 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
      * Gets the names of all the {@link TopLevelItem}s.
      */
     public Collection<String> getTopLevelItemNames() {
-        List<String> names = new ArrayList<String>();
+        List<String> names = new ArrayList<>();
         for (TopLevelItem j : items.values())
             names.add(j.getName());
         return names;
@@ -1968,7 +1968,7 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
      * Gets all the active labels in the current system.
      */
     public Set<Label> getLabels() {
-        Set<Label> r = new TreeSet<Label>();
+        Set<Label> r = new TreeSet<>();
         for (Label l : labels.values()) {
             if(!l.isEmpty())
                 r.add(l);
@@ -1977,7 +1977,7 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
     }
 
     public Set<LabelAtom> getLabelAtoms() {
-        Set<LabelAtom> r = new TreeSet<LabelAtom>();
+        Set<LabelAtom> r = new TreeSet<>();
         for (Label l : labels.values()) {
             if(!l.isEmpty() && l instanceof LabelAtom)
                 r.add((LabelAtom)l);
@@ -2007,7 +2007,7 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
      */
     @Restricted(NoExternalUse.class)
     public void setJDKs(Collection<? extends JDK> jdks) {
-        this.jdks = new ArrayList<JDK>(jdks);
+        this.jdks = new ArrayList<>(jdks);
     }
 
     /**
@@ -3087,7 +3087,7 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
         }
         File[] subdirs = projectsDir.listFiles();
 
-        final Set<String> loadedNames = Collections.synchronizedSet(new HashSet<String>());
+        final Set<String> loadedNames = Collections.synchronizedSet(new HashSet<>());
 
         TaskGraphBuilder g = new TaskGraphBuilder();
         Handle loadJenkins = g.requires(EXTENSIONS_AUGMENTED).attains(JOB_LOADED).add("Loading global config", new Executable() {
@@ -3380,7 +3380,7 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
 
     private Set<Future<?>> _cleanUpDisconnectComputers(final List<Throwable> errors) {
         LOGGER.log(Main.isUnitTest ? Level.FINE : Level.INFO, "Starting node disconnection");
-        final Set<Future<?>> pending = new HashSet<Future<?>>();
+        final Set<Future<?>> pending = new HashSet<>();
         // JENKINS-28840 we know we will be interrupting all the Computers so get the Queue lock once for all
         Queue.withLock(new Runnable() {
             @Override
@@ -3839,7 +3839,7 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
         checkPermission(ADMINISTER);
 
         // issue the requests all at once
-        Map<String,Future<Map<String,String>>> future = new HashMap<String, Future<Map<String, String>>>();
+        Map<String,Future<Map<String,String>>> future = new HashMap<>();
 
         for (Computer c : getComputers()) {
             try {
@@ -3856,7 +3856,7 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
         // this is a precaution against hang nodes
         long endTime = System.currentTimeMillis() + 5000;
 
-        Map<String,Map<String,String>> r = new HashMap<String, Map<String, String>>();
+        Map<String,Map<String,String>> r = new HashMap<>();
         for (Entry<String, Future<Map<String, String>>> e : future.entrySet()) {
             try {
                 r.put(e.getKey(), e.getValue().get(endTime-System.currentTimeMillis(), TimeUnit.MILLISECONDS));
@@ -3864,7 +3864,7 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
                 r.put(e.getKey(), Collections.singletonMap("Failed to retrieve thread dump", Functions.printThrowable(x)));
             }
         }
-        return Collections.unmodifiableSortedMap(new TreeMap<String, Map<String, String>>(r));
+        return Collections.unmodifiableSortedMap(new TreeMap<>(r));
     }
 
     @RequirePOST
@@ -4136,7 +4136,7 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
         checkPermission(ADMINISTER);
 
         System.out.println("Creating artificial OutOfMemoryError situation");
-        List<Object> args = new ArrayList<Object>();
+        List<Object> args = new ArrayList<>();
         //[Erik] Creating OutOfMemoryError situation on purpose
         while (true) //NOSONAR
             args.add(new byte[1024*1024]);
@@ -4700,7 +4700,7 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
      * @since 1.495
      */
     public Collection<String> getUnprotectedRootActions() {
-        Set<String> names = new TreeSet<String>();
+        Set<String> names = new TreeSet<>();
         names.add("jnlpJars"); // TODO cleaner to refactor doJnlpJars into a URA
         // TODO consider caching (expiring cache when actions changes)
         for (Action a : getActions()) {

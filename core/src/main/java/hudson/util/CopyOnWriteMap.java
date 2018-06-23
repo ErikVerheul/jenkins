@@ -185,7 +185,7 @@ public abstract class CopyOnWriteMap<K,V> implements Map<K,V> {
 
         @Override
         protected Map<K,V> copy() {
-            return new LinkedHashMap<K,V>(core);
+            return new LinkedHashMap<>(core);
         }
 
         public static class ConverterImpl extends MapConverter {
@@ -232,14 +232,14 @@ public abstract class CopyOnWriteMap<K,V> implements Map<K,V> {
 
         @Override
         protected Map<K,V> copy() {
-            TreeMap<K,V> m = new TreeMap<K,V>(comparator);
+            TreeMap<K,V> m = new TreeMap<>(comparator);
             m.putAll(core);
             return m;
         }
 
         @Override
         public synchronized void clear() {
-            update(new TreeMap<K,V>(comparator));
+            update(new TreeMap<>(comparator));
         }
 
         public static class ConverterImpl extends TreeMapConverter {

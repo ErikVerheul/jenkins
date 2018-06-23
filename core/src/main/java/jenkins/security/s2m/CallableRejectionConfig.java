@@ -26,7 +26,7 @@ public class CallableRejectionConfig extends ConfigFile<Class,Set<Class>> {
 
     @Override
     protected Set<Class> create() {
-        return new HashSet<Class>();
+        return new HashSet<>();
     }
 
     @Override
@@ -65,7 +65,7 @@ public class CallableRejectionConfig extends ConfigFile<Class,Set<Class>> {
      * Return the object that helps the UI rendering by providing the details.
      */
     public List<RejectedCallable> describe() {
-        List<RejectedCallable> l = new ArrayList<RejectedCallable>();
+        List<RejectedCallable> l = new ArrayList<>();
         for (Class c : get()) {
             if (!whitelist.contains(c.getName()))
                 l.add(new RejectedCallable(c));

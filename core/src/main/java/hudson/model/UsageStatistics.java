@@ -128,7 +128,7 @@ public class UsageStatistics extends PageDecorator {
         o.put("servletContainer", j.servletContext.getServerInfo());
         o.put("version", Jenkins.VERSION);
 
-        List<JSONObject> nodes = new ArrayList<JSONObject>();
+        List<JSONObject> nodes = new ArrayList<>();
         for( Computer c : j.getComputers() ) {
             JSONObject  n = new JSONObject();
             if(c.getNode()==j) {
@@ -144,7 +144,7 @@ public class UsageStatistics extends PageDecorator {
         }
         o.put("nodes",nodes);
 
-        List<JSONObject> plugins = new ArrayList<JSONObject>();
+        List<JSONObject> plugins = new ArrayList<>();
         for( PluginWrapper pw : j.getPluginManager().getPlugins() ) {
             if(!pw.isActive())  continue;   // treat disabled plugins as if they are uninstalled
             JSONObject p = new JSONObject();

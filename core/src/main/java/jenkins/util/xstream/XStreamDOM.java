@@ -186,7 +186,7 @@ public class XStreamDOM {
 
         List<XStreamDOM> newChildren = null;
         if (children!=null) {
-            newChildren = new ArrayList<XStreamDOM>(children.size());
+            newChildren = new ArrayList<>(children.size());
             for (XStreamDOM d : children)
                 newChildren.add(d.expandMacro(vars));
         }
@@ -273,7 +273,7 @@ public class XStreamDOM {
     }
 
     public Map<String, String> getAttributeMap() {
-        Map<String,String> r = new HashMap<String, String>();
+        Map<String,String> r = new HashMap<>();
         for (int i=0; i<attributes.length; i+=2)
             r.put(attributes[i],attributes[i+1]);
         return r;
@@ -314,7 +314,7 @@ public class XStreamDOM {
             }
         }
 
-        private final Stack<Pointer> pointers = new Stack<Pointer>();
+        private final Stack<Pointer> pointers = new Stack<>();
 
 
         public ReaderImpl(XStreamDOM current) {
@@ -416,7 +416,7 @@ public class XStreamDOM {
         private static class Pending {
             final String tagName;
             List<XStreamDOM> children;
-            List<String> attributes = new ArrayList<String>();
+            List<String> attributes = new ArrayList<>();
             String value;
 
             private Pending(String tagName) {
@@ -425,7 +425,7 @@ public class XStreamDOM {
 
             void addChild(XStreamDOM dom) {
                 if (children==null)
-                    children = new ArrayList<XStreamDOM>();
+                    children = new ArrayList<>();
                 children.add(dom);
             }
 
@@ -434,7 +434,7 @@ public class XStreamDOM {
             }
         }
 
-        private final Stack<Pending> pendings = new Stack<Pending>();
+        private final Stack<Pending> pendings = new Stack<>();
 
         public WriterImpl() {
             pendings.push(new Pending(null));   // to get the final result
@@ -545,7 +545,7 @@ public class XStreamDOM {
             List<XStreamDOM> children = null;
             String value = null;
             if (r.hasMoreChildren()) {
-                children = new ArrayList<XStreamDOM>();
+                children = new ArrayList<>();
                 while (r.hasMoreChildren()) {
                     children.add(unmarshal(r, context));
                 }

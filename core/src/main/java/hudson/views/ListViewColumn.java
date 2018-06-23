@@ -152,7 +152,7 @@ public abstract class ListViewColumn implements ExtensionPoint, Describable<List
     private static List<ListViewColumn> createDefaultInitialColumnList(List<Descriptor<ListViewColumn>> descriptors) {
         // OK, set up default list of columns:
         // create all instances
-        ArrayList<ListViewColumn> r = new ArrayList<ListViewColumn>();
+        ArrayList<ListViewColumn> r = new ArrayList<>();
         final JSONObject emptyJSON = new JSONObject();
         for (Descriptor<ListViewColumn> d : descriptors)
             try {

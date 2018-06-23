@@ -411,7 +411,7 @@ public abstract class Descriptor<T extends Describable<T>> implements Saveable, 
             throw new IllegalStateException(String.format("%s doesn't have the %s method for filling a drop-down list", getClass(), methodName));
 
         // build query parameter line by figuring out what should be submitted
-        List<String> depends = buildFillDependencies(method, new ArrayList<String>());
+        List<String> depends = buildFillDependencies(method, new ArrayList<>());
 
         if (!depends.isEmpty())
             attributes.put("fillDependsOn",Util.join(depends," "));
@@ -501,7 +501,7 @@ public abstract class Descriptor<T extends Describable<T>> implements Saveable, 
      * Given the class, list up its {@link PropertyType}s from its public fields/getters.
      */
     private Map<String, PropertyType> buildPropertyTypes(Class<?> clazz) {
-        Map<String, PropertyType> r = new HashMap<String, PropertyType>();
+        Map<String, PropertyType> r = new HashMap<>();
         for (Field f : clazz.getFields())
             r.put(f.getName(),new PropertyType(f));
 
@@ -849,7 +849,7 @@ public abstract class Descriptor<T extends Describable<T>> implements Saveable, 
     }
 
     protected List<String> getPossibleViewNames(String baseName) {
-        List<String> names = new ArrayList<String>();
+        List<String> names = new ArrayList<>();
         for (Facet f : WebApp.get(Jenkins.get().servletContext).facets) {
             if (f instanceof JellyCompatibleFacet) {
                 JellyCompatibleFacet jcf = (JellyCompatibleFacet) f;
@@ -976,12 +976,12 @@ public abstract class Descriptor<T extends Describable<T>> implements Saveable, 
     }
 
     public static <T> List<T> toList( T... values ) {
-        return new ArrayList<T>(Arrays.asList(values));
+        return new ArrayList<>(Arrays.asList(values));
     }
 
     public static <T extends Describable<T>>
     Map<Descriptor<T>,T> toMap(Iterable<T> describables) {
-        Map<Descriptor<T>,T> m = new LinkedHashMap<Descriptor<T>,T>();
+        Map<Descriptor<T>,T> m = new LinkedHashMap<>();
         for (T d : describables) {
             Descriptor<T> descriptor;
             try {
@@ -1020,7 +1020,7 @@ public abstract class Descriptor<T extends Describable<T>> implements Saveable, 
     List<T> newInstancesFromHeteroList(StaplerRequest req, Object formData,
                 Collection<? extends Descriptor<T>> descriptors) throws FormException {
 
-        List<T> items = new ArrayList<T>();
+        List<T> items = new ArrayList<>();
 
         if (formData!=null) {
             for (Object o : JSONArray.fromObject(formData)) {

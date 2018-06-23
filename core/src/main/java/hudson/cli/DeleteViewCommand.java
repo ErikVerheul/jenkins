@@ -54,7 +54,7 @@ public class DeleteViewCommand extends CLICommand {
         boolean errorOccurred = false;
 
         // Remove duplicates
-        final HashSet<String> hs = new HashSet<String>();
+        final HashSet<String> hs = new HashSet<>();
         hs.addAll(views);
 
         ViewOptionHandler voh = new ViewOptionHandler(null, null, null);

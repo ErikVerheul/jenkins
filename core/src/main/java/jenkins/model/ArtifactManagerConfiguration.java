@@ -42,7 +42,7 @@ public class ArtifactManagerConfiguration extends GlobalConfiguration {
         return Jenkins.get().getInjector().getInstance(ArtifactManagerConfiguration.class);
     }
 
-    private final DescribableList<ArtifactManagerFactory,ArtifactManagerFactoryDescriptor> artifactManagerFactories = new DescribableList<ArtifactManagerFactory,ArtifactManagerFactoryDescriptor>(this);
+    private final DescribableList<ArtifactManagerFactory,ArtifactManagerFactoryDescriptor> artifactManagerFactories = new DescribableList<>(this);
 
     public ArtifactManagerConfiguration() {
         load();

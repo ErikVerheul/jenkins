@@ -42,7 +42,7 @@ public class CommonsBeanutils1 implements ObjectPayload<Object> {
 		final BeanComparator comparator = new BeanComparator("lowestSetBit");
 
 		// create queue with numbers and basic comparator
-		final PriorityQueue<Object> queue = new PriorityQueue<Object>(2, comparator);
+		final PriorityQueue<Object> queue = new PriorityQueue<>(2, comparator);
 		// stub data for replacement later
 		queue.add(new BigInteger("1"));
 		queue.add(new BigInteger("1"));

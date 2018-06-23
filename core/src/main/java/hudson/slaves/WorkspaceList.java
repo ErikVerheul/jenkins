@@ -154,7 +154,7 @@ public final class WorkspaceList {
         }
     }
 
-    private final Map<FilePath,Entry> inUse = new HashMap<FilePath,Entry>();
+    private final Map<FilePath,Entry> inUse = new HashMap<>();
 
     public WorkspaceList() {
     }

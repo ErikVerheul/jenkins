@@ -204,7 +204,7 @@ public abstract class Label extends Actionable implements Comparable<Label>, Mod
         Set<Node> nodes = this.nodes;
         if(nodes!=null) return nodes;
 
-        Set<Node> r = new HashSet<Node>();
+        Set<Node> r = new HashSet<>();
         Jenkins h = Jenkins.get();
         if(this.matches(h))
             r.add(h);
@@ -221,7 +221,7 @@ public abstract class Label extends Actionable implements Comparable<Label>, Mod
     @Exported
     public Set<Cloud> getClouds() {
         if(clouds==null) {
-            Set<Cloud> r = new HashSet<Cloud>();
+            Set<Cloud> r = new HashSet<>();
             Jenkins h = Jenkins.get();
             for (Cloud c : h.clouds) {
                 if(c.canProvision(this))
@@ -361,7 +361,7 @@ public abstract class Label extends Actionable implements Comparable<Label>, Mod
      */
     @Exported
     public List<AbstractProject> getTiedJobs() {
-        List<AbstractProject> r = new ArrayList<AbstractProject>();
+        List<AbstractProject> r = new ArrayList<>();
         for (AbstractProject<?,?> p : Jenkins.get().allItems(AbstractProject.class)) {
             if(p instanceof TopLevelItem && this.equals(p.getAssignedLabel()))
                 r.add(p);
@@ -397,7 +397,7 @@ public abstract class Label extends Actionable implements Comparable<Label>, Mod
                     }
                 }
                 if (topLevelItem instanceof ItemGroup) {
-                    Stack<ItemGroup> q = new Stack<ItemGroup>();
+                    Stack<ItemGroup> q = new Stack<>();
                     q.push((ItemGroup) topLevelItem);
 
                     while (!q.isEmpty()) {
@@ -460,7 +460,7 @@ public abstract class Label extends Actionable implements Comparable<Label>, Mod
      * @since 1.420
      */
     public Set<LabelAtom> listAtoms() {
-        Set<LabelAtom> r = new HashSet<LabelAtom>();
+        Set<LabelAtom> r = new HashSet<>();
         accept(ATOM_COLLECTOR,r);
         return r;
     }

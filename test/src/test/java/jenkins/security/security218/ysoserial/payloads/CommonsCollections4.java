@@ -64,7 +64,7 @@ public class CommonsCollections4 implements ObjectPayload<Queue<Object>> {
 		ChainedTransformer chain = new ChainedTransformer(new Transformer[] { constant, instantiate });
 
 		// create queue with numbers
-		PriorityQueue<Object> queue = new PriorityQueue<Object>(2, new TransformingComparator(chain));
+		PriorityQueue<Object> queue = new PriorityQueue<>(2, new TransformingComparator(chain));
 		queue.add(1);
 		queue.add(1);
 

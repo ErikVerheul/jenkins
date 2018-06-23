@@ -172,7 +172,7 @@ public class Items {
      * @since 1.607
      */
     public static List<TopLevelItemDescriptor> all(Authentication a, ItemGroup c) {
-        List<TopLevelItemDescriptor> result = new ArrayList<TopLevelItemDescriptor>();
+        List<TopLevelItemDescriptor> result = new ArrayList<>();
         ACL acl;
         if (c instanceof AccessControlled) {
             acl = ((AccessControlled) c).getACL();
@@ -223,7 +223,7 @@ public class Items {
     public static <T extends Item> List<T> fromNameList(ItemGroup context, @Nonnull String list, @Nonnull Class<T> type) {
         final Jenkins jenkins = Jenkins.get();
         
-        List<T> r = new ArrayList<T>();
+        List<T> r = new ArrayList<>();
         if (jenkins == null) {
             return r;
         }
@@ -249,7 +249,7 @@ public class Items {
         String[] c = context.getFullName().split("/");
         String[] p = path.split("/");
 
-        Stack<String> name = new Stack<String>();
+        Stack<String> name = new Stack<>();
         for (int i=0; i<c.length;i++) {
             if (i==0 && c[i].equals("")) continue;
             name.push(c[i]);
@@ -293,7 +293,7 @@ public class Items {
     public static String computeRelativeNamesAfterRenaming(String oldFullName, String newFullName, String relativeNames, ItemGroup context) {
 
         StringTokenizer tokens = new StringTokenizer(relativeNames,",");
-        List<String> newValue = new ArrayList<String>();
+        List<String> newValue = new ArrayList<>();
         while(tokens.hasMoreTokens()) {
             String relativeName = tokens.nextToken().trim();
             String canonicalName = getCanonicalName(context, relativeName);
@@ -399,12 +399,12 @@ public class Items {
      * @since 1.512
      */
     public static <T extends Item> List<T> getAllItems(final ItemGroup root, Class<T> type) {
-        List<T> r = new ArrayList<T>();
+        List<T> r = new ArrayList<>();
         getAllItems(root, type, r);
         return r;
     }
     private static <T extends Item> void getAllItems(final ItemGroup root, Class<T> type, List<T> r) {
-        List<Item> items = new ArrayList<Item>(root.getItems());
+        List<Item> items = new ArrayList<>(root.getItems());
         // because we add items depth first, we can use the quicker BY_NAME comparison
         Collections.sort(items, BY_NAME);
         for (Item i : items) {

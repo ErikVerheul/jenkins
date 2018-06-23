@@ -148,7 +148,7 @@ public abstract class ParameterizedJobMixIn<JobT extends Job<JobT, RunT> & Param
         if (!asJob().isBuildable())
             return null;
 
-        List<Action> queueActions = new ArrayList<Action>(actions);
+        List<Action> queueActions = new ArrayList<>(actions);
         if (isParameterized() && Util.filter(queueActions, ParametersAction.class).isEmpty()) {
             queueActions.add(new ParametersAction(getDefaultParametersValues()));
         }
@@ -157,7 +157,7 @@ public abstract class ParameterizedJobMixIn<JobT extends Job<JobT, RunT> & Param
 
     private List<ParameterValue> getDefaultParametersValues() {
         ParametersDefinitionProperty paramDefProp = asJob().getProperty(ParametersDefinitionProperty.class);
-        ArrayList<ParameterValue> defValues = new ArrayList<ParameterValue>();
+        ArrayList<ParameterValue> defValues = new ArrayList<>();
 
         /*
          * This check is made ONLY if someone will call this method even if isParametrized() is false.

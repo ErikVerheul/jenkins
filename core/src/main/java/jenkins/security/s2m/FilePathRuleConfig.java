@@ -24,7 +24,7 @@ class FilePathRuleConfig extends ConfigDirectory<FilePathRule,List<FilePathRule>
 
     @Override
     protected List<FilePathRule> create() {
-        return new ArrayList<FilePathRule>();
+        return new ArrayList<>();
     }
 
     @Override

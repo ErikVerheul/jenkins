@@ -50,7 +50,7 @@ import java.util.logging.Logger;
  */
 public class PrivateKeyProvider {
 
-    private List<KeyPair> privateKeys = new ArrayList<KeyPair>();
+    private List<KeyPair> privateKeys = new ArrayList<>();
 
     /**
      * Get keys read so far.

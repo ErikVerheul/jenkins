@@ -162,9 +162,9 @@ public class HistoryWidget<O extends ModelObject,T> extends Widget {
             return Collections.emptyList();
         }
 
-        List<HistoryPageEntry<T>> pageEntries = new ArrayList<HistoryPageEntry<T>>();
+        List<HistoryPageEntry<T>> pageEntries = new ArrayList<>();
         while (iterator.hasNext()) {
-            pageEntries.add(new HistoryPageEntry<T>(iterator.next()));
+            pageEntries.add(new HistoryPageEntry<>(iterator.next()));
         }
 
         return pageEntries;
@@ -182,7 +182,7 @@ public class HistoryWidget<O extends ModelObject,T> extends Widget {
     }
 
     protected HistoryPageFilter<T> newPageFilter() {
-        HistoryPageFilter<T> historyPageFilter = new HistoryPageFilter<T>(THRESHOLD);
+        HistoryPageFilter<T> historyPageFilter = new HistoryPageFilter<>(THRESHOLD);
 
         if (newerThan != null) {
             historyPageFilter.setNewerThan(newerThan);
@@ -218,7 +218,7 @@ public class HistoryWidget<O extends ModelObject,T> extends Widget {
         rsp.setContentType("text/html;charset=UTF-8");
 
         // pick up builds to send back
-        List<T> items = new ArrayList<T>();
+        List<T> items = new ArrayList<>();
 
         if (n != null) {
             String nn=null; // we'll compute next n here

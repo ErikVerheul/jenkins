@@ -22,7 +22,7 @@ import org.kohsuke.stapler.StaplerRequest;
 @Extension @Symbol("queueItemAuthenticator")
 public class QueueItemAuthenticatorConfiguration extends GlobalConfiguration {
     private final DescribableList<QueueItemAuthenticator,QueueItemAuthenticatorDescriptor> authenticators
-        = new DescribableList<QueueItemAuthenticator, QueueItemAuthenticatorDescriptor>(this);
+        = new DescribableList<>(this);
 
     public QueueItemAuthenticatorConfiguration() {
         load();

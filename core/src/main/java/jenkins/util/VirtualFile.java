@@ -424,7 +424,7 @@ public abstract class VirtualFile implements Comparable<VirtualFile>, Serializab
             this.glob = glob;
         }
         @Override public String[] invoke(File f, VirtualChannel channel) throws IOException {
-            final List<String> paths = new ArrayList<String>();
+            final List<String> paths = new ArrayList<>();
             new DirScanner.Glob(glob, null).scan(f, new FileVisitor() {
                 @Override
                 public void visit(File f, String relativePath) throws IOException {

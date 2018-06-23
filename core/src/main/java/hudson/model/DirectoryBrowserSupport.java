@@ -333,7 +333,7 @@ public final class DirectoryBrowserSupport implements HttpResponse {
      * from a string like "/foo/bar/zot".
      */
     private List<Path> buildParentPath(String pathList, int restSize) {
-        List<Path> r = new ArrayList<Path>();
+        List<Path> r = new ArrayList<>();
         StringTokenizer tokens = new StringTokenizer(pathList, "/");
         int total = tokens.countTokens();
         int current=1;
@@ -495,7 +495,7 @@ public final class DirectoryBrowserSupport implements HttpResponse {
      * (this mechanism is used to skip empty intermediate directory.)
      */
     private static List<List<Path>> buildChildPaths(VirtualFile cur, Locale locale) throws IOException {
-            List<List<Path>> r = new ArrayList<List<Path>>();
+            List<List<Path>> r = new ArrayList<>();
 
             VirtualFile[] files = cur.list();
                 Arrays.sort(files,new FileComparator(locale));
@@ -506,12 +506,12 @@ public final class DirectoryBrowserSupport implements HttpResponse {
                         r.add(Collections.singletonList(p));
                     } else {
                         // find all empty intermediate directory
-                        List<Path> l = new ArrayList<Path>();
+                        List<Path> l = new ArrayList<>();
                         l.add(p);
                         String relPath = Util.rawEncode(f.getName());
                         while(true) {
                             // files that don't start with '.' qualify for 'meaningful files', nor SCM related files
-                            List<VirtualFile> sub = new ArrayList<VirtualFile>();
+                            List<VirtualFile> sub = new ArrayList<>();
                             for (VirtualFile vf : f.list()) {
                                 String name = vf.getName();
                                 if (!name.startsWith(".") && !name.equals("CVS") && !name.equals(".svn")) {
@@ -540,7 +540,7 @@ public final class DirectoryBrowserSupport implements HttpResponse {
             String[] files = baseDir.list(pattern);
 
             if (files.length > 0) {
-                List<List<Path>> r = new ArrayList<List<Path>>(files.length);
+                List<List<Path>> r = new ArrayList<>(files.length);
                 for (String match : files) {
                     List<Path> file = buildPathList(baseDir, baseDir.child(match), baseRef);
                     r.add(file);
@@ -555,7 +555,7 @@ public final class DirectoryBrowserSupport implements HttpResponse {
          * Builds a path list from the current workspace directory down to the specified file path.
          */
         private static List<Path> buildPathList(VirtualFile baseDir, VirtualFile filePath, String baseRef) throws IOException {
-            List<Path> pathList = new ArrayList<Path>();
+            List<Path> pathList = new ArrayList<>();
             StringBuilder href = new StringBuilder(baseRef);
 
             buildPathList(baseDir, filePath, pathList, href);

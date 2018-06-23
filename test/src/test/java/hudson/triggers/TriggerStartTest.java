@@ -116,7 +116,7 @@ public class TriggerStartTest {
         }
 
         @Override protected Object readResolve() throws ObjectStreamException {
-            calls = new ArrayList<Boolean>();
+            calls = new ArrayList<>();
             return super.readResolve();
         }
 

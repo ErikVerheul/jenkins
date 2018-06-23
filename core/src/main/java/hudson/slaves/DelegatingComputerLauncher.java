@@ -81,7 +81,7 @@ public abstract class DelegatingComputerLauncher extends ComputerLauncher {
          */
         public List<Descriptor<ComputerLauncher>> applicableDescriptors(@CheckForNull Slave it,
                                                                         @Nonnull Slave.SlaveDescriptor itDescriptor) {
-            List<Descriptor<ComputerLauncher>> r = new ArrayList<Descriptor<ComputerLauncher>>();
+            List<Descriptor<ComputerLauncher>> r = new ArrayList<>();
             for (Descriptor<ComputerLauncher> d : itDescriptor.computerLauncherDescriptors(it)) {
                 if (DelegatingComputerLauncher.class.isAssignableFrom(d.getKlass().toJavaClass()))  continue;
                 r.add(d);
@@ -97,7 +97,7 @@ public abstract class DelegatingComputerLauncher extends ComputerLauncher {
         @Restricted(DoNotUse.class)
         @RestrictedSince("2.12")
         public List<Descriptor<ComputerLauncher>> getApplicableDescriptors() {
-            List<Descriptor<ComputerLauncher>> r = new ArrayList<Descriptor<ComputerLauncher>>();
+            List<Descriptor<ComputerLauncher>> r = new ArrayList<>();
             for (Descriptor<ComputerLauncher> d :
                     Jenkins.get().<ComputerLauncher, Descriptor<ComputerLauncher>>getDescriptorList(ComputerLauncher.class)) {
                 if (DelegatingComputerLauncher.class.isAssignableFrom(d.getKlass().toJavaClass()))  continue;

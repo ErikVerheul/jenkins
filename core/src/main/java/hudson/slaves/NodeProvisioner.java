@@ -125,7 +125,7 @@ public class NodeProvisioner {
     private final Label label;
 
     private final AtomicReference<List<PlannedNode>> pendingLaunches
-            = new AtomicReference<List<PlannedNode>>(new ArrayList<PlannedNode>());
+            = new AtomicReference<>(new ArrayList<>());
 
     private final Lock provisioningLock = new ReentrantLock();
 
@@ -157,7 +157,7 @@ public class NodeProvisioner {
      * @since 1.401
      */
     public List<PlannedNode> getPendingLaunches() {
-        return new ArrayList<PlannedNode>(pendingLaunches.get());
+        return new ArrayList<>(pendingLaunches.get());
     }
 
     /**
@@ -212,7 +212,7 @@ public class NodeProvisioner {
 
                     int plannedCapacitySnapshot = 0;
 
-                    List<PlannedNode> snapPendingLaunches = new ArrayList<PlannedNode>(pendingLaunches.get());
+                    List<PlannedNode> snapPendingLaunches = new ArrayList<>(pendingLaunches.get());
                     for (Iterator<PlannedNode> itr = snapPendingLaunches.iterator(); itr.hasNext(); ) {
                         PlannedNode f = itr.next();
                         if (f.future.isDone()) {
@@ -262,7 +262,7 @@ public class NodeProvisioner {
                             } finally {
                                 while (true) {
                                     List<PlannedNode> orig = pendingLaunches.get();
-                                    List<PlannedNode> repl = new ArrayList<PlannedNode>(orig);
+                                    List<PlannedNode> repl = new ArrayList<>(orig);
                                     // the contract for List.remove(o) is that the first element i where
                                     // (o==null ? get(i)==null : o.equals(get(i)))
                                     // is true will be removed from the list
@@ -579,7 +579,7 @@ public class NodeProvisioner {
             }
             while (!plannedNodes.isEmpty()) {
                 List<PlannedNode> orig = pendingLaunches.get();
-                List<PlannedNode> repl = new ArrayList<PlannedNode>(orig);
+                List<PlannedNode> repl = new ArrayList<>(orig);
                 repl.addAll(plannedNodes);
                 if (pendingLaunches.compareAndSet(orig, repl)) {
                     if (additionalPlannedCapacity > 0) {

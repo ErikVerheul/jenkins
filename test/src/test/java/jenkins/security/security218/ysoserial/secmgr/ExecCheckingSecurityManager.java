@@ -41,7 +41,7 @@ public class ExecCheckingSecurityManager extends SecurityManager {
 
 	private final boolean throwException;
 
-	private final List<String> cmds = new LinkedList<String>();
+	private final List<String> cmds = new LinkedList<>();
 
 	public List<String> getCmds() {
 		return Collections.unmodifiableList(cmds);

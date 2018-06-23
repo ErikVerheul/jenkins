@@ -179,18 +179,18 @@ public class UpdateCenter extends AbstractModelObject implements Saveable, OnMas
     /**
      * List of created {@link UpdateCenterJob}s. Access needs to be synchronized.
      */
-    private final Vector<UpdateCenterJob> jobs = new Vector<UpdateCenterJob>();
+    private final Vector<UpdateCenterJob> jobs = new Vector<>();
 
     /**
      * {@link UpdateSite}s from which we've already installed a plugin at least once.
      * This is used to skip network tests.
      */
-    private final Set<UpdateSite> sourcesUsed = new HashSet<UpdateSite>();
+    private final Set<UpdateSite> sourcesUsed = new HashSet<>();
 
     /**
      * List of {@link UpdateSite}s to be used.
      */
-    private final PersistedList<UpdateSite> sites = new PersistedList<UpdateSite>(this);
+    private final PersistedList<UpdateSite> sites = new PersistedList<>(this);
 
     /**
      * Update center configuration data
@@ -316,7 +316,7 @@ public class UpdateCenter extends AbstractModelObject implements Saveable, OnMas
     @Exported
     public List<UpdateCenterJob> getJobs() {
         synchronized (jobs) {
-            return new ArrayList<UpdateCenterJob>(jobs);
+            return new ArrayList<>(jobs);
         }
     }
 
@@ -886,7 +886,7 @@ public class UpdateCenter extends AbstractModelObject implements Saveable, OnMas
 
     @Exported
     public List<Plugin> getAvailables() {
-        Map<String,Plugin> pluginMap = new LinkedHashMap<String, Plugin>();
+        Map<String,Plugin> pluginMap = new LinkedHashMap<>();
         for (UpdateSite site : sites) {
             for (Plugin plugin: site.getAvailables()) {
                 final Plugin existing = pluginMap.get(plugin.name);
@@ -903,7 +903,7 @@ public class UpdateCenter extends AbstractModelObject implements Saveable, OnMas
             }
         }
 
-        return new ArrayList<Plugin>(pluginMap.values());
+        return new ArrayList<>(pluginMap.values());
     }
 
     /**
@@ -911,7 +911,7 @@ public class UpdateCenter extends AbstractModelObject implements Saveable, OnMas
      * A plugin with multiple categories will appear multiple times in the list.
      */
     public PluginEntry[] getCategorizedAvailables() {
-        TreeSet<PluginEntry> entries = new TreeSet<PluginEntry>();
+        TreeSet<PluginEntry> entries = new TreeSet<>();
         for (Plugin p : getAvailables()) {
             if (p.categories==null || p.categories.length==0)
                 entries.add(new PluginEntry(p, getCategoryDisplayName(null)));
@@ -934,7 +934,7 @@ public class UpdateCenter extends AbstractModelObject implements Saveable, OnMas
     }
 
     public List<Plugin> getUpdates() {
-        Map<String,Plugin> pluginMap = new LinkedHashMap<String, Plugin>();
+        Map<String,Plugin> pluginMap = new LinkedHashMap<>();
         for (UpdateSite site : sites) {
             for (Plugin plugin: site.getUpdates()) {
                 final Plugin existing = pluginMap.get(plugin.name);
@@ -951,7 +951,7 @@ public class UpdateCenter extends AbstractModelObject implements Saveable, OnMas
             }
         }
 
-        return new ArrayList<Plugin>(pluginMap.values());
+        return new ArrayList<>(pluginMap.values());
     }
 
     /**
@@ -965,7 +965,7 @@ public class UpdateCenter extends AbstractModelObject implements Saveable, OnMas
      *
      */
     public List<FormValidation> updateAllSites() throws InterruptedException, ExecutionException {
-        List <Future<FormValidation>> futures = new ArrayList<Future<FormValidation>>();
+        List <Future<FormValidation>> futures = new ArrayList<>();
         for (UpdateSite site : getSites()) {
             Future<FormValidation> future = site.updateDirectly(DownloadService.signatureCheck);
             if (future != null) {
@@ -973,7 +973,7 @@ public class UpdateCenter extends AbstractModelObject implements Saveable, OnMas
             }
         }
 
-        List<FormValidation> results = new ArrayList<FormValidation>();
+        List<FormValidation> results = new ArrayList<>();
         for (Future<FormValidation> f : futures) {
             results.add(f.get());
         }
@@ -1436,7 +1436,7 @@ public class UpdateCenter extends AbstractModelObject implements Saveable, OnMas
      * Tests the internet connectivity.
      */
     public final class ConnectionCheckJob extends UpdateCenterJob {
-        private final Vector<String> statuses= new Vector<String>();
+        private final Vector<String> statuses= new Vector<>();
 
         final Map<String, ConnectionStatus> connectionStates = new ConcurrentHashMap<>();
 

@@ -45,7 +45,7 @@ import org.kohsuke.stapler.export.Flavor;
  * @author Kohsuke Kawaguchi
  */
 public class AutoCompletionCandidates implements HttpResponse {
-    private final List<String> values = new ArrayList<String>();
+    private final List<String> values = new ArrayList<>();
 
     public AutoCompletionCandidates add(String v) {
         values.add(v);

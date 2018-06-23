@@ -107,7 +107,7 @@ public class BuildCommand extends CLICommand {
                 throw new IllegalStateException(job.getFullDisplayName()+" is not parameterized but the -p option was specified.");
 
             //TODO: switch to type annotations after the migration to Java 1.8
-            List<ParameterValue> values = new ArrayList<ParameterValue>();
+            List<ParameterValue> values = new ArrayList<>();
 
             for (Entry<String, String> e : parameters.entrySet()) {
                 String name = e.getKey();

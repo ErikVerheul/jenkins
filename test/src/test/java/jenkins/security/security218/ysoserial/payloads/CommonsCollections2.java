@@ -52,7 +52,7 @@ public class CommonsCollections2 implements ObjectPayload<Queue<Object>> {
 		final InvokerTransformer transformer = new InvokerTransformer("toString", new Class[0], new Object[0]);
 		
 		// create queue with numbers and basic comparator
-		final PriorityQueue<Object> queue = new PriorityQueue<Object>(2,new TransformingComparator(transformer)); 
+		final PriorityQueue<Object> queue = new PriorityQueue<>(2,new TransformingComparator(transformer)); 
 		// stub data for replacement later
 		queue.add(1); 
 		queue.add(1); 

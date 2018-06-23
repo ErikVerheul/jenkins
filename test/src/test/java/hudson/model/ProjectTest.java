@@ -824,7 +824,7 @@ public class ProjectTest {
 
         @Override
         public Collection<? extends Action> createFor(AbstractProject target) {
-            List<Action> actions = new ArrayList<Action>();
+            List<Action> actions = new ArrayList<>();
             if(createAction)
                 actions.add(new TransientAction());
             return actions;
@@ -910,7 +910,7 @@ public class ProjectTest {
 
         @Override
         public Collection getSubTasks() {
-            ArrayList<SubTask> list = new ArrayList<SubTask>();
+            ArrayList<SubTask> list = new ArrayList<>();
             list.add(new SubTaskImpl());
             return list;
         }
@@ -923,7 +923,7 @@ public class ProjectTest {
 
         @Override
         public Collection<? extends SubTask> forProject(AbstractProject<?, ?> p) {
-            ArrayList<SubTask> list = new ArrayList<SubTask>();
+            ArrayList<SubTask> list = new ArrayList<>();
             if(createSubTask){
                 list.add(new SubTaskImpl2());
             }
@@ -996,7 +996,7 @@ public class ProjectTest {
 
         @Override
         public Collection<NodeProvisioner.PlannedNode> provision(Label label, int excessWorkload) {
-            List<NodeProvisioner.PlannedNode> r = new ArrayList<NodeProvisioner.PlannedNode>();
+            List<NodeProvisioner.PlannedNode> r = new ArrayList<>();
 
             //Always provision...even if there is no workload.
             while(excessWorkload >= 0) {

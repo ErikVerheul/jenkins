@@ -104,7 +104,7 @@ public class RobustReflectionConverter implements Converter {
             // If the class already exists, then add a new field, otherwise
             // create the hash map field
             if (!criticalFields.containsKey(field)) {
-                criticalFields.put(field, new HashSet<String>());
+                criticalFields.put(field, new HashSet<>());
             }
             criticalFields.get(field).add(clazz.getName());
         }
@@ -382,7 +382,7 @@ public class RobustReflectionConverter implements Converter {
         LOGGER.log(FINE, "Failed to load", e);
         ArrayList<Throwable> list = (ArrayList<Throwable>)context.get("ReadError");
         if (list == null)
-            context.put("ReadError", list = new ArrayList<Throwable>());
+            context.put("ReadError", list = new ArrayList<>());
         list.add(e);
     }
 

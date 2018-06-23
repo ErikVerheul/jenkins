@@ -388,7 +388,7 @@ public class JDKInstaller extends ToolInstaller {
 
         @Override
         public List<String> listSubDirectories(String dir) throws IOException, InterruptedException {
-            List<String> r = new ArrayList<String>();
+            List<String> r = new ArrayList<>();
             for( FilePath f : $(dir).listDirectories())
                 r.add(f.getName());
             return r;
@@ -894,7 +894,7 @@ public class JDKInstaller extends ToolInstaller {
                         if (data1.name.equals(data2.name)) {
                             hasDuplicate = true;
                             processed [j] = true;
-                            JDKFamily reducedData = reduceData(data1.name, new LinkedList<JDKRelease>(Arrays.asList(data1.releases)), new LinkedList<JDKRelease>(Arrays.asList(data2.releases)));
+                            JDKFamily reducedData = reduceData(data1.name, new LinkedList<>(Arrays.asList(data1.releases)), new LinkedList<>(Arrays.asList(data2.releases)));
                             tmpReducedFamilies.add(reducedData);
                             //after the first duplicate has been found we break the loop since the duplicates are
                             //processed two by two
@@ -925,7 +925,7 @@ public class JDKInstaller extends ToolInstaller {
                     JDKRelease release2 = iterator2.next();
                     if (release1.name.equals(release2.name)) {
                         hasDuplicate = true;
-                        JDKRelease reducedRelease = reduceReleases(release1, new LinkedList<JDKFile>(Arrays.asList(release1.files)), new LinkedList<JDKFile>(Arrays.asList(release2.files)));
+                        JDKRelease reducedRelease = reduceReleases(release1, new LinkedList<>(Arrays.asList(release1.files)), new LinkedList<>(Arrays.asList(release2.files)));
                         iterator2.remove();
                         reducedReleases.add(reducedRelease);
                         //we assume that in one release list there are no duplicates so we stop at the first one

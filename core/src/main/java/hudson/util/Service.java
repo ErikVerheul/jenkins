@@ -45,7 +45,7 @@ import java.util.logging.Logger;
 @Deprecated
 public class Service {
     public static <T> List<T> loadInstances(ClassLoader classLoader, Class<T> type) throws IOException {
-        List<T> result = new ArrayList<T>();
+        List<T> result = new ArrayList<>();
 
         final Enumeration<URL> e = classLoader.getResources("META-INF/services/"+type.getName());
         while (e.hasMoreElements()) {

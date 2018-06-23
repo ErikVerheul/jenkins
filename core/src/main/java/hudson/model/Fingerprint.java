@@ -420,7 +420,7 @@ public class Fingerprint implements ModelObject, Saveable {
          */
         @Exported
         public synchronized List<Range> getRanges() {
-            return new ArrayList<Range>(ranges);
+            return new ArrayList<>(ranges);
         }
 
         /**
@@ -518,7 +518,7 @@ public class Fingerprint implements ModelObject, Saveable {
          * @return true if this range set was modified as a result.
          */
         public synchronized boolean retainAll(RangeSet that) {
-            List<Range> intersection = new ArrayList<Range>();
+            List<Range> intersection = new ArrayList<>();
 
             int lhs=0,rhs=0;
             while(lhs<this.ranges.size() && rhs<that.ranges.size()) {
@@ -564,7 +564,7 @@ public class Fingerprint implements ModelObject, Saveable {
          */
         public synchronized boolean removeAll(RangeSet that) {
             boolean modified = false;
-            List<Range> sub = new ArrayList<Range>();
+            List<Range> sub = new ArrayList<>();
 
             int lhs=0,rhs=0;
             while(lhs<this.ranges.size() && rhs<that.ranges.size()) {
@@ -874,9 +874,9 @@ public class Fingerprint implements ModelObject, Saveable {
     /**
      * Range of builds that use this file keyed by a job full name.
      */
-    private final Hashtable<String,RangeSet> usages = new Hashtable<String,RangeSet>();
+    private final Hashtable<String,RangeSet> usages = new Hashtable<>();
 
-    PersistedList<FingerprintFacet> facets = new PersistedList<FingerprintFacet>(this);
+    PersistedList<FingerprintFacet> facets = new PersistedList<>(this);
 
     /**
      * Lazily computed immutable {@link FingerprintFacet}s created from {@link TransientFingerprintFacetFactory}.
@@ -976,7 +976,7 @@ public class Fingerprint implements ModelObject, Saveable {
      * Gets the sorted list of job names where this jar is used.
      */
     public @Nonnull List<String> getJobs() {
-        List<String> r = new ArrayList<String>();
+        List<String> r = new ArrayList<>();
         r.addAll(usages.keySet());
         Collections.sort(r);
         return r;
@@ -1002,7 +1002,7 @@ public class Fingerprint implements ModelObject, Saveable {
     // this is for remote API
     @Exported(name="usage")
     public @Nonnull List<RangeItem> _getUsages() {
-        List<RangeItem> r = new ArrayList<RangeItem>();
+        List<RangeItem> r = new ArrayList<>();
         final Jenkins instance = Jenkins.get();
         for (Entry<String, RangeSet> e : usages.entrySet()) {
             final String itemName = e.getKey();
@@ -1088,7 +1088,7 @@ public class Fingerprint implements ModelObject, Saveable {
     public synchronized boolean trim() throws IOException {
         boolean modified = false;
 
-        for (Entry<String,RangeSet> e : new Hashtable<String,RangeSet>(usages).entrySet()) {// copy because we mutate
+        for (Entry<String,RangeSet> e : new Hashtable<>(usages).entrySet()) {// copy because we mutate
             Job j = Jenkins.get().getItemByFullName(e.getKey(),Job.class);
             if(j==null) {// no such job any more. recycle the record
                 modified = true;
@@ -1159,7 +1159,7 @@ public class Fingerprint implements ModelObject, Saveable {
      */
     public @Nonnull Collection<FingerprintFacet> getFacets() {
         if (transientFacets==null) {
-            List<FingerprintFacet> transientFacets = new ArrayList<FingerprintFacet>();
+            List<FingerprintFacet> transientFacets = new ArrayList<>();
             for (TransientFingerprintFacetFactory fff : TransientFingerprintFacetFactory.all()) {
                 fff.createFor(this,transientFacets);
             }
@@ -1200,7 +1200,7 @@ public class Fingerprint implements ModelObject, Saveable {
      * @return Sorted list of {@link FingerprintFacet}s 
      */
     public @Nonnull Collection<FingerprintFacet> getSortedFacets() {
-        List<FingerprintFacet> r = new ArrayList<FingerprintFacet>(getFacets());
+        List<FingerprintFacet> r = new ArrayList<>(getFacets());
         Collections.sort(r,new Comparator<FingerprintFacet>() {
             @Override
             public int compare(FingerprintFacet o1, FingerprintFacet o2) {
@@ -1232,7 +1232,7 @@ public class Fingerprint implements ModelObject, Saveable {
      * Returns the actions contributed from {@link #getFacets()}
      */
     public @Nonnull List<Action> getActions() {
-        List<Action> r = new ArrayList<Action>();
+        List<Action> r = new ArrayList<>();
         for (FingerprintFacet ff : getFacets())
             ff.createActions(r);
         return Collections.unmodifiableList(r);
@@ -1378,7 +1378,7 @@ public class Fingerprint implements ModelObject, Saveable {
             if(logger.isLoggable(Level.FINE))
                 logger.fine("Loading fingerprint "+file+" took "+(System.currentTimeMillis()-start)+"ms");
             if (f.facets==null)
-                f.facets = new PersistedList<FingerprintFacet>(f);
+                f.facets = new PersistedList<>(f);
             for (FingerprintFacet facet : f.facets)
                 facet._setOwner(f);
             return f;
@@ -1417,7 +1417,7 @@ public class Fingerprint implements ModelObject, Saveable {
     }
 
     @Override public String toString() {
-        return "Fingerprint[original=" + original + ",hash=" + getHashString() + ",fileName=" + fileName + ",timestamp=" + DATE_CONVERTER.toString(timestamp) + ",usages=" + new TreeMap<String,RangeSet>(usages) + ",facets=" + facets + "]";
+        return "Fingerprint[original=" + original + ",hash=" + getHashString() + ",fileName=" + fileName + ",timestamp=" + DATE_CONVERTER.toString(timestamp) + ",usages=" + new TreeMap<>(usages) + ",facets=" + facets + "]";
     }
     
     /**

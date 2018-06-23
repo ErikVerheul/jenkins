@@ -310,7 +310,7 @@ public final class FilePath implements Serializable {
         }
         boolean isAbsolute = buf.length() > 0;
         // Split remaining path into tokens, trimming any duplicate or trailing separators
-        List<String> tokens = new ArrayList<String>();
+        List<String> tokens = new ArrayList<>();
         int s = 0, end = path.length();
         for (int i = 0; i < end; i++) {
             char c = path.charAt(i);
@@ -1049,7 +1049,7 @@ public final class FilePath implements Serializable {
         if (channel != null) {
             // run this on a remote system
             try {
-                DelegatingCallable<T, IOException> wrapper = new FileCallableWrapper<T>(callable, cl);
+                DelegatingCallable<T, IOException> wrapper = new FileCallableWrapper<>(callable, cl);
                 for (FileCallableWrapperFactory factory : ExtensionList.lookup(FileCallableWrapperFactory.class)) {
                     wrapper = factory.wrap(wrapper);
                 }
@@ -1134,7 +1134,7 @@ public final class FilePath implements Serializable {
      */
     public <T> Future<T> actAsync(final FileCallable<T> callable) throws IOException, InterruptedException {
         try {
-            DelegatingCallable<T, IOException> wrapper = new FileCallableWrapper<T>(callable);
+            DelegatingCallable<T, IOException> wrapper = new FileCallableWrapper<>(callable);
             for (FileCallableWrapperFactory factory : ExtensionList.lookup(FileCallableWrapperFactory.class)) {
                 wrapper = factory.wrap(wrapper);
             }
@@ -1823,7 +1823,7 @@ public final class FilePath implements Serializable {
                     return Collections.emptyList();
                 }
 
-                ArrayList<FilePath> r = new ArrayList<FilePath>(children.length);
+                ArrayList<FilePath> r = new ArrayList<>(children.length);
                 for (File child : children) {
                     r.add(new FilePath(child));
                 }

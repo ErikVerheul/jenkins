@@ -347,7 +347,7 @@ public class Maven extends Builder {
             }
 
             // Add properties from builder configuration, AFTER the injected build variables.
-            final VariableResolver<String> resolver = new Union<String>(new ByMap<String>(env), vr);
+            final VariableResolver<String> resolver = new Union<>(new ByMap<>(env), vr);
             args.addKeyValuePairsFromPropertyString("-D", this.properties, resolver, sensitiveVars);
 
             if (usesPrivateRepository())
@@ -462,7 +462,7 @@ public class Maven extends Builder {
         }
 
 		public void setInstallations(MavenInstallation... installations) {
-			List<MavenInstallation> tmpList = new ArrayList<Maven.MavenInstallation>();
+			List<MavenInstallation> tmpList = new ArrayList<>();
 			// remote empty Maven installation : 
 			if(installations != null) {
 				Collections.addAll(tmpList, installations);

@@ -114,7 +114,7 @@ public class InstallUtil {
                 if (current == null || InstallState.UNKNOWN.equals(current)) {
                     return getDefaultInstallState();
                 }
-                final Map<InstallState, InstallState> states = new HashMap<InstallState, InstallState>();
+                final Map<InstallState, InstallState> states = new HashMap<>();
                 {
                     states.put(InstallState.CREATE_ADMIN_USER, InstallState.INITIAL_SETUP_COMPLETED);
                     states.put(InstallState.INITIAL_PLUGINS_INSTALLING, InstallState.CREATE_ADMIN_USER);
@@ -318,7 +318,7 @@ public class InstallUtil {
 		return;
 	}
 	LOGGER.fine("Writing install state to: " + installingPluginsFile.getAbsolutePath());
-	Map<String,String> statuses = new HashMap<String,String>();
+	Map<String,String> statuses = new HashMap<>();
 	for(UpdateCenterJob j : installingPlugins) {
 		if(j instanceof InstallationJob && j.getCorrelationId() != null) { // only include install jobs with a correlation id (directly selected)
 			InstallationJob ij = (InstallationJob)j;

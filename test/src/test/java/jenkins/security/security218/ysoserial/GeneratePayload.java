@@ -75,7 +75,7 @@ public class GeneratePayload {
 		System.err.println("Usage: java -jar ysoserial-[version]-all.jar [payload type] '[command to execute]'");
 		System.err.println("\tAvailable payload types:");
 		final List<Class<? extends ObjectPayload>> payloadClasses =
-			new ArrayList<Class<? extends ObjectPayload>>(ObjectPayload.Utils.getPayloadClasses());
+			new ArrayList<>(ObjectPayload.Utils.getPayloadClasses());
 		Collections.sort(payloadClasses, new ToStringComparator()); // alphabetize
 		for (Class<? extends ObjectPayload> payloadClass : payloadClasses) {
 			System.err.println("\t\t" + payloadClass.getSimpleName() + " " + Arrays.asList(Dependencies.Utils.getDependencies(payloadClass)));

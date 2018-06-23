@@ -127,7 +127,7 @@ public class ExtensionListTest {
     @Test
     public void fishDiscovery() throws Exception {
         // imagine that this is a static instance, like it is in many LIST static field in Hudson.
-        DescriptorList<Fish> LIST = new DescriptorList<Fish>(Fish.class);
+        DescriptorList<Fish> LIST = new DescriptorList<>(Fish.class);
 
         DescriptorExtensionList<Fish,Descriptor<Fish>> list = j.jenkins.<Fish,Descriptor<Fish>>getDescriptorList(Fish.class);
         assertEquals(2,list.size());
@@ -146,7 +146,7 @@ public class ExtensionListTest {
         assertNotNull(LIST.findByName(Saba.class.getName()));
 
         // DescriptorList can be gone and new one created but it should still have the same list
-        LIST = new DescriptorList<Fish>(Fish.class);
+        LIST = new DescriptorList<>(Fish.class);
         assertEquals(3,LIST.size());
         assertNotNull(LIST.findByName(Tai.class.getName()));
         assertNotNull(LIST.findByName(Sishamo.class.getName()));
@@ -156,7 +156,7 @@ public class ExtensionListTest {
     @Test
     public void legacyDescriptorList() throws Exception {
         // created in a legacy fashion without any tie to ExtensionList
-        DescriptorList<Fish> LIST = new DescriptorList<Fish>();
+        DescriptorList<Fish> LIST = new DescriptorList<>();
 
         // we won't auto-discover anything
         assertEquals(0,LIST.size());
@@ -167,7 +167,7 @@ public class ExtensionListTest {
         assertNotNull(LIST.findByName(Sishamo.class.getName()));
 
         // create a new list and it forgets everything.
-        LIST = new DescriptorList<Fish>();
+        LIST = new DescriptorList<>();
         assertEquals(0,LIST.size());
     }
 

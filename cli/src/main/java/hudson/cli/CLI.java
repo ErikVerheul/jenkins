@@ -88,7 +88,7 @@ public class CLI implements AutoCloseable {
     private final Channel channel;
     private final CliEntryPoint entryPoint;
     private final boolean ownsPool;
-    private final List<Closeable> closables = new ArrayList<Closeable>(); // stuff to close in the close method
+    private final List<Closeable> closables = new ArrayList<>(); // stuff to close in the close method
     private final String httpsProxyTunnel;
     private final String authorization;
 
@@ -639,7 +639,7 @@ public class CLI implements AutoCloseable {
 
             // execute the command
             // Arrays.asList is not serializable --- see 6835580
-            args = new ArrayList<String>(args);
+            args = new ArrayList<>(args);
             return cli.execute(args, System.in, System.out, System.err);
         }
     }

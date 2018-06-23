@@ -80,7 +80,7 @@ public class Gadgets {
 
 
     public static Map<String, Object> createMap ( final String key, final Object val ) {
-        final Map<String, Object> map = new HashMap<String, Object>();
+        final Map<String, Object> map = new HashMap<>();
         map.put(key, val);
         return map;
     }

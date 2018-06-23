@@ -16,7 +16,7 @@ import java.util.List;
  * @since 1.300
  */
 public class ClasspathBuilder implements Serializable {
-    private final List<String> args = new ArrayList<String>();
+    private final List<String> args = new ArrayList<>();
 
     /**
      * Adds a single directory or a jar file.

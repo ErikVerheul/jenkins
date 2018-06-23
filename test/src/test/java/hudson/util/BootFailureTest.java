@@ -115,7 +115,7 @@ public class BootFailureTest {
 
         // second failed boot
         problem = null;
-        runRecord = new ArrayList<String>();
+        runRecord = new ArrayList<>();
         assertNull(j.newHudson());
         assertEquals(2, bootFailures(home));
         assertEquals(Arrays.asList("1", "2"), runRecord);

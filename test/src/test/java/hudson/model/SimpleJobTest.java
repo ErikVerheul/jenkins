@@ -21,7 +21,7 @@ public class SimpleJobTest {
     @Test
     public void testGetEstimatedDuration() throws IOException {
         
-        final SortedMap<Integer, TestBuild> runs = new TreeMap<Integer, TestBuild>();
+        final SortedMap<Integer, TestBuild> runs = new TreeMap<>();
         
         Job project = createMockProject(runs);
         
@@ -43,7 +43,7 @@ public class SimpleJobTest {
     @Test
     public void testGetEstimatedDurationWithOneRun() throws IOException {
         
-        final SortedMap<Integer, TestBuild> runs = new TreeMap<Integer, TestBuild>();
+        final SortedMap<Integer, TestBuild> runs = new TreeMap<>();
         
         Job project = createMockProject(runs);
         
@@ -55,7 +55,7 @@ public class SimpleJobTest {
     
     public void testGetEstimatedDurationWithFailedRun() throws IOException {
         
-        final SortedMap<Integer, TestBuild> runs = new TreeMap<Integer, TestBuild>();
+        final SortedMap<Integer, TestBuild> runs = new TreeMap<>();
         
         Job project = createMockProject(runs);
         
@@ -68,7 +68,7 @@ public class SimpleJobTest {
     @Test
     public void testGetEstimatedDurationWithNoRuns() throws IOException {
         
-        final SortedMap<Integer, TestBuild> runs = new TreeMap<Integer, TestBuild>();
+        final SortedMap<Integer, TestBuild> runs = new TreeMap<>();
         
         Job project = createMockProject(runs);
         
@@ -78,7 +78,7 @@ public class SimpleJobTest {
     @Test
     public void testGetEstimatedDurationIfPrevious3BuildsFailed() throws IOException {
         
-        final SortedMap<Integer, TestBuild> runs = new TreeMap<Integer, TestBuild>();
+        final SortedMap<Integer, TestBuild> runs = new TreeMap<>();
         
         Job project = createMockProject(runs);
         
@@ -107,7 +107,7 @@ public class SimpleJobTest {
     @Test
     public void testGetEstimatedDurationIfNoSuccessfulBuildTakeDurationOfFailedBuild() throws IOException {
         
-        final SortedMap<Integer, TestBuild> runs = new TreeMap<Integer, TestBuild>();
+        final SortedMap<Integer, TestBuild> runs = new TreeMap<>();
         
         Job project = createMockProject(runs);
         

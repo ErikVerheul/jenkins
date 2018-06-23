@@ -45,7 +45,7 @@ public class ComputerRetentionWork extends PeriodicWork {
     /**
      * Use weak hash map to avoid leaking {@link Computer}.
      */
-    private final Map<Computer, Long> nextCheck = new WeakHashMap<Computer, Long>();
+    private final Map<Computer, Long> nextCheck = new WeakHashMap<>();
 
     @Override
     public long getRecurrencePeriod() {

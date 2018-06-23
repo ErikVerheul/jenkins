@@ -135,7 +135,7 @@ public class Search {
      *      a certain threshold to avoid showing too many options. 
      */
     public SearchResult getSuggestions(StaplerRequest req, String query) {
-        Set<String> paths = new HashSet<String>();  // paths already added, to control duplicates
+        Set<String> paths = new HashSet<>();  // paths already added, to control duplicates
         SearchResultImpl r = new SearchResultImpl();
         int max = req.hasParameter("max") ? Integer.parseInt(req.getParameter("max")) : 20;
         SearchableModelObject smo = findClosestSearchableModelObject(req);
@@ -307,7 +307,7 @@ public class Search {
             }
         }
 
-        List<Tag> buf = new ArrayList<Tag>();
+        List<Tag> buf = new ArrayList<>();
         List<SuggestedItem> items = find(Mode.SUGGEST, index, tokenList, searchContext);
 
         // sort them
@@ -374,9 +374,9 @@ public class Search {
 
         List<SuggestedItem>[] paths = new List[tokens.length()+1]; // we won't use [0].
         for(int i=1;i<=tokens.length();i++)
-            paths[i] = new ArrayList<SuggestedItem>();
+            paths[i] = new ArrayList<>();
 
-        List<SearchItem> items = new ArrayList<SearchItem>(); // items found in 1 step
+        List<SearchItem> items = new ArrayList<>(); // items found in 1 step
 
         LOGGER.log(Level.FINE, "tokens={0}", tokens);
         
