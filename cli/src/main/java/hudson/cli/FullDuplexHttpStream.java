@@ -129,7 +129,7 @@ public class FullDuplexHttpStream {
             }
             con.getInputStream().close();
             base = con.getURL();
-        } catch (Exception ex) {
+        } catch (IOException ex) {
             // Do not obscure the problem propagating the exception. If the problem is real it will manifest during the
             // actual exchange so will be reported properly there. If it is not real (no permission in UI but sufficient
             // for CLI connection using one of its mechanisms), there is no reason to bother user about it.

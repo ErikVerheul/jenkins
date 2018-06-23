@@ -230,7 +230,8 @@ public interface BuildStep {
      *      {@link Extension} for registration.
      */
     @Deprecated
-    List<Descriptor<Builder>> BUILDERS = new DescriptorList<>(Builder.class);
+    //[Erik] depricated, not fixed
+    List<Descriptor<Builder>> BUILDERS = new DescriptorList<>(Builder.class); //NOSONAR
 
     /**
      * List of all installed publishers.

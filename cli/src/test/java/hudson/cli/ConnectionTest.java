@@ -3,6 +3,7 @@ package hudson.cli;
 import hudson.remoting.FastPipedInputStream;
 import hudson.remoting.FastPipedOutputStream;
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import org.codehaus.groovy.runtime.Security218;
@@ -37,7 +38,7 @@ public class ConnectionTest {
             public void run() {
                 try {
                     c1.encryptConnection(sessionKey,"AES/CFB8/NoPadding").writeUTF("Hello");
-                } catch (Throwable x) {
+                } catch (IOException | GeneralSecurityException x) {
                     e = x;
                 }
             }
@@ -50,7 +51,7 @@ public class ConnectionTest {
                 try {
                     String data = c2.encryptConnection(sessionKey,"AES/CFB8/NoPadding").readUTF();
                     assertEquals("Hello", data);
-                } catch (Throwable x) {
+                } catch (IOException | GeneralSecurityException x) {
                     e = x;
                 }
             }
