@@ -1,22 +1,25 @@
 package hudson.model;
 
+import static org.junit.Assert.assertTrue;
+
 import com.gargoylesoftware.htmlunit.WebResponseListener;
 import com.gargoylesoftware.htmlunit.html.DomNodeUtil;
-import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlElementUtil;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import hudson.matrix.MatrixProject;
-import hudson.maven.MavenModuleSet;
-import hudson.model.HelpLinkTest.HelpNotFoundBuilder.DescriptorImpl;
-import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildStepMonitor;
-import hudson.tasks.Publisher;
-import java.util.List;
 import org.junit.Assert;
-import static org.junit.Assert.assertTrue;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
+import hudson.matrix.MatrixProject;
+import hudson.maven.MavenModuleSet;
+
+import java.util.List;
+
+import hudson.tasks.Publisher;
+import hudson.tasks.BuildStepDescriptor;
+import hudson.model.HelpLinkTest.HelpNotFoundBuilder.DescriptorImpl;
 import org.jvnet.hudson.test.JenkinsRule;
 
 /**
@@ -110,6 +113,7 @@ public class HelpLinkTest {
 
     public static class HelpNotFoundBuilder extends Publisher {
         public static final class DescriptorImpl extends BuildStepDescriptor {
+            @Override
             public boolean isApplicable(Class jobType) {
                 return true;
             }
@@ -120,6 +124,7 @@ public class HelpLinkTest {
             }
         }
 
+        @Override
         public BuildStepMonitor getRequiredMonitorService() {
             return BuildStepMonitor.BUILD;
         }
