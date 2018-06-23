@@ -1037,7 +1037,7 @@ public abstract class Launcher {
             if (vc == null) {
                 throw new IllegalStateException("RemoteLauncher has been initialized with Null channel. It should not happen");
             }
-            return super.getChannel();
+            return super.getChannel(); //NOSONAR
         }
 
         public Proc launch(ProcStarter ps) throws IOException {

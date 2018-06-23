@@ -36,7 +36,6 @@ import jenkins.model.Jenkins;
 import hudson.model.UpdateCenter;
 import hudson.model.UpdateSite;
 import hudson.util.VersionNumber;
-import org.jvnet.localizer.ResourceBundleHolder;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.DoNotUse;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
@@ -54,7 +53,6 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import java.io.Closeable;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URL;
@@ -64,7 +62,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -207,7 +204,7 @@ public class PluginWrapper implements Comparable<PluginWrapper>, ModelObject {
      * The core can depend on a plugin if it is bundled. Sometimes it's the only thing that
      * depends on the plugin e.g. UI support library bundle plugin.
      */
-    private static Set<String> CORE_ONLY_DEPENDANT = ImmutableSet.copyOf(Arrays.asList("jenkins-core"));
+    private static final Set<String> CORE_ONLY_DEPENDANT = ImmutableSet.copyOf(Arrays.asList("jenkins-core"));
 
     /**
      * Set the list of components that depend on this plugin.
@@ -260,10 +257,10 @@ public class PluginWrapper implements Comparable<PluginWrapper>, ModelObject {
             if(idx==-1)
                 throw new IllegalArgumentException("Illegal dependency specifier "+s);
             this.shortName = s.substring(0,idx);
-            String version = s.substring(idx+1);
+            String v = s.substring(idx+1);
 
             boolean isOptional = false;
-            String[] osgiProperties = version.split("[;]");
+            String[] osgiProperties = v.split("[;]");
             for (int i = 1; i < osgiProperties.length; i++) {
                 String osgiProperty = osgiProperties[i].trim();
                 if (osgiProperty.equalsIgnoreCase("resolution:=optional")) {
@@ -274,7 +271,7 @@ public class PluginWrapper implements Comparable<PluginWrapper>, ModelObject {
             if (isOptional) {
                 this.version = osgiProperties[0];
             } else {
-                this.version = version;
+                this.version = v;
             }
         }
 
@@ -313,6 +310,7 @@ public class PluginWrapper implements Comparable<PluginWrapper>, ModelObject {
         this.archive = archive;
     }
 
+    @Override
     public String getDisplayName() {
         return StringUtils.removeStart(getLongName(), "Jenkins ");
     }
@@ -489,7 +487,7 @@ public class PluginWrapper implements Comparable<PluginWrapper>, ModelObject {
             try {
                 LOGGER.log(Level.FINE, "Stopping {0}", shortName);
                 plugin.stop();
-            } catch (Throwable t) {
+            } catch (Exception t) {
                 LOGGER.log(WARNING, "Failed to shut down " + shortName, t);
             }
         } else {
@@ -596,7 +594,7 @@ public class PluginWrapper implements Comparable<PluginWrapper>, ModelObject {
         if (ENABLE_PLUGIN_DEPENDENCIES_VERSION_CHECK) {
             String requiredCoreVersion = getRequiredCoreVersion();
             if (requiredCoreVersion == null) {
-                LOGGER.warning(shortName + " doesn't declare required core version.");
+                LOGGER.log(WARNING, "{0} doesn''t declare required core version.", shortName);
             } else {
                 VersionNumber actualVersion = Jenkins.getVersion();
                 if (actualVersion.isOlderThan(new VersionNumber(requiredCoreVersion))) {
@@ -714,6 +712,7 @@ public class PluginWrapper implements Comparable<PluginWrapper>, ModelObject {
     /**
      * Sort by short name.
      */
+    @Override
     public int compareTo(PluginWrapper pw) {
         return shortName.compareToIgnoreCase(pw.shortName);
     }
@@ -775,6 +774,7 @@ public class PluginWrapper implements Comparable<PluginWrapper>, ModelObject {
             plugins.put(plugin.shortName, plugin);
         }
 
+        @Override
         public boolean isActivated() {
             return !plugins.isEmpty();
         }
@@ -836,7 +836,7 @@ public class PluginWrapper implements Comparable<PluginWrapper>, ModelObject {
     public HttpResponse doPin() throws IOException {
         Jenkins.get().checkPermission(Jenkins.ADMINISTER);
         // See https://groups.google.com/d/msg/jenkinsci-dev/kRobm-cxFw8/6V66uhibAwAJ
-        LOGGER.log(WARNING, "Call to pin plugin has been ignored. Plugin name: " + shortName);
+        LOGGER.log(WARNING, "Call to pin plugin has been ignored. Plugin name: {0}", shortName);
         return HttpResponses.ok();
     }
 
@@ -845,13 +845,13 @@ public class PluginWrapper implements Comparable<PluginWrapper>, ModelObject {
     public HttpResponse doUnpin() throws IOException {
         Jenkins.get().checkPermission(Jenkins.ADMINISTER);
         // See https://groups.google.com/d/msg/jenkinsci-dev/kRobm-cxFw8/6V66uhibAwAJ
-        LOGGER.log(WARNING, "Call to unpin plugin has been ignored. Plugin name: " + shortName);
+        LOGGER.log(WARNING, "Call to unpin plugin has been ignored. Plugin name: {0}", shortName);
         return HttpResponses.ok();
     }
 
     @RequirePOST
     public HttpResponse doDoUninstall() throws IOException {
-        Jenkins jenkins = Jenkins.getActiveInstance();
+        Jenkins jenkins = Jenkins.get();
         
         jenkins.checkPermission(Jenkins.ADMINISTER);
         archive.delete();

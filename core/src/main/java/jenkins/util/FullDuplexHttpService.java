@@ -116,7 +116,7 @@ public abstract class FullDuplexHttpService {
         } finally {
             // publish that we are done
             completed = true;
-            notify();
+            notifyAll();
         }
     }
 
@@ -135,7 +135,7 @@ public abstract class FullDuplexHttpService {
         // publish the upload channel
         upload = in;
         LOGGER.log(Level.FINE, "Recording upload stream {0} for {1}: {2}", new Object[] {upload, uuid, this});
-        notify();
+        notifyAll();
 
         // wait until we are done
         while (!completed) {
@@ -190,6 +190,8 @@ public abstract class FullDuplexHttpService {
                     }
                 }
             } catch (InterruptedException e) {
+                // Restore interrupted state...
+                Thread.currentThread().interrupt();
                 throw new IOException(e);
             }
         }

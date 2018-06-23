@@ -82,7 +82,7 @@ public class ViewOptionHandlerTest {
 
         PowerMockito.mockStatic(Jenkins.class);
         PowerMockito.when(Jenkins.get()).thenReturn(jenkins);
-        PowerMockito.when(Jenkins.getActiveInstance()).thenReturn(jenkins);
+        PowerMockito.when(Jenkins.get()).thenReturn(jenkins);
         when(jenkins.getView("outer")).thenReturn(outer);
         when(jenkins.getDisplayName()).thenReturn("Jenkins");
         when(jenkins.getACL()).thenReturn(new ACL() {
@@ -254,9 +254,11 @@ public class ViewOptionHandlerTest {
 
     private void parse(final String... params) throws CmdLineException {
         handler.parseArguments(new Parameters() {
+            @Override
             public String getParameter(int idx) throws CmdLineException {
                 return params[idx];
             }
+            @Override
             public int size() {
                 return params.length;
             }

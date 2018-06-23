@@ -158,7 +158,7 @@ public abstract class AsyncPeriodicWork extends PeriodicWork {
         } else {
             lastRotateMillis = System.currentTimeMillis();
             // migrate old log files the first time we start-up
-            File oldFile = new File(Jenkins.getActiveInstance().getRootDir(), f.getName());
+            File oldFile = new File(Jenkins.get().getRootDir(), f.getName());
             if (oldFile.isFile()) {
                 File newFile = new File(f.getParentFile(), f.getName() + ".1");
                 if (!newFile.isFile()) {
@@ -183,7 +183,7 @@ public abstract class AsyncPeriodicWork extends PeriodicWork {
      * Determines the log file that records the result of this task.
      */
     protected File getLogFile() {
-        return new File(Jenkins.getActiveInstance().getRootDir(),"logs/tasks/"+name+".log");
+        return new File(Jenkins.get().getRootDir(),"logs/tasks/"+name+".log");
     }
     
     /**

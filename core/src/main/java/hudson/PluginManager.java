@@ -323,8 +323,8 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
         this.rootDir = rootDir;
         if(!rootDir.exists())
             rootDir.mkdirs();
-        String workDir = SystemProperties.getString(PluginManager.class.getName()+".workDir");
-        this.workDir = StringUtils.isBlank(workDir) ? null : new File(workDir);
+        String wDir = SystemProperties.getString(PluginManager.class.getName()+".workDir");
+        this.workDir = StringUtils.isBlank(wDir) ? null : new File(wDir);
 
         strategy = createPluginStrategy();
 
@@ -421,7 +421,7 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
                                     private boolean isDuplicate(PluginWrapper p) {
                                         String shortName = p.getShortName();
                                         if (inspectedShortNames.containsKey(shortName)) {
-                                            LOGGER.info("Ignoring "+arc+" because "+inspectedShortNames.get(shortName)+" is already loaded");
+                                            LOGGER.log(INFO, "Ignoring {0} because {1} is already loaded", new Object[]{arc, inspectedShortNames.get(shortName)});
                                             return true;
                                         }
 
@@ -588,12 +588,12 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
     protected @Nonnull Set<String> loadPluginsFromWar(@Nonnull String fromPath, @CheckForNull FilenameFilter filter) {
         Set<String> names = new HashSet();
 
-        ServletContext context = Jenkins.getActiveInstance().servletContext;
-        Set<String> plugins = Util.fixNull((Set<String>) context.getResourcePaths(fromPath));
+        ServletContext ctext = Jenkins.get().servletContext;
+        Set<String> pins = Util.fixNull((Set<String>) ctext.getResourcePaths(fromPath));
         Set<URL> copiedPlugins = new HashSet<>();
         Set<URL> dependencies = new HashSet<>();
 
-        for( String pluginPath : plugins) {
+        for( String pluginPath : pins) {
             String fileName = pluginPath.substring(pluginPath.lastIndexOf('/')+1);
             if(fileName.length()==0) {
                 // see http://www.nabble.com/404-Not-Found-error-when-clicking-on-help-td24508544.html
@@ -601,7 +601,7 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
                 continue;
             }
             try {
-                URL url = context.getResource(pluginPath);
+                URL url = ctext.getResource(pluginPath);
                 if (filter != null && url != null) {
                     if (!filter.accept(new File(url.getFile()).getParentFile(), fileName)) {
                         continue;
@@ -613,7 +613,7 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
                 copiedPlugins.add(url);
                 try {
                     addDependencies(url, fromPath, dependencies);
-                } catch (Exception e) {
+                } catch (MalformedURLException | URISyntaxException e) {
                     LOGGER.log(Level.SEVERE, "Failed to resolve dependencies for the bundled plugin " + fileName, e);
                 }
             } catch (IOException e) {
@@ -1112,18 +1112,16 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
 		if (strategyName != null) {
 			try {
 				Class<?> klazz = getClass().getClassLoader().loadClass(strategyName);
-				Object strategy = klazz.getConstructor(PluginManager.class)
+				Object strat = klazz.getConstructor(PluginManager.class)
 						.newInstance(this);
-				if (strategy instanceof PluginStrategy) {
-					LOGGER.info("Plugin strategy: " + strategyName);
-					return (PluginStrategy) strategy;
+				if (strat instanceof PluginStrategy) {
+					LOGGER.log(INFO, "Plugin strategy: {0}", strategyName);
+					return (PluginStrategy) strat;
 				} else {
-					LOGGER.warning("Plugin strategy (" + strategyName +
-							") is not an instance of hudson.PluginStrategy");
+					LOGGER.log(WARNING, "Plugin strategy ({0}) is not an instance of hudson.PluginStrategy", strategyName);
 				}
 			} catch (ClassNotFoundException e) {
-				LOGGER.warning("Plugin strategy class not found: "
-						+ strategyName);
+				LOGGER.log(WARNING, "Plugin strategy class not found: {0}", strategyName);
 			} catch (IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException 
                 | SecurityException | InvocationTargetException e) {
 				LOGGER.log(WARNING, "Could not instantiate plugin strategy: "
@@ -1356,19 +1354,19 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
     @RequirePOST
     public void doInstall(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException {
         Jenkins.get().checkPermission(Jenkins.ADMINISTER);
-        Set<String> plugins = new LinkedHashSet<>();
+        Set<String> pins = new LinkedHashSet<>();
 
         Enumeration<String> en = req.getParameterNames();
         while (en.hasMoreElements()) {
             String n =  en.nextElement();
             if(n.startsWith("plugin.")) {
                 n = n.substring(7);
-                plugins.add(n);
+                pins.add(n);
             }
         }
 
         boolean dynamicLoad = req.getParameter("dynamicLoad")!=null;
-        install(plugins, dynamicLoad);
+        install(pins, dynamicLoad);
 
         rsp.sendRedirect("../updateCenter/");
     }
@@ -1388,16 +1386,16 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
         String payload = IOUtils.toString(req.getInputStream(), req.getCharacterEncoding());
         JSONObject request = JSONObject.fromObject(payload);
         JSONArray pluginListJSON = request.getJSONArray("plugins");
-        List<String> plugins = new ArrayList<>();
+        List<String> pins = new ArrayList<>();
 
         for (int i = 0; i < pluginListJSON.size(); i++) {
-            plugins.add(pluginListJSON.getString(i));
+            pins.add(pluginListJSON.getString(i));
         }
 
         UUID correlationId = UUID.randomUUID();
         try {
             boolean dynamicLoad = request.getBoolean("dynamicLoad");
-            install(plugins, dynamicLoad, correlationId);
+            install(pins, dynamicLoad, correlationId);
 
             JSONObject responseData = new JSONObject();
             responseData.put("correlationId", correlationId.toString());
@@ -1619,8 +1617,8 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
 
                 if (StringUtils.isNotBlank(deps)) {
                     // now we get to parse it!
-                    String[] plugins = deps.split(",");
-                    for (String p : plugins) {
+                    String[] pins = deps.split(",");
+                    for (String p : pins) {
                         // should have name:version[;resolution:=optional]
                         String[] attrs = p.split("[:;]");
                         dependencies.add(new JSONObject()

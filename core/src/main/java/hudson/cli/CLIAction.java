@@ -74,20 +74,23 @@ public class CLIAction implements UnprotectedRootAction, StaplerProxy {
 
     private transient final Map<UUID, FullDuplexHttpService> duplexServices = new HashMap<>();
 
+    @Override
     public String getIconFileName() {
         return null;
     }
 
+    @Override
     public String getDisplayName() {
         return "Jenkins CLI";
     }
 
+    @Override
     public String getUrlName() {
         return "cli";
     }
 
     public void doCommand(StaplerRequest req, StaplerResponse rsp) throws ServletException, IOException {
-        final Jenkins jenkins = Jenkins.getActiveInstance();
+        final Jenkins jenkins = Jenkins.get();
         jenkins.checkPermission(Jenkins.READ);
 
         // Strip trailing slash
@@ -225,6 +228,8 @@ public class CLIAction implements UnprotectedRootAction, StaplerProxy {
                                 Thread.sleep(1000);
                             } catch (InterruptedException x) {
                                 // expected; ignore
+                                // [Erik] Restore interrupted state...
+                                Thread.currentThread().interrupt();
                             }
                         } finally {
                             CLICommand.setCurrent(orig);

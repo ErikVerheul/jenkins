@@ -89,7 +89,7 @@ public class CancelQuietDownCommandTest {
 
     @Test
     public void cancelQuietDownShouldSuccessOnQuietDownedJenkins() throws Exception {
-        j.jenkins.getActiveInstance().doQuietDown();
+        Jenkins.get().doQuietDown();
         QuietDownCommandTest.assertJenkinsInQuietMode(j);
         final CLICommandInvoker.Result result = command
                 .authorizedTo(Jenkins.READ, Jenkins.ADMINISTER)
@@ -142,7 +142,7 @@ public class CancelQuietDownCommandTest {
         Future<FreeStyleBuild> build = OnlineNodeCommandTest.startBlockingAndFinishingBuild(project, finish);
         assertThat(((FreeStyleProject) j.jenkins.getItem("aProject")).getBuilds(), hasSize(1));
         assertThat(project.isBuilding(), equalTo(true));
-        j.jenkins.getActiveInstance().doQuietDown();
+        Jenkins.get().doQuietDown();
         QuietDownCommandTest.assertJenkinsInQuietMode(j);
 
         final CLICommandInvoker.Result result = command

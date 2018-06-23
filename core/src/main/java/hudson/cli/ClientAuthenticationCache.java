@@ -54,6 +54,7 @@ public class ClientAuthenticationCache implements Serializable {
 
     public ClientAuthenticationCache(Channel channel) throws IOException, InterruptedException {
         store = (channel==null ? FilePath.localChannel :  channel).call(new MasterToSlaveCallable<FilePath, IOException>() {
+            @Override
             public FilePath call() throws IOException {
                 File home = new File(System.getProperty("user.home"));
                 File hudsonHome = new File(home, ".hudson");
@@ -76,7 +77,7 @@ public class ClientAuthenticationCache implements Serializable {
      * @return {@link jenkins.model.Jenkins#ANONYMOUS} if no such credential is found, or if the stored credential is invalid.
      */
     public @Nonnull Authentication get() {
-        Jenkins h = Jenkins.getActiveInstance();
+        Jenkins h = Jenkins.get();
         String val = props.getProperty(getPropertyKey());
         if (val == null) {
             LOGGER.finer("No stored CLI authentication");
@@ -113,7 +114,7 @@ public class ClientAuthenticationCache implements Serializable {
      */
     @VisibleForTesting
     String getPropertyKey() {
-        Jenkins j = Jenkins.getActiveInstance();
+        Jenkins j = Jenkins.get();
         String url = j.getRootUrl();
         if (url!=null)  return url;
         
@@ -124,7 +125,7 @@ public class ClientAuthenticationCache implements Serializable {
      * Persists the specified authentication.
      */
     public void set(Authentication a) throws IOException, InterruptedException {
-        Jenkins h = Jenkins.getActiveInstance();
+        Jenkins h = Jenkins.get();
 
         // make sure that this security realm is capable of retrieving the authentication by name,
         // as it's not required.

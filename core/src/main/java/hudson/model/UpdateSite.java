@@ -143,7 +143,7 @@ public class UpdateSite {
     /**
      * the prefix for the signature validator name
      */
-    private static final String signatureValidatorPrefix = "update site";
+    private static final String SIGNATUREVALIDATORPREFIX = "update site";
 
 
     public UpdateSite(String id, String url) {
@@ -223,7 +223,7 @@ public class UpdateSite {
             }
         }
 
-        LOGGER.info("Obtained the latest update center data file for UpdateSource " + id);
+        LOGGER.log(Level.INFO, "Obtained the latest update center data file for UpdateSource {0}", id);
         retryWindow = 0;
         getDataFile().write(json);
         return FormValidation.ok();
@@ -276,7 +276,7 @@ public class UpdateSite {
     @Nonnull
     protected JSONSignatureValidator getJsonSignatureValidator(@CheckForNull String name) {
         if (name == null) {
-            name = signatureValidatorPrefix + " '" + id + "'";
+            name = SIGNATUREVALIDATORPREFIX + " '" + id + "'";
         }
         return new JSONSignatureValidator(name);
     }
@@ -339,15 +339,13 @@ public class UpdateSite {
         if(df.exists()) {
             try {
                 return JSONObject.fromObject(df.read());
-            } catch (JSONException e) {
-                LOGGER.log(Level.SEVERE,"Failed to parse "+df,e);
-                df.delete(); // if we keep this file, it will cause repeated failures
-                return null;
-            } catch (IOException e) {
+            } catch (JSONException | IOException e) {
                 LOGGER.log(Level.SEVERE,"Failed to parse "+df,e);
                 df.delete(); // if we keep this file, it will cause repeated failures
                 return null;
             }
+            // if we keep this file, it will cause repeated failures
+            
         } else {
             return null;
         }
@@ -360,9 +358,9 @@ public class UpdateSite {
     @Exported
     public List<Plugin> getAvailables() {
         List<Plugin> r = new ArrayList<Plugin>();
-        Data data = getData();
-        if(data==null)     return Collections.emptyList();
-        for (Plugin p : data.plugins.values()) {
+        Data d = getData();
+        if(d==null)     return Collections.emptyList();
+        for (Plugin p : d.plugins.values()) {
             if(p.getInstalled()==null)
                 r.add(p);
         }
@@ -416,8 +414,8 @@ public class UpdateSite {
      */
     @Exported
     public List<Plugin> getUpdates() {
-        Data data = getData();
-        if(data==null)      return Collections.emptyList(); // fail to determine
+        Data d = getData();
+        if(d==null)      return Collections.emptyList(); // fail to determine
         
         List<Plugin> r = new ArrayList<Plugin>();
         for (PluginWrapper pw : Jenkins.get().getPluginManager().getPlugins()) {
@@ -433,8 +431,8 @@ public class UpdateSite {
      */
     @Exported
     public boolean hasUpdates() {
-        Data data = getData();
-        if(data==null)      return false;
+        Data d = getData();
+        if(d==null)      return false;
         
         for (PluginWrapper pw : Jenkins.get().getPluginManager().getPlugins()) {
             if(!pw.isBundled() && pw.getUpdateInfo()!=null)
@@ -629,14 +627,14 @@ public class UpdateSite {
             // to the end in old commons-codec. Not the case on updates.jenkins-ci.org, but let's be safe.
             this.sha1 = Util.fixEmptyAndTrim(o.optString("sha1"));
 
-            String url = o.getString("url");
-            if (!URI.create(url).isAbsolute()) {
+            String u = o.getString("url");
+            if (!URI.create(u).isAbsolute()) {
                 if (baseURL == null) {
-                    throw new IllegalArgumentException("Cannot resolve " + url + " without a base URL");
+                    throw new IllegalArgumentException("Cannot resolve " + u + " without a base URL");
                 }
-                url = URI.create(baseURL).resolve(url).toString();
+                u = URI.create(baseURL).resolve(u).toString();
             }
-            this.url = url;
+            this.url = u;
         }
 
         /**
@@ -852,15 +850,15 @@ public class UpdateSite {
         }
 
         /**
-         * Returns true if this warning is relevant to the current configuration
          * @return true if this warning is relevant to the current configuration
          */
         public boolean isRelevant() {
             switch (this.type) {
                 case CORE:
                     VersionNumber current = Jenkins.getVersion();
-
-                    if (!isRelevantToVersion(current)) {
+                    
+                    //[Erik] current is checked for null
+                    if (current != null && !isRelevantToVersion(current)) { //NOSONAR
                         return false;
                     }
                     return true;
@@ -1150,7 +1148,9 @@ public class UpdateSite {
          */
         @Restricted(DoNotUse.class)
         public boolean hasWarnings() {
-            return getWarnings().size() > 0;
+            Set w = getWarnings();
+            if (w == null) return false;
+            return w.size() > 0;
         }
 
         /**
@@ -1202,10 +1202,10 @@ public class UpdateSite {
             for (Plugin dep : getNeededDependencies()) {
                 UpdateCenter.InstallationJob job = uc.getJob(dep);
                 if (job == null || job.status instanceof UpdateCenter.DownloadJob.Failure) {
-                    LOGGER.log(Level.INFO, "Adding dependent install of " + dep.name + " for plugin " + name);
+                    LOGGER.log(Level.INFO, "Adding dependent install of {0} for plugin {1}", new Object[]{dep.name, name});
                     dep.deploy(dynamicLoad);
                 } else {
-                    LOGGER.log(Level.INFO, "Dependent install of " + dep.name + " for plugin " + name + " already added, skipping");
+                    LOGGER.log(Level.INFO, "Dependent install of {0} for plugin {1} already added, skipping", new Object[]{dep.name, name});
                 }
             }
             PluginWrapper pw = getInstalled();

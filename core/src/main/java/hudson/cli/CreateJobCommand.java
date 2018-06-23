@@ -44,8 +44,9 @@ public class CreateJobCommand extends CLICommand {
     @Argument(metaVar="NAME",usage="Name of the job to create",required=true)
     public String name;
 
+    @Override
     protected int run() throws Exception {
-        Jenkins h = Jenkins.getActiveInstance();
+        Jenkins h = Jenkins.get();
 
         if (h.getItemByFullName(name)!=null) {
             throw new IllegalStateException("Job '"+name+"' already exists");

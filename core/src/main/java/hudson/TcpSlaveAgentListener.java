@@ -413,11 +413,16 @@ public final class TcpSlaveAgentListener extends Thread {
                             LOGGER.log(Level.FINE, "Received ping response from {0}", socket.getRemoteSocketAddress());
                             return true;
                         } else {
-                            LOGGER.log(Level.FINE, "Expected ping response from {0} of {1} got {2}", new Object[]{
-                                    socket.getRemoteSocketAddress(),
+                            String addr = socket.getRemoteSocketAddress().toString();
+                            if (addr == null) {
+                                LOGGER.log(Level.FINE, "NOT CONNECTED YET");
+                            } else {
+                                LOGGER.log(Level.FINE, "Expected ping response from {0} of {1} got {2}", new Object[]{
+                                    addr,
                                     new String(ping, "UTF-8"),
                                     new String(response, 0, responseLength, "UTF-8")
-                            });
+                                });
+                            }
                             return false;
                         }
                     }
@@ -510,6 +515,7 @@ public final class TcpSlaveAgentListener extends Thread {
      * Connection terminated because we are reconnected from the current peer.
      */
     public static class ConnectionFromCurrentPeer extends OfflineCause {
+        @Override
         public String toString() {
             return "The current peer is reconnecting";
         }

@@ -82,6 +82,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static hudson.tools.JDKInstaller.Preference.*;
+import java.util.logging.Level;
+import javax.annotation.Nonnull;
 import org.kohsuke.stapler.interceptor.RequirePOST;
 
 /**
@@ -120,6 +122,7 @@ public class JDKInstaller extends ToolInstaller {
         this.acceptLicense = acceptLicense;
     }
 
+    @Override
     public FilePath performInstallation(ToolInstallation tool, Node node, TaskListener log) throws IOException, InterruptedException {
         FilePath expectedLocation = preferredLocation(tool, node);
         PrintStream out = log.getLogger();
@@ -371,18 +374,22 @@ public class JDKInstaller extends ToolInstaller {
             this.node = node;
         }
 
+        @Override
         public void delete(String file) throws IOException, InterruptedException {
             $(file).delete();
         }
 
+        @Override
         public void chmod(String file, int mode) throws IOException, InterruptedException {
             $(file).chmod(mode);
         }
 
+        @Override
         public InputStream read(String file) throws IOException, InterruptedException {
             return $(file).read();
         }
 
+        @Override
         public List<String> listSubDirectories(String dir) throws IOException, InterruptedException {
             List<String> r = new ArrayList<String>();
             for( FilePath f : $(dir).listDirectories())
@@ -390,6 +397,7 @@ public class JDKInstaller extends ToolInstaller {
             return r;
         }
 
+        @Override
         public void pullUp(String from, String to) throws IOException, InterruptedException {
             $(from).moveAllChildrenTo($(to));
         }
@@ -441,7 +449,7 @@ public class JDKInstaller extends ToolInstaller {
         if(primary==null)   primary=secondary;
         if(primary==null)
             throw new AbortException("Couldn't find the right download for "+platform+" and "+ cpu +" combination");
-        LOGGER.fine("Platform choice:"+primary);
+        LOGGER.log(Level.FINE, "Platform choice:{0}", primary);
 
         log.getLogger().println("Downloading JDK from "+primary.filepath);
 
@@ -464,7 +472,7 @@ public class JDKInstaller extends ToolInstaller {
                 if (totalPageCount++>16) // looping too much
                     throw new IOException("Unable to find the login form");
 
-                LOGGER.fine("Requesting " + m.getURI());
+                LOGGER.log(Level.FINE, "Requesting {0}", m.getURI());
                 int r = hc.executeMethod(m);
                 if (r/100==3) {
                     // redirect?
@@ -497,6 +505,8 @@ public class JDKInstaller extends ToolInstaller {
                             m = new GetMethod(new URI(m.getURI(), "/oaam_server/authJump.do?jump=false", true).toString());
                             continue;
                         } catch (InterruptedException x) {
+                            // Restore interrupted state...
+                            Thread.currentThread().interrupt();
                             throw new IOException("Interrupted while logging in", x);
                         }
                     }
@@ -619,6 +629,7 @@ public class JDKInstaller extends ToolInstaller {
 
         static class GetCurrentPlatform extends MasterToSlaveCallable<Platform,DetectionFailedException> {
             private static final long serialVersionUID = 1L;
+            @Override
             public Platform call() throws DetectionFailedException {
                 return current();
             }
@@ -681,6 +692,7 @@ public class JDKInstaller extends ToolInstaller {
 
         static class GetCurrentCPU extends MasterToSlaveCallable<CPU,DetectionFailedException> {
             private static final long serialVersionUID = 1L;
+            @Override
             public CPU call() throws DetectionFailedException {
                 return current();
             }
@@ -776,6 +788,7 @@ public class JDKInstaller extends ToolInstaller {
             load();
         }
 
+        @Override
         public String getDisplayName() {
             return Messages.JDKInstaller_DescriptorImpl_displayName();
         }
@@ -909,8 +922,7 @@ public class JDKInstaller extends ToolInstaller {
 
         private JDKFamily reduceData(String name, List<JDKRelease> releases1, List<JDKRelease> releases2) {
             LinkedList<JDKRelease> reducedReleases = new LinkedList<>();
-            for (Iterator<JDKRelease> iterator = releases1.iterator(); iterator.hasNext(); ) {
-                JDKRelease release1 = iterator.next();
+            for (JDKRelease release1 : releases1) {
                 boolean hasDuplicate = false;
                 for (Iterator<JDKRelease> iterator2 = releases2.iterator(); iterator2.hasNext(); ) {
                     JDKRelease release2 = iterator2.next();
@@ -937,8 +949,7 @@ public class JDKInstaller extends ToolInstaller {
 
         private JDKRelease reduceReleases(JDKRelease release, List<JDKFile> files1, List<JDKFile> files2) {
             LinkedList<JDKFile> reducedFiles = new LinkedList<>();
-            for (Iterator<JDKFile> iterator1 = files1.iterator(); iterator1.hasNext(); ) {
-                JDKFile file1 = iterator1.next();
+            for (JDKFile file1 : files1) {
                 for (Iterator<JDKFile> iterator2 = files2.iterator(); iterator2.hasNext(); ) {
                     JDKFile file2 = iterator2.next();
                     if (file1.name.equals(file2.name)) {

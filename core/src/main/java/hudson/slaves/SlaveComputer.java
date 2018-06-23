@@ -459,7 +459,11 @@ public class SlaveComputer extends Computer {
      * @since 1.495
      */
     public long getResourceLoadingTime() throws IOException, InterruptedException {
-        return channel.call(new LoadingTime(true));
+        Channel c = Channel.current();
+        if (c == null) {
+            return -1;
+        }
+        return c.call(new LoadingTime(true));
     }
 
     /**
@@ -491,7 +495,11 @@ public class SlaveComputer extends Computer {
 
     static class LoadingPrefetchCacheCount extends MasterToSlaveCallable<Integer,RuntimeException> {
         @Override public Integer call() {
-            return Channel.current().classLoadingPrefetchCacheCount.get();
+            Channel c = Channel.current();
+            if (c == null) {
+                return -1;
+            }
+            return c.classLoadingPrefetchCacheCount.get();
         }
     }
 

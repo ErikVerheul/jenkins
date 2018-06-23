@@ -731,7 +731,9 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
     }
 
     static JenkinsHolder HOLDER = new JenkinsHolder() {
-        public @CheckForNull Jenkins getInstance() {
+        public @CheckForNull
+        @Override
+        Jenkins getInstance() {
             return theInstance;
         }
     };
@@ -4962,7 +4964,7 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
      */
     @Restricted(NoExternalUse.class)
     public @CheckForNull static VersionNumber getStoredVersion() {
-        return toVersion(Jenkins.getActiveInstance().version);
+        return toVersion(Jenkins.get().version);
     }
 
     /**

@@ -59,12 +59,14 @@ public class InstallToolCommand extends CLICommand {
     @Argument(index=1,metaVar="NAME",usage="The name of the tool to install, as you've entered in the Jenkins system configuration")
     public String toolName;
 
+    @Override
     public String getShortDescription() {
         return Messages.InstallToolCommand_ShortDescription();
     }
 
+    @Override
     protected int run() throws Exception {
-        Jenkins h = Jenkins.getActiveInstance();
+        Jenkins h = Jenkins.get();
         h.checkPermission(Jenkins.READ);
 
         // where is this build running?
@@ -134,6 +136,7 @@ public class InstallToolCommand extends CLICommand {
     private static final class BuildIDs extends MasterToSlaveCallable<BuildIDs, IOException> {
         String job,number,id;
 
+        @Override
         public BuildIDs call() throws IOException {
             job = System.getenv("JOB_NAME");
             number = System.getenv("BUILD_NUMBER");

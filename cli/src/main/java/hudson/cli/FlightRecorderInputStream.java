@@ -52,6 +52,7 @@ class FlightRecorderInputStream extends InputStream {
         final IOException[] error = new IOException[1];
 
         Thread diagnosisThread = new Thread(diagnosisName+" stream corruption diagnosis thread") {
+            @Override
             public void run() {
                 int b;
                 try {
@@ -104,7 +105,7 @@ class FlightRecorderInputStream extends InputStream {
      */
     @Override
     public long skip(long n) throws IOException {
-        byte[] buf = new byte[(int)Math.min(n,64*1024)];
+        byte[] buf = new byte[(int)Math.min(n,64L*1024)];
         return read(buf,0,buf.length);
     }
 

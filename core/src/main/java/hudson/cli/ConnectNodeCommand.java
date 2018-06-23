@@ -60,7 +60,7 @@ public class ConnectNodeCommand extends CLICommand {
     @Override
     protected int run() throws Exception {
         boolean errorOccurred = false;
-        final Jenkins jenkins = Jenkins.getActiveInstance();
+        final Jenkins jenkins = Jenkins.get();
 
         final HashSet<String> hs = new HashSet<String>();
         hs.addAll(nodes);

@@ -266,7 +266,7 @@ public class DisconnectNodeCommandTest {
     }
 
     public void disconnectNodeShouldSucceedOnMaster() throws Exception {
-        final Computer masterComputer = j.jenkins.getActiveInstance().getComputer("");
+        final Computer masterComputer = Jenkins.get().getComputer("");
         assertThat(masterComputer.isOnline(), equalTo(true));
         assertThat(masterComputer.getOfflineCause(), equalTo(null));
 

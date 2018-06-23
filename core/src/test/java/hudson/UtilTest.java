@@ -60,7 +60,6 @@ import org.jvnet.hudson.test.Issue;
 import hudson.util.StreamTaskListener;
 
 import org.junit.Rule;
-import org.junit.internal.AssumptionViolatedException;
 import org.junit.rules.TemporaryFolder;
 
 import com.google.common.collect.Lists;
@@ -359,7 +358,7 @@ public class UtilTest {
         final File d1f1 = new File(d1, "d1f1");
         final File d2f2 = new File(d2, "d1f2");
         final int defaultDeletionMax = Util.DELETION_MAX;
-        final int defaultDeletionWait = Util.WAIT_BETWEEN_DELETION_RETRIES;
+        final long defaultDeletionWait = Util.WAIT_BETWEEN_DELETION_RETRIES;
         final boolean defaultDeletionGC = Util.GC_AFTER_FAILED_DELETE;
         try {
             // Test: If we cannot delete a file, we throw
@@ -414,7 +413,7 @@ public class UtilTest {
         final File d1f1 = new File(d1, "d1f1");
         final File d2f2 = new File(d2, "d1f2");
         final int defaultDeletionMax = Util.DELETION_MAX;
-        final int defaultDeletionWait = Util.WAIT_BETWEEN_DELETION_RETRIES;
+        final long defaultDeletionWait = Util.WAIT_BETWEEN_DELETION_RETRIES;
         final boolean defaultDeletionGC = Util.GC_AFTER_FAILED_DELETE;
         try {
             // Test: If we cannot delete a file, we throw

@@ -50,7 +50,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import jenkins.model.DownloadSettings;
 import jenkins.model.Jenkins;
-import jenkins.util.JSONSignatureValidator;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
@@ -77,7 +76,7 @@ public class DownloadService extends PageDecorator {
     /**
      * the prefix for the signature validator name
      */
-    private static final String signatureValidatorPrefix = "downloadable";
+    private static final String SIGNATUREVALIDATORPREFIX = "downloadable";
     /**
      * Builds up an HTML fragment that starts all the download jobs.
      */
@@ -89,24 +88,26 @@ public class DownloadService extends PageDecorator {
         if (doesNotSupportPostMessage())  return "";
 
         StringBuilder buf = new StringBuilder();
-        if(Jenkins.get().hasPermission(Jenkins.READ)) {
+        if (Jenkins.get().hasPermission(Jenkins.READ)) {
             long now = System.currentTimeMillis();
             for (Downloadable d : Downloadable.all()) {
-                if(d.getDue()<now && d.lastAttempt+10*1000<now) {
+                if (d.getDue() < now && d.lastAttempt + 10 * 1000 < now) {
                     buf.append("<script>")
-                       .append("Behaviour.addLoadEvent(function() {")
-                       .append("  downloadService.download(")
-                       .append(QuotedStringTokenizer.quote(d.getId()))
-                       .append(',')
-                       .append(QuotedStringTokenizer.quote(mapHttps(d.getUrl())))
-                       .append(',')
-                       .append("{version:"+QuotedStringTokenizer.quote(Jenkins.VERSION)+'}')
-                       .append(',')
-                       .append(QuotedStringTokenizer.quote(Stapler.getCurrentRequest().getContextPath()+'/'+getUrl()+"/byId/"+d.getId()+"/postBack"))
-                       .append(',')
-                       .append("null);")
-                       .append("});")
-                       .append("</script>");
+                        .append("Behaviour.addLoadEvent(function() {")
+                        .append("  downloadService.download(")
+                        .append(QuotedStringTokenizer.quote(d.getId()))
+                        .append(',')
+                        .append(QuotedStringTokenizer.quote(mapHttps(d.getUrl())))
+                        .append(',')
+                        .append("{version:")
+                        .append(QuotedStringTokenizer.quote(Jenkins.VERSION))
+                        .append('}')
+                        .append(',')
+                        .append(QuotedStringTokenizer.quote(Stapler.getCurrentRequest().getContextPath() + '/' + getUrl() + "/byId/" + d.getId() + "/postBack"))
+                        .append(',')
+                        .append("null);")
+                        .append("});")
+                        .append("</script>");
                     d.lastAttempt = now;
                 }
             }
@@ -226,14 +227,14 @@ public class DownloadService extends PageDecorator {
             for (Downloadable d : Downloadable.all()) {
                 TextFile f = d.getDataFile();
                 if (f == null || !f.exists()) {
-                    LOGGER.log(Level.FINE, "Updating metadata for " + d.getId());
+                    LOGGER.log(Level.FINE, "Updating metadata for {0}", d.getId());
                     try {
                         d.updateNow();
                     } catch (IOException e) {
                         LOGGER.log(Level.WARNING, "Failed to update metadata for " + d.getId(), e);
                     }
                 } else {
-                    LOGGER.log(Level.FINER, "Skipping update of metadata for " + d.getId());
+                    LOGGER.log(Level.FINER, "Skipping update of metadata for {0}", d.getId());
                 }
             }
         }
@@ -310,7 +311,7 @@ public class DownloadService extends PageDecorator {
          */
         public List<String> getUrls() {
             List<String> updateSites = new ArrayList<String>();
-            for (UpdateSite site : Jenkins.getActiveInstance().getUpdateCenter().getSiteList()) {
+            for (UpdateSite site : Jenkins.get().getUpdateCenter().getSiteList()) {
                 String siteUrl = site.getUrl();
                 int baseUrlEnd = siteUrl.indexOf("update-center.json");
                 if (baseUrlEnd != -1) {
@@ -390,7 +391,7 @@ public class DownloadService extends PageDecorator {
             TextFile df = getDataFile();
             df.write(json);
             df.file.setLastModified(dataTimestamp);
-            LOGGER.info("Obtained the updated data file for "+id);
+            LOGGER.log(Level.INFO, "Obtained the updated data file for {0}", id);
             return FormValidation.ok();
         }
 
@@ -398,7 +399,7 @@ public class DownloadService extends PageDecorator {
         public FormValidation updateNow() throws IOException {
             List<JSONObject> jsonList = new ArrayList<>();
             boolean toolInstallerMetadataExists = false;
-            for (UpdateSite updatesite : Jenkins.getActiveInstance().getUpdateCenter().getSiteList()) {
+            for (UpdateSite updatesite : Jenkins.get().getUpdateCenter().getSiteList()) {
                 String site = updatesite.getMetadataUrlForDownloadable(url);
                 if (site == null) {
                     return FormValidation.warning("The update site " + site + " does not look like an update center");
@@ -407,13 +408,13 @@ public class DownloadService extends PageDecorator {
                 try {
                     jsonString = loadJSONHTML(new URL(site + ".html?id=" + URLEncoder.encode(getId(), "UTF-8") + "&version=" + URLEncoder.encode(Jenkins.VERSION, "UTF-8")));
                     toolInstallerMetadataExists = true;
-                } catch (Exception e) {
+                } catch (IOException e) {
                     LOGGER.log(Level.FINE, "Could not load json from " + site, e );
                     continue;
                 }
                 JSONObject o = JSONObject.fromObject(jsonString);
                 if (signatureCheck) {
-                    FormValidation e = updatesite.getJsonSignatureValidator(signatureValidatorPrefix +" '"+id+"'").verifySignature(o);
+                    FormValidation e = updatesite.getJsonSignatureValidator(SIGNATUREVALIDATORPREFIX +" '"+id+"'").verifySignature(o);
                     if (e.kind!= Kind.OK) {
                         LOGGER.log(Level.WARNING, "signature check failed for " + site, e );
                         continue;
@@ -421,10 +422,10 @@ public class DownloadService extends PageDecorator {
                 }
                 jsonList.add(o);
             }
-            if (jsonList.size() == 0 && toolInstallerMetadataExists) {
+            if (jsonList.isEmpty() && toolInstallerMetadataExists) {
                 return FormValidation.warning("None of the tool installer metadata passed the signature check");
             } else if (!toolInstallerMetadataExists) {
-                LOGGER.log(Level.WARNING, "No tool installer metadata found for " + id);
+                LOGGER.log(Level.WARNING, "No tool installer metadata found for {0}", id);
                 return FormValidation.ok();
             }
             JSONObject reducedJson = reduce(jsonList);
@@ -455,7 +456,7 @@ public class DownloadService extends PageDecorator {
             try {
                 field = genericList.get(0).getClass().getDeclaredField(comparator);
             } catch (NoSuchFieldException e) {
-                LOGGER.warning("comparator: " + comparator + "does not exist for " + genericList.get(0).getClass() + ", " + e);
+                LOGGER.log(Level.WARNING, "comparator: {0}does not exist for {1}, {2}", new Object[]{comparator, genericList.get(0).getClass(), e});
                 return false;
             }
             for (int i = 0; i < genericList.size(); i ++ ) {
@@ -467,7 +468,7 @@ public class DownloadService extends PageDecorator {
                             return true;
                         }
                     } catch (IllegalAccessException e) {
-                        LOGGER.warning("could not access field: " + comparator + ", " + e);
+                        LOGGER.log(Level.WARNING, "could not access field: {0}, {1}", new Object[]{comparator, e});
                     }
                 }
             }

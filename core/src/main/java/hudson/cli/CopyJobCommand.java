@@ -49,8 +49,9 @@ public class CopyJobCommand extends CLICommand {
     @Argument(metaVar="DST",usage="Name of the new job to be created.",index=1,required=true)
     public String dst;
 
+    @Override
     protected int run() throws Exception {
-        Jenkins jenkins = Jenkins.getActiveInstance();
+        Jenkins jenkins = Jenkins.get();
 
         if (jenkins.getItemByFullName(dst)!=null) {
             throw new IllegalStateException("Job '"+dst+"' already exists");

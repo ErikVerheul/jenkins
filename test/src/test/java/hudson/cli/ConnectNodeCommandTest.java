@@ -32,7 +32,6 @@ import hudson.model.Computer;
 import hudson.slaves.DumbSlave;
 import jenkins.model.Jenkins;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
@@ -175,7 +174,7 @@ public class ConnectNodeCommandTest {
     }
 
     @Test public void connectNodeShouldSucceedOnMaster() throws Exception {
-        final Computer masterComputer = j.jenkins.getActiveInstance().getComputer("");
+        final Computer masterComputer = Jenkins.get().getComputer("");
 
         CLICommandInvoker.Result result = command
                 .authorizedTo(Computer.CONNECT, Jenkins.READ)

@@ -8,14 +8,11 @@ import hudson.model.Computer;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Collections;
-import java.util.HashMap;
-import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import jenkins.AgentProtocol;
 import jenkins.model.Jenkins;
 import jenkins.util.SystemProperties;
 import org.jenkinsci.Symbol;
-import org.jenkinsci.remoting.engine.JnlpClientDatabase;
 import org.jenkinsci.remoting.engine.JnlpConnectionState;
 import org.jenkinsci.remoting.engine.JnlpProtocol3Handler;
 import org.kohsuke.accmod.Restricted;
@@ -56,7 +53,8 @@ public class JnlpSlaveAgentProtocol3 extends AgentProtocol {
         // we only want to force the protocol off for users that have explicitly banned it via system property
         // everyone on the A/B test will just have the opt-in flag toggled
         // TODO strip all this out and hardcode OptIn==TRUE once JENKINS-36871 is merged
-        return forceEnabled != Boolean.FALSE ? handler.getName() : null;
+        //[Erik] this crooked use of Boolean is by design
+        return FORCEENABLED != Boolean.FALSE ? handler.getName() : null; //NOSONAR
     }
 
     /**
@@ -90,14 +88,14 @@ public class JnlpSlaveAgentProtocol3 extends AgentProtocol {
     @SuppressFBWarnings(value = "MS_SHOULD_BE_REFACTORED_TO_BE_FINAL",
             justification = "Part of the administrative API for System Groovy scripts.")
     public static boolean ENABLED;
-    private static final Boolean forceEnabled;
+    private static final Boolean FORCEENABLED;
 
     static {
-        forceEnabled = SystemProperties.optBoolean(JnlpSlaveAgentProtocol3.class.getName() + ".enabled");
-        if (forceEnabled != null) {
-            ENABLED = forceEnabled;
+        FORCEENABLED = SystemProperties.optBoolean(JnlpSlaveAgentProtocol3.class.getName() + ".enabled");
+        if (FORCEENABLED != null) {
+            ENABLED = FORCEENABLED;
         } else {
-            byte hash = Util.fromHexString(Jenkins.getActiveInstance().getLegacyInstanceId())[0];
+            byte hash = Util.fromHexString(Jenkins.get().getLegacyInstanceId())[0];
             ENABLED = (hash % 10) == 0;
         }
     }

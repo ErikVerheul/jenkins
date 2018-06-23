@@ -26,12 +26,14 @@ package hudson.cli;
 import hudson.AbortException;
 import hudson.Extension;
 import hudson.model.AbstractItem;
+import java.io.IOException;
 import jenkins.model.Jenkins;
 import org.kohsuke.args4j.Argument;
 
 import java.util.List;
 import java.util.HashSet;
 import java.util.logging.Logger;
+import org.acegisecurity.AccessDeniedException;
 
 /**
  * CLI command, which deletes a job or multiple jobs.
@@ -54,7 +56,7 @@ public class DeleteJobCommand extends CLICommand {
     protected int run() throws Exception {
 
         boolean errorOccurred = false;
-        final Jenkins jenkins = Jenkins.getActiveInstance();
+        final Jenkins jenkins = Jenkins.get();
 
         final HashSet<String> hs = new HashSet<String>();
         hs.addAll(jobs);
@@ -71,7 +73,7 @@ public class DeleteJobCommand extends CLICommand {
 
                 job.checkPermission(AbstractItem.DELETE);
                 job.delete();
-            } catch (Exception e) {
+            } catch (IOException | IllegalArgumentException | InterruptedException | AccessDeniedException e) {
                 if(hs.size() == 1) {
                     throw e;
                 }
@@ -79,7 +81,6 @@ public class DeleteJobCommand extends CLICommand {
                 final String errorMsg = String.format(job_s + ": " + e.getMessage());
                 stderr.println(errorMsg);
                 errorOccurred = true;
-                continue;
             }
         }
 

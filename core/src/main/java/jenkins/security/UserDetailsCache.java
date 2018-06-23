@@ -68,10 +68,11 @@ public final class UserDetailsCache {
     public UserDetailsCache() {
         if (EXPIRE_AFTER_WRITE_SEC == null || EXPIRE_AFTER_WRITE_SEC <= 0) {
             //just in case someone is trying to trick us
-            EXPIRE_AFTER_WRITE_SEC = SystemProperties.getInteger(SYS_PROP_NAME, (int)TimeUnit.MINUTES.toSeconds(2));
+            //[Erik] This class is used as a singleton so instantiated once
+            EXPIRE_AFTER_WRITE_SEC = SystemProperties.getInteger(SYS_PROP_NAME, (int)TimeUnit.MINUTES.toSeconds(2)); //NOSONAR
             if (EXPIRE_AFTER_WRITE_SEC <= 0) {
                 //The property could also be set to a negative value
-                EXPIRE_AFTER_WRITE_SEC = (int)TimeUnit.MINUTES.toSeconds(2);
+                EXPIRE_AFTER_WRITE_SEC = (int)TimeUnit.MINUTES.toSeconds(2); //NOSONAR
             }
         }
         detailsCache = newBuilder().softValues().expireAfterWrite(EXPIRE_AFTER_WRITE_SEC, TimeUnit.SECONDS).build();

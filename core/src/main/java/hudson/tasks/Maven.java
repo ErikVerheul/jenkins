@@ -725,16 +725,35 @@ public class Maven extends Builder {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
 
+            String gh = getHome();
             final MavenInstallation that = (MavenInstallation) o;
-
-            if (getHome() != null ? !getHome().equals(that.getHome()) : that.getHome() != null) return false;
-            if (getName() != null ? !getName().equals(that.getName()) : that.getName() != null) return false;
+            if (gh != null) {
+                if (!gh.equals(that.getHome())) return false;
+            } else  {
+                if (that.getHome() != null) return false;
+            }
+            if (getName() != null) {
+                if (!getName().equals(that.getName())) return false;
+            } else  {
+                if (that.getName() != null) return false;
+            }
+//            [Erik] Possible  null reference when using ternary operation           
+//            if (getHome() != null ? !getHome().equals(that.getHome()) : that.getHome() != null) return false;
+//            if (getName() != null ? !getName().equals(that.getName()) : that.getName() != null) return false;
             return true;
         }
 
         @Override
         public int hashCode() {
-            int result = getHome() != null ? getHome().hashCode() : 0;
+            String gh = getHome();
+            int result;
+            if (gh != null) {
+                result = gh.hashCode();
+            } else {
+                result = 0;
+            }
+//            [Erik] Possible  null reference when using ternary operation 
+//            int result = getHome() != null ? getHome().hashCode() : 0;
             result = 31 * result + (getName() != null ? getName().hashCode() : 0);
             //result = 31 * result + (getProperties() != null ? getProperties().hashCode() : 0);
             return result;

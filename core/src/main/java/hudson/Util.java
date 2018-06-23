@@ -1355,7 +1355,7 @@ public class Util {
                         TimeUnit.MILLISECONDS.sleep(timeInMillis); //trying to defeat likely ongoing race condition
                         continue;
                     }
-                    LOGGER.warning("symlink FileAlreadyExistsException thrown " + maxNumberOfTries + " times => cannot createSymbolicLink");
+                    LOGGER.log(Level.WARNING, "symlink FileAlreadyExistsException thrown {0} times => cannot createSymbolicLink", maxNumberOfTries);
                     throw fileAlreadyExistsException;
                 }
             }
@@ -1451,7 +1451,7 @@ public class Util {
         try {
             return new URI(null,url,null).toASCIIString();
         } catch (URISyntaxException e) {
-            LOGGER.warning("Failed to encode "+url);    // could this ever happen?
+            LOGGER.log(Level.WARNING, "Failed to encode {0}", url);    // could this ever happen?
             return url;
         }
     }
@@ -1472,10 +1472,13 @@ public class Util {
      * is returned.
      * @param numberStr string to parse
      * @param defaultNumber number to return if the string can not be parsed
-     * @return returns the parsed string; otherwise the default number
+     * @return returns the parsed string; otherwise the default number or 0 when the default number is null
      */
-    @CheckForNull
-    public static Number tryParseNumber(@CheckForNull String numberStr, @CheckForNull Number defaultNumber) {
+    @Nonnull
+    public static Number tryParseNumber(@CheckForNull String numberStr, Number defaultNumber) {
+        if (defaultNumber == null) {
+            defaultNumber = 0;
+        }
         if ((numberStr == null) || (numberStr.length() == 0)) {
             return defaultNumber;
         }
@@ -1701,7 +1704,7 @@ public class Util {
      */
     @Restricted(value = NoExternalUse.class)
     private static final int DEFAULT_VALUE = 100;
-    static int WAIT_BETWEEN_DELETION_RETRIES = SystemProperties.getInteger(Util.class.getName() + ".deletionRetryWait", DEFAULT_VALUE);
+    static long WAIT_BETWEEN_DELETION_RETRIES = SystemProperties.getInteger(Util.class.getName() + ".deletionRetryWait", DEFAULT_VALUE);
 
     /**
      * If this flag is set to true then we will request a garbage collection

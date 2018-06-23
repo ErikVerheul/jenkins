@@ -64,7 +64,7 @@ public abstract class CommandDuringBuild extends CLICommand {
             if (envs[0]==null || envs[1]==null)
                 return null;
 
-            Job j = Jenkins.getActiveInstance().getItemByFullName(envs[0],Job.class);
+            Job j = Jenkins.get().getItemByFullName(envs[0],Job.class);
             if (j==null)
                 throw new IllegalArgumentException("No such job: "+envs[0]);
 
@@ -88,6 +88,7 @@ public abstract class CommandDuringBuild extends CLICommand {
      * Gets the environment variables that points to the build being executed.
      */
     private static final class GetCharacteristicEnvironmentVariables extends MasterToSlaveCallable<String[],IOException> {
+        @Override
         public String[] call() throws IOException {
             return new String[] {
                 System.getenv("JOB_NAME"),

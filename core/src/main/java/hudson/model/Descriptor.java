@@ -640,14 +640,13 @@ public abstract class Descriptor<T extends Describable<T>> implements Saveable, 
             if (isApplicable(actualType, json)) {
                 LOGGER.log(Level.FINE, "switching to newInstance {0} {1}", new Object[] {actualType.getName(), json});
                 try {
-                    final Descriptor descriptor = Jenkins.getActiveInstance().getDescriptor(actualType);
+                    final Descriptor descriptor = Jenkins.get().getDescriptor(actualType);
                     if (descriptor != null) {
                         return descriptor.newInstance(Stapler.getCurrentRequest(), json);
                     } else {
-                        LOGGER.log(Level.WARNING, "Descriptor not found. Falling back to default instantiation "
-                                + actualType.getName() + " " + json);
+                        LOGGER.log(Level.WARNING, "Descriptor not found. Falling back to default instantiation {0} {1}", new Object[]{actualType.getName(), json});
                     }
-                } catch (Exception x) {
+                } catch (FormException | IllegalStateException x) {
                     LOGGER.log(Level.WARNING, "falling back to default instantiation " + actualType.getName() + " " + json, x);
                     // If nested objects are not using newInstance, bindJSON will wind up throwing the same exception anyway,
                     // so logging above will result in a duplicated stack trace.
@@ -666,8 +665,8 @@ public abstract class Descriptor<T extends Describable<T>> implements Saveable, 
                 if (isApplicable(targetTypeErasure, json)) {
                     LOGGER.log(Level.FINE, "switching to newInstance {0} {1}", new Object[] {targetTypeErasure.getName(), json});
                     try {
-                        return Jenkins.getActiveInstance().getDescriptor(targetTypeErasure).newInstance(Stapler.getCurrentRequest(), json);
-                    } catch (Exception x) {
+                        return Jenkins.get().getDescriptor(targetTypeErasure).newInstance(Stapler.getCurrentRequest(), json);
+                    } catch (FormException | IllegalStateException x) {
                         LOGGER.log(Level.WARNING, "falling back to default instantiation " + targetTypeErasure.getName() + " " + json, x);
                     }
                 }
@@ -866,6 +865,7 @@ public abstract class Descriptor<T extends Describable<T>> implements Saveable, 
     /**
      * Saves the configuration info to the disk.
      */
+    @Override
     public synchronized void save() {
         if(BulkChange.contains(this))   return;
         try {
@@ -1144,6 +1144,7 @@ public abstract class Descriptor<T extends Describable<T>> implements Saveable, 
             return formField;
         }
 
+        @Override
         public void generateResponse(StaplerRequest req, StaplerResponse rsp, Object node) throws IOException, ServletException {
             if (FormApply.isApply(req)) {
                 FormApply.applyResponse("notificationBar.show(" + quote(getMessage())+ ",notificationBar.ERROR)")

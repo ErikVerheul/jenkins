@@ -102,7 +102,7 @@ public class UnlabeledLoadStatistics extends LoadStatistics {
     private static class UnlabeledNodesIterator extends Iterators.FilterIterator<Node> {
 
         protected UnlabeledNodesIterator() {
-            super(Jenkins.getActiveInstance().getNodes().iterator());
+            super(Jenkins.get().getNodes().iterator());
         }
 
         @Override
@@ -110,6 +110,7 @@ public class UnlabeledLoadStatistics extends LoadStatistics {
             return n != null && n.getMode() == Mode.NORMAL;
         }
 
+        @Override
         public void remove() {
             // why does Iterators.FilterIterator do the stupid thing and allow remove?
             // (remove should remove the object last returned by next(), but it won't if hasNext() is called

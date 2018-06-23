@@ -29,8 +29,10 @@ import javax.annotation.Nonnull;
 import hudson.Extension;
 import hudson.ExtensionList;
 import hudson.ExtensionPoint;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.servlet.ServletException;
 import jenkins.model.Jenkins;
 import org.apache.commons.lang.StringUtils;
 /**
@@ -67,11 +69,12 @@ public class InstallState implements ExtensionPoint {
      */
     @Extension
     public static final InstallState INITIAL_SETUP_COMPLETED = new InstallState("INITIAL_SETUP_COMPLETED", true) {
+        @Override
         public void initializeState() {
             Jenkins j = Jenkins.get();
             try {
                 j.getSetupWizard().completeSetup();
-            } catch (Exception e) {
+            } catch (IOException | ServletException e) {
                 throw new RuntimeException(e);
             }
             j.setInstallState(RUNNING);
@@ -83,6 +86,7 @@ public class InstallState implements ExtensionPoint {
      */
     @Extension
     public static final InstallState CREATE_ADMIN_USER = new InstallState("CREATE_ADMIN_USER", false) {
+        @Override
         public void initializeState() {
             Jenkins j = Jenkins.get();
             // Skip this state if not using the security defaults
@@ -105,10 +109,11 @@ public class InstallState implements ExtensionPoint {
      */
     @Extension
     public static final InstallState INITIAL_SECURITY_SETUP = new InstallState("INITIAL_SECURITY_SETUP", false) {
+        @Override
         public void initializeState() {
             try {
                 Jenkins.get().getSetupWizard().init(true);
-            } catch (Exception e) {
+            } catch (IOException | IllegalStateException | InterruptedException e) {
                 throw new RuntimeException(e);
             }
 
@@ -127,6 +132,7 @@ public class InstallState implements ExtensionPoint {
      */
     @Extension
     public static final InstallState RESTART = new InstallState("RESTART", true) {
+        @Override
         public void initializeState() {
             InstallUtil.saveLastExecVersion();
         }
@@ -143,6 +149,7 @@ public class InstallState implements ExtensionPoint {
      */
     @Extension
     public static final InstallState DOWNGRADE = new InstallState("DOWNGRADE", true) {
+        @Override
         public void initializeState() {
             InstallUtil.saveLastExecVersion();
         }
@@ -210,7 +217,10 @@ public class InstallState implements ExtensionPoint {
     
     @Override
     public boolean equals(Object obj) {
-        if(obj instanceof InstallState) {
+        if (obj == null) {
+            return false;
+        }
+        if (this.getClass() == obj.getClass()) {
             return name.equals(((InstallState)obj).name());
         }
         return false;

@@ -61,9 +61,10 @@ public class GroovyCommand extends CLICommand {
     @Argument(metaVar="ARGUMENTS", index=1, usage="Command line arguments to pass into script.")
     public List<String> remaining = new ArrayList<String>();
 
+    @Override
     protected int run() throws Exception {
         // this allows the caller to manipulate the JVM state, so require the execute script privilege.
-        Jenkins.getActiveInstance().checkPermission(Jenkins.RUN_SCRIPTS);
+        Jenkins.get().checkPermission(Jenkins.RUN_SCRIPTS);
 
         Binding binding = new Binding();
         binding.setProperty("out",new PrintWriter(stdout,true));
@@ -75,7 +76,7 @@ public class GroovyCommand extends CLICommand {
         if (channel != null) {
             String j = getClientEnvironmentVariable("JOB_NAME");
             if (j != null) {
-                Item job = Jenkins.getActiveInstance().getItemByFullName(j);
+                Item job = Jenkins.get().getItemByFullName(j);
                 binding.setProperty("currentJob", job);
                 String b = getClientEnvironmentVariable("BUILD_NUMBER");
                 if (b != null && job instanceof AbstractProject) {
@@ -85,7 +86,7 @@ public class GroovyCommand extends CLICommand {
             }
         }
 
-        GroovyShell groovy = new GroovyShell(Jenkins.getActiveInstance().getPluginManager().uberClassLoader, binding);
+        GroovyShell groovy = new GroovyShell(Jenkins.get().getPluginManager().uberClassLoader, binding);
         groovy.run(loadScript(),"RemoteClass",remaining.toArray(new String[remaining.size()]));
         return 0;
     }

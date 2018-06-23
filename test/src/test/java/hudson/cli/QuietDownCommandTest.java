@@ -50,6 +50,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static hudson.cli.CLICommandInvoker.Matcher.failedWith;
 import static hudson.cli.CLICommandInvoker.Matcher.hasNoStandardOutput;
 import static hudson.cli.CLICommandInvoker.Matcher.succeededSilently;
+import hudson.model.Queue;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -60,11 +61,15 @@ import static org.junit.Assert.fail;
 public class QuietDownCommandTest {
 
     private CLICommandInvoker command;
-    private final static QueueTest.TestFlyweightTask task
+    private final static QueueTest.TestFlyweightTask TASK
             = new QueueTest.TestFlyweightTask(new AtomicInteger(), null);
 
     @Rule
-    public final JenkinsRule j = new JenkinsRule();
+    public final JenkinsRule j;
+
+    public QuietDownCommandTest() {
+        this.j = new JenkinsRule();
+    }
 
     @Before
     public void setUp() {
@@ -129,7 +134,7 @@ public class QuietDownCommandTest {
 
     @Test
     public void quietDownShouldSuccessOnAlreadyQuietDownedJenkins() throws Exception {
-        j.jenkins.getActiveInstance().doQuietDown();
+        Jenkins.get().doQuietDown();
         assertJenkinsInQuietMode();
         final CLICommandInvoker.Result result = command
                 .authorizedTo(Jenkins.READ, Jenkins.ADMINISTER)
@@ -140,7 +145,7 @@ public class QuietDownCommandTest {
 
     @Test
     public void quietDownShouldSuccessWithBlockOnAlreadyQuietDownedJenkins() throws Exception {
-        j.jenkins.getActiveInstance().doQuietDown(true, 0);
+        Jenkins.get().doQuietDown(true, 0);
         assertJenkinsInQuietMode();
         final CLICommandInvoker.Result result = command
                 .authorizedTo(Jenkins.READ, Jenkins.ADMINISTER)
@@ -151,7 +156,7 @@ public class QuietDownCommandTest {
 
     @Test
     public void quietDownShouldSuccessWithBlockAndTimeoutOnAlreadyQuietDownedJenkins() throws Exception {
-        j.jenkins.getActiveInstance().doQuietDown(true, 0);
+        Jenkins.get().doQuietDown(true, 0);
         assertJenkinsInQuietMode();
         final long time_before = System.currentTimeMillis();
         final CLICommandInvoker.Result result = command
@@ -382,6 +387,7 @@ public class QuietDownCommandTest {
 
         boolean timeoutOccurred = false;
         final FutureTask exec_task = new FutureTask(new Callable() {
+            @Override
             public Object call() {
                 assertJenkinsNotInQuietMode();
                 final long time_before = System.currentTimeMillis();
@@ -426,6 +432,7 @@ public class QuietDownCommandTest {
         assertThat(((FreeStyleProject) j.jenkins.getItem("aProject")).getBuilds(), hasSize(1));
 
         final FutureTask exec_task = new FutureTask(new Callable() {
+            @Override
             public Object call() {
                 assertJenkinsNotInQuietMode();
                 final long time_before = System.currentTimeMillis();
@@ -465,7 +472,7 @@ public class QuietDownCommandTest {
      * Asserts if Jenkins is in quiet mode.
      * Will retry for some time before actually failing.
      */
-    private final void assertJenkinsInQuietMode() {
+    private void assertJenkinsInQuietMode() {
         assertJenkinsInQuietMode(j);
     }
 
@@ -473,7 +480,7 @@ public class QuietDownCommandTest {
      * Asserts if Jenkins is <strong>not</strong> in quiet mode.
      * Will retry for some time before actually failing.
      */
-    private final void assertJenkinsNotInQuietMode() {
+    private void assertJenkinsNotInQuietMode() {
         assertJenkinsNotInQuietMode(j);
     }
 
@@ -484,7 +491,7 @@ public class QuietDownCommandTest {
     public static final void assertJenkinsInQuietMode(final JenkinsRule j) {
         await().pollInterval(250, TimeUnit.MILLISECONDS)
                 .atMost(10, TimeUnit.SECONDS)
-                .until(() -> j.jenkins.getActiveInstance().getQueue().isBlockedByShutdown(task));
+                .until(() -> Queue.isBlockedByShutdown(TASK));
     }
 
     /**
@@ -494,6 +501,6 @@ public class QuietDownCommandTest {
     public static final void assertJenkinsNotInQuietMode(final JenkinsRule j) {
         await().pollInterval(250, TimeUnit.MILLISECONDS)
                 .atMost(10, TimeUnit.SECONDS)
-                .until(() -> !j.jenkins.getActiveInstance().getQueue().isBlockedByShutdown(task));
+                .until(() -> !Queue.isBlockedByShutdown(TASK));
     }
 }

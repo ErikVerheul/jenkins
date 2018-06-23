@@ -25,7 +25,6 @@ package hudson.model;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import hudson.console.ModelHyperlinkNote;
@@ -334,7 +333,6 @@ public abstract class Cause {
             public ConverterImpl(XStream2 xstream) { super(xstream); }
             @Override protected void callback(UpstreamCause uc, UnmarshallingContext context) {
                 if (uc.upstreamCause != null) {
-                    if (uc.upstreamCauses == null) uc.upstreamCauses = new ArrayList<Cause>();
                     uc.upstreamCauses.add(uc.upstreamCause);
                     uc.upstreamCause = null;
                     OldDataMonitor.report(context, "1.288");
@@ -403,7 +401,7 @@ public abstract class Cause {
     public static class UserIdCause extends Cause {
 
         @CheckForNull
-        private String userId;
+        private final String userId;
 
         /**
          * Constructor, which uses the current {@link User}.
@@ -459,8 +457,11 @@ public abstract class Cause {
         }
 
         @Override
-        public boolean equals(Object o) {
-            return o instanceof UserIdCause && Objects.equals(userId, ((UserIdCause) o).userId);
+        public boolean equals(Object obj) {
+            if (obj ==null) {
+                return false;
+            }
+            return (this.getClass() == obj.getClass()) && Objects.equals(userId, ((UserIdCause) obj).userId);
         }
 
         @Override
@@ -470,8 +471,8 @@ public abstract class Cause {
     }
 
     public static class RemoteCause extends Cause {
-        private String addr;
-        private String note;
+        private final String addr;
+        private final String note;
 
         public RemoteCause(String host, String note) {
             this.addr = host;

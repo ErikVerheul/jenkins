@@ -81,7 +81,7 @@ public abstract class TransientActionFactory<T> implements ExtensionPoint {
     public abstract @Nonnull Collection<? extends Action> createFor(@Nonnull T target);
 
     /** @see <a href="http://stackoverflow.com/a/24336841/12916">no pairs/tuples in Java</a> */
-    private static class CacheKey {
+    private static final class CacheKey {
         private final Class<?> type;
         private final Class<? extends Action> actionType;
         CacheKey(Class<?> type, Class<? extends Action> actionType) {
@@ -90,7 +90,8 @@ public abstract class TransientActionFactory<T> implements ExtensionPoint {
         }
         @Override
         public boolean equals(Object obj) {
-            return obj instanceof CacheKey && type == ((CacheKey) obj).type && actionType == ((CacheKey) obj).actionType;
+            if (obj == null) return false;
+            return (this.getClass() == obj.getClass()) && type == ((CacheKey) obj).type && actionType == ((CacheKey) obj).actionType;
         }
         @Override
         public int hashCode() {
@@ -98,7 +99,7 @@ public abstract class TransientActionFactory<T> implements ExtensionPoint {
         }
     }
     @SuppressWarnings("rawtypes")
-    private static final LoadingCache<ExtensionList<TransientActionFactory>, LoadingCache<CacheKey, List<TransientActionFactory<?>>>> cache =
+    private static final LoadingCache<ExtensionList<TransientActionFactory>, LoadingCache<CacheKey, List<TransientActionFactory<?>>>> CACHE =
         CacheBuilder.newBuilder().weakKeys().build(new CacheLoader<ExtensionList<TransientActionFactory>, LoadingCache<CacheKey, List<TransientActionFactory<?>>>>() {
         @Override
         public LoadingCache<CacheKey, List<TransientActionFactory<?>>> load(final ExtensionList<TransientActionFactory> allFactories) throws Exception {
@@ -128,7 +129,7 @@ public abstract class TransientActionFactory<T> implements ExtensionPoint {
 
     @Restricted(NoExternalUse.class) // pending a need for it outside Actionable
     public static Iterable<? extends TransientActionFactory<?>> factoriesFor(Class<?> type, Class<? extends Action> actionType) {
-        return cache.getUnchecked(ExtensionList.lookup(TransientActionFactory.class)).getUnchecked(new CacheKey(type, actionType));
+        return CACHE.getUnchecked(ExtensionList.lookup(TransientActionFactory.class)).getUnchecked(new CacheKey(type, actionType));
     }
 
 }

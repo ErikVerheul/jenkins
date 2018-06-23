@@ -35,7 +35,6 @@ import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.Option;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.net.MalformedURLException;
 import java.util.HashSet;
@@ -52,6 +51,7 @@ import org.apache.commons.io.FileUtils;
  */
 @Extension
 public class InstallPluginCommand extends CLICommand {
+    @Override
     public String getShortDescription() {
         return Messages.InstallPluginCommand_ShortDescription();
     }
@@ -72,8 +72,9 @@ public class InstallPluginCommand extends CLICommand {
     @Option(name="-deploy",usage="Deploy plugins right away without postponing them until the reboot.")
     public boolean dynamicLoad;
 
+    @Override
     protected int run() throws Exception {
-        Jenkins h = Jenkins.getActiveInstance();
+        Jenkins h = Jenkins.get();
         h.checkPermission(PluginManager.UPLOAD_PLUGINS);
         PluginManager pm = h.getPluginManager();
 
@@ -177,6 +178,6 @@ public class InstallPluginCommand extends CLICommand {
     }
 
     private static File getTargetFile(String name) {
-        return new File(Jenkins.getActiveInstance().getPluginManager().rootDir,name+".jpi");
+        return new File(Jenkins.get().getPluginManager().rootDir,name+".jpi");
     }
 }
