@@ -28,7 +28,6 @@ import hudson.model.Executor;
 import hudson.model.Queue;
 import hudson.model.Queue.BuildableItem;
 import hudson.model.Queue.Task;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

@@ -23,22 +23,18 @@
  */
 package hudson.model;
 
+import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
+import com.gargoylesoftware.htmlunit.html.HtmlForm;
+import com.gargoylesoftware.htmlunit.xml.XmlPage;
+import hudson.slaves.DumbSlave;
+import hudson.slaves.OfflineCause;
+import java.io.File;
+import jenkins.model.Jenkins;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.*;
-
-import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
-import com.gargoylesoftware.htmlunit.html.HtmlForm;
-import com.gargoylesoftware.htmlunit.xml.XmlPage;
-
-import java.io.File;
-
-import jenkins.model.Jenkins;
-import hudson.slaves.DumbSlave;
-import hudson.slaves.OfflineCause;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.Issue;

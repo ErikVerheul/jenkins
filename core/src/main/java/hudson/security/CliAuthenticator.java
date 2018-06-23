@@ -24,13 +24,12 @@
 package hudson.security;
 
 import hudson.cli.CLICommand;
+import java.io.IOException;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.AuthenticationException;
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
-
-import java.io.IOException;
 
 /**
  * Handles authentication for CLI commands.

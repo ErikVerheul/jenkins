@@ -26,13 +26,13 @@
  */
 package hudson.security;
 
+import hudson.security.SecurityRealm.SecurityComponents;
 import org.acegisecurity.GrantedAuthority;
 import org.acegisecurity.ldap.InitialDirContextFactory;
 import org.acegisecurity.ldap.LdapDataAccessException;
 import org.acegisecurity.providers.ldap.LdapAuthoritiesPopulator;
 import org.acegisecurity.providers.ldap.populator.DefaultLdapAuthoritiesPopulator;
 import org.acegisecurity.userdetails.ldap.LdapUserDetails;
-import hudson.security.SecurityRealm.SecurityComponents;
 
 /**
  * Implementation of {@link LdapAuthoritiesPopulator} that defers creation of a

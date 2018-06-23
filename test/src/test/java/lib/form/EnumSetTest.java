@@ -4,12 +4,11 @@ import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import hudson.model.BallColor;
 import hudson.util.FormValidation;
+import java.util.EnumSet;
 import net.sf.json.JSONObject;
 import org.jvnet.hudson.test.HudsonTestCase;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
-
-import java.util.EnumSet;
 
 /**
  * @author Kohsuke Kawaguchi

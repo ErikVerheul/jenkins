@@ -5,12 +5,10 @@ import hudson.model.Computer;
 import hudson.model.TaskListener;
 import hudson.slaves.ComputerListener;
 import hudson.util.Futures;
-import jenkins.model.Jenkins;
-
 import java.io.IOException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-
+import jenkins.model.Jenkins;
 import jenkins.util.Timer;
 
 /**

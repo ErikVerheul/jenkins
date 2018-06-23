@@ -24,8 +24,8 @@
 package hudson.model;
 
 import hudson.model.UpdateCenter.DownloadJob;
-import hudson.model.UpdateCenter.DownloadJob.Success;
 import hudson.model.UpdateCenter.DownloadJob.Failure;
+import hudson.model.UpdateCenter.DownloadJob.Success;
 import static org.junit.Assert.*;
 import org.junit.Rule;
 import org.junit.Test;

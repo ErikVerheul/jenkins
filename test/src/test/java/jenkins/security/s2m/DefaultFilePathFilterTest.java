@@ -30,15 +30,13 @@ import hudson.remoting.Callable;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-
-import org.jenkinsci.remoting.RoleChecker;
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
-import org.junit.Rule;
-import org.jvnet.hudson.test.JenkinsRule;
-
 import javax.inject.Inject;
+import org.jenkinsci.remoting.RoleChecker;
+import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.jvnet.hudson.test.JenkinsRule;
 
 public class DefaultFilePathFilterTest {
 

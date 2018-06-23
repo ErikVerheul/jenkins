@@ -26,13 +26,11 @@ package jenkins.security.security218.ysoserial.payloads;
 
 import java.math.BigInteger;
 import java.util.PriorityQueue;
-
-import org.apache.commons.beanutils.BeanComparator;
-
 import jenkins.security.security218.ysoserial.payloads.annotation.Dependencies;
 import jenkins.security.security218.ysoserial.payloads.util.Gadgets;
 import jenkins.security.security218.ysoserial.payloads.util.PayloadRunner;
 import jenkins.security.security218.ysoserial.payloads.util.Reflections;
+import org.apache.commons.beanutils.BeanComparator;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 @Dependencies({"commons-beanutils:commons-beanutils:1.9.2", "commons-collections:commons-collections:3.1", "commons-logging:commons-logging:1.2"})

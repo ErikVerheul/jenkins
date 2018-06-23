@@ -1,19 +1,17 @@
 package hudson.scheduler;
 
 import antlr.ANTLRException;
-import static org.junit.Assert.*;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.jvnet.hudson.test.Issue;
-import org.jvnet.hudson.test.For;
-
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.GregorianCalendar;
+import static org.junit.Assert.*;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.jvnet.hudson.test.For;
+import org.jvnet.hudson.test.Issue;
 
 @RunWith(Parameterized.class)
 @For({CronTab.class, Hash.class})

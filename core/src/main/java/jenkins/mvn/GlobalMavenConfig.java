@@ -4,7 +4,6 @@ import hudson.Extension;
 import jenkins.model.GlobalConfiguration;
 import jenkins.model.GlobalConfigurationCategory;
 import jenkins.tools.ToolConfigurationCategory;
-
 import org.jenkinsci.Symbol;
 
 //as close as it gets to the global Maven Project configuration

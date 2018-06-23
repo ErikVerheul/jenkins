@@ -28,8 +28,13 @@ package hudson;
 import com.google.common.annotations.VisibleForTesting;
 import com.jcraft.jzlib.GZIPInputStream;
 import com.jcraft.jzlib.GZIPOutputStream;
+import static hudson.FilePath.TarCompression.GZIP;
 import hudson.Launcher.LocalLauncher;
 import hudson.Launcher.RemoteLauncher;
+import static hudson.Util.deleteFile;
+import static hudson.Util.fileToPath;
+import static hudson.Util.fixEmpty;
+import static hudson.Util.isSymlink;
 import hudson.model.AbstractProject;
 import hudson.model.Computer;
 import hudson.model.Item;
@@ -80,14 +85,15 @@ import java.net.URLConnection;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
-import java.nio.file.Path;
 import java.nio.file.LinkOption;
+import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.Enumeration;
@@ -130,13 +136,6 @@ import org.jenkinsci.remoting.RoleSensitive;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.Stapler;
-import static hudson.FilePath.TarCompression.GZIP;
-import static hudson.Util.deleteFile;
-import static hudson.Util.fileToPath;
-import static hudson.Util.fixEmpty;
-import static hudson.Util.isSymlink;
-
-import java.util.Collections;
 
 /**
  * {@link File} like object with remoting support.

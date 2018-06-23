@@ -3,9 +3,7 @@ package hudson.cli;
 import hudson.Extension;
 import hudson.model.Job;
 import hudson.model.Run;
-
 import java.io.Serializable;
-
 import org.apache.commons.io.IOUtils;
 import org.kohsuke.args4j.Argument;
 

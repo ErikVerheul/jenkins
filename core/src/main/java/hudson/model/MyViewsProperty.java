@@ -27,25 +27,19 @@ import hudson.Extension;
 import hudson.Util;
 import hudson.model.Descriptor.FormException;
 import hudson.security.ACL;
-import hudson.security.Permission;
 import hudson.util.FormValidation;
 import hudson.views.MyViewsTabBar;
 import hudson.views.ViewsTabBar;
-
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-
 import javax.annotation.CheckForNull;
 import javax.servlet.ServletException;
-
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
-
-import org.acegisecurity.AccessDeniedException;
 import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.HttpRedirect;

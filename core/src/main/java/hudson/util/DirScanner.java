@@ -1,16 +1,14 @@
 package hudson.util;
 
 import hudson.Util;
-import org.apache.tools.ant.DirectoryScanner;
-import org.apache.tools.ant.types.FileSet;
-
+import static hudson.Util.fixEmpty;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.io.Serializable;
-
-import static hudson.Util.fixEmpty;
+import org.apache.tools.ant.DirectoryScanner;
+import org.apache.tools.ant.types.FileSet;
 
 /**
  * Visits a directory and its contents and pass them to the {@link FileVisitor}.

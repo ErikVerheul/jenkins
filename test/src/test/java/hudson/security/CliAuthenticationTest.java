@@ -3,6 +3,8 @@ package hudson.security;
 import hudson.ExtensionList;
 import hudson.cli.CLI;
 import hudson.cli.CLICommand;
+import java.io.ByteArrayOutputStream;
+import java.util.Arrays;
 import jenkins.model.Jenkins;
 import jenkins.security.SecurityListener;
 import jenkins.security.SpySecurityListener;
@@ -14,7 +16,7 @@ import org.acegisecurity.userdetails.User;
 import org.acegisecurity.userdetails.UserDetails;
 import org.acegisecurity.userdetails.UsernameNotFoundException;
 import org.apache.commons.io.input.NullInputStream;
-import org.junit.After;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -23,11 +25,6 @@ import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.TestExtension;
 import org.springframework.dao.DataAccessException;
-
-import java.io.ByteArrayOutputStream;
-import java.util.Arrays;
-
-import static org.junit.Assert.*;
 
 /**
  * @author Kohsuke Kawaguchi

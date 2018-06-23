@@ -38,26 +38,21 @@ import static hudson.security.HudsonPrivateSecurityRealm.CLASSIC;
 import static hudson.security.HudsonPrivateSecurityRealm.PASSWORD_ENCODER;
 import hudson.security.pages.SignupPage;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
+import javax.annotation.Nonnull;
 import jenkins.security.ApiTokenProperty;
+import jenkins.security.SecurityListener;
+import org.apache.commons.lang.StringUtils;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.xml.HasXPath.hasXPath;
 import static org.junit.Assert.*;
-
-import jenkins.security.SecurityListener;
-import org.apache.commons.lang.StringUtils;
-
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Field;
-
-import hudson.security.pages.SignupPage;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -67,8 +62,6 @@ import org.jvnet.hudson.test.JenkinsRule.WebClient;
 import org.jvnet.hudson.test.TestExtension;
 import org.jvnet.hudson.test.WithoutJenkins;
 import org.jvnet.hudson.test.recipes.LocalData;
-
-import javax.annotation.Nonnull;
 
 public class HudsonPrivateSecurityRealmTest {
 

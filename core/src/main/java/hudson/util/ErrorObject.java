@@ -24,12 +24,11 @@
 package hudson.util;
 
 import hudson.Functions;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
-
+import java.io.IOException;
 import javax.servlet.ServletException;
 import static javax.servlet.http.HttpServletResponse.SC_SERVICE_UNAVAILABLE;
-import java.io.IOException;
+import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerResponse;
 
 /**
  * Basis for error model objects.

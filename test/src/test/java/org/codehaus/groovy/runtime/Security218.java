@@ -1,8 +1,7 @@
 package org.codehaus.groovy.runtime;
 
-import org.jenkinsci.remoting.RoleChecker;
-
 import java.io.Serializable;
+import org.jenkinsci.remoting.RoleChecker;
 
 /**
  * Test payload in a prohibited package name.

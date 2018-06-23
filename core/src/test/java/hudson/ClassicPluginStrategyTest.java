@@ -23,13 +23,11 @@
  */
 package hudson;
 
+import hudson.ClassicPluginStrategy.DetachedPlugin;
 import hudson.util.VersionNumber;
+import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
-
-import java.util.List;
-
-import static hudson.ClassicPluginStrategy.DetachedPlugin;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>

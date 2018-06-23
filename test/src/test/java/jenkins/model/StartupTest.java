@@ -25,10 +25,10 @@ package jenkins.model;
 
 import java.util.Collections;
 import java.util.logging.Level;
-import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.ClassRule;
 import org.junit.Rule;
+import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.LoggerRule;
 

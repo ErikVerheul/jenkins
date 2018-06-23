@@ -24,23 +24,19 @@
 
 package jenkins.security.security218.ysoserial.payloads;
 
+import com.sun.org.apache.xalan.internal.xsltc.trax.TrAXFilter;
 import java.util.PriorityQueue;
 import java.util.Queue;
-
 import javax.xml.transform.Templates;
-
+import jenkins.security.security218.ysoserial.payloads.annotation.Dependencies;
+import jenkins.security.security218.ysoserial.payloads.util.Gadgets;
+import jenkins.security.security218.ysoserial.payloads.util.PayloadRunner;
+import jenkins.security.security218.ysoserial.payloads.util.Reflections;
 import org.apache.commons.collections4.Transformer;
 import org.apache.commons.collections4.comparators.TransformingComparator;
 import org.apache.commons.collections4.functors.ChainedTransformer;
 import org.apache.commons.collections4.functors.ConstantTransformer;
 import org.apache.commons.collections4.functors.InstantiateTransformer;
-
-import jenkins.security.security218.ysoserial.payloads.annotation.Dependencies;
-import jenkins.security.security218.ysoserial.payloads.util.Gadgets;
-import jenkins.security.security218.ysoserial.payloads.util.PayloadRunner;
-import jenkins.security.security218.ysoserial.payloads.util.Reflections;
-
-import com.sun.org.apache.xalan.internal.xsltc.trax.TrAXFilter;
 
 /*
  * Variation on CommonsCollections2 that uses InstantiateTransformer instead of

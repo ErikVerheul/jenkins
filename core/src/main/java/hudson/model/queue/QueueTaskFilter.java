@@ -30,7 +30,6 @@ import hudson.model.Queue;
 import hudson.model.Queue.Executable;
 import hudson.model.Queue.Task;
 import hudson.model.ResourceList;
-
 import java.io.IOException;
 import java.util.Collection;
 import javax.annotation.CheckForNull;

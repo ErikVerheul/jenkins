@@ -23,13 +23,11 @@
  */
 package hudson.util;
 
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Test;
-
+import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.io.IOException;
+import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 /**
  * @author Kohsuke Kawaguchi

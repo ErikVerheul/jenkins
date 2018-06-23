@@ -25,21 +25,20 @@ package hudson.security;
 
 import hudson.ExtensionList;
 import hudson.ExtensionPoint;
-import jenkins.model.Jenkins;
 import hudson.model.User;
 import hudson.model.UserProperty;
+import java.io.IOException;
+import java.io.Serializable;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+import javax.servlet.ServletException;
+import jenkins.model.Jenkins;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import org.acegisecurity.userdetails.UserDetails;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-import javax.servlet.ServletException;
-import java.io.IOException;
-import java.io.Serializable;
 
 /**
  * Abstraction for a login mechanism through external authenticator/identity provider

@@ -26,14 +26,13 @@ package hudson;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
-import jenkins.util.SystemProperties;
-import jenkins.model.Jenkins;
-
-import javax.servlet.ServletContext;
 import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.logging.Logger;
+import javax.servlet.ServletContext;
+import jenkins.model.Jenkins;
+import jenkins.util.SystemProperties;
 
 /**
  * Default implementation of {@link PluginManager}.

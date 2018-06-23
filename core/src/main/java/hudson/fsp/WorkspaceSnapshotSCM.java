@@ -23,26 +23,24 @@
  */
 package hudson.fsp;
 
+import hudson.FilePath;
+import hudson.Launcher;
+import hudson.PermalinkList;
+import hudson.WorkspaceSnapshot;
+import hudson.model.AbstractBuild;
+import hudson.model.AbstractProject;
+import hudson.model.BuildListener;
+import hudson.model.PermalinkProjectAction.Permalink;
+import hudson.model.Result;
+import hudson.model.TaskListener;
+import hudson.scm.ChangeLogParser;
 import hudson.scm.PollingResult;
 import hudson.scm.SCM;
-import hudson.scm.ChangeLogParser;
 import hudson.scm.SCMDescriptor;
 import hudson.scm.SCMRevisionState;
-import hudson.model.AbstractProject;
-import hudson.model.TaskListener;
-import hudson.model.AbstractBuild;
-import hudson.model.BuildListener;
-import jenkins.model.Jenkins;
-import hudson.model.Result;
-import hudson.model.PermalinkProjectAction.Permalink;
-import hudson.Launcher;
-import hudson.FilePath;
-import hudson.WorkspaceSnapshot;
-import hudson.PermalinkList;
-
-import java.io.IOException;
 import java.io.File;
-
+import java.io.IOException;
+import jenkins.model.Jenkins;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /**

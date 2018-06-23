@@ -26,7 +26,6 @@ package hudson.slaves;
 import hudson.ExtensionPoint;
 import hudson.model.AbstractDescribableImpl;
 import hudson.model.TaskListener;
-
 import java.io.IOException;
 import javax.annotation.Nonnull;
 

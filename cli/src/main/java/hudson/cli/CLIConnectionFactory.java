@@ -1,11 +1,10 @@
 package hudson.cli;
 
-import org.apache.commons.codec.binary.Base64;
-
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.ExecutorService;
+import org.apache.commons.codec.binary.Base64;
 
 /**
  * Fluent-API to instantiate {@link CLI}.

@@ -24,13 +24,8 @@
  */
 package hudson;
 
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Properties;
-import java.util.concurrent.Callable;
-import java.util.concurrent.atomic.AtomicReference;
+import com.google.common.collect.Lists;
+import hudson.util.StreamTaskListener;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -40,7 +35,15 @@ import java.nio.file.FileSystemException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermissions;
-
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Properties;
+import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicReference;
+import org.apache.commons.io.FileUtils;
+import org.hamcrest.BaseMatcher;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.hasItem;
@@ -48,21 +51,13 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.startsWith;
-import static org.junit.Assert.*;
-
-import org.apache.commons.io.FileUtils;
-import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
+import static org.junit.Assert.*;
 import org.junit.Assume;
-import org.junit.Test;
-import org.jvnet.hudson.test.Issue;
-
-import hudson.util.StreamTaskListener;
-
 import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-
-import com.google.common.collect.Lists;
+import org.jvnet.hudson.test.Issue;
 
 /**
  * @author Kohsuke Kawaguchi

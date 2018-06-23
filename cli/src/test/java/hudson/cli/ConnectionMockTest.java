@@ -25,17 +25,12 @@ package hudson.cli;
 
 import hudson.remoting.FastPipedInputStream;
 import hudson.remoting.FastPipedOutputStream;
-
 import java.io.DataInputStream;
 import java.io.IOException;
-
 import static org.junit.Assert.*;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import static org.powermock.api.mockito.PowerMockito.*;
-
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 

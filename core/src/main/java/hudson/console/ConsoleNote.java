@@ -23,19 +23,17 @@
  */
 package hudson.console;
 
+import com.jcraft.jzlib.GZIPInputStream;
+import com.jcraft.jzlib.GZIPOutputStream;
 import hudson.ExtensionPoint;
 import hudson.Functions;
 import hudson.MarkupText;
 import hudson.model.Describable;
-import jenkins.model.Jenkins;
 import hudson.model.Run;
+import hudson.remoting.ClassFilter;
 import hudson.remoting.ObjectInputStreamEx;
 import hudson.util.IOUtils;
 import hudson.util.UnbufferedBase64InputStream;
-import org.apache.commons.codec.binary.Base64OutputStream;
-import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.apache.tools.ant.BuildListener;
-
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -49,11 +47,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import com.jcraft.jzlib.GZIPInputStream;
-import com.jcraft.jzlib.GZIPOutputStream;
-import hudson.remoting.ClassFilter;
+import jenkins.model.Jenkins;
 import jenkins.security.HMACConfidentialKey;
 import jenkins.util.SystemProperties;
+import org.apache.commons.codec.binary.Base64OutputStream;
+import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.apache.tools.ant.BuildListener;
 
 /**
  * Data that hangs off from a console output.

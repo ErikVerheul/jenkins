@@ -32,13 +32,12 @@ import hudson.model.ComputerSet;
 import hudson.model.Environment;
 import hudson.model.Node;
 import hudson.model.TaskListener;
-import org.jenkinsci.Symbol;
-import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.Stapler;
-
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import org.jenkinsci.Symbol;
+import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.Stapler;
 
 /**
  * {@link NodeProperty} that sets additional environment variables.

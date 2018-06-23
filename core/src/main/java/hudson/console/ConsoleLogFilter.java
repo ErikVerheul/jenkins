@@ -32,10 +32,9 @@ import hudson.model.Computer;
 import hudson.model.Run;
 import hudson.tasks.BuildWrapper;
 import hudson.util.ArgumentListBuilder;
-
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.OutputStream;
+import javax.annotation.Nonnull;
 
 /**
  * A hook to allow filtering of information that is written to the console log.

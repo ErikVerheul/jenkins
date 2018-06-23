@@ -38,14 +38,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.regex.Pattern;
-
 import jenkins.model.Jenkins;
 import org.acegisecurity.Authentication;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.Issue;

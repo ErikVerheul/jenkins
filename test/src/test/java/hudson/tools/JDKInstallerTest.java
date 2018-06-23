@@ -1,32 +1,28 @@
 package hudson.tools;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.html.HtmlFormUtil;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import hudson.FilePath;
+import hudson.Functions;
+import hudson.Launcher.LocalLauncher;
+import hudson.model.JDK;
+import hudson.model.TaskListener;
 import hudson.tools.JDKInstaller.DescriptorImpl;
-
+import hudson.tools.JDKInstaller.Platform;
+import hudson.util.StreamTaskListener;
+import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.util.Arrays;
+import java.util.Properties;
+import java.util.logging.Logger;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import hudson.model.JDK;
-import hudson.model.TaskListener;
-import hudson.util.StreamTaskListener;
-import hudson.tools.JDKInstaller.Platform;
-import hudson.FilePath;
-import hudson.Functions;
-import hudson.Launcher.LocalLauncher;
-
-import java.io.File;
-import java.util.Arrays;
-import java.util.Properties;
-import java.util.logging.Logger;
-
 import org.junit.rules.TemporaryFolder;
 import org.jvnet.hudson.test.JenkinsRule;
 

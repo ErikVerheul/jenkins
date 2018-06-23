@@ -23,8 +23,8 @@
  */
 package jenkins.model;
 
-import jenkins.util.SystemProperties;
 import hudson.model.Hudson;
+import jenkins.util.SystemProperties;
 
 
 public class Configuration {

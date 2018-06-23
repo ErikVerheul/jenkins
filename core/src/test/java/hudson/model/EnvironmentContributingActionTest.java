@@ -1,11 +1,9 @@
 package hudson.model;
 
 import hudson.EnvVars;
-import org.junit.Test;
-
-
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import org.junit.Test;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 

@@ -1,19 +1,10 @@
 package jenkins;
 
 import com.google.common.collect.Lists;
-import jenkins.util.SystemProperties;
 import hudson.init.InitMilestone;
 import hudson.init.InitReactorListener;
 import hudson.util.DaemonThreadFactory;
 import hudson.util.NamingThreadFactory;
-import jenkins.model.Configuration;
-import jenkins.model.Jenkins;
-import org.jvnet.hudson.reactor.Milestone;
-import org.jvnet.hudson.reactor.Reactor;
-import org.jvnet.hudson.reactor.ReactorException;
-import org.jvnet.hudson.reactor.ReactorListener;
-import org.jvnet.hudson.reactor.Task;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.ServiceLoader;
@@ -23,9 +14,16 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import static java.util.logging.Level.SEVERE;
+import java.util.logging.Logger;
+import jenkins.model.Configuration;
+import jenkins.model.Jenkins;
+import jenkins.util.SystemProperties;
+import org.jvnet.hudson.reactor.Milestone;
+import org.jvnet.hudson.reactor.Reactor;
+import org.jvnet.hudson.reactor.ReactorException;
+import org.jvnet.hudson.reactor.ReactorListener;
+import org.jvnet.hudson.reactor.Task;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 

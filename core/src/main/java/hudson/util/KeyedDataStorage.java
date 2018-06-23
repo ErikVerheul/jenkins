@@ -25,7 +25,6 @@ package hudson.util;
 
 import hudson.model.Fingerprint;
 import hudson.model.FingerprintMap;
-
 import java.io.IOException;
 import java.lang.ref.SoftReference;
 import java.text.MessageFormat;

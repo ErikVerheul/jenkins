@@ -23,20 +23,15 @@
  */
 package hudson.model;
 
-import hudson.model.ItemGroupMixIn;
-import hudson.model.View;
-import hudson.model.ViewGroup;
-import java.util.Locale;
-import java.util.logging.Level;
-import org.kohsuke.stapler.export.Exported;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import org.kohsuke.stapler.export.Exported;
 
 /**
  * Implements {@link ViewGroup} to be used as a "mix-in".

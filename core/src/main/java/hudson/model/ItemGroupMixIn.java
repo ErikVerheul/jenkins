@@ -30,17 +30,6 @@ import hudson.security.AccessControlled;
 import hudson.util.CopyOnWriteMap;
 import hudson.util.Function1;
 import hudson.util.Secret;
-import jenkins.model.Jenkins;
-import jenkins.util.xml.XMLUtils;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletResponse;
-import javax.xml.transform.Source;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -49,8 +38,17 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletResponse;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import jenkins.model.Jenkins;
 import jenkins.security.NotReallyRoleSensitiveCallable;
+import jenkins.util.xml.XMLUtils;
 import org.acegisecurity.AccessDeniedException;
+import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerResponse;
 import org.xml.sax.SAXException;
 
 /**

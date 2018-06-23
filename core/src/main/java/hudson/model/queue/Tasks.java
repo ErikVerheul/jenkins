@@ -26,13 +26,12 @@ package hudson.model.queue;
 import hudson.model.Queue;
 import hudson.model.Queue.Item;
 import hudson.model.Queue.Task;
-import javax.annotation.CheckForNull;
-import org.acegisecurity.Authentication;
-
 import java.util.Collection;
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import jenkins.security.QueueItemAuthenticator;
 import jenkins.security.QueueItemAuthenticatorProvider;
+import org.acegisecurity.Authentication;
 
 /**
  * Convenience methods around {@link Task} and {@link SubTask}.

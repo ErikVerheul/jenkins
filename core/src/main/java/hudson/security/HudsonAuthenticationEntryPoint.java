@@ -23,25 +23,22 @@
  */
 package hudson.security;
 
-import hudson.Functions;
-
 import com.google.common.base.Strings;
-import org.acegisecurity.AuthenticationException;
-import org.acegisecurity.InsufficientAuthenticationException;
-import org.acegisecurity.ui.webapp.AuthenticationProcessingFilterEntryPoint;
-
+import hudson.Functions;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.URLEncoder;
+import java.text.MessageFormat;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
-
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.net.URLEncoder;
-import java.text.MessageFormat;
+import org.acegisecurity.AuthenticationException;
+import org.acegisecurity.InsufficientAuthenticationException;
+import org.acegisecurity.ui.webapp.AuthenticationProcessingFilterEntryPoint;
 
 /**
  * For anonymous requests to pages that require authentication,

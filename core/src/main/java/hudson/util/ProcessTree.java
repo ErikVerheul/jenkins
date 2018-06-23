@@ -23,11 +23,12 @@
  */
 package hudson.util;
 
+import com.sun.jna.LastErrorException;
 import com.sun.jna.Memory;
 import com.sun.jna.Native;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
-import com.sun.jna.LastErrorException;
+import static com.sun.jna.Pointer.NULL;
 import com.sun.jna.ptr.IntByReference;
 import hudson.EnvVars;
 import hudson.FilePath;
@@ -39,10 +40,7 @@ import hudson.util.ProcessKillingVeto.VetoCause;
 import hudson.util.ProcessTree.OSProcess;
 import hudson.util.ProcessTreeRemoting.IOSProcess;
 import hudson.util.ProcessTreeRemoting.IProcessTree;
-import jenkins.security.SlaveToMasterCallable;
-import org.jvnet.winp.WinProcess;
-import org.jvnet.winp.WinpException;
-
+import static hudson.util.jna.GNUCLibrary.LIBC;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -58,15 +56,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.annotation.CheckForNull;
-import static com.sun.jna.Pointer.NULL;
-import jenkins.util.SystemProperties;
-import static hudson.util.jna.GNUCLibrary.LIBC;
 import static java.util.logging.Level.FINER;
 import static java.util.logging.Level.FINEST;
+import java.util.logging.Logger;
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import jenkins.security.SlaveToMasterCallable;
+import jenkins.util.SystemProperties;
+import org.jvnet.winp.WinProcess;
+import org.jvnet.winp.WinpException;
 
 /**
  * Represents a snapshot of the process tree of the current system.

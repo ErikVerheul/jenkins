@@ -24,8 +24,8 @@
 package hudson.model;
 
 import hudson.remoting.Channel;
-import hudson.remoting.PingThread;
 import hudson.remoting.Channel.Mode;
+import hudson.remoting.PingThread;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;

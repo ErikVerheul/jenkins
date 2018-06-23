@@ -23,13 +23,9 @@
  */
 package hudson.util;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
-
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.thoughtworks.xstream.XStreamException;
-import com.thoughtworks.xstream.io.xml.KXml2Driver;
 import com.thoughtworks.xstream.security.ForbiddenClassException;
 import hudson.model.Result;
 import hudson.model.Run;
@@ -42,6 +38,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import jenkins.model.Jenkins;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.*;
 import org.junit.Test;
 import org.jvnet.hudson.test.Issue;
 

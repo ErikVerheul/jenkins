@@ -30,18 +30,15 @@ package hudson.model;
 import hudson.security.AccessControlled;
 import hudson.slaves.ComputerListener;
 import hudson.slaves.RetentionStrategy;
-import jenkins.model.Jenkins;
-import org.kohsuke.stapler.StaplerFallback;
-import org.kohsuke.stapler.StaplerProxy;
-
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-
 import jenkins.model.Configuration;
+import jenkins.model.Jenkins;
+import org.kohsuke.stapler.StaplerFallback;
+import org.kohsuke.stapler.StaplerProxy;
 
 public abstract class AbstractCIBase extends Node implements ItemGroup<TopLevelItem>, StaplerProxy, StaplerFallback, ViewGroup, AccessControlled, DescriptorByNameOwner {
 

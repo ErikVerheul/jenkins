@@ -24,7 +24,6 @@
 package hudson.model;
 
 import hudson.Functions;
-
 import javax.annotation.CheckForNull;
 
 /**

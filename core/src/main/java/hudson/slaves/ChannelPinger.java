@@ -26,20 +26,19 @@ package hudson.slaves;
 import com.google.common.annotations.VisibleForTesting;
 import hudson.Extension;
 import hudson.FilePath;
-import jenkins.util.SystemProperties;
 import hudson.model.Computer;
 import hudson.model.Slave;
 import hudson.model.TaskListener;
 import hudson.remoting.Channel;
 import hudson.remoting.PingThread;
-import jenkins.security.MasterToSlaveCallable;
-import jenkins.slaves.PingFailureAnalyzer;
-
-import javax.annotation.CheckForNull;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.CheckForNull;
+import jenkins.security.MasterToSlaveCallable;
+import jenkins.slaves.PingFailureAnalyzer;
+import jenkins.util.SystemProperties;
 
 /**
  * Establish a periodic ping to keep connections between {@link Slave slaves}

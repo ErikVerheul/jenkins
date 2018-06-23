@@ -1,22 +1,21 @@
 package jenkins.security.s2m;
 
 import hudson.Extension;
-import jenkins.util.SystemProperties;
 import hudson.remoting.Callable;
 import hudson.remoting.ChannelBuilder;
+import java.util.Collection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.annotation.Nonnull;
 import jenkins.security.ChannelConfigurator;
 import jenkins.security.Roles;
+import jenkins.util.SystemProperties;
 import org.jenkinsci.remoting.Role;
 import org.jenkinsci.remoting.RoleChecker;
 import org.jenkinsci.remoting.RoleSensitive;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.DoNotUse;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
-
-import javax.annotation.Nonnull;
-import java.util.Collection;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Inspects {@link Callable}s that run on the master.

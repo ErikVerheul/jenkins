@@ -32,9 +32,8 @@ import hudson.model.Job;
 import hudson.model.ModelObject;
 import hudson.model.Node;
 import hudson.model.Run;
-import jenkins.model.Jenkins;
-
 import java.util.Set;
+import jenkins.model.Jenkins;
 
 /**
  * Represents the model class {@link Permission} acts on and scoped to.

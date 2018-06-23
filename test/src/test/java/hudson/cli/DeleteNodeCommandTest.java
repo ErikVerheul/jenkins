@@ -28,17 +28,16 @@
 
 package hudson.cli;
 
+import static hudson.cli.CLICommandInvoker.Matcher.*;
 import hudson.model.Computer;
 import jenkins.model.Jenkins;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.nullValue;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
-
-import static hudson.cli.CLICommandInvoker.Matcher.*;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.nullValue;
 
 public class DeleteNodeCommandTest {
 

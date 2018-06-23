@@ -23,15 +23,21 @@
  */
 package hudson.tasks;
 
+import hudson.Extension;
 import hudson.FilePath;
 import hudson.Util;
-import hudson.Extension;
 import hudson.model.AbstractProject;
 import hudson.remoting.VirtualChannel;
 import hudson.util.FormValidation;
+import hudson.util.LineEndingConversion;
 import java.io.IOException;
 import java.io.ObjectStreamException;
-import hudson.util.LineEndingConversion;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.annotation.CheckForNull;
 import jenkins.security.MasterToSlaveCallable;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.SystemUtils;
@@ -40,16 +46,8 @@ import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.DoNotUse;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
-import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.QueryParameter;
-
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.annotation.CheckForNull;
+import org.kohsuke.stapler.StaplerRequest;
 
 /**
  * Executes a series of commands by using a shell.

@@ -5,9 +5,8 @@ import hudson.ExtensionPoint;
 import hudson.remoting.Channel;
 import hudson.remoting.ChannelBuilder;
 import hudson.slaves.SlaveComputer;
-import jenkins.model.Jenkins;
-
 import javax.annotation.Nullable;
+import jenkins.model.Jenkins;
 
 /**
  * Intercepts the new creation of {@link Channel} and tweak its configuration.

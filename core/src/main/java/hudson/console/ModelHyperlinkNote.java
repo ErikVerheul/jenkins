@@ -2,13 +2,12 @@ package hudson.console;
 
 import hudson.Extension;
 import hudson.model.*;
-import jenkins.model.Jenkins;
-import org.jenkinsci.Symbol;
-
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Nonnull;
+import jenkins.model.Jenkins;
+import org.jenkinsci.Symbol;
 
 /**
  * {@link HyperlinkNote} that links to a {@linkplain ModelObject model object},

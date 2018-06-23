@@ -1,11 +1,9 @@
 package jenkins.util;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 /**

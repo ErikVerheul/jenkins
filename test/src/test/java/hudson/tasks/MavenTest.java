@@ -47,23 +47,21 @@ import hudson.tools.InstallSourceProperty;
 import hudson.tools.ToolProperty;
 import hudson.tools.ToolPropertyDescriptor;
 import hudson.util.DescribableList;
+import java.util.Collections;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
 import jenkins.mvn.DefaultGlobalSettingsProvider;
 import jenkins.mvn.DefaultSettingsProvider;
 import jenkins.mvn.FilePathGlobalSettingsProvider;
 import jenkins.mvn.FilePathSettingsProvider;
 import jenkins.mvn.GlobalMavenConfig;
+import static org.junit.Assert.*;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.ExtractResourceSCM;
 import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.ToolInstallations;
-
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
-import java.util.Collections;
-
-import static org.junit.Assert.*;
 
 /**
  * @author Kohsuke Kawaguchi

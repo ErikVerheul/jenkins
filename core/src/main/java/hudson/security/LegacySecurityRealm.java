@@ -23,21 +23,20 @@
  */
 package hudson.security;
 
-import org.acegisecurity.AuthenticationManager;
+import groovy.lang.Binding;
+import hudson.Extension;
+import hudson.model.Descriptor;
+import hudson.util.spring.BeanBuilder;
+import javax.servlet.Filter;
+import javax.servlet.FilterConfig;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.AuthenticationException;
+import org.acegisecurity.AuthenticationManager;
 import org.jenkinsci.Symbol;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.springframework.web.context.WebApplicationContext;
-import groovy.lang.Binding;
-import hudson.model.Descriptor;
-import hudson.util.spring.BeanBuilder;
-import hudson.Extension;
-
-import javax.servlet.Filter;
-import javax.servlet.FilterConfig;
 
 /**
  * {@link SecurityRealm} that accepts {@link ContainerAuthentication} object

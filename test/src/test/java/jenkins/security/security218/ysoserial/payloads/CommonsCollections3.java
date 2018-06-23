@@ -24,26 +24,22 @@
 
 package jenkins.security.security218.ysoserial.payloads;
 
+import com.sun.org.apache.xalan.internal.xsltc.trax.TrAXFilter;
 import java.lang.reflect.InvocationHandler;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.xml.transform.Templates;
-
-import org.apache.commons.collections.Transformer;
-import org.apache.commons.collections.functors.ChainedTransformer;
-import org.apache.commons.collections.functors.ConstantTransformer;
-import org.apache.commons.collections.functors.InstantiateTransformer;
-import org.apache.commons.collections.map.LazyMap;
-
 import jenkins.security.security218.ysoserial.payloads.annotation.Dependencies;
 import jenkins.security.security218.ysoserial.payloads.annotation.PayloadTest;
 import jenkins.security.security218.ysoserial.payloads.util.Gadgets;
 import jenkins.security.security218.ysoserial.payloads.util.JavaVersion;
 import jenkins.security.security218.ysoserial.payloads.util.PayloadRunner;
 import jenkins.security.security218.ysoserial.payloads.util.Reflections;
-
-import com.sun.org.apache.xalan.internal.xsltc.trax.TrAXFilter;
+import org.apache.commons.collections.Transformer;
+import org.apache.commons.collections.functors.ChainedTransformer;
+import org.apache.commons.collections.functors.ConstantTransformer;
+import org.apache.commons.collections.functors.InstantiateTransformer;
+import org.apache.commons.collections.map.LazyMap;
 
 /*
  * Variation on CommonsCollections1 that uses InstantiateTransformer instead of

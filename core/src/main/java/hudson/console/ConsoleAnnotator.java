@@ -24,7 +24,6 @@
 package hudson.console;
 
 import hudson.MarkupText;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;

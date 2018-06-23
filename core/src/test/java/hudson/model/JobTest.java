@@ -1,10 +1,9 @@
 package hudson.model;
 
-import static org.junit.Assert.*;
-
-import java.lang.reflect.Method;
-
+import hudson.EnvVars;
+import hudson.Platform;
 import org.hamcrest.CoreMatchers;
+import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.jvnet.hudson.test.Issue;
@@ -13,10 +12,6 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.MockRepository;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-
-import hudson.EnvVars;
-import hudson.Platform;
-import hudson.util.ReflectionUtils;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ Node.class, Platform.class })

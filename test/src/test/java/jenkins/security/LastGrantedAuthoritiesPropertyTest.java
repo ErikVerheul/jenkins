@@ -4,22 +4,18 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import hudson.security.AbstractPasswordBasedSecurityRealm;
 import hudson.security.GroupDetails;
 import hudson.security.UserMayOrMayNotExistException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.acegisecurity.*;
 import org.acegisecurity.userdetails.User;
 import org.acegisecurity.userdetails.UserDetails;
 import org.acegisecurity.userdetails.UsernameNotFoundException;
+import static org.junit.Assert.assertEquals;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.springframework.dao.DataAccessException;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 
 /**
  * @author Kohsuke Kawaguchi

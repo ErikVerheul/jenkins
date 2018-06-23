@@ -23,14 +23,11 @@
  */
 package hudson.search;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 import hudson.Util;
-
 import java.util.ArrayList;
 import java.util.List;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 
 /**

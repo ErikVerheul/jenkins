@@ -26,21 +26,19 @@ package hudson.model;
 import hudson.util.ByteBuffer;
 import hudson.util.CharSpool;
 import hudson.util.LineEndNormalizingWriter;
-import org.apache.commons.fileupload.util.Closeable;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
-import org.kohsuke.stapler.framework.io.WriterOutputStream;
-import org.apache.commons.io.output.CountingOutputStream;
-
-import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
-import java.io.Writer;
 import java.io.Reader;
-import java.io.InputStreamReader;
+import java.io.Writer;
+import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.io.output.CountingOutputStream;
+import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.framework.io.WriterOutputStream;
 
 /**
  * Represents a large text data.

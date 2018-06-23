@@ -1,14 +1,12 @@
 package hudson.init;
 
-import org.jvnet.hudson.annotation_indexer.Indexed;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
 import static hudson.init.TermMilestone.*;
+import java.lang.annotation.Documented;
 import static java.lang.annotation.ElementType.METHOD;
+import java.lang.annotation.Retention;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import java.lang.annotation.Target;
+import org.jvnet.hudson.annotation_indexer.Indexed;
 
 /**
  * Like {@link Initializer} but used during the shut down.

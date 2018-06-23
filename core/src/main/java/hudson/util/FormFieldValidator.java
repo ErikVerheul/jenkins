@@ -23,17 +23,15 @@
  */
 package hudson.util;
 
-import static hudson.Util.fixEmpty;
 import hudson.EnvVars;
 import hudson.FilePath;
 import hudson.ProxyConfiguration;
 import hudson.Util;
+import static hudson.Util.fixEmpty;
 import hudson.model.AbstractProject;
-import jenkins.model.Jenkins;
 import hudson.model.Item;
-import hudson.security.Permission;
 import hudson.security.AccessControlled;
-
+import hudson.security.Permission;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -42,13 +40,12 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Locale;
-
 import javax.servlet.ServletException;
-
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
+import jenkins.model.Jenkins;
 import org.acegisecurity.AccessDeniedException;
 import org.kohsuke.stapler.Stapler;
+import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerResponse;
 
 /**
  * Base class that provides the framework for doing on-the-fly form field validation.

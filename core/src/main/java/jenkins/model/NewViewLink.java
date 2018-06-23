@@ -7,7 +7,6 @@ import hudson.model.TransientViewActionFactory;
 import hudson.model.View;
 import java.util.Collections;
 import java.util.List;
-
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.DoNotUse;
 

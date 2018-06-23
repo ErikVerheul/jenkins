@@ -25,13 +25,12 @@ package hudson.model;
 
 import hudson.Util;
 import hudson.util.KeyedDataStorage;
-import jenkins.model.Jenkins;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Locale;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import jenkins.model.Jenkins;
 
 /**
  * Cache of {@link Fingerprint}s.

@@ -32,7 +32,6 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.SortedMap;
 import java.util.logging.Level;
-
 import static java.util.logging.Level.*;
 import java.util.logging.Logger;
 import jenkins.model.RunIdMigrator;

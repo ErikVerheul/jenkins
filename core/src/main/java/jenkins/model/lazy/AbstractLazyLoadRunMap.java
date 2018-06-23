@@ -40,11 +40,10 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.CheckForNull;
-import org.kohsuke.accmod.Restricted;
-import org.kohsuke.accmod.restrictions.NoExternalUse;
-
 import static jenkins.model.lazy.AbstractLazyLoadRunMap.Direction.ASC;
 import static jenkins.model.lazy.AbstractLazyLoadRunMap.Direction.DESC;
+import org.kohsuke.accmod.Restricted;
+import org.kohsuke.accmod.restrictions.NoExternalUse;
 
 /**
  * {@link SortedMap} that keeps build records by their build numbers, in the descending order

@@ -3,11 +3,9 @@
  */
 package hudson.model;
 
+import java.util.Collection;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-
-import java.util.Collection;
-
 import org.junit.Test;
 
 /**

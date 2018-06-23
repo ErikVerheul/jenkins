@@ -43,7 +43,6 @@ import java.net.URLClassLoader;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Future;
-
 import jenkins.ClassLoaderReflectionToolkit;
 import jenkins.RestartRequiredException;
 import net.sf.json.JSONArray;
@@ -52,7 +51,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.tools.ant.filters.StringInputStream;
 import static org.junit.Assert.*;
 import static org.junit.Assume.assumeFalse;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;

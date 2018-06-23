@@ -31,7 +31,6 @@ import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import hudson.model.Node;
 import hudson.util.RobustCollectionConverter;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;

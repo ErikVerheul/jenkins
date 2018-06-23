@@ -1,17 +1,17 @@
 package hudson.security;
 
+import com.gargoylesoftware.htmlunit.html.HtmlCheckBoxInput;
+import com.gargoylesoftware.htmlunit.html.HtmlForm;
+import com.gargoylesoftware.htmlunit.html.HtmlFormUtil;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import hudson.model.User;
+import java.io.IOException;
+import java.net.URL;
 import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import static org.acegisecurity.ui.rememberme.TokenBasedRememberMeServices.ACEGI_SECURITY_HASHED_REMEMBER_ME_COOKIE_KEY;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-
-import com.gargoylesoftware.htmlunit.html.HtmlFormUtil;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.gargoylesoftware.htmlunit.html.HtmlForm;
-import com.gargoylesoftware.htmlunit.html.HtmlCheckBoxInput;
-
-import hudson.model.User;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
@@ -19,9 +19,6 @@ import org.jvnet.hudson.test.JenkinsRule.WebClient;
 import org.jvnet.hudson.test.recipes.PresetData;
 import org.jvnet.hudson.test.recipes.PresetData.DataSet;
 import org.xml.sax.SAXException;
-
-import java.io.IOException;
-import java.net.URL;
 
 /**
  * @author Kohsuke Kawaguchi

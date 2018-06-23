@@ -24,15 +24,13 @@
 package hudson.util;
 
 import com.trilead.ssh2.crypto.digest.MD5;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-
 import hudson.util.Iterators.DuplicateFilterIterator;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.NoSuchElementException;
 
 /**
  * Consistent hash.

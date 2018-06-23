@@ -1,9 +1,8 @@
 package hudson.model;
 
 import hudson.FilePath;
-import org.junit.Test;
-
 import java.io.File;
+import org.junit.Test;
 
 /**
  * @author Kohsuke Kawaguchi

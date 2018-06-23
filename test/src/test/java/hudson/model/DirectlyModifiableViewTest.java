@@ -23,23 +23,19 @@
  */
 package hudson.model;
 
-import static org.junit.Assert.*;
-
+import com.gargoylesoftware.htmlunit.HttpMethod;
+import com.gargoylesoftware.htmlunit.Page;
+import com.gargoylesoftware.htmlunit.WebRequest;
+import com.gargoylesoftware.htmlunit.WebResponse;
 import java.io.IOException;
 import java.net.URL;
-
-
-import com.gargoylesoftware.htmlunit.WebRequest;
 import org.hamcrest.Matchers;
+import static org.junit.Assert.*;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.JenkinsRule.WebClient;
 import org.jvnet.hudson.test.MockFolder;
-
-import com.gargoylesoftware.htmlunit.HttpMethod;
-import com.gargoylesoftware.htmlunit.Page;
-import com.gargoylesoftware.htmlunit.WebResponse;
 
 public class DirectlyModifiableViewTest {
 

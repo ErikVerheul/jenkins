@@ -26,9 +26,7 @@ package jenkins.security.security218.ysoserial.payloads;
 import java.lang.reflect.InvocationHandler;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
-
 import javax.xml.transform.Templates;
-
 import jenkins.security.security218.ysoserial.payloads.annotation.Dependencies;
 import jenkins.security.security218.ysoserial.payloads.annotation.PayloadTest;
 import jenkins.security.security218.ysoserial.payloads.util.Gadgets;

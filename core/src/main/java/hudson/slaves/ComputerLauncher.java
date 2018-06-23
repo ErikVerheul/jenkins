@@ -23,13 +23,12 @@
  */
 package hudson.slaves;
 
-import hudson.ExtensionPoint;
 import hudson.Extension;
+import hudson.ExtensionPoint;
 import hudson.model.*;
 import hudson.remoting.Channel;
 import hudson.util.DescriptorList;
 import hudson.util.StreamTaskListener;
-
 import java.io.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

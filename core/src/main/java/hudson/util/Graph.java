@@ -23,21 +23,20 @@
  */
 package hudson.util;
 
-import org.jfree.chart.JFreeChart;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.Calendar;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+import javax.imageio.ImageIO;
+import javax.servlet.ServletOutputStream;
 import org.jfree.chart.ChartRenderingInfo;
 import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.Plot;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
-
-import javax.servlet.ServletOutputStream;
-import javax.imageio.ImageIO;
-import java.io.IOException;
-import java.util.Calendar;
-import java.awt.image.BufferedImage;
-import java.awt.*;
-import javax.annotation.Nonnull;
-import javax.annotation.CheckForNull;
 
 /**
  * A JFreeChart-generated graph that's bound to UI.

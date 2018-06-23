@@ -33,13 +33,14 @@ import hudson.tasks.BuildWrapperDescriptor;
 import hudson.tasks.Builder;
 import hudson.tasks.Publisher;
 import hudson.triggers.Trigger;
-import org.apache.commons.io.FileUtils;
-
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
-
+import java.util.Collection;
+import java.util.List;
+import org.apache.commons.io.FileUtils;
+import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.*;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.Issue;
@@ -47,12 +48,6 @@ import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.MockFolder;
 import org.jvnet.hudson.test.TestExtension;
 import org.jvnet.hudson.test.recipes.LocalData;
-
-import java.io.File;
-import java.util.Collection;
-import java.util.List;
-
-import static org.hamcrest.core.StringContains.containsString;
 
 public class ItemGroupMixInTest {
 

@@ -24,6 +24,8 @@
 
 package hudson.tools;
 
+import com.thoughtworks.xstream.annotations.XStreamSerializable;
+import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import hudson.DescriptorExtensionList;
 import hudson.EnvVars;
 import hudson.Extension;
@@ -33,13 +35,9 @@ import hudson.model.*;
 import hudson.slaves.NodeSpecific;
 import hudson.util.DescribableList;
 import hudson.util.XStream2;
-
-import java.io.Serializable;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.List;
-
-import com.thoughtworks.xstream.annotations.XStreamSerializable;
-import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import jenkins.model.Jenkins;

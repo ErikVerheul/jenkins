@@ -26,13 +26,10 @@ package hudson.util;
 import hudson.ExtensionList;
 import hudson.ExtensionPoint;
 import hudson.util.ProcessTreeRemoting.IOSProcess;
-
 import java.util.Collections;
 import java.util.List;
-
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-
 import jenkins.util.JenkinsJVM;
 
 /**

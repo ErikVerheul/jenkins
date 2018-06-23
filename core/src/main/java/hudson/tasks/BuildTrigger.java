@@ -41,7 +41,6 @@ import hudson.model.Items;
 import hudson.model.Job;
 import hudson.model.Project;
 import hudson.model.Result;
-import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.model.listeners.ItemListener;
 import hudson.model.queue.Tasks;

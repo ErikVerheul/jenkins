@@ -26,8 +26,8 @@ package hudson.diagnosis;
 
 import com.gargoylesoftware.htmlunit.WebRequest;
 import java.net.URL;
-import org.junit.Test;
 import org.junit.Rule;
+import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 
 public class ReverseProxySetupMonitorTest {

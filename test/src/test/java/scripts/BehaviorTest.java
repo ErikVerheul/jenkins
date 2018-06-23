@@ -25,8 +25,8 @@ package scripts;
 
 import com.gargoylesoftware.htmlunit.ScriptResult;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.HudsonTestCase;
+import org.jvnet.hudson.test.Issue;
 
 /**
  * Tests <tt>behaviour.js</tt>

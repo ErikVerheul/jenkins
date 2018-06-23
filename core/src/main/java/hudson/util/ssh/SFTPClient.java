@@ -6,7 +6,6 @@ import com.trilead.ssh2.SFTPv3Client;
 import com.trilead.ssh2.SFTPv3FileAttributes;
 import com.trilead.ssh2.SFTPv3FileHandle;
 import com.trilead.ssh2.sftp.ErrorCodes;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;

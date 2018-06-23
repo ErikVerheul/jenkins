@@ -1,22 +1,20 @@
 package hudson.model;
 
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.emptyIterable;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.*;
-
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.LoggerRule;
 import org.jvnet.hudson.test.TestExtension;
-
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
 
 public class DescriptorVisibilityFilterTest {
 

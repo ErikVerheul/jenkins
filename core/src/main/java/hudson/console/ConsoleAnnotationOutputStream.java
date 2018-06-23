@@ -24,9 +24,6 @@
 package hudson.console;
 
 import hudson.MarkupText;
-import org.apache.commons.io.output.ProxyWriter;
-import org.kohsuke.stapler.framework.io.WriterOutputStream;
-
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -38,6 +35,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.io.output.ProxyWriter;
+import org.kohsuke.stapler.framework.io.WriterOutputStream;
 
 /**
  * Used to convert plain text console output (as byte sequence) + embedded annotations into HTML (as char sequence),

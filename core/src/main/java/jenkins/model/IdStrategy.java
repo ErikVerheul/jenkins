@@ -28,15 +28,14 @@ import hudson.Extension;
 import hudson.ExtensionPoint;
 import hudson.model.AbstractDescribableImpl;
 import hudson.util.CaseInsensitiveComparator;
+import java.util.Comparator;
+import java.util.Locale;
+import javax.annotation.Nonnull;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.Symbol;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.ProtectedExternally;
 import org.kohsuke.stapler.DataBoundConstructor;
-
-import javax.annotation.Nonnull;
-import java.util.Comparator;
-import java.util.Locale;
 
 /**
  * The strategy to use for manipulating converting names (e.g. user names, group names, etc) into ids.

@@ -1,12 +1,10 @@
 package hudson.scm;
 
-import static org.junit.Assert.assertEquals;
-
 import hudson.Extension;
 import hudson.MarkupText;
 import hudson.model.AbstractBuild;
 import hudson.scm.ChangeLogSet.Entry;
-
+import static org.junit.Assert.assertEquals;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.FakeChangeLogSCM.EntryImpl;

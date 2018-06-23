@@ -24,11 +24,10 @@
 package jenkins.model;
 
 import hudson.Extension;
+import java.io.IOException;
 import net.sf.json.JSONObject;
 import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.StaplerRequest;
-
-import java.io.IOException;
 
 /**
  * Configures the system-default quiet period.

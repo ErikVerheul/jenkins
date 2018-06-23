@@ -24,20 +24,15 @@
 package jenkins.security.security218.ysoserial.payloads;
 
 import static java.lang.Class.forName;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Type;
-
 import javax.xml.transform.Templates;
-
-import org.springframework.beans.factory.ObjectFactory;
-
-
 import jenkins.security.security218.ysoserial.util.Gadgets;
 import jenkins.security.security218.ysoserial.util.PayloadRunner;
 import jenkins.security.security218.ysoserial.util.Reflections;
 import org.apache.xalan.xsltc.trax.TemplatesImpl;
+import org.springframework.beans.factory.ObjectFactory;
 
 /*
 	Gadget chain:

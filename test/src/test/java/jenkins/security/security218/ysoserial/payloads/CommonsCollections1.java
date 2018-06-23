@@ -29,7 +29,6 @@ import java.util.Map;
 import jenkins.security.security218.ysoserial.util.Gadgets;
 import jenkins.security.security218.ysoserial.util.PayloadRunner;
 import jenkins.security.security218.ysoserial.util.Reflections;
-
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.collections.functors.ChainedTransformer;
 import org.apache.commons.collections.functors.ConstantTransformer;

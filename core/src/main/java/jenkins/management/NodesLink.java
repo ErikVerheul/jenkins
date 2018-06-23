@@ -26,7 +26,6 @@ package jenkins.management;
 
 import hudson.Extension;
 import hudson.model.ManagementLink;
-import jenkins.management.Messages;
 import org.jenkinsci.Symbol;
 
 /**

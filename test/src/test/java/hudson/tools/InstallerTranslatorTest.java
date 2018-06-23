@@ -37,12 +37,11 @@ import hudson.tasks.BatchFile;
 import hudson.tasks.Shell;
 import hudson.util.StreamTaskListener;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Rule;
+import org.junit.Test;
 import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 

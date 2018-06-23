@@ -8,9 +8,11 @@ package hudson.security.csrf;
 
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import java.net.HttpURLConnection;
 import jenkins.model.Jenkins;
 import junit.framework.Assert;
 import net.sf.json.JSONObject;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -18,10 +20,6 @@ import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.JenkinsRule.WebClient;
 import org.jvnet.hudson.test.recipes.PresetData;
-
-import java.net.HttpURLConnection;
-
-import static org.junit.Assert.*;
 
 /**
  *

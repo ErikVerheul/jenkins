@@ -1,7 +1,6 @@
 package hudson.tasks;
 
 import hudson.EnvVars;
-import hudson.model.labels.LabelAtom;
 import hudson.maven.MavenModuleSet;
 import hudson.maven.MavenModuleSetBuild;
 import hudson.model.AbstractBuild;
@@ -9,16 +8,16 @@ import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
 import hudson.model.JDK;
 import hudson.model.Result;
+import hudson.model.labels.LabelAtom;
 import hudson.slaves.DumbSlave;
 import hudson.tasks.Ant.AntInstallation;
 import hudson.tasks.Maven.MavenInstallation;
-
+import static hudson.tasks._ant.Messages.Ant_ExecutableNotFound;
 import org.apache.tools.ant.taskdefs.condition.Os;
 import org.junit.Assume;
+import org.junit.rules.TemporaryFolder;
 import org.jvnet.hudson.test.ExtractResourceSCM;
 import org.jvnet.hudson.test.HudsonTestCase;
-import static hudson.tasks._ant.Messages.Ant_ExecutableNotFound;
-import org.junit.rules.TemporaryFolder;
 import org.jvnet.hudson.test.ToolInstallations;
 
 public class EnvVarsInConfigTasksTest extends HudsonTestCase {

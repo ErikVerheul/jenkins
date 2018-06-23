@@ -24,19 +24,19 @@
 package hudson.model;
 
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import org.junit.Before;
-import org.junit.Test;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import hudson.security.GlobalMatrixAuthorizationStrategy;
 import java.io.IOException;
 import java.util.logging.Level;
 import org.acegisecurity.context.SecurityContextHolder;
 import static org.hamcrest.Matchers.*;
-import org.junit.Rule;
-import org.jvnet.hudson.test.JenkinsRule;
 import static org.junit.Assert.*;
 import static org.junit.Assume.*;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.LoggerRule;
 
 /**

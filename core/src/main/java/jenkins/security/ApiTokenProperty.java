@@ -24,7 +24,6 @@
 package jenkins.security;
 
 import hudson.Extension;
-import jenkins.util.SystemProperties;
 import hudson.Util;
 import hudson.model.Descriptor.FormException;
 import hudson.model.User;
@@ -33,23 +32,23 @@ import hudson.model.UserPropertyDescriptor;
 import hudson.security.ACL;
 import hudson.util.HttpResponses;
 import hudson.util.Secret;
-import jenkins.model.Jenkins;
-import net.sf.json.JSONObject;
-import org.jenkinsci.Symbol;
-import org.kohsuke.stapler.AncestorInPath;
-import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.HttpResponse;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
-
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 import javax.annotation.Nonnull;
+import jenkins.model.Jenkins;
+import jenkins.util.SystemProperties;
+import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
+import org.jenkinsci.Symbol;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
+import org.kohsuke.stapler.AncestorInPath;
+import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.HttpResponse;
+import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.interceptor.RequirePOST;
 
 /**

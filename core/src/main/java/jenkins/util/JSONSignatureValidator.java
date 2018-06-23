@@ -2,21 +2,13 @@ package jenkins.util;
 
 import com.trilead.ssh2.crypto.Base64;
 import hudson.util.FormValidation;
-import java.nio.file.Files;
-import java.nio.file.InvalidPathException;
-import jenkins.model.Jenkins;
-import net.sf.json.JSONObject;
-import org.apache.commons.io.output.NullOutputStream;
-import org.apache.commons.io.output.TeeOutputStream;
-import org.jvnet.hudson.crypto.CertificateUtil;
-import org.jvnet.hudson.crypto.SignatureOutputStream;
-
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
+import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.security.DigestOutputStream;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
@@ -34,6 +26,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import jenkins.model.Jenkins;
+import net.sf.json.JSONObject;
+import org.apache.commons.io.output.NullOutputStream;
+import org.apache.commons.io.output.TeeOutputStream;
+import org.jvnet.hudson.crypto.CertificateUtil;
+import org.jvnet.hudson.crypto.SignatureOutputStream;
 
 /**
  * @author Kohsuke Kawaguchi

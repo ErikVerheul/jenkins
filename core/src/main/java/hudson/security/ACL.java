@@ -23,28 +23,27 @@
  */
 package hudson.security;
 
+import hudson.model.Item;
+import hudson.model.ItemGroup;
+import hudson.model.TopLevelItemDescriptor;
 import hudson.model.User;
 import hudson.model.View;
 import hudson.model.ViewDescriptor;
 import hudson.model.ViewGroup;
+import hudson.remoting.Callable;
+import java.util.function.BiFunction;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-
-import hudson.model.Item;
-import hudson.remoting.Callable;
-import hudson.model.ItemGroup;
-import hudson.model.TopLevelItemDescriptor;
-import java.util.function.BiFunction;
-import jenkins.security.NonSerializableSecurityContext;
 import jenkins.model.Jenkins;
+import jenkins.security.NonSerializableSecurityContext;
 import jenkins.security.NotReallyRoleSensitiveCallable;
 import org.acegisecurity.AccessDeniedException;
 import org.acegisecurity.Authentication;
+import org.acegisecurity.acls.sid.PrincipalSid;
+import org.acegisecurity.acls.sid.Sid;
 import org.acegisecurity.context.SecurityContext;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
-import org.acegisecurity.acls.sid.PrincipalSid;
-import org.acegisecurity.acls.sid.Sid;
 import org.acegisecurity.providers.anonymous.AnonymousAuthenticationToken;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;

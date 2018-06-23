@@ -23,18 +23,16 @@
  */
 package hudson.model;
 
-import hudson.ExtensionPoint;
-import hudson.ExtensionListView;
 import hudson.Extension;
 import hudson.ExtensionList;
+import hudson.ExtensionListView;
+import hudson.ExtensionPoint;
 import hudson.security.Permission;
-import jenkins.model.Jenkins;
-
 import java.util.List;
-import org.kohsuke.stapler.interceptor.RequirePOST;
-
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import jenkins.model.Jenkins;
+import org.kohsuke.stapler.interceptor.RequirePOST;
 
 /**
  * Extension point to add icon to <tt>http://server/hudson/manage</tt> page.

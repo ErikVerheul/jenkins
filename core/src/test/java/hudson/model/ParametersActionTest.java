@@ -4,12 +4,11 @@ import hudson.EnvVars;
 import hudson.model.queue.SubTask;
 import hudson.tasks.BuildWrapper;
 import java.util.LinkedList;
-import org.junit.Before;
-import org.junit.Test;
-
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.jvnet.hudson.test.Issue;
 import static org.powermock.api.mockito.PowerMockito.mock;

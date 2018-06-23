@@ -27,14 +27,14 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.ServiceLoader;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import static java.util.logging.Level.WARNING;
+import java.util.logging.Logger;
 
 /**
  * Load classes by looking up <tt>META-INF/services</tt>.

@@ -23,13 +23,11 @@
  */
 package jenkins.security;
 
-import org.acegisecurity.userdetails.UserDetails;
-
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
-
+import javax.annotation.Nonnull;
+import org.acegisecurity.userdetails.UserDetails;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;

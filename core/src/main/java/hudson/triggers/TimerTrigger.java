@@ -38,13 +38,11 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
-
+import javax.annotation.Nonnull;
 import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
-
-import javax.annotation.Nonnull;
 
 /**
  * {@link Trigger} that runs a job periodically.

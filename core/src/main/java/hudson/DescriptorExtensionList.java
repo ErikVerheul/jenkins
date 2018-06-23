@@ -23,32 +23,30 @@
  */
 package hudson;
 
-import hudson.model.Descriptor;
 import hudson.model.Describable;
-import hudson.model.Hudson;
-import jenkins.ExtensionComponentSet;
-import jenkins.model.Jenkins;
-import hudson.model.ViewDescriptor;
+import hudson.model.Descriptor;
 import hudson.model.Descriptor.FormException;
-import hudson.util.AdaptedIterator;
-import hudson.util.Iterators.FlattenIterator;
+import hudson.model.Hudson;
+import hudson.model.ViewDescriptor;
 import hudson.slaves.NodeDescriptor;
 import hudson.tasks.Publisher;
-
-import java.util.Collection;
-import java.util.List;
+import hudson.util.AdaptedIterator;
+import hudson.util.Iterators.FlattenIterator;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.concurrent.CopyOnWriteArrayList;
 import javax.annotation.CheckForNull;
-
-import org.kohsuke.stapler.Stapler;
+import jenkins.ExtensionComponentSet;
+import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
+import org.kohsuke.stapler.Stapler;
 
 /**
  * {@link ExtensionList} for holding a set of {@link Descriptor}s, which is a group of descriptors for

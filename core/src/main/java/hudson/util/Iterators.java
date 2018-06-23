@@ -25,16 +25,14 @@ package hudson.util;
 
 import com.google.common.base.Predicates;
 import com.google.common.collect.ImmutableList;
-
+import java.util.AbstractList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.ListIterator;
-import java.util.AbstractList;
-import java.util.Arrays;
+import java.util.NoSuchElementException;
 import java.util.Set;
-import java.util.HashSet;
 
 /**
  * Varios {@link Iterator} implementations.

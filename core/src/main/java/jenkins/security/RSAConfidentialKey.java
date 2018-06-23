@@ -23,8 +23,6 @@
  */
 package jenkins.security;
 
-import org.apache.commons.codec.binary.Base64;
-
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.KeyFactory;
@@ -37,6 +35,7 @@ import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.RSAPublicKeySpec;
+import org.apache.commons.codec.binary.Base64;
 
 /**
  * RSA public/private key pair as {@link ConfidentialKey}.

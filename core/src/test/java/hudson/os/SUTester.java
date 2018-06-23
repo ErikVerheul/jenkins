@@ -5,8 +5,6 @@ import java.io.File;
 import java.nio.file.Files;
 import jenkins.security.MasterToSlaveCallable;
 
-import java.io.FileOutputStream;
-
 /**
  * @author Kohsuke Kawaguchi
  */

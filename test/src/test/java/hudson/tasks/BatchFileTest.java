@@ -1,22 +1,20 @@
 package hudson.tasks;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assume.assumeTrue;
-
-import java.io.IOException;
-
-import org.junit.Rule;
-import org.junit.Test;
-import org.jvnet.hudson.test.Issue;
-import org.jvnet.hudson.test.JenkinsRule;
-import org.jvnet.hudson.test.FakeLauncher;
-import org.jvnet.hudson.test.PretendSlave;
 import hudson.Functions;
 import hudson.Launcher.ProcStarter;
 import hudson.Proc;
-import hudson.model.Result;
 import hudson.model.FreeStyleProject;
+import hudson.model.Result;
+import java.io.IOException;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assume.assumeTrue;
+import org.junit.Rule;
+import org.junit.Test;
+import org.jvnet.hudson.test.FakeLauncher;
+import org.jvnet.hudson.test.Issue;
+import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.PretendSlave;
 import org.jvnet.hudson.test.recipes.LocalData;
 
 

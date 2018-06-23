@@ -23,12 +23,10 @@
  */
 package jenkins.security;
 
-import jenkins.util.InterceptingExecutorService;
-import org.acegisecurity.context.SecurityContext;
-
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
-
+import jenkins.util.InterceptingExecutorService;
+import org.acegisecurity.context.SecurityContext;
 import static org.acegisecurity.context.SecurityContextHolder.*;
 
 /**

@@ -23,18 +23,11 @@
  */
 package hudson.model;
 
+import hudson.Extension;
+import hudson.Indenter;
 import hudson.model.Descriptor.FormException;
 import hudson.util.CaseInsensitiveComparator;
-import hudson.Indenter;
-import hudson.Extension;
-import jenkins.util.SystemProperties;
 import hudson.views.ViewsTabBar;
-import jenkins.model.Jenkins;
-import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
-
-import javax.servlet.ServletException;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
@@ -42,6 +35,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.CopyOnWriteArrayList;
+import javax.servlet.ServletException;
+import jenkins.model.Jenkins;
+import jenkins.util.SystemProperties;
+import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.interceptor.RequirePOST;
 
 /**

@@ -7,22 +7,20 @@ import hudson.slaves.DumbSlave;
 import hudson.slaves.JNLPLauncher;
 import hudson.slaves.RetentionStrategy;
 import java.io.File;
-import org.apache.tools.ant.util.JavaEnvUtils;
-import org.junit.After;
-import org.junit.Rule;
-import org.junit.Test;
-import org.jvnet.hudson.test.Issue;
-import org.jvnet.hudson.test.JenkinsRule;
-
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.logging.Level;
 import org.apache.commons.io.FileUtils;
+import org.apache.tools.ant.util.JavaEnvUtils;
 import org.codehaus.groovy.runtime.MethodClosure;
 import static org.hamcrest.Matchers.containsString;
-
+import org.junit.After;
 import static org.junit.Assert.*;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.jvnet.hudson.test.Issue;
+import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.LoggerRule;
 
 /**

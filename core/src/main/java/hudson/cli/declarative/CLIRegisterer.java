@@ -32,21 +32,7 @@ import hudson.Util;
 import hudson.cli.CLICommand;
 import hudson.cli.CloneableCLICommand;
 import hudson.model.Hudson;
-import jenkins.ExtensionComponentSet;
-import jenkins.ExtensionRefreshException;
-import jenkins.model.Jenkins;
 import hudson.security.CliAuthenticator;
-import org.acegisecurity.AccessDeniedException;
-import org.acegisecurity.Authentication;
-import org.acegisecurity.BadCredentialsException;
-import org.acegisecurity.context.SecurityContext;
-import org.acegisecurity.context.SecurityContextHolder;
-import org.jvnet.hudson.annotation_indexer.Index;
-import org.jvnet.localizer.ResourceBundleHolder;
-import org.kohsuke.args4j.ClassParser;
-import org.kohsuke.args4j.CmdLineParser;
-import org.kohsuke.args4j.CmdLineException;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -60,11 +46,23 @@ import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.Stack;
-import static java.util.logging.Level.SEVERE;
-
 import java.util.UUID;
 import java.util.logging.Level;
+import static java.util.logging.Level.SEVERE;
 import java.util.logging.Logger;
+import jenkins.ExtensionComponentSet;
+import jenkins.ExtensionRefreshException;
+import jenkins.model.Jenkins;
+import org.acegisecurity.AccessDeniedException;
+import org.acegisecurity.Authentication;
+import org.acegisecurity.BadCredentialsException;
+import org.acegisecurity.context.SecurityContext;
+import org.acegisecurity.context.SecurityContextHolder;
+import org.jvnet.hudson.annotation_indexer.Index;
+import org.jvnet.localizer.ResourceBundleHolder;
+import org.kohsuke.args4j.ClassParser;
+import org.kohsuke.args4j.CmdLineException;
+import org.kohsuke.args4j.CmdLineParser;
 
 /**
  * Discover {@link CLIMethod}s and register them as {@link CLICommand} implementations.

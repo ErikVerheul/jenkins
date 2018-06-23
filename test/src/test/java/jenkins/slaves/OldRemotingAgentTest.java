@@ -35,7 +35,14 @@ import hudson.node_monitors.NodeMonitor;
 import hudson.slaves.ComputerLauncher;
 import hudson.tasks.BatchFile;
 import hudson.tasks.Shell;
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.net.URISyntaxException;
+import java.util.Collection;
 import org.codehaus.plexus.util.FileUtils;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -43,15 +50,6 @@ import org.junit.rules.TemporaryFolder;
 import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.SimpleCommandLauncher;
-
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Method;
-import java.net.URISyntaxException;
-import java.util.Collection;
-
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
 
 /**
  * Tests for old Remoting agent versions

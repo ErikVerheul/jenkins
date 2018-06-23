@@ -7,6 +7,11 @@ import hudson.ExtensionList;
 import hudson.model.UnprotectedRootAction;
 import hudson.model.User;
 import hudson.util.HttpResponses;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -15,13 +20,6 @@ import org.jvnet.hudson.test.JenkinsRule.WebClient;
 import org.jvnet.hudson.test.TestExtension;
 import org.kohsuke.stapler.HttpResponse;
 import org.xml.sax.SAXException;
-
-import java.io.IOException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-
-import static org.junit.Assert.*;
 
 /**
  * @author Kohsuke Kawaguchi

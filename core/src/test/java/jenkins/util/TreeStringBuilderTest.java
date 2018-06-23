@@ -1,11 +1,9 @@
 package jenkins.util;
 
-import static org.junit.Assert.*;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
+import static org.junit.Assert.*;
 import org.junit.Test;
 
 /**

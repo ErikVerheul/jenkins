@@ -24,13 +24,12 @@
 package jenkins.slaves;
 
 import hudson.util.VersionNumber;
-
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.Nonnull;
 
 // TODO: Make the API public (JENKINS-48766)
 /**

@@ -23,10 +23,9 @@
  */
 package hudson.util;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
-
 import hudson.Util;
+import static org.junit.Assert.*;
+import org.junit.Test;
 
 /**
  * Test for {@link Util.isOverridden} method.

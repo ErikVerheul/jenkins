@@ -23,13 +23,12 @@
  */
 package hudson.pages;
 
-import static org.junit.Assert.assertEquals;
-
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import hudson.model.PageDecorator;
 import net.sf.json.JSONObject;
 import org.junit.After;
+import static org.junit.Assert.assertEquals;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.Issue;

@@ -24,43 +24,40 @@
 package hudson.lifecycle;
 
 import com.sun.jna.Native;
+import hudson.AbortException;
+import hudson.Extension;
 import hudson.Functions;
 import hudson.Launcher.LocalLauncher;
 import hudson.model.ManagementLink;
 import hudson.model.TaskListener;
-import hudson.util.jna.Kernel32Utils;
-import hudson.util.jna.SHELLEXECUTEINFO;
-import hudson.util.jna.Shell32;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.InvalidPathException;
-import jenkins.model.Jenkins;
-import hudson.AbortException;
-import hudson.Extension;
-import jenkins.util.SystemProperties;
 import hudson.util.StreamTaskListener;
 import hudson.util.jna.DotNet;
+import hudson.util.jna.Kernel32Utils;
+import hudson.util.jna.SHELLEXECUTEINFO;
+import static hudson.util.jna.SHELLEXECUTEINFO.*;
+import hudson.util.jna.Shell32;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.servlet.ServletException;
+import jenkins.model.Jenkins;
+import jenkins.util.SystemProperties;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.apache.tools.ant.DefaultLogger;
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.taskdefs.Move;
+import org.apache.tools.ant.types.FileSet;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.apache.tools.ant.taskdefs.Move;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.DefaultLogger;
-import org.apache.tools.ant.types.FileSet;
 import org.kohsuke.stapler.interceptor.RequirePOST;
-
-import javax.servlet.ServletException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.logging.Logger;
-import java.util.logging.Level;
-import java.net.URL;
-
-import static hudson.util.jna.SHELLEXECUTEINFO.*;
 
 /**
  * {@link ManagementLink} that allows the installation as a Windows service.

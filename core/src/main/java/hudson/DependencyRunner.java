@@ -25,16 +25,14 @@
 package hudson;
 
 import hudson.model.AbstractProject;
-import jenkins.model.Jenkins;
 import hudson.security.ACL;
-
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.Collection;
 import java.util.logging.Logger;
-
+import jenkins.model.Jenkins;
 import org.acegisecurity.context.SecurityContext;
 import org.acegisecurity.context.SecurityContextHolder;
 

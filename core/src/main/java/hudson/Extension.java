@@ -23,16 +23,14 @@
  */
 package hudson;
 
-import jenkins.YesNoMaybe;
-import net.java.sezpoz.Indexable;
-
 import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
 import static java.lang.annotation.ElementType.*;
+import java.lang.annotation.Retention;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import java.lang.annotation.Target;
+import jenkins.YesNoMaybe;
 import static jenkins.YesNoMaybe.MAYBE;
+import net.java.sezpoz.Indexable;
 
 /**
  * Marks a field, a method, or a class for automatic discovery, so that Hudson can locate

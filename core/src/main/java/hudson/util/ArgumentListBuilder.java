@@ -26,17 +26,16 @@ package hudson.util;
 
 import hudson.Launcher;
 import hudson.Util;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.BitSet;
-import java.util.Properties;
-import java.util.Map.Entry;
-import java.io.Serializable;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.BitSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.Set;
 import javax.annotation.Nonnull;
 

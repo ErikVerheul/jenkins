@@ -24,11 +24,10 @@
 package hudson.diagnosis;
 
 import hudson.Extension;
-import jenkins.model.Jenkins;
 import hudson.model.PeriodicWork;
-import org.jenkinsci.Symbol;
-
 import java.util.logging.Logger;
+import jenkins.model.Jenkins;
+import org.jenkinsci.Symbol;
 
 /**
  * Periodically checks the disk usage of <tt>JENKINS_HOME</tt>,

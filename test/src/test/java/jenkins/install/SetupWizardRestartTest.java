@@ -1,19 +1,16 @@
 package jenkins.install;
 
+import hudson.Main;
+import java.io.IOException;
+import jenkins.model.Jenkins;
+import org.apache.commons.io.FileUtils;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-
-import java.io.IOException;
-
-import org.apache.commons.io.FileUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runners.model.Statement;
 import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.RestartableJenkinsRule;
-
-import hudson.Main;
-import jenkins.model.Jenkins;
 
 public class SetupWizardRestartTest {
     @Rule

@@ -23,19 +23,18 @@
  */
 package hudson.tasks;
 
+import hudson.EnvVars;
 import hudson.FilePath;
+import hudson.Functions;
 import hudson.Launcher;
 import hudson.Proc;
 import hudson.Util;
-import hudson.EnvVars;
-import hudson.Functions;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.model.Node;
 import hudson.model.Result;
 import hudson.model.TaskListener;
 import hudson.remoting.ChannelClosedException;
-
 import java.io.IOException;
 import java.util.Map;
 import java.util.logging.Level;

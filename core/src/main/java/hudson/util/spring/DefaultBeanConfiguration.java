@@ -16,18 +16,17 @@
 package hudson.util.spring;
 
 import groovy.lang.GroovyObjectSupport;
+import java.util.*;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.beans.factory.config.BeanReference;
 import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.ChildBeanDefinition;
 import org.springframework.beans.factory.support.RootBeanDefinition;
-
-import java.util.*;
-import org.springframework.beans.factory.config.BeanReference;
 
 /**
  * Default implementation of the BeanConfiguration interface

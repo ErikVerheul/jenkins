@@ -23,20 +23,15 @@
  */
 package hudson.cli.handlers;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
-import hudson.model.ViewGroup;
 import hudson.model.View;
+import hudson.model.ViewGroup;
 import hudson.security.ACL;
 import hudson.security.Permission;
 import jenkins.model.Jenkins;
-
 import org.acegisecurity.AccessDeniedException;
 import org.acegisecurity.Authentication;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,6 +39,10 @@ import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.spi.Parameters;
 import org.kohsuke.args4j.spi.Setter;
 import org.mockito.Mock;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;

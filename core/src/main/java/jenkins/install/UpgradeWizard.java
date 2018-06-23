@@ -1,16 +1,17 @@
 package jenkins.install;
 
-import static java.util.logging.Level.FINE;
-
+import hudson.Extension;
+import hudson.util.HttpResponses;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
+import static java.util.logging.Level.FINE;
 import java.util.logging.Logger;
-
 import javax.inject.Provider;
 import javax.servlet.http.HttpSession;
-
+import jenkins.model.Jenkins;
+import net.sf.json.JSONArray;
 import org.apache.commons.io.FileUtils;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
@@ -18,11 +19,6 @@ import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.WebApp;
 import org.kohsuke.stapler.interceptor.RequirePOST;
-
-import hudson.Extension;
-import hudson.util.HttpResponses;
-import jenkins.model.Jenkins;
-import net.sf.json.JSONArray;
 
 /**
  * This class is responsible for specific upgrade behaviors in the Jenkins UI.

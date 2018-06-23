@@ -30,16 +30,15 @@ import com.google.common.collect.Lists;
 import hudson.model.BallColor;
 import hudson.model.StatusIcon;
 import hudson.model.StockStatusIcon;
-import jenkins.util.NonLocalizable;
-import org.jvnet.hudson.test.HudsonTestCase;
-
+import java.io.StringWriter;
+import java.util.List;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.StringWriter;
-import java.util.List;
+import jenkins.util.NonLocalizable;
+import org.jvnet.hudson.test.HudsonTestCase;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>

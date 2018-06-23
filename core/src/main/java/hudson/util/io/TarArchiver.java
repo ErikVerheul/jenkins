@@ -28,13 +28,10 @@ import hudson.Functions;
 import hudson.os.PosixException;
 import hudson.util.FileVisitor;
 import hudson.util.IOUtils;
-
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;

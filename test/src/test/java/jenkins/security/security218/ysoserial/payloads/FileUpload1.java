@@ -29,16 +29,14 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
-
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.fileupload.disk.DiskFileItem;
-import org.apache.commons.io.output.DeferredFileOutputStream;
-import org.apache.commons.io.output.ThresholdingOutputStream;
-
 import jenkins.security.security218.ysoserial.payloads.annotation.Dependencies;
 import jenkins.security.security218.ysoserial.payloads.annotation.PayloadTest;
 import jenkins.security.security218.ysoserial.payloads.util.PayloadRunner;
 import jenkins.security.security218.ysoserial.payloads.util.Reflections;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.fileupload.disk.DiskFileItem;
+import org.apache.commons.io.output.DeferredFileOutputStream;
+import org.apache.commons.io.output.ThresholdingOutputStream;
 
 /**
  * Gadget chain:

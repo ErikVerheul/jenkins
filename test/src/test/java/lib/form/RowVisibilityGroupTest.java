@@ -9,13 +9,12 @@ import com.gargoylesoftware.htmlunit.html.HtmlSelect;
 import hudson.model.AbstractDescribableImpl;
 import hudson.model.Describable;
 import hudson.model.Descriptor;
+import java.util.List;
 import net.sf.json.JSONObject;
 import org.jvnet.hudson.test.HudsonTestCase;
 import org.jvnet.hudson.test.TestExtension;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
-
-import java.util.List;
 
 /**
  * Tests the 'rowvg-start' and 'rowvg-end' CSS attributes and their effects.

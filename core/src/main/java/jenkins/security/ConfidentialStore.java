@@ -4,11 +4,6 @@ import hudson.Extension;
 import hudson.Lookup;
 import hudson.init.InitMilestone;
 import hudson.util.Secret;
-import jenkins.model.Jenkins;
-import org.kohsuke.MetaInfServices;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.Iterator;
@@ -16,6 +11,10 @@ import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+import jenkins.model.Jenkins;
+import org.kohsuke.MetaInfServices;
 
 /**
  * The actual storage for the data held by {@link ConfidentialKey}s, and the holder

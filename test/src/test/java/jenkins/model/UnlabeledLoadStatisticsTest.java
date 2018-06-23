@@ -32,11 +32,11 @@ import hudson.model.StringParameterValue;
 import hudson.model.labels.LabelAtom;
 import hudson.slaves.DumbSlave;
 import org.junit.After;
+import static org.junit.Assert.*;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
-import static org.junit.Assert.*;
 
 /**
  * Tests for {@link UnlabeledLoadStatistics} class.

@@ -1,8 +1,7 @@
 package jenkins.security.security218.ysoserial.payloads;
 
-import jenkins.security.security218.ysoserial.util.PayloadRunner;
-
 import java.lang.reflect.Constructor;
+import jenkins.security.security218.ysoserial.util.PayloadRunner;
 
 /**
  * @author Kohsuke Kawaguchi

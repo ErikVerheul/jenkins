@@ -1,7 +1,5 @@
 package jenkins.util;
 
-import org.apache.tools.ant.Project;
-
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
@@ -10,6 +8,7 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Vector;
+import org.apache.tools.ant.Project;
 
 /**
  * As of 1.8.0, {@link org.apache.tools.ant.AntClassLoader} doesn't implement {@link #findResource(String)}

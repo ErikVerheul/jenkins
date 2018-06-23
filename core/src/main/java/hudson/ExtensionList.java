@@ -24,15 +24,12 @@
 package hudson;
 
 import com.google.common.collect.Lists;
+import hudson.ExtensionPoint.LegacyInstancesAreScopedToHudson;
 import hudson.init.InitMilestone;
 import hudson.model.Hudson;
-import jenkins.ExtensionComponentSet;
-import jenkins.model.Jenkins;
 import hudson.util.AdaptedIterator;
 import hudson.util.DescriptorList;
 import hudson.util.Iterators;
-import hudson.ExtensionPoint.LegacyInstancesAreScopedToHudson;
-
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -47,6 +44,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import jenkins.ExtensionComponentSet;
+import jenkins.model.Jenkins;
 import jenkins.util.io.OnMaster;
 
 /**

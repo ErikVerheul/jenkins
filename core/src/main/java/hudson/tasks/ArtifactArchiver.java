@@ -25,13 +25,11 @@ package hudson.tasks;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.AbortException;
+import hudson.Extension;
 import hudson.FilePath;
-import jenkins.MasterToSlaveFileCallable;
+import hudson.Functions;
 import hudson.Launcher;
 import hudson.Util;
-import hudson.Extension;
-import hudson.Functions;
-import jenkins.util.SystemProperties;
 import hudson.model.AbstractProject;
 import hudson.model.Result;
 import hudson.model.Run;
@@ -40,28 +38,27 @@ import hudson.model.listeners.ItemListener;
 import hudson.remoting.VirtualChannel;
 import hudson.util.FormValidation;
 import java.io.File;
-
-import org.apache.tools.ant.types.FileSet;
-import org.jenkinsci.Symbol;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.AncestorInPath;
-import org.kohsuke.stapler.QueryParameter;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.CheckForNull;
-
-import net.sf.json.JSONObject;
 import javax.annotation.Nonnull;
+import jenkins.MasterToSlaveFileCallable;
 import jenkins.model.BuildDiscarder;
 import jenkins.model.Jenkins;
 import jenkins.tasks.SimpleBuildStep;
 import jenkins.util.BuildListenerAdapter;
+import jenkins.util.SystemProperties;
+import net.sf.json.JSONObject;
+import org.apache.tools.ant.types.FileSet;
+import org.jenkinsci.Symbol;
+import org.kohsuke.stapler.AncestorInPath;
+import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
+import org.kohsuke.stapler.QueryParameter;
+import org.kohsuke.stapler.StaplerRequest;
 
 /**
  * Copies the artifacts into an archive directory.

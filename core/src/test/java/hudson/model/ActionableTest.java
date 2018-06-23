@@ -26,14 +26,11 @@ package hudson.model;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
-
 import java.util.Collections;
 import java.util.List;
-
+import static org.hamcrest.CoreMatchers.is;
 import org.junit.Assert;
+import static org.junit.Assert.*;
 import org.junit.Test;
 import org.jvnet.hudson.test.Issue;
 

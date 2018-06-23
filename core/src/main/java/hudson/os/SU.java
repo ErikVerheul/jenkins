@@ -36,13 +36,11 @@ import hudson.remoting.VirtualChannel;
 import hudson.remoting.Which;
 import hudson.slaves.Channels;
 import hudson.util.ArgumentListBuilder;
-
+import static hudson.util.jna.GNUCLibrary.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Collections;
-
-import static hudson.util.jna.GNUCLibrary.*;
 
 /**
  * Executes {@link Callable} as the super user, by forking a new process and executing the closure in there

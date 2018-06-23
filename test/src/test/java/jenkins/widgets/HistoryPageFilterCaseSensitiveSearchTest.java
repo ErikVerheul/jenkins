@@ -1,17 +1,5 @@
 package jenkins.widgets;
 
-import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-
-import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.jvnet.hudson.test.Issue;
-import org.jvnet.hudson.test.JenkinsRule;
-import org.mockito.Mockito;
-
 import com.google.common.collect.ImmutableList;
 import hudson.model.Job;
 import hudson.model.ModelObject;
@@ -23,6 +11,16 @@ import hudson.search.UserSearchProperty;
 import hudson.security.ACL;
 import hudson.security.ACLContext;
 import hudson.security.AuthorizationStrategy;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
+import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
+import org.junit.Assert;
+import org.junit.Rule;
+import org.junit.Test;
+import org.jvnet.hudson.test.Issue;
+import org.jvnet.hudson.test.JenkinsRule;
+import org.mockito.Mockito;
 
 /**
  * TODO: Code partially duplicated with HistoryPageFilterTest in core

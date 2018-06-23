@@ -23,10 +23,9 @@
  */
 package hudson.model;
 
-import jenkins.model.PeepholePermalink;
-
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import jenkins.model.PeepholePermalink;
 
 /**
  * Optional interface for {@link Action}s that are attached

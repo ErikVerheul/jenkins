@@ -15,16 +15,15 @@
  */
 package hudson.util.spring;
 
+import java.util.Collection;
+import java.util.List;
+import javax.servlet.ServletContext;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.context.WebApplicationContext;
-
-import javax.servlet.ServletContext;
-import java.util.Collection;
-import java.util.List;
 
 /**
  * A programmable runtime Spring configuration that allows a spring ApplicationContext

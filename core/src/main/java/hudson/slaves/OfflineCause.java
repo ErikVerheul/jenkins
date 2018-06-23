@@ -27,17 +27,15 @@ package hudson.slaves;
 import hudson.Functions;
 import hudson.model.Computer;
 import hudson.model.User;
-
-import jenkins.model.Jenkins;
-import org.jvnet.localizer.Localizable;
-import org.kohsuke.stapler.export.ExportedBean;
-import org.kohsuke.stapler.export.Exported;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
 import java.io.ObjectStreamException;
 import java.util.Collections;
 import java.util.Date;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+import jenkins.model.Jenkins;
+import org.jvnet.localizer.Localizable;
+import org.kohsuke.stapler.export.Exported;
+import org.kohsuke.stapler.export.ExportedBean;
 
 /**
  * Represents a cause that puts a {@linkplain Computer#isOffline() computer offline}.

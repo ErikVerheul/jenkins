@@ -23,29 +23,26 @@
  */
 package hudson.cli;
 
-import static org.junit.Assert.*;
+import com.gargoylesoftware.htmlunit.ElementNotFoundException;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import static hudson.cli.CLICommandInvoker.Matcher.*;
+import hudson.cli.CLICommandInvoker.Result;
+import hudson.model.Computer;
+import hudson.model.Slave;
+import hudson.slaves.DumbSlave;
+import hudson.slaves.OfflineCause.UserCause;
+import jenkins.model.Jenkins;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
-
-import jenkins.model.Jenkins;
-import hudson.cli.CLICommandInvoker.Result;
-import hudson.model.Computer;
-import hudson.model.Slave;
-import hudson.slaves.DumbSlave;
-import hudson.slaves.OfflineCause.UserCause;
-
+import static org.junit.Assert.*;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.JenkinsRule.WebClient;
-
-import com.gargoylesoftware.htmlunit.ElementNotFoundException;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 /**
  * @author ogondza

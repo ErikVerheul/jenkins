@@ -1,20 +1,18 @@
 package hudson.scheduler;
 
-import static org.junit.Assert.assertEquals;
-
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.GregorianCalendar;
 import java.util.Locale;
-
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.For;
+import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.Url;
 
 /**

@@ -24,11 +24,6 @@
 
 package jenkins.xml;
 
-import jenkins.util.xml.XMLUtils;
-
-import org.junit.Assert;
-import org.junit.Test;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
@@ -38,9 +33,11 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.xpath.XPathExpressionException;
-
+import jenkins.util.xml.XMLUtils;
 import static org.hamcrest.core.StringContains.containsString;
+import org.junit.Assert;
 import static org.junit.Assert.assertThat;
+import org.junit.Test;
 import org.jvnet.hudson.test.Issue;
 import org.xml.sax.SAXException;
 

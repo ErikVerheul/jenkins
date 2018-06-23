@@ -1,23 +1,18 @@
 package hudson.model;
 
-import hudson.model.FreeStyleBuild;
-import hudson.model.FreeStyleProject;
-import hudson.model.Result;
 import hudson.model.utils.AbortExceptionPublisher;
 import hudson.model.utils.IOExceptionPublisher;
 import hudson.model.utils.ResultWriterPublisher;
 import hudson.model.utils.TrueFalsePublisher;
 import hudson.tasks.ArtifactArchiver;
+import java.io.File;
 import org.apache.commons.io.FileUtils;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
-
-import java.io.File;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Freestyle publishers statuses tests

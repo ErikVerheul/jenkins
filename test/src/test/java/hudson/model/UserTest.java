@@ -31,7 +31,6 @@ import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.util.WebConnectionWrapper;
 import hudson.ExtensionList;
-
 import hudson.security.ACL;
 import hudson.security.ACLContext;
 import hudson.security.AbstractPasswordBasedSecurityRealm;
@@ -51,11 +50,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-
 import jenkins.model.IdStrategy;
 import jenkins.model.Jenkins;
 import jenkins.security.ApiTokenProperty;
-
 import org.acegisecurity.AccessDeniedException;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.AuthenticationException;
@@ -64,11 +61,9 @@ import org.acegisecurity.context.SecurityContext;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.acegisecurity.userdetails.UserDetails;
 import org.acegisecurity.userdetails.UsernameNotFoundException;
-
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 import static org.junit.Assume.*;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.FakeChangeLogSCM;

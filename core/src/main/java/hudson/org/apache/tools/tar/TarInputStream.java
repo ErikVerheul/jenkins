@@ -23,14 +23,13 @@
 
 package hudson.org.apache.tools.tar;
 
-import org.apache.tools.tar.TarBuffer;
-import org.apache.tools.tar.TarEntry;
-
+import java.io.ByteArrayOutputStream;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.ByteArrayOutputStream;
+import org.apache.tools.tar.TarBuffer;
+import org.apache.tools.tar.TarEntry;
 
 /**
  * The TarInputStream reads a UNIX tar archive as an InputStream.

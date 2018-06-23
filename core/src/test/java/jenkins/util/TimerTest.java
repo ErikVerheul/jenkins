@@ -1,19 +1,15 @@
 package jenkins.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-
 import groovy.lang.GroovyClassLoader;
 import hudson.triggers.SafeTimerTask;
-import org.junit.Assert;
-import org.junit.Test;
-import org.jvnet.hudson.test.Issue;
-
-import java.net.URLClassLoader;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import org.junit.Assert;
+import static org.junit.Assert.fail;
+import org.junit.Test;
+import org.jvnet.hudson.test.Issue;
 
 public class TimerTest {
 

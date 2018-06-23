@@ -25,9 +25,8 @@
  */
 package hudson;
 
-import hudson.model.Slave;
-import hudson.security.*;
-import jenkins.util.SystemProperties;
+import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
 import hudson.cli.CLICommand;
 import hudson.console.ConsoleAnnotationDescriptor;
 import hudson.console.ConsoleAnnotatorFactory;
@@ -50,13 +49,16 @@ import hudson.model.PageDecorator;
 import hudson.model.PaneStatusProperties;
 import hudson.model.ParameterDefinition;
 import hudson.model.ParameterDefinition.ParameterDescriptor;
+import hudson.model.PasswordParameterDefinition;
 import hudson.model.Run;
+import hudson.model.Slave;
 import hudson.model.TopLevelItem;
 import hudson.model.User;
 import hudson.model.View;
 import hudson.scm.SCM;
 import hudson.scm.SCMDescriptor;
 import hudson.search.SearchableModelObject;
+import hudson.security.*;
 import hudson.security.captcha.CaptchaSupport;
 import hudson.security.csrf.CrumbIssuer;
 import hudson.slaves.Cloud;
@@ -75,14 +77,15 @@ import hudson.util.FormValidation.CheckMethod;
 import hudson.util.HudsonIsLoading;
 import hudson.util.HudsonIsRestarting;
 import hudson.util.Iterators;
-import hudson.util.jna.GNUCLibrary;
+import hudson.util.RunList;
 import hudson.util.Secret;
+import hudson.util.jna.GNUCLibrary;
 import hudson.views.MyViewsTabBar;
 import hudson.views.ViewsTabBar;
 import hudson.widgets.RenderOnDemandClosure;
-
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
@@ -109,32 +112,34 @@ import java.util.ConcurrentModificationException;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 import java.util.regex.Pattern;
-
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import jenkins.model.GlobalConfiguration;
 import jenkins.model.GlobalConfigurationCategory;
 import jenkins.model.Jenkins;
 import jenkins.model.ModelObjectWithChildren;
 import jenkins.model.ModelObjectWithContextMenu;
-
-import org.acegisecurity.Authentication;
-import org.acegisecurity.providers.anonymous.AnonymousAuthenticationToken;
+import jenkins.util.SystemProperties;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.jelly.JellyContext;
 import org.apache.commons.jelly.JellyTagException;
 import org.apache.commons.jelly.Script;
@@ -144,26 +149,14 @@ import org.apache.commons.jexl.util.Introspector;
 import org.apache.commons.lang.StringUtils;
 import org.jenkins.ui.icon.IconSet;
 import org.jvnet.tiger_types.Types;
+import org.kohsuke.accmod.Restricted;
+import org.kohsuke.accmod.restrictions.DoNotUse;
+import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.Ancestor;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.jelly.InternationalizedStringExpression.RawHtmlArgument;
-
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
-import hudson.model.PasswordParameterDefinition;
-import hudson.util.RunList;
-import java.io.PrintStream;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicLong;
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-import org.apache.commons.io.IOUtils;
-import org.kohsuke.accmod.Restricted;
-import org.kohsuke.accmod.restrictions.NoExternalUse;
-import org.kohsuke.accmod.restrictions.DoNotUse;
 
 /**
  * Utility functions used in views.

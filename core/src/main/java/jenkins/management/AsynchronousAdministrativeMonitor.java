@@ -7,15 +7,14 @@ import hudson.model.AdministrativeMonitor;
 import hudson.model.TaskListener;
 import hudson.security.ACL;
 import hudson.util.StreamTaskListener;
-import jenkins.model.Jenkins;
-import jenkins.security.RekeySecretAdminMonitor;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Nonnull;
+import jenkins.model.Jenkins;
+import jenkins.security.RekeySecretAdminMonitor;
 
 /**
  * Convenient partial implementation of {@link AdministrativeMonitor} that involves a background "fixing" action

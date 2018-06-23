@@ -26,10 +26,9 @@ package hudson.model;
 import hudson.EnvVars;
 import hudson.util.Secret;
 import hudson.util.VariableResolver;
-import org.kohsuke.stapler.DataBoundConstructor;
-
 import java.util.Locale;
 import javax.annotation.Nonnull;
+import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
  * @author Kohsuke Kawaguchi

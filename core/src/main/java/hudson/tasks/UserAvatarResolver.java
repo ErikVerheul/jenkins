@@ -23,17 +23,16 @@
  */
 package hudson.tasks;
 
-import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import jenkins.model.Jenkins;
 import hudson.Extension;
 import hudson.ExtensionList;
 import hudson.ExtensionPoint;
 import hudson.Functions;
 import hudson.model.User;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.annotation.CheckForNull;
+import jenkins.model.Jenkins;
 
 /**
  * Infers avatar image URLs for users

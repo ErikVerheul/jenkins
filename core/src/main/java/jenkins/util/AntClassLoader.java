@@ -17,30 +17,14 @@
  */
 package jenkins.util;
 
-import java.nio.file.Files;
-import org.apache.tools.ant.BuildEvent;
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.SubBuildListener;
-import org.apache.tools.ant.launch.Locator;
-import org.apache.tools.ant.types.Path;
-import org.apache.tools.ant.util.CollectionUtils;
-import org.apache.tools.ant.util.FileUtils;
-import org.apache.tools.ant.util.JavaEnvUtils;
-import org.apache.tools.ant.util.LoaderUtils;
-import org.apache.tools.ant.util.ReflectUtil;
-import org.apache.tools.ant.util.VectorSet;
-import org.kohsuke.accmod.Restricted;
-import org.kohsuke.accmod.restrictions.NoExternalUse;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
 import java.security.cert.Certificate;
@@ -57,6 +41,20 @@ import java.util.jar.Attributes.Name;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+import org.apache.tools.ant.BuildEvent;
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.SubBuildListener;
+import org.apache.tools.ant.launch.Locator;
+import org.apache.tools.ant.types.Path;
+import org.apache.tools.ant.util.CollectionUtils;
+import org.apache.tools.ant.util.FileUtils;
+import org.apache.tools.ant.util.JavaEnvUtils;
+import org.apache.tools.ant.util.LoaderUtils;
+import org.apache.tools.ant.util.ReflectUtil;
+import org.apache.tools.ant.util.VectorSet;
+import org.kohsuke.accmod.Restricted;
+import org.kohsuke.accmod.restrictions.NoExternalUse;
 
 /**
  * Used to load classes within ant with a different classpath from

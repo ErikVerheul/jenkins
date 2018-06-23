@@ -1,11 +1,11 @@
 package lib.form;
 
-import org.jvnet.hudson.test.HudsonTestCase;
-import org.kohsuke.stapler.StaplerRequest;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import hudson.util.FormValidation;
 import net.sf.json.JSONObject;
+import org.jvnet.hudson.test.HudsonTestCase;
+import org.kohsuke.stapler.StaplerRequest;
 
 /**
  * @author Kohsuke Kawaguchi

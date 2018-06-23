@@ -23,11 +23,9 @@
  */
 package jenkins.model;
 
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import hudson.model.FreeStyleProject;
 import hudson.model.ParametersDefinitionProperty;
 import hudson.model.StringParameterDefinition;
-import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
 import org.junit.Rule;
 import org.junit.Test;

@@ -25,15 +25,13 @@ package hudson.model;
 
 import hudson.ExtensionList;
 import hudson.ExtensionPoint;
+import static hudson.init.InitMilestone.JOB_LOADED;
 import hudson.init.Initializer;
 import hudson.triggers.SafeTimerTask;
-import jenkins.util.Timer;
-
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
-
-import static hudson.init.InitMilestone.JOB_LOADED;
+import jenkins.util.Timer;
 
 
 /**

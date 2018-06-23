@@ -23,28 +23,26 @@
  */
 package hudson.util;
 
+import static hudson.init.InitMilestone.JOB_LOADED;
 import hudson.init.Initializer;
-import jenkins.model.Jenkins;
 import hudson.triggers.SafeTimerTask;
+import java.io.File;
+import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.lang.reflect.Method;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+import jenkins.model.Jenkins;
 import jenkins.util.Timer;
 import org.apache.commons.io.FileUtils;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.interceptor.RequirePOST;
-
-import javax.servlet.ServletException;
-import javax.servlet.ServletContext;
-
-import static hudson.init.InitMilestone.JOB_LOADED;
-import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-import java.io.File;
-import java.io.IOException;
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
-import java.util.logging.Level;
-import java.lang.management.ManagementFactory;
-import java.lang.reflect.Method;
 
 /**
  * Makes sure that no other Hudson uses our <tt>JENKINS_HOME</tt> directory,

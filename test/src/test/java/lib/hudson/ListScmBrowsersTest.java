@@ -1,7 +1,5 @@
 package lib.hudson;
 
-import static org.junit.Assert.assertTrue;
-
 import com.gargoylesoftware.htmlunit.html.DomNodeUtil;
 import com.gargoylesoftware.htmlunit.html.HtmlOption;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
@@ -9,15 +7,15 @@ import com.gargoylesoftware.htmlunit.html.HtmlSelect;
 import hudson.matrix.MatrixProject;
 import hudson.maven.MavenModuleSet;
 import hudson.model.Item;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import static org.junit.Assert.assertTrue;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.xml.sax.SAXException;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.io.IOException;
 
 /**
  * @author Kohsuke Kawaguchi

@@ -24,33 +24,31 @@
 package hudson.slaves;
 
 import hudson.AbortException;
+import hudson.Extension;
 import hudson.ExtensionPoint;
 import hudson.model.*;
-import jenkins.model.Jenkins;
-
 import static hudson.model.LoadStatistics.DECAY;
 import hudson.model.MultiStageTimeSeries.TimeScale;
-import hudson.Extension;
-import jenkins.util.SystemProperties;
-import org.jenkinsci.Symbol;
-
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.GuardedBy;
 import java.awt.Color;
-import java.util.Arrays;
-import java.util.concurrent.Future;
-import java.util.concurrent.ExecutionException;
-import java.util.List;
-import java.util.Collection;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.logging.Logger;
 import java.util.logging.Level;
-import java.io.IOException;
+import java.util.logging.Logger;
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.GuardedBy;
+import jenkins.model.Jenkins;
+import jenkins.util.SystemProperties;
+import org.jenkinsci.Symbol;
 
 /**
  * Uses the {@link LoadStatistics} and determines when we need to allocate

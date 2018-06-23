@@ -34,7 +34,6 @@ import hudson.model.Run;
 import hudson.model.TopLevelItem;
 import hudson.model.View;
 import hudson.util.Iterators.CountingPredicate;
-
 import java.util.*;
 
 /**

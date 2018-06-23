@@ -25,7 +25,6 @@ package hudson.util;
 
 import hudson.EnvVars;
 import hudson.util.ProcessTree.OSProcess;
-
 import java.util.Map;
 
 /**

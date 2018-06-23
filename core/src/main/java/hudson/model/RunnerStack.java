@@ -24,9 +24,8 @@
 package hudson.model;
 
 import hudson.model.Run.RunExecution;
-
-import java.util.Stack;
 import java.util.Map;
+import java.util.Stack;
 import java.util.WeakHashMap;
 import javax.annotation.CheckForNull;
 

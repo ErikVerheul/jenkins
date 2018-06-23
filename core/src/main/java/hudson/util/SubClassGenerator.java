@@ -24,14 +24,12 @@
 package hudson.util;
 
 import hudson.PluginManager.UberClassLoader;
+import java.lang.reflect.Constructor;
 import jenkins.model.Jenkins;
 import org.kohsuke.asm5.ClassWriter;
 import org.kohsuke.asm5.MethodVisitor;
-import org.kohsuke.asm5.Type;
-
-import java.lang.reflect.Constructor;
-
 import static org.kohsuke.asm5.Opcodes.*;
+import org.kohsuke.asm5.Type;
 
 /**
  * Generates a new class that just defines constructors into the super types.

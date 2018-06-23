@@ -23,18 +23,6 @@
  */
 package jenkins.model;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
-
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.HttpMethod;
 import com.gargoylesoftware.htmlunit.Page;
@@ -42,40 +30,25 @@ import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.WebResponse;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-
 import hudson.maven.MavenModuleSet;
 import hudson.maven.MavenModuleSetBuild;
 import hudson.model.Computer;
 import hudson.model.Failure;
+import hudson.model.FreeStyleProject;
 import hudson.model.RestartListener;
 import hudson.model.RootAction;
+import hudson.model.TaskListener;
 import hudson.model.UnprotectedRootAction;
 import hudson.model.User;
 import hudson.security.FullControlOnceLoggedInAuthorizationStrategy;
-import hudson.security.HudsonPrivateSecurityRealm;
-import hudson.util.HttpResponses;
-import hudson.model.FreeStyleProject;
-import hudson.model.TaskListener;
 import hudson.security.GlobalMatrixAuthorizationStrategy;
+import hudson.security.HudsonPrivateSecurityRealm;
 import hudson.slaves.ComputerListener;
 import hudson.slaves.DumbSlave;
 import hudson.slaves.OfflineCause;
 import hudson.util.FormValidation;
+import hudson.util.HttpResponses;
 import hudson.util.VersionNumber;
-
-import jenkins.AgentProtocol;
-import org.junit.Rule;
-import org.junit.Test;
-import org.jvnet.hudson.test.Issue;
-import org.jvnet.hudson.test.ExtractResourceSCM;
-import org.jvnet.hudson.test.JenkinsRule;
-import org.jvnet.hudson.test.JenkinsRule.WebClient;
-import org.jvnet.hudson.test.TestExtension;
-import org.jvnet.hudson.test.recipes.WithPlugin;
-import org.kohsuke.stapler.HttpResponse;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Mockito;
-
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.Socket;
@@ -83,9 +56,31 @@ import java.net.URL;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import org.jvnet.hudson.test.MockAuthorizationStrategy;
-
 import javax.annotation.CheckForNull;
+import jenkins.AgentProtocol;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import org.junit.Rule;
+import org.junit.Test;
+import org.jvnet.hudson.test.ExtractResourceSCM;
+import org.jvnet.hudson.test.Issue;
+import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.JenkinsRule.WebClient;
+import org.jvnet.hudson.test.MockAuthorizationStrategy;
+import org.jvnet.hudson.test.TestExtension;
+import org.jvnet.hudson.test.recipes.WithPlugin;
+import org.kohsuke.stapler.HttpResponse;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 
 /**
  * Tests of the {@link Jenkins} class instance logic.

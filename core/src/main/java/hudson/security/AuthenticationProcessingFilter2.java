@@ -23,15 +23,13 @@
  */
 package hudson.security;
 
-import java.util.Properties;
-import java.util.logging.Logger;
-import java.util.logging.Level;
+import hudson.Util;
 import java.io.IOException;
-
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import hudson.Util;
 import jenkins.security.SecurityListener;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.AuthenticationException;

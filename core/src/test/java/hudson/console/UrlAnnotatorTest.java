@@ -23,11 +23,9 @@
  */
 package hudson.console;
 
-import static org.junit.Assert.assertEquals;
 import hudson.MarkupText;
-
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
-
 import org.jvnet.hudson.test.Issue;
 
 /**

@@ -1,10 +1,5 @@
 package hudson.model;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
-import java.io.IOException;
-
 import hudson.EnvVars;
 import hudson.matrix.MatrixBuild;
 import hudson.matrix.MatrixProject;
@@ -12,12 +7,11 @@ import hudson.maven.MavenModuleSet;
 import hudson.maven.MavenModuleSetBuild;
 import hudson.tasks.Maven.MavenInstallation;
 import hudson.util.StreamTaskListener;
-
+import java.io.IOException;
 import jenkins.model.Jenkins;
-
-import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.ExtractResourceSCM;
 import org.jvnet.hudson.test.HudsonTestCase;
+import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.ToolInstallations;
 
 /**

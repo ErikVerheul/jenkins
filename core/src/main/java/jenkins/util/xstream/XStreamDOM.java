@@ -37,7 +37,6 @@ import com.thoughtworks.xstream.io.xml.DocumentReader;
 import com.thoughtworks.xstream.io.xml.XmlFriendlyReplacer;
 import hudson.Util;
 import hudson.util.VariableResolver;
-
 import hudson.util.XStream2;
 import java.io.InputStream;
 import java.io.OutputStream;

@@ -23,8 +23,6 @@
  */
 package hudson.model.queue;
 
-import static org.junit.Assert.assertEquals;
-
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.Executor;
@@ -32,14 +30,14 @@ import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
 import hudson.model.Queue.Executable;
 import hudson.model.Queue.Task;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
+import static org.junit.Assert.assertEquals;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.TestExtension;
-
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * @author Kohsuke Kawaguchi

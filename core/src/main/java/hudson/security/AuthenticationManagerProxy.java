@@ -23,9 +23,9 @@
  */
 package hudson.security;
 
-import org.acegisecurity.AuthenticationManager;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.AuthenticationException;
+import org.acegisecurity.AuthenticationManager;
 import org.acegisecurity.DisabledException;
 
 /**

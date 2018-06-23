@@ -24,9 +24,8 @@
 package hudson.model;
 
 import hudson.EnvVars;
-import org.kohsuke.stapler.DataBoundConstructor;
-
 import java.util.Locale;
+import org.kohsuke.stapler.DataBoundConstructor;
 
 public class JobParameterValue extends ParameterValue {
     public transient final Job job;

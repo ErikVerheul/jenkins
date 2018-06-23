@@ -4,8 +4,6 @@ import hudson.Extension;
 import hudson.ExtensionList;
 import hudson.ExtensionPoint;
 import hudson.model.ModelObject;
-import hudson.security.*;
-import hudson.security.Messages;
 import org.jenkinsci.Symbol;
 
 /**

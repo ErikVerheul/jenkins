@@ -24,12 +24,7 @@
 package hudson.util;
 
 import com.google.common.collect.*;
-
 import hudson.Util;
-
-import java.nio.file.Files;
-import java.nio.file.InvalidPathException;
-import javax.annotation.Nonnull;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -41,7 +36,10 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.util.Iterator;
+import javax.annotation.Nonnull;
 
 /**
  * Represents a text file.

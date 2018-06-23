@@ -27,7 +27,6 @@ package hudson.model;
 import hudson.ExtensionPoint;
 import hudson.FilePath;
 import hudson.slaves.WorkspaceList;
-
 import javax.annotation.CheckForNull;
 
 /**

@@ -26,11 +26,10 @@ package jenkins.model;
 import hudson.ExtensionList;
 import hudson.ExtensionPoint;
 import hudson.model.Node;
-
-import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.Nonnull;
 
 /**
  * Listen to {@link Node} CRUD operations.

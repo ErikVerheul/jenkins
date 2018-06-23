@@ -25,45 +25,24 @@ package hudson;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.InvalidPathException;
-
-import jenkins.util.AntWithFindResourceClassLoader;
-import jenkins.util.SystemProperties;
 import com.google.common.collect.Lists;
 import hudson.Plugin.DummyImpl;
 import hudson.PluginWrapper.Dependency;
 import hudson.model.Hudson;
-import jenkins.util.AntClassLoader;
 import hudson.util.CyclicGraphDetector;
 import hudson.util.CyclicGraphDetector.CycleDetectedException;
 import hudson.util.IOUtils;
 import hudson.util.MaskingClassLoader;
 import hudson.util.VersionNumber;
-import jenkins.ClassLoaderReflectionToolkit;
-import jenkins.ExtensionFilter;
-import org.apache.commons.io.output.NullOutputStream;
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.taskdefs.Expand;
-import org.apache.tools.ant.taskdefs.Zip;
-import org.apache.tools.ant.types.FileSet;
-import org.apache.tools.ant.types.PatternSet;
-import org.apache.tools.ant.types.Resource;
-import org.apache.tools.ant.types.ZipFileSet;
-import org.apache.tools.ant.types.resources.MappedResourceCollection;
-import org.apache.tools.ant.util.GlobPatternMapper;
-import org.apache.tools.zip.ZipEntry;
-import org.apache.tools.zip.ZipExtraField;
-import org.apache.tools.zip.ZipOutputStream;
-
 import java.io.Closeable;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -78,13 +57,30 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.annotation.Nonnull;
+import jenkins.ClassLoaderReflectionToolkit;
+import jenkins.ExtensionFilter;
+import jenkins.util.AntClassLoader;
+import jenkins.util.AntWithFindResourceClassLoader;
+import jenkins.util.SystemProperties;
+import static org.apache.commons.io.FilenameUtils.getBaseName;
+import org.apache.commons.io.output.NullOutputStream;
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.taskdefs.Expand;
+import org.apache.tools.ant.taskdefs.Zip;
+import org.apache.tools.ant.types.FileSet;
+import org.apache.tools.ant.types.PatternSet;
+import org.apache.tools.ant.types.Resource;
+import org.apache.tools.ant.types.ZipFileSet;
+import org.apache.tools.ant.types.resources.MappedResourceCollection;
+import org.apache.tools.ant.util.GlobPatternMapper;
+import org.apache.tools.zip.ZipEntry;
+import org.apache.tools.zip.ZipExtraField;
+import org.apache.tools.zip.ZipOutputStream;
 import org.jenkinsci.bytecode.Transformer;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
-
-import javax.annotation.Nonnull;
-
-import static org.apache.commons.io.FilenameUtils.getBaseName;
 
 public class ClassicPluginStrategy implements PluginStrategy {
 

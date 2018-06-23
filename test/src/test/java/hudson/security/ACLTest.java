@@ -29,9 +29,9 @@ import hudson.model.Item;
 import java.util.Collection;
 import java.util.Collections;
 import org.acegisecurity.Authentication;
-import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Rule;
+import org.junit.Test;
 import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 

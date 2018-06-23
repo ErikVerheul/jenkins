@@ -25,14 +25,13 @@ package hudson.console;
 
 import hudson.Extension;
 import hudson.MarkupText;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import jenkins.model.Jenkins;
 import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
-
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Turns a text into a hyperlink by specifying the URL separately.

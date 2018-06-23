@@ -23,17 +23,16 @@
  */
 package hudson.security;
 
-import jenkins.model.Jenkins;
-import org.acegisecurity.AccessDeniedException;
-import org.acegisecurity.ui.AccessDeniedHandler;
-import org.kohsuke.stapler.WebApp;
-
+import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import jenkins.model.Jenkins;
+import org.acegisecurity.AccessDeniedException;
+import org.acegisecurity.ui.AccessDeniedHandler;
+import org.kohsuke.stapler.WebApp;
 
 /**
  * Handles {@link AccessDeniedException} happened during request processing.

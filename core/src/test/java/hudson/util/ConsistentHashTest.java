@@ -23,18 +23,16 @@
  */
 package hudson.util;
 
-import static org.junit.Assert.*;
-
 import hudson.util.CopyOnWriteMap.Hash;
-import org.junit.Test;
-
-import java.util.Random;
-import java.util.Map;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Set;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
+import java.util.Set;
+import static org.junit.Assert.*;
+import org.junit.Test;
 
 /**
  * @author Kohsuke Kawaguchi

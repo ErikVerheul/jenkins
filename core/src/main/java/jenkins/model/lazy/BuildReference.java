@@ -3,7 +3,6 @@ package jenkins.model.lazy;
 import hudson.Extension;
 import hudson.ExtensionList;
 import hudson.ExtensionPoint;
-import jenkins.util.SystemProperties;
 import hudson.model.Run;
 import java.lang.ref.Reference;
 import java.lang.ref.SoftReference;
@@ -13,6 +12,7 @@ import java.util.logging.Logger;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import jenkins.model.lazy.LazyBuildMixIn.RunMixIn;
+import jenkins.util.SystemProperties;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 

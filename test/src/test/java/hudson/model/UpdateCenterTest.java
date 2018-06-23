@@ -24,14 +24,13 @@
 package hudson.model;
 
 import com.trilead.ssh2.crypto.Base64;
-import java.util.concurrent.TimeUnit;
-import net.sf.json.JSONObject;
-
 import java.io.ByteArrayInputStream;
 import java.net.URL;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
+import net.sf.json.JSONObject;
 import static org.junit.Assert.*;
 import static org.junit.Assume.*;
 import org.junit.Test;

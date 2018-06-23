@@ -23,22 +23,20 @@
  */
 package hudson.os.solaris;
 
-import jenkins.MasterToSlaveFileCallable;
-import hudson.FileSystemProvisioner;
-import hudson.FilePath;
-import hudson.WorkspaceSnapshot;
-import hudson.FileSystemProvisionerDescriptor;
 import hudson.Extension;
-import hudson.remoting.VirtualChannel;
+import hudson.FilePath;
+import hudson.FileSystemProvisioner;
+import hudson.FileSystemProvisionerDescriptor;
+import hudson.WorkspaceSnapshot;
 import hudson.model.AbstractBuild;
-import hudson.model.TaskListener;
 import hudson.model.AbstractProject;
 import hudson.model.Node;
-
-import java.io.IOException;
+import hudson.model.TaskListener;
+import hudson.remoting.VirtualChannel;
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
-
+import jenkins.MasterToSlaveFileCallable;
 import org.jenkinsci.Symbol;
 import org.jvnet.solaris.libzfs.LibZFS;
 import org.jvnet.solaris.libzfs.ZFSFileSystem;

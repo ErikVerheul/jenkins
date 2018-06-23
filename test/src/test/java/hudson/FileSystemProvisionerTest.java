@@ -1,10 +1,9 @@
 package hudson;
 
-import static org.junit.Assert.assertTrue;
-
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
 import hudson.util.StreamTaskListener;
+import static org.junit.Assert.assertTrue;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;

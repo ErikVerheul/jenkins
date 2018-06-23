@@ -23,10 +23,9 @@
  */
 package jenkins.slaves;
 
-import org.junit.Test;
-
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
+import org.junit.Test;
 
 /**
  * Tests for {@link RemotingVersionInfo}.

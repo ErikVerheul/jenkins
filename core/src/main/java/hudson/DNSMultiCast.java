@@ -1,11 +1,5 @@
 package hudson;
 
-import jenkins.util.SystemProperties;
-import jenkins.model.Jenkins;
-import jenkins.model.Jenkins.MasterComputer;
-
-import javax.jmdns.JmDNS;
-import javax.jmdns.ServiceInfo;
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.URL;
@@ -14,6 +8,11 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.jmdns.JmDNS;
+import javax.jmdns.ServiceInfo;
+import jenkins.model.Jenkins;
+import jenkins.model.Jenkins.MasterComputer;
+import jenkins.util.SystemProperties;
 
 /**
  * Registers a DNS multi-cast service-discovery support.

@@ -24,13 +24,20 @@
 package hudson.model;
 
 import hudson.Extension;
-import jenkins.util.SystemProperties;
 import hudson.model.MultiStageTimeSeries.TimeScale;
 import hudson.model.MultiStageTimeSeries.TrendChart;
 import hudson.model.queue.SubTask;
 import hudson.util.ColorPalette;
 import hudson.util.NoOverlapCategoryAxis;
+import java.awt.*;
+import java.io.IOException;
+import java.io.Serializable;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.List;
+import javax.annotation.CheckForNull;
 import jenkins.model.Jenkins;
+import jenkins.util.SystemProperties;
 import org.jenkinsci.Symbol;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
@@ -43,16 +50,8 @@ import org.jfree.chart.renderer.category.LineAndShapeRenderer;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.ui.RectangleInsets;
 import org.kohsuke.stapler.QueryParameter;
-import org.kohsuke.stapler.export.ExportedBean;
 import org.kohsuke.stapler.export.Exported;
-
-import java.awt.*;
-import java.io.IOException;
-import java.io.Serializable;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.List;
-import javax.annotation.CheckForNull;
+import org.kohsuke.stapler.export.ExportedBean;
 
 /**
  * Utilization statistics for a node or a set of nodes.

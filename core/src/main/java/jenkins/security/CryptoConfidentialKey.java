@@ -2,17 +2,14 @@ package jenkins.security;
 
 import hudson.Main;
 import hudson.util.Secret;
-import jenkins.model.Jenkins;
-import org.kohsuke.accmod.Restricted;
-import org.kohsuke.accmod.restrictions.DoNotUse;
-import org.kohsuke.accmod.restrictions.NoExternalUse;
-
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.IOException;
-import java.security.GeneralSecurityException;
+import org.kohsuke.accmod.Restricted;
+import org.kohsuke.accmod.restrictions.NoExternalUse;
 
 /**
  * {@link ConfidentialKey} that stores a {@link SecretKey} for shared-secret cryptography (AES).

@@ -29,11 +29,9 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.util.HashMap;
 import java.util.Map;
-
 import javassist.ClassClassPath;
 import javassist.ClassPool;
 import javassist.CtClass;
-
 import org.apache.xalan.xsltc.DOM;
 import org.apache.xalan.xsltc.TransletException;
 import org.apache.xalan.xsltc.runtime.AbstractTranslet;

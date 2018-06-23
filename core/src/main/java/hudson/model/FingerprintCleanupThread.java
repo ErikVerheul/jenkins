@@ -26,13 +26,12 @@ package hudson.model;
 import hudson.Extension;
 import hudson.ExtensionList;
 import hudson.Functions;
-import jenkins.model.Jenkins;
-import org.jenkinsci.Symbol;
-
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.regex.Pattern;
+import jenkins.model.Jenkins;
+import org.jenkinsci.Symbol;
 
 /**
  * Scans the fingerprint database and remove old records

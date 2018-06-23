@@ -1,24 +1,20 @@
 package jenkins.install;
 
-import jenkins.model.Jenkins;
-import net.sf.json.JSONArray;
-
-import org.apache.commons.io.FileUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.jvnet.hudson.test.JenkinsRule;
-
 import hudson.Main;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
-
+import jenkins.model.Jenkins;
+import net.sf.json.JSONArray;
+import org.apache.commons.io.FileUtils;
+import org.junit.After;
 import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.jvnet.hudson.test.JenkinsRule;
 
 /**
  * @author Kohsuke Kawaguchi

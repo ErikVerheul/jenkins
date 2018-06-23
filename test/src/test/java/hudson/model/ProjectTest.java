@@ -23,66 +23,48 @@
  */
 package hudson.model;
 
+import antlr.ANTLRException;
 import com.gargoylesoftware.htmlunit.HttpMethod;
 import com.gargoylesoftware.htmlunit.WebRequest;
-import hudson.*;
-import hudson.model.queue.QueueTaskFuture;
-import hudson.security.AccessDeniedException2;
-import hudson.tasks.*;
-import hudson.security.HudsonPrivateSecurityRealm;
-import hudson.security.GlobalMatrixAuthorizationStrategy;
-
-import java.io.Closeable;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.Collections;
-
-import hudson.util.Scrambler;
-import org.jvnet.hudson.reactor.ReactorException;
-import org.jvnet.hudson.test.FakeChangeLogSCM;
-import hudson.scm.SCMRevisionState;
-import hudson.scm.PollingResult;
-import hudson.Launcher.RemoteLauncher;
-import hudson.scm.NullSCM;
-import hudson.scm.SCM;
-import hudson.model.queue.SubTaskContributor;
-import hudson.model.Queue.Executable;
-import hudson.model.Queue.Task;
-import hudson.model.queue.SubTask;
-import hudson.model.AbstractProject.BecauseOfUpstreamBuildInProgress;
-import hudson.model.AbstractProject.BecauseOfDownstreamBuildInProgress;
-import jenkins.model.WorkspaceWriter;
-import jenkins.model.Jenkins;
-import antlr.ANTLRException;
-import hudson.triggers.SCMTrigger;
-import hudson.model.Cause.LegacyCodeCause;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import java.io.Serializable;
-import jenkins.scm.DefaultSCMCheckoutStrategyImpl;
-import jenkins.scm.SCMCheckoutStrategy;
-import java.io.File;
-
-import hudson.slaves.EnvironmentVariablesNodeProperty;
+import hudson.*;
+import hudson.Launcher.RemoteLauncher;
+import hudson.model.AbstractProject.BecauseOfDownstreamBuildInProgress;
+import hudson.model.AbstractProject.BecauseOfUpstreamBuildInProgress;
+import hudson.model.Cause.LegacyCodeCause;
+import hudson.model.Queue.Executable;
+import hudson.model.Queue.Task;
 import hudson.model.labels.LabelAtom;
+import hudson.model.queue.QueueTaskFuture;
+import hudson.model.queue.SubTask;
+import hudson.model.queue.SubTaskContributor;
+import hudson.scm.NullSCM;
+import hudson.scm.PollingResult;
+import hudson.scm.SCM;
 import hudson.scm.SCMDescriptor;
+import hudson.scm.SCMRevisionState;
 import hudson.security.ACL;
 import hudson.security.ACLContext;
+import hudson.security.AccessDeniedException2;
+import hudson.security.GlobalMatrixAuthorizationStrategy;
+import hudson.security.HudsonPrivateSecurityRealm;
 import hudson.slaves.Cloud;
 import hudson.slaves.DumbSlave;
+import hudson.slaves.EnvironmentVariablesNodeProperty;
 import hudson.slaves.NodeProvisioner;
-import org.jvnet.hudson.test.TestExtension;
-import java.util.List;
-import java.util.ArrayList;
+import hudson.tasks.*;
+import hudson.triggers.SCMTrigger;
+import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
+import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Collection;
-import org.junit.Rule;
-import org.junit.Test;
-import org.jvnet.hudson.test.JenkinsRule;
-import static org.junit.Assert.*;
-
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -90,10 +72,20 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 import jenkins.model.BlockedBecauseOfBuildInProgress;
-
+import jenkins.model.Jenkins;
+import jenkins.model.WorkspaceWriter;
+import jenkins.scm.DefaultSCMCheckoutStrategyImpl;
+import jenkins.scm.SCMCheckoutStrategy;
+import static org.junit.Assert.*;
 import org.junit.Ignore;
+import org.junit.Rule;
+import org.junit.Test;
+import org.jvnet.hudson.reactor.ReactorException;
+import org.jvnet.hudson.test.FakeChangeLogSCM;
 import org.jvnet.hudson.test.Issue;
+import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.TestBuilder;
+import org.jvnet.hudson.test.TestExtension;
 
 /**
  *

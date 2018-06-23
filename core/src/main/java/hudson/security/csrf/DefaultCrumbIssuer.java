@@ -5,24 +5,20 @@
  */
 package hudson.security.csrf;
 
+import hudson.Extension;
+import hudson.Util;
+import hudson.model.ModelObject;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import hudson.Extension;
-import jenkins.util.SystemProperties;
-import hudson.Util;
-import jenkins.model.Jenkins;
-import hudson.model.ModelObject;
-
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
+import jenkins.model.Jenkins;
 import jenkins.security.HexStringConfidentialKey;
-
+import jenkins.util.SystemProperties;
 import net.sf.json.JSONObject;
-
 import org.acegisecurity.Authentication;
 import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.DataBoundConstructor;

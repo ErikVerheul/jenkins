@@ -23,7 +23,6 @@
  */
 package hudson.tasks;
 
-import static org.junit.Assert.*;
 import hudson.Launcher;
 import hudson.maven.MavenModuleSet;
 import hudson.maven.MavenModuleSetBuild;
@@ -33,10 +32,10 @@ import hudson.model.Action;
 import hudson.model.BuildListener;
 import hudson.model.Cause;
 import hudson.model.Computer;
-import hudson.model.FreeStyleBuild;
-import hudson.model.FreeStyleProject;
 import hudson.model.DependencyGraph;
 import hudson.model.DependencyGraph.Dependency;
+import hudson.model.FreeStyleBuild;
+import hudson.model.FreeStyleProject;
 import hudson.model.Item;
 import hudson.model.Result;
 import hudson.model.Run;
@@ -48,26 +47,23 @@ import hudson.security.LegacySecurityRealm;
 import hudson.security.Permission;
 import hudson.security.ProjectMatrixAuthorizationStrategy;
 import hudson.util.FormValidation;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.List;
-
 import javax.annotation.CheckForNull;
-
 import jenkins.model.Jenkins;
 import jenkins.security.QueueItemAuthenticatorConfiguration;
 import jenkins.triggers.ReverseBuildTriggerTest;
-
 import org.acegisecurity.Authentication;
 import org.acegisecurity.context.SecurityContext;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.dom4j.DocumentException;
 import org.dom4j.io.SAXReader;
+import static org.junit.Assert.*;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -78,9 +74,9 @@ import org.jvnet.hudson.test.ExtractResourceSCM;
 import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.JenkinsRule.WebClient;
-import org.jvnet.hudson.test.TestBuilder;
 import org.jvnet.hudson.test.MockBuilder;
 import org.jvnet.hudson.test.MockQueueItemAuthenticator;
+import org.jvnet.hudson.test.TestBuilder;
 import org.jvnet.hudson.test.ToolInstallations;
 import org.xml.sax.SAXException;
 

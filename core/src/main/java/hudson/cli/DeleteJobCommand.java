@@ -27,13 +27,11 @@ import hudson.AbortException;
 import hudson.Extension;
 import hudson.model.AbstractItem;
 import java.io.IOException;
-import jenkins.model.Jenkins;
-import org.kohsuke.args4j.Argument;
-
-import java.util.List;
 import java.util.HashSet;
-import java.util.logging.Logger;
+import java.util.List;
+import jenkins.model.Jenkins;
 import org.acegisecurity.AccessDeniedException;
+import org.kohsuke.args4j.Argument;
 
 /**
  * CLI command, which deletes a job or multiple jobs.

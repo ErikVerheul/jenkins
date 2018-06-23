@@ -25,7 +25,6 @@ package jenkins.widgets;
 
 import hudson.model.Queue;
 import hudson.model.Run;
-
 import javax.annotation.Nonnull;
 
 /**

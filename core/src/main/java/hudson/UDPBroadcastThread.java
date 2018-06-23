@@ -23,12 +23,9 @@
  */
 package hudson;
 
-import jenkins.util.SystemProperties;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.model.Hudson;
-import jenkins.model.Jenkins;
 import hudson.util.OneShotEvent;
-
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
@@ -39,6 +36,8 @@ import java.net.UnknownHostException;
 import java.nio.channels.ClosedByInterruptException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import jenkins.model.Jenkins;
+import jenkins.util.SystemProperties;
 
 /**
  * Monitors a UDP multicast broadcast and respond with the location of the Hudson service.

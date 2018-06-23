@@ -1,36 +1,5 @@
 package jenkins.install;
 
-import static org.apache.commons.io.FileUtils.readFileToString;
-import static org.apache.commons.lang.StringUtils.defaultIfBlank;
-
-import java.io.IOException;
-import java.util.Locale;
-import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.annotation.CheckForNull;
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
-import javax.servlet.http.HttpServletResponse;
-
-import jenkins.util.SystemProperties;
-import org.acegisecurity.Authentication;
-import org.acegisecurity.context.SecurityContextHolder;
-import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
-import org.acegisecurity.userdetails.UsernameNotFoundException;
-import org.kohsuke.accmod.Restricted;
-import org.kohsuke.accmod.restrictions.NoExternalUse;
-import org.kohsuke.stapler.HttpResponse;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
-
 import hudson.BulkChange;
 import hudson.Extension;
 import hudson.FilePath;
@@ -48,6 +17,7 @@ import hudson.util.HttpResponses;
 import hudson.util.PluginServletFilter;
 import hudson.util.VersionNumber;
 import java.io.File;
+import java.io.IOException;
 import java.net.HttpRetryException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -56,15 +26,40 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
+import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.annotation.CheckForNull;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+import javax.servlet.http.HttpServletResponse;
 import jenkins.CLI;
-
 import jenkins.model.Jenkins;
 import jenkins.security.s2m.AdminWhitelistRule;
+import jenkins.util.SystemProperties;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.acegisecurity.Authentication;
+import org.acegisecurity.context.SecurityContextHolder;
+import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
+import org.acegisecurity.userdetails.UsernameNotFoundException;
 import org.apache.commons.io.FileUtils;
+import static org.apache.commons.io.FileUtils.readFileToString;
 import org.apache.commons.io.IOUtils;
+import static org.apache.commons.lang.StringUtils.defaultIfBlank;
+import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.DoNotUse;
+import org.kohsuke.accmod.restrictions.NoExternalUse;
+import org.kohsuke.stapler.HttpResponse;
+import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.interceptor.RequirePOST;
 
 /**

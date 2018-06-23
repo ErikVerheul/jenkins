@@ -14,12 +14,11 @@
  */
 package jenkins.security;
 
+import javax.servlet.http.HttpSession;
+import org.acegisecurity.Authentication;
 import org.acegisecurity.context.SecurityContext;
 import org.acegisecurity.context.SecurityContextImpl;
-import org.acegisecurity.Authentication;
 import org.acegisecurity.userdetails.UserDetails;
-
-import javax.servlet.http.HttpSession;
 
 /**
  * The same as {@link SecurityContextImpl} but doesn't serialize {@link Authentication}.

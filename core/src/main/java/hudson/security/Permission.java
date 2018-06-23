@@ -26,8 +26,6 @@ package hudson.security;
 import com.google.common.collect.ImmutableSet;
 import hudson.model.Hudson;
 import java.io.Serializable;
-import jenkins.model.Jenkins;
-import net.sf.json.util.JSONUtils;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -35,7 +33,8 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-
+import jenkins.model.Jenkins;
+import net.sf.json.util.JSONUtils;
 import org.jvnet.localizer.Localizable;
 
 /**

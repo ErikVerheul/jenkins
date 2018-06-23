@@ -23,12 +23,6 @@
  */
 package hudson.model.queue;
 
-import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import hudson.model.Action;
 import hudson.model.Computer;
 import hudson.model.Executor;
@@ -38,17 +32,21 @@ import hudson.model.Queue.BuildableItem;
 import hudson.model.Queue.JobOffer;
 import hudson.model.Queue.Task;
 import hudson.model.Queue.WaitingItem;
-import org.junit.Rule;
-import org.junit.Test;
-import org.jvnet.hudson.test.JenkinsRule;
-import org.jvnet.hudson.test.TestExtension;
-
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import static java.util.Arrays.asList;
 import java.util.Collection;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import org.junit.Rule;
+import org.junit.Test;
+import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.TestExtension;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Kohsuke Kawaguchi

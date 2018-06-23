@@ -27,7 +27,6 @@ import hudson.RestrictedSince;
 import hudson.model.Descriptor;
 import hudson.model.Slave;
 import hudson.model.TaskListener;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;

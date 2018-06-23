@@ -24,13 +24,12 @@
 package hudson.slaves;
 
 import hudson.model.Computer;
+import java.io.IOException;
+import javax.annotation.CheckForNull;
 import org.kohsuke.stapler.HttpRedirect;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.HttpResponses;
 import org.kohsuke.stapler.interceptor.RequirePOST;
-
-import java.io.IOException;
-import javax.annotation.CheckForNull;
 
 /**
  * Partial implementation of {@link Computer} to be used in conjunction with

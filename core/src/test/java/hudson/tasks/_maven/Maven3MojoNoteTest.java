@@ -1,9 +1,8 @@
 package hudson.tasks._maven;
 
+import hudson.MarkupText;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import hudson.MarkupText;
-
 import org.junit.Test;
 
 public class Maven3MojoNoteTest {

@@ -25,17 +25,15 @@ package hudson.scheduler;
 
 import antlr.ANTLRException;
 import java.util.Calendar;
-import java.util.TimeZone;
 import java.util.Collection;
+import java.util.TimeZone;
 import java.util.Vector;
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-
-import org.kohsuke.accmod.Restricted;
-import org.kohsuke.accmod.restrictions.NoExternalUse;
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+import org.kohsuke.accmod.Restricted;
+import org.kohsuke.accmod.restrictions.NoExternalUse;
 
 /**
  * {@link CronTab} list (logically OR-ed).

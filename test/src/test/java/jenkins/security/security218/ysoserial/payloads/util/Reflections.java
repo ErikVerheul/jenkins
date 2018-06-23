@@ -3,7 +3,6 @@ package jenkins.security.security218.ysoserial.payloads.util;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-
 import sun.reflect.ReflectionFactory;
 
 @SuppressWarnings ( "restriction" )

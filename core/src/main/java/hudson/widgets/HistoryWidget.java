@@ -24,24 +24,22 @@
 package hudson.widgets;
 
 import hudson.Functions;
-import jenkins.util.SystemProperties;
 import hudson.model.ModelObject;
 import hudson.model.Run;
-
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import javax.annotation.CheckForNull;
+import javax.servlet.ServletException;
+import jenkins.util.SystemProperties;
 import jenkins.widgets.HistoryPageEntry;
 import jenkins.widgets.HistoryPageFilter;
 import org.kohsuke.stapler.Header;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
-
-import javax.annotation.CheckForNull;
-import javax.servlet.ServletException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * Displays the history of records (normally {@link Run}s) on the side panel.

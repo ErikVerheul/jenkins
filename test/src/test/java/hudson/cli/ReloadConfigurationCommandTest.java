@@ -25,29 +25,26 @@
 package hudson.cli;
 
 import hudson.Util;
+import static hudson.cli.CLICommandInvoker.Matcher.failedWith;
+import static hudson.cli.CLICommandInvoker.Matcher.hasNoStandardOutput;
+import static hudson.cli.CLICommandInvoker.Matcher.succeededSilently;
 import hudson.model.FreeStyleProject;
 import hudson.model.ListView;
 import hudson.model.Node;
 import hudson.model.User;
 import hudson.tasks.Mailer;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import jenkins.model.Jenkins;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
-
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-
-import static hudson.cli.CLICommandInvoker.Matcher.failedWith;
-import static hudson.cli.CLICommandInvoker.Matcher.hasNoStandardOutput;
-
-import static hudson.cli.CLICommandInvoker.Matcher.succeededSilently;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
 import org.jvnet.hudson.test.MockAuthorizationStrategy;
 
 /**

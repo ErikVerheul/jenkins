@@ -27,13 +27,12 @@ import hudson.console.ModelHyperlinkNote;
 import hudson.model.Executor;
 import hudson.model.TaskListener;
 import hudson.model.User;
-import org.kohsuke.stapler.export.Exported;
-import org.kohsuke.stapler.export.ExportedBean;
-
 import java.io.Serializable;
 import java.util.Collections;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import org.kohsuke.stapler.export.Exported;
+import org.kohsuke.stapler.export.ExportedBean;
 
 /**
  * Records why an {@linkplain Executor#interrupt() executor is interrupted}.

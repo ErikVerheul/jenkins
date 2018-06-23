@@ -28,7 +28,6 @@ import hudson.DescriptorExtensionList;
 import hudson.ExtensionPoint;
 import hudson.model.AbstractDescribableImpl;
 import hudson.model.Descriptor;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import jenkins.model.Jenkins;

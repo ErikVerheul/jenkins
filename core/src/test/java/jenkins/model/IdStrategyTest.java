@@ -1,11 +1,8 @@
 package jenkins.model;
 
-import org.junit.Test;
-
 import java.util.Locale;
-
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import org.junit.Test;
 
 public class IdStrategyTest {
     private IdStrategy idStrategy;

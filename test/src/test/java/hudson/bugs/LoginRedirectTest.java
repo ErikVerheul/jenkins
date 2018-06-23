@@ -27,8 +27,8 @@ import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.html.HtmlFormUtil;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import java.net.HttpURLConnection;
-import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.HudsonTestCase;
+import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.recipes.PresetData;
 import org.jvnet.hudson.test.recipes.PresetData.DataSet;
 

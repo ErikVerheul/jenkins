@@ -1,9 +1,8 @@
 package jenkins;
 
 import hudson.FilePath;
-
-import javax.annotation.Nullable;
 import java.io.File;
+import javax.annotation.Nullable;
 
 /**
  * Variant of {@link FilePathFilter} that assumes it is the sole actor.

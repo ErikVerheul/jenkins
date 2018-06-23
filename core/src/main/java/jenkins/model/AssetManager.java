@@ -2,18 +2,17 @@ package jenkins.model;
 
 import hudson.Extension;
 import hudson.model.UnprotectedRootAction;
-import java.util.concurrent.TimeUnit;
-import org.jenkinsci.Symbol;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.Enumeration;
+import java.util.concurrent.TimeUnit;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletResponse;
+import org.jenkinsci.Symbol;
+import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerResponse;
 
 /**
  * Serves files located in the {@code /assets} classpath directory via the Jenkins core ClassLoader.

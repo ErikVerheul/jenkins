@@ -2,13 +2,12 @@ package hudson.slaves;
 
 import hudson.model.Computer;
 import hudson.model.Node;
-import java.util.concurrent.TimeUnit;
-import jenkins.model.Jenkins;
-
-import javax.annotation.concurrent.GuardedBy;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.concurrent.GuardedBy;
+import jenkins.model.Jenkins;
 import jenkins.util.SystemProperties;
 
 /**

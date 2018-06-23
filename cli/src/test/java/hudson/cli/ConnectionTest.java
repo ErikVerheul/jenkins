@@ -1,17 +1,14 @@
 package hudson.cli;
 
-import static org.junit.Assert.*;
-
 import hudson.remoting.FastPipedInputStream;
 import hudson.remoting.FastPipedOutputStream;
-import org.codehaus.groovy.runtime.Security218;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
+import java.io.IOException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.IOException;
+import org.codehaus.groovy.runtime.Security218;
+import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author Kohsuke Kawaguchi

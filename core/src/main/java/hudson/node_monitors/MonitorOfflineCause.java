@@ -23,9 +23,8 @@
  */
 package hudson.node_monitors;
 
-import javax.annotation.Nonnull;
-
 import hudson.slaves.OfflineCause;
+import javax.annotation.Nonnull;
 
 /**
  * Offline cause to denote it was node monitor what put computer offline.

@@ -45,7 +45,6 @@ import hudson.util.FormValidation;
 import hudson.util.NamingThreadFactory;
 import hudson.util.SequentialExecutionQueue;
 import hudson.util.StreamTaskListener;
-import java.util.concurrent.TimeUnit;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -62,7 +61,9 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
+import static java.util.logging.Level.WARNING;
 import java.util.logging.Logger;
 import jenkins.model.Jenkins;
 import jenkins.model.RunAction2;
@@ -83,8 +84,6 @@ import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
-
-import static java.util.logging.Level.WARNING;
 
 
 /**

@@ -1,30 +1,28 @@
 package hudson.util;
 
 import hudson.model.Items;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.logging.Level;
+import javax.servlet.ReadListener;
+import javax.servlet.ServletInputStream;
+import jenkins.security.ClassFilterImpl;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import static org.junit.Assert.assertFalse;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.LoggerRule;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
-import javax.servlet.ReadListener;
-import javax.servlet.ServletInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.logging.Level;
-import jenkins.security.ClassFilterImpl;
-
-import static org.junit.Assert.assertFalse;
-import org.jvnet.hudson.test.LoggerRule;
 import static org.mockito.Mockito.when;
+import org.mockito.MockitoAnnotations;
 
 public class XStream2Security383Test {
 

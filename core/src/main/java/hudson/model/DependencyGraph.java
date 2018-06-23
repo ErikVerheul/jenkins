@@ -24,15 +24,8 @@
  */
 package hudson.model;
 
-import jenkins.model.DependencyDeclarer;
 import com.google.common.collect.ImmutableList;
 import hudson.security.ACL;
-import jenkins.model.Jenkins;
-import jenkins.util.DirectedGraph;
-import jenkins.util.DirectedGraph.SCC;
-import org.acegisecurity.context.SecurityContext;
-import org.acegisecurity.context.SecurityContextHolder;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -46,6 +39,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Stack;
+import jenkins.model.DependencyDeclarer;
+import jenkins.model.Jenkins;
+import jenkins.util.DirectedGraph;
+import jenkins.util.DirectedGraph.SCC;
+import org.acegisecurity.context.SecurityContext;
+import org.acegisecurity.context.SecurityContextHolder;
 
 /**
  * Maintains the build dependencies between {@link AbstractProject}s

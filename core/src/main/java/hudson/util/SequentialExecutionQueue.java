@@ -1,12 +1,12 @@
 package hudson.util;
 
-import javax.annotation.Nonnull;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.HashSet;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
+import javax.annotation.Nonnull;
 
 /**
  * {@link Executor} that collapses two equal {@link Runnable}s into one,

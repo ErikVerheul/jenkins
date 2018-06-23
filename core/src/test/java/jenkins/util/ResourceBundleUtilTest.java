@@ -23,12 +23,11 @@
  */
 package jenkins.util;
 
+import java.util.Locale;
+import java.util.MissingResourceException;
 import net.sf.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
-
-import java.util.Locale;
-import java.util.MissingResourceException;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>

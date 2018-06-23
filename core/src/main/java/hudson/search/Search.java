@@ -24,10 +24,8 @@
  */
 package hudson.search;
 
-import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 import hudson.Util;
 import hudson.util.EditDistance;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -39,9 +37,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.servlet.ServletException;
-
+import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.Ancestor;

@@ -29,16 +29,12 @@ import hudson.ExtensionPoint;
 import hudson.model.*;
 import hudson.slaves.Cloud;
 import hudson.util.DescriptorList;
-
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import javax.annotation.Nonnull;
-
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
-
-import org.acegisecurity.Authentication;
 import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.StaplerRequest;
 

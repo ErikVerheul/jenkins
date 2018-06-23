@@ -26,15 +26,6 @@ package hudson.cli;
 import hudson.remoting.ClassFilter;
 import hudson.remoting.ObjectInputStreamEx;
 import hudson.remoting.SocketChannelStream;
-import org.apache.commons.codec.binary.Base64;
-
-import javax.crypto.Cipher;
-import javax.crypto.CipherInputStream;
-import javax.crypto.CipherOutputStream;
-import javax.crypto.KeyAgreement;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.DHParameterSpec;
-import javax.crypto.spec.IvParameterSpec;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -54,7 +45,15 @@ import java.security.Signature;
 import java.security.interfaces.DSAPublicKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.X509EncodedKeySpec;
+import javax.crypto.Cipher;
+import javax.crypto.CipherInputStream;
+import javax.crypto.CipherOutputStream;
+import javax.crypto.KeyAgreement;
+import javax.crypto.SecretKey;
 import javax.crypto.interfaces.DHKey;
+import javax.crypto.spec.DHParameterSpec;
+import javax.crypto.spec.IvParameterSpec;
+import org.apache.commons.codec.binary.Base64;
 
 /**
  * Used by Jenkins core only in deprecated Remoting-based CLI.

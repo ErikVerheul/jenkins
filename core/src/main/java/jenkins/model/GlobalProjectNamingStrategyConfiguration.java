@@ -26,7 +26,6 @@ package jenkins.model;
 import hudson.Extension;
 import jenkins.model.ProjectNamingStrategy.DefaultProjectNamingStrategy;
 import net.sf.json.JSONObject;
-
 import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.StaplerRequest;
 

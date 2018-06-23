@@ -23,8 +23,6 @@
  */
 package hudson.model;
 
-import org.junit.Test;
-import org.junit.Rule;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import hudson.model.Descriptor.FormException;
 import hudson.security.GlobalMatrixAuthorizationStrategy;
@@ -33,9 +31,11 @@ import java.io.IOException;
 import jenkins.model.Jenkins;
 import org.acegisecurity.AccessDeniedException;
 import org.acegisecurity.context.SecurityContextHolder;
+import static org.junit.Assert.*;
+import org.junit.Rule;
+import org.junit.Test;
 import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
-import static org.junit.Assert.*;
 /**
  *
  * @author Lucie Votypkova

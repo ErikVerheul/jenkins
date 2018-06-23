@@ -24,12 +24,11 @@
 package hudson.model;
 
 import hudson.EnvVars;
+import java.util.Locale;
+import javax.annotation.CheckForNull;
 import jenkins.model.Jenkins;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.export.Exported;
-
-import javax.annotation.CheckForNull;
-import java.util.Locale;
 
 public class RunParameterValue extends ParameterValue {
 

@@ -30,9 +30,9 @@ import hudson.slaves.WorkspaceList;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Notifier;
 import java.io.IOException;
-import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Rule;
+import org.junit.Test;
 import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 

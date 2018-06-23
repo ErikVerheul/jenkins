@@ -26,12 +26,11 @@ package hudson.model;
 import hudson.EnvVars;
 import hudson.Util;
 import hudson.model.Queue.Task;
-import hudson.tasks.Builder;
 import hudson.tasks.BuildWrapper;
+import hudson.tasks.Builder;
+import javax.annotation.Nonnull;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.ProtectedExternally;
-
-import javax.annotation.Nonnull;
 
 /**
  * {@link Action} that contributes environment variables during a build.

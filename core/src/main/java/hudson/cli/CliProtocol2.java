@@ -1,12 +1,6 @@
 package hudson.cli;
 
 import hudson.Extension;
-import jenkins.model.Jenkins;
-import org.jenkinsci.Symbol;
-import org.jenkinsci.remoting.nio.NioChannelHub;
-
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -14,6 +8,11 @@ import java.net.Socket;
 import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
 import java.security.Signature;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import jenkins.model.Jenkins;
+import org.jenkinsci.Symbol;
+import org.jenkinsci.remoting.nio.NioChannelHub;
 
 /**
  * {@link CliProtocol} Version 2, which adds transport encryption.

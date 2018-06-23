@@ -25,17 +25,14 @@
 package hudson.cli;
 
 import static hudson.cli.CLICommandInvoker.Matcher.*;
-import static org.junit.Assert.*;
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.text.StringContainsInOrder.stringContainsInOrder;
-
-import java.io.PrintStream;
-import java.util.Arrays;
-
 import hudson.cli.CLICommandInvoker.Result;
 import hudson.model.AbstractProject;
-
+import java.io.PrintStream;
+import java.util.Arrays;
+import static org.hamcrest.CoreMatchers.*;
 import org.hamcrest.Matcher;
+import static org.hamcrest.text.StringContainsInOrder.stringContainsInOrder;
+import static org.junit.Assert.*;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;

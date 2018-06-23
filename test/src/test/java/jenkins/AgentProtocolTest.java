@@ -30,17 +30,13 @@ import javax.annotation.CheckForNull;
 import jenkins.install.SetupWizardTest;
 import jenkins.model.Jenkins;
 import jenkins.slaves.DeprecatedAgentProtocolMonitor;
-import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.StringUtils;
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
-import org.hamcrest.core.StringContains;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;

@@ -31,21 +31,19 @@ import hudson.model.queue.QueueTaskFuture;
 import hudson.slaves.EnvironmentVariablesNodeProperty;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Builder;
+import hudson.tasks.LogRotatorTest;
+import hudson.tasks.Recorder;
+import hudson.util.OneShotEvent;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
-
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-
-import hudson.tasks.LogRotatorTest;
-import hudson.tasks.Recorder;
-import hudson.util.OneShotEvent;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.CaptureEnvironmentBuilder;

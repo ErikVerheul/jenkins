@@ -23,16 +23,13 @@
  */
 package hudson.util;
 
-import static org.junit.Assert.*;
-
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.ConversionException;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
+import static org.junit.Assert.*;
 import org.junit.Test;
 
 /**

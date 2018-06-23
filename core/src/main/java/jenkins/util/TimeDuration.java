@@ -1,10 +1,9 @@
 package jenkins.util;
 
-import org.apache.commons.beanutils.Converter;
-import org.kohsuke.stapler.QueryParameter;
-
 import java.util.concurrent.TimeUnit;
 import javax.annotation.CheckForNull;
+import org.apache.commons.beanutils.Converter;
+import org.kohsuke.stapler.QueryParameter;
 
 /**
  * Represents a length of something, like {@code 3sec}.

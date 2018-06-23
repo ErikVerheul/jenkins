@@ -25,16 +25,15 @@
 package jenkins.security.s2m;
 
 import hudson.Extension;
-import jenkins.util.SystemProperties;
 import hudson.remoting.ChannelBuilder;
-import jenkins.ReflectiveFilePathFilter;
-import jenkins.security.ChannelConfigurator;
-import org.kohsuke.accmod.Restricted;
-import org.kohsuke.accmod.restrictions.DoNotUse;
-
 import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import jenkins.ReflectiveFilePathFilter;
+import jenkins.security.ChannelConfigurator;
+import jenkins.util.SystemProperties;
+import org.kohsuke.accmod.Restricted;
+import org.kohsuke.accmod.restrictions.DoNotUse;
 
 /**
  * Blocks agents from writing to files on the master by default (and also provide the kill switch.)

@@ -14,6 +14,17 @@
  */
 package jenkins.security;
 
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.acegisecurity.AccessDeniedException;
 import org.acegisecurity.AcegiSecurityException;
 import org.acegisecurity.AuthenticationException;
@@ -30,18 +41,6 @@ import org.acegisecurity.util.PortResolver;
 import org.acegisecurity.util.PortResolverImpl;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
-
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Handles any <code>AccessDeniedException</code> and <code>AuthenticationException</code> thrown within the

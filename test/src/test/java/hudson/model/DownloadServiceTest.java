@@ -1,21 +1,20 @@
 package hudson.model;
 
 import hudson.model.DownloadService.Downloadable;
+import hudson.tasks.Maven;
+import hudson.tools.DownloadFromUrlInstaller;
+import hudson.tools.JDKInstaller;
+import hudson.tools.ToolInstallation;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-
-import hudson.tasks.Maven;
-import hudson.tools.DownloadFromUrlInstaller;
-import hudson.tools.JDKInstaller;
-import hudson.tools.ToolInstallation;
 import jenkins.model.DownloadSettings;
 import net.sf.json.JSONObject;
-import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.HudsonTestCase;
+import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.WithoutJenkins;
 import org.kohsuke.stapler.StaplerResponse;
 

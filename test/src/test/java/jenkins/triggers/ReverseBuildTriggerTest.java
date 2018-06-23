@@ -37,20 +37,17 @@ import hudson.model.User;
 import hudson.tasks.BuildTrigger;
 import hudson.tasks.BuildTriggerTest;
 import hudson.triggers.Trigger;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import jenkins.model.Jenkins;
 import jenkins.security.QueueItemAuthenticatorConfiguration;
 import org.acegisecurity.Authentication;
-
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.ClassRule;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.BuildWatcher;

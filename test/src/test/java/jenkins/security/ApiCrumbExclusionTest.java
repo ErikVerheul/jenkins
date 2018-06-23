@@ -34,7 +34,10 @@ import hudson.model.UnprotectedRootAction;
 import hudson.model.User;
 import hudson.security.csrf.DefaultCrumbIssuer;
 import hudson.util.HttpResponses;
-import hudson.util.Scrambler;
+import java.io.IOException;
+import java.net.URL;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.Issue;
@@ -43,12 +46,6 @@ import org.jvnet.hudson.test.JenkinsRule.WebClient;
 import org.jvnet.hudson.test.TestExtension;
 import org.kohsuke.stapler.HttpResponse;
 import org.xml.sax.SAXException;
-
-import java.io.IOException;
-import java.net.URL;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 public class ApiCrumbExclusionTest {
     @Rule

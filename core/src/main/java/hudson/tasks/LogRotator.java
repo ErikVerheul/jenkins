@@ -27,19 +27,17 @@ import com.google.common.collect.Lists;
 import hudson.Extension;
 import hudson.model.Job;
 import hudson.model.Run;
-import jenkins.model.BuildDiscarder;
-import jenkins.model.BuildDiscarderDescriptor;
-import org.jenkinsci.Symbol;
-import org.kohsuke.stapler.DataBoundConstructor;
-
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.logging.Logger;
-
 import static java.util.logging.Level.*;
+import java.util.logging.Logger;
+import jenkins.model.BuildDiscarder;
+import jenkins.model.BuildDiscarderDescriptor;
+import org.jenkinsci.Symbol;
+import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
  * Default implementation of {@link BuildDiscarder}.

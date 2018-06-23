@@ -23,10 +23,6 @@
  */
 package hudson.util;
 
-import jenkins.util.SystemProperties;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -40,6 +36,9 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import jenkins.util.SystemProperties;
 
 /**
  * Buffered {@link FileWriter} that supports atomic operations.
@@ -226,7 +225,11 @@ public class AtomicFileWriter extends Writer {
 
     @Override
     protected void finalize() throws Throwable {
-        closeAndDeleteTempFile();
+        try {
+            closeAndDeleteTempFile();
+        } finally {
+            super.finalize();
+        }
     }
 
     private void closeAndDeleteTempFile() throws IOException {

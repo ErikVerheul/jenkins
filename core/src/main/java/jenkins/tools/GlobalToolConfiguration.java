@@ -30,20 +30,18 @@ import hudson.model.Descriptor;
 import hudson.model.ManagementLink;
 import hudson.security.Permission;
 import hudson.util.FormApply;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.servlet.ServletException;
 import jenkins.model.GlobalConfigurationCategory;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
-
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.interceptor.RequirePOST;
-
-import javax.servlet.ServletException;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @Extension(ordinal = Integer.MAX_VALUE - 220)
 @Restricted(NoExternalUse.class)

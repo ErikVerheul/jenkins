@@ -1,9 +1,8 @@
 package jenkins.security.s2m;
 
 import hudson.PluginWrapper;
-import jenkins.model.Jenkins;
-
 import javax.annotation.CheckForNull;
+import jenkins.model.Jenkins;
 
 /**
 * @author Kohsuke Kawaguchi

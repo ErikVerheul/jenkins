@@ -24,13 +24,12 @@
 
 package hudson.cli;
 
-import jenkins.model.Jenkins;
 import hudson.model.Job;
 import hudson.model.Run;
+import java.io.IOException;
+import jenkins.model.Jenkins;
 import jenkins.security.MasterToSlaveCallable;
 import org.kohsuke.args4j.CmdLineException;
-
-import java.io.IOException;
 
 /**
  * Base class for those commands that are valid only during a build.

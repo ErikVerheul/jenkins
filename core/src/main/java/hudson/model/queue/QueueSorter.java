@@ -2,18 +2,16 @@ package hudson.model.queue;
 
 import hudson.ExtensionList;
 import hudson.ExtensionPoint;
+import static hudson.init.InitMilestone.JOB_LOADED;
 import hudson.init.Initializer;
-import jenkins.model.Jenkins;
 import hudson.model.LoadBalancer;
 import hudson.model.Queue;
 import hudson.model.Queue.BuildableItem;
-
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Logger;
-
-import static hudson.init.InitMilestone.JOB_LOADED;
+import jenkins.model.Jenkins;
 
 /**
  * Singleton extension point for sorting buildable items

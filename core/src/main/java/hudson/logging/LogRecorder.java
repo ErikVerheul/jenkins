@@ -30,21 +30,14 @@ import hudson.FilePath;
 import hudson.Util;
 import hudson.XmlFile;
 import hudson.model.*;
-import hudson.util.HttpResponses;
-import jenkins.model.Jenkins;
 import hudson.model.listeners.SaveableListener;
 import hudson.remoting.Channel;
 import hudson.remoting.VirtualChannel;
 import hudson.slaves.ComputerListener;
 import hudson.util.CopyOnWriteList;
+import hudson.util.HttpResponses;
 import hudson.util.RingBufferLogHandler;
 import hudson.util.XStream2;
-import jenkins.security.MasterToSlaveCallable;
-import net.sf.json.JSONObject;
-import org.kohsuke.stapler.*;
-import org.kohsuke.stapler.interceptor.RequirePOST;
-
-import javax.servlet.ServletException;
 import java.io.File;
 import java.io.IOException;
 import java.text.Collator;
@@ -53,8 +46,14 @@ import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
+import javax.servlet.ServletException;
+import jenkins.model.Jenkins;
+import jenkins.security.MasterToSlaveCallable;
+import net.sf.json.JSONObject;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
+import org.kohsuke.stapler.*;
+import org.kohsuke.stapler.interceptor.RequirePOST;
 
 /**
  * Records a selected set of logs so that the system administrator

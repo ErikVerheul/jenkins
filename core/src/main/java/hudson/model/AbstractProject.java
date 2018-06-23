@@ -54,7 +54,6 @@ import hudson.model.queue.SubTask;
 import hudson.model.queue.SubTaskContributor;
 import hudson.scm.NullSCM;
 import hudson.scm.PollingResult;
-
 import static hudson.scm.PollingResult.*;
 import hudson.scm.SCM;
 import hudson.scm.SCMRevisionState;

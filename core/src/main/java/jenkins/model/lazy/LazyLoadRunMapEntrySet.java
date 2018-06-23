@@ -1,13 +1,12 @@
 package jenkins.model.lazy;
 
-import jenkins.model.lazy.AbstractLazyLoadRunMap.Direction;
-
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.AbstractSet;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import jenkins.model.lazy.AbstractLazyLoadRunMap.Direction;
 
 /**
  * Set that backs {@link AbstractLazyLoadRunMap#entrySet()}.

@@ -23,30 +23,26 @@
  */
 package hudson.util;
 
+import com.google.common.base.Joiner;
+import hudson.Functions;
+import hudson.Launcher.LocalLauncher;
+import hudson.Launcher.RemoteLauncher;
+import hudson.Proc;
+import hudson.model.Slave;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.StringWriter;
+import org.apache.tools.ant.util.JavaEnvUtils;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.*;
-import hudson.Functions;
-import hudson.Launcher.LocalLauncher;
-import hudson.Launcher.RemoteLauncher;
-import hudson.Proc;
-import hudson.model.Slave;
-
-import org.apache.tools.ant.util.JavaEnvUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.Email;
 import org.jvnet.hudson.test.JenkinsRule;
-
-import com.google.common.base.Joiner;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.StringWriter;
-import java.net.URL;
 
 /**
  * @author Kohsuke Kawaguchi

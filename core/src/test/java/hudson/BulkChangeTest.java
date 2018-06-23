@@ -23,12 +23,10 @@
  */
 package hudson;
 
-import static org.junit.Assert.assertEquals;
-
 import hudson.model.Saveable;
-import org.junit.Test;
-
 import java.io.IOException;
+import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 /**
  * Tests {@link BulkChange}.

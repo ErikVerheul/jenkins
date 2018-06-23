@@ -31,8 +31,8 @@ import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.scm.ChangeLogSet;
 import hudson.scm.SCM;
-import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Test;
 import org.jvnet.hudson.test.Issue;
 import org.mockito.Mockito;
 

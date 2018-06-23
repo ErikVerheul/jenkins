@@ -23,18 +23,17 @@
  */
 package hudson.security;
 
-import jenkins.security.NonSerializableSecurityContext;
-import org.acegisecurity.context.HttpSessionContextIntegrationFilter;
-import org.acegisecurity.context.SecurityContext;
-import org.acegisecurity.Authentication;
-
+import java.io.IOException;
+import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
+import jenkins.security.NonSerializableSecurityContext;
+import org.acegisecurity.Authentication;
+import org.acegisecurity.context.HttpSessionContextIntegrationFilter;
+import org.acegisecurity.context.SecurityContext;
 
 /**
  * Erases the {@link SecurityContext} persisted in {@link HttpSession}

@@ -25,7 +25,6 @@ package hudson.slaves;
 
 import hudson.model.Descriptor;
 import hudson.model.TaskListener;
-
 import java.io.IOException;
 
 /**

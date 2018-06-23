@@ -2,15 +2,14 @@ package hudson.init.impl;
 
 import hudson.init.Initializer;
 import java.io.EOFException;
-import jenkins.model.Jenkins;
-import org.kohsuke.stapler.WebApp;
-import org.kohsuke.stapler.compression.CompressionFilter;
-import javax.servlet.ServletException;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
+import javax.servlet.ServletException;
+import jenkins.model.Jenkins;
 import org.kohsuke.stapler.Stapler;
+import org.kohsuke.stapler.WebApp;
+import org.kohsuke.stapler.compression.CompressionFilter;
 
 /**
  * Deals with exceptions that get thrown all the way up to the Stapler rendering layer.

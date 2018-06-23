@@ -24,12 +24,10 @@
 package hudson.bugs.seasar;
 
 import hudson.maven.MavenModuleSet;
-import hudson.model.Item;
 import hudson.model.FreeStyleProject;
+import hudson.model.Item;
 import hudson.tasks.BuildTrigger;
-
 import java.util.Collections;
-
 import org.jvnet.hudson.test.HudsonTestCase;
 
 /**

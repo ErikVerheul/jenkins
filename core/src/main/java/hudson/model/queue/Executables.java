@@ -24,7 +24,6 @@
 package hudson.model.queue;
 
 import hudson.model.Queue.Executable;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import javax.annotation.CheckForNull;

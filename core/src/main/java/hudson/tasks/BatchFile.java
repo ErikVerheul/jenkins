@@ -23,22 +23,20 @@
  */
 package hudson.tasks;
 
-import hudson.FilePath;
 import hudson.Extension;
+import hudson.FilePath;
 import hudson.Util;
 import hudson.model.AbstractProject;
 import hudson.util.FormValidation;
 import hudson.util.LineEndingConversion;
+import java.io.ObjectStreamException;
+import javax.annotation.CheckForNull;
 import org.jenkinsci.Symbol;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.DoNotUse;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
-
-import java.io.ObjectStreamException;
-
-import javax.annotation.CheckForNull;
 
 /**
  * Executes commands by using Windows batch file.

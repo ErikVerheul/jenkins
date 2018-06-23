@@ -27,7 +27,6 @@ import java.lang.reflect.InvocationHandler;
 import java.util.Map;
 import jenkins.security.security218.ysoserial.util.Gadgets;
 import jenkins.security.security218.ysoserial.util.PayloadRunner;
-
 import org.codehaus.groovy.runtime.ConvertedClosure;
 import org.codehaus.groovy.runtime.MethodClosure;
 

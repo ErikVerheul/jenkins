@@ -3,16 +3,15 @@ package jenkins.security;
 import hudson.Extension;
 import hudson.model.queue.Tasks;
 import hudson.util.DescribableList;
+import java.io.IOException;
+import java.util.List;
+import javax.annotation.Nonnull;
 import jenkins.model.GlobalConfiguration;
 import jenkins.model.GlobalConfigurationCategory;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.StaplerRequest;
-
-import javax.annotation.Nonnull;
-import java.io.IOException;
-import java.util.List;
 
 /**
  * Show the {@link QueueItemAuthenticator} configurations on the system config page.

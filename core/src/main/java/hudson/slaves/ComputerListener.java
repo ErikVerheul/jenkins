@@ -32,9 +32,7 @@ import hudson.model.Computer;
 import hudson.model.Node;
 import hudson.model.TaskListener;
 import hudson.remoting.Channel;
-
 import java.io.IOException;
-
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 

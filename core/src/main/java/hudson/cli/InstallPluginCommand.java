@@ -27,21 +27,20 @@ import hudson.AbortException;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.PluginManager;
-import jenkins.model.Jenkins;
 import hudson.model.UpdateSite;
 import hudson.model.UpdateSite.Data;
 import hudson.util.EditDistance;
-import org.kohsuke.args4j.Argument;
-import org.kohsuke.args4j.Option;
-
 import java.io.File;
-import java.net.URL;
 import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Set;
+import jenkins.model.Jenkins;
 import org.apache.commons.io.FileUtils;
+import org.kohsuke.args4j.Argument;
+import org.kohsuke.args4j.Option;
 
 /**
  * Installs a plugin either from a file, an URL, or from update center.

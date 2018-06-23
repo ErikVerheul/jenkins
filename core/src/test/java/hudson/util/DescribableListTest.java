@@ -27,8 +27,8 @@ package hudson.util;
 import com.thoughtworks.xstream.converters.basic.AbstractSingleValueConverter;
 import hudson.model.Describable;
 import hudson.model.Descriptor;
-import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Test;
 import org.jvnet.hudson.test.Issue;
 
 public class DescribableListTest {

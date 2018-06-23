@@ -23,16 +23,14 @@
  */
 package hudson.model;
 
-import jenkins.model.DependencyDeclarer;
 import hudson.security.ACL;
 import hudson.tasks.BuildTrigger;
 import hudson.tasks.MailMessageIdAction;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
+import jenkins.model.DependencyDeclarer;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.jvnet.hudson.test.HudsonTestCase;
 import org.jvnet.hudson.test.Issue;

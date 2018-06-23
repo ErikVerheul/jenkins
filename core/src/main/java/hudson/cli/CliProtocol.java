@@ -6,13 +6,6 @@ import hudson.model.Computer;
 import hudson.remoting.Channel;
 import hudson.remoting.Channel.Mode;
 import hudson.remoting.ChannelBuilder;
-import jenkins.AgentProtocol;
-import jenkins.model.Jenkins;
-import jenkins.slaves.NioChannelSelector;
-import org.jenkinsci.Symbol;
-import org.jenkinsci.remoting.nio.NioChannelHub;
-
-import javax.inject.Inject;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
@@ -20,6 +13,12 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
+import javax.inject.Inject;
+import jenkins.AgentProtocol;
+import jenkins.model.Jenkins;
+import jenkins.slaves.NioChannelSelector;
+import org.jenkinsci.Symbol;
+import org.jenkinsci.remoting.nio.NioChannelHub;
 
 /**
  * {@link AgentProtocol} that accepts connection from CLI clients.

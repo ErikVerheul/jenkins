@@ -35,24 +35,20 @@ import hudson.matrix.AxisList;
 import hudson.matrix.MatrixProject;
 import hudson.model.*;
 import hudson.util.RunList;
+import hudson.util.StreamTaskListener;
 import java.io.File;
-
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-
+import jenkins.model.Jenkins;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.*;
-
-import hudson.util.StreamTaskListener;
-import jenkins.model.Jenkins;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.Issue;
-
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.recipes.LocalData;
 

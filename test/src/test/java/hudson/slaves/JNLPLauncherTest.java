@@ -23,7 +23,6 @@
  */
 package hudson.slaves;
 
-import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import hudson.Proc;
 import hudson.Util;
@@ -32,34 +31,27 @@ import hudson.model.Node;
 import hudson.model.Node.Mode;
 import hudson.model.Slave;
 import hudson.remoting.Which;
-import hudson.slaves.DelegatingComputerLauncher;
 import hudson.util.ArgumentListBuilder;
-
-import jenkins.security.SlaveToMasterCallable;
-import jenkins.slaves.RemotingWorkDirSettings;
-
-import org.junit.Assume;
-import org.junit.Rule;
-import org.junit.Test;
-import org.jvnet.hudson.test.JenkinsRule;
-import org.jvnet.hudson.test.TestExtension;
-
+import java.awt.*;
 import java.io.File;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
+import jenkins.security.SlaveToMasterCallable;
+import jenkins.slaves.RemotingWorkDirSettings;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-
-import java.awt.*;
-import static org.hamcrest.Matchers.instanceOf;
+import org.junit.Assume;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.jvnet.hudson.test.Issue;
+import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.TestExtension;
 import org.jvnet.hudson.test.recipes.LocalData;
 
 /**

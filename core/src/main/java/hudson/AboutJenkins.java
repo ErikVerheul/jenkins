@@ -2,7 +2,6 @@ package hudson;
 
 import hudson.model.ManagementLink;
 import java.net.URL;
-
 import org.jenkinsci.Symbol;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;

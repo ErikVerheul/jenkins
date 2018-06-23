@@ -1,12 +1,10 @@
 package jenkins.slaves.restarter;
 
 import hudson.Extension;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.logging.Logger;
-
 import static java.util.logging.Level.*;
+import java.util.logging.Logger;
 import static org.apache.commons.io.IOUtils.*;
 
 /**

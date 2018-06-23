@@ -1,10 +1,6 @@
 package hudson.util;
 
-import static org.junit.Assert.*;
-import static org.junit.Assume.*;
-import java.io.File;
-import java.io.IOException;
-
+import com.google.common.collect.ImmutableMap;
 import hudson.EnvVars;
 import hudson.Functions;
 import hudson.Launcher;
@@ -16,8 +12,12 @@ import hudson.model.FreeStyleProject;
 import hudson.tasks.Maven;
 import hudson.tasks.Shell;
 import hudson.util.ProcessTreeRemoting.IOSProcess;
+import java.io.File;
+import java.io.IOException;
 import org.junit.After;
+import static org.junit.Assert.*;
 import org.junit.Assume;
+import static org.junit.Assume.*;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.ExtractResourceSCM;
@@ -25,7 +25,6 @@ import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.TestBuilder;
 import org.jvnet.hudson.test.TestExtension;
-import com.google.common.collect.ImmutableMap;
 
 public class ProcessTreeKillerTest {
 

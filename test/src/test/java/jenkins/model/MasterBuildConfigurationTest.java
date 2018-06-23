@@ -1,9 +1,7 @@
 package jenkins.model;
 
-import static org.junit.Assert.assertTrue;
-
 import hudson.model.Node.Mode;
-
+import static org.junit.Assert.assertTrue;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.Issue;

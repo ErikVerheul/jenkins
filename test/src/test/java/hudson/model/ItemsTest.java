@@ -34,23 +34,18 @@ import hudson.cli.CLICommandInvoker;
 import hudson.cli.CopyJobCommand;
 import hudson.cli.CreateJobCommand;
 import hudson.security.ACL;
-import hudson.security.csrf.CrumbIssuer;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
 import jenkins.model.Jenkins;
 import org.acegisecurity.context.SecurityContext;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.apache.commons.httpclient.HttpStatus;
-
-import org.junit.Before;
-import org.junit.Test;
-
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.*;
 import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;

@@ -25,14 +25,13 @@ package hudson;
 
 import com.google.inject.AbstractModule;
 import hudson.model.PageDecorator;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import javax.inject.Inject;
+import javax.inject.Qualifier;
 import org.jvnet.hudson.test.HudsonTestCase;
 import org.jvnet.hudson.test.TestEnvironment;
 import org.jvnet.hudson.test.TestExtension;
-
-import javax.inject.Inject;
-import javax.inject.Qualifier;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 
 /**
  * @author Kohsuke Kawaguchi

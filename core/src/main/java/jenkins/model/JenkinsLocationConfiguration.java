@@ -2,25 +2,23 @@ package jenkins.model;
 
 import hudson.Extension;
 import hudson.Util;
+import static hudson.Util.fixNull;
 import hudson.XmlFile;
 import hudson.util.FormValidation;
 import hudson.util.XStream2;
-import org.jenkinsci.Symbol;
-import org.kohsuke.stapler.QueryParameter;
-
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import javax.servlet.ServletContext;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import static hudson.Util.fixNull;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.servlet.ServletContext;
+import org.jenkinsci.Symbol;
+import org.kohsuke.stapler.QueryParameter;
 
 /**
  * Stores the location of Jenkins (e-mail address and the HTTP URL.)

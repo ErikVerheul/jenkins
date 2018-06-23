@@ -23,25 +23,23 @@
  */
 package hudson.cli;
 
-import hudson.Extension;
-import jenkins.model.Jenkins;
-import hudson.remoting.ChannelClosedException;
 import groovy.lang.Binding;
 import groovy.lang.Closure;
+import hudson.Extension;
+import hudson.remoting.ChannelClosedException;
+import java.io.BufferedInputStream;
+import java.io.InputStream;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
+import jenkins.model.Jenkins;
+import jline.TerminalFactory;
+import jline.UnsupportedTerminal;
 import org.codehaus.groovy.tools.shell.Groovysh;
 import org.codehaus.groovy.tools.shell.IO;
 import org.codehaus.groovy.tools.shell.Shell;
 import org.codehaus.groovy.tools.shell.util.XmlCommandRegistrar;
-
-import java.util.List;
-import java.io.PrintStream;
-import java.io.InputStream;
-import java.io.BufferedInputStream;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-
-import jline.UnsupportedTerminal;
-import jline.TerminalFactory;
 import org.kohsuke.args4j.Argument;
 
 /**

@@ -24,12 +24,11 @@
 
 package hudson.slaves;
 
-import hudson.model.Node;
 import hudson.model.EnvironmentSpecific;
+import hudson.model.Node;
 import hudson.model.TaskListener;
-
-import javax.annotation.Nonnull;
 import java.io.IOException;
+import javax.annotation.Nonnull;
 
 /**
  * Represents any concept that can be adapted for a node.

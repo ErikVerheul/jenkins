@@ -10,20 +10,16 @@ import hudson.FilePath;
 import hudson.Util;
 import hudson.util.Secret;
 import hudson.util.SecretHelper;
-import org.apache.commons.io.FileUtils;
-import org.hamcrest.CoreMatchers;
-import org.jvnet.hudson.test.HudsonTestCase;
-import org.jvnet.hudson.test.recipes.Recipe.Runner;
-import org.xml.sax.SAXException;
-
-import javax.crypto.Cipher;
-import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.regex.Pattern;
-
-import static org.junit.Assert.assertThat;
+import javax.crypto.Cipher;
+import javax.inject.Inject;
+import org.apache.commons.io.FileUtils;
+import org.jvnet.hudson.test.HudsonTestCase;
+import org.jvnet.hudson.test.recipes.Recipe.Runner;
+import org.xml.sax.SAXException;
 
 /**
  * @author Kohsuke Kawaguchi

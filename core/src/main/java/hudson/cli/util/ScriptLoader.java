@@ -1,15 +1,14 @@
 package hudson.cli.util;
 
 import hudson.AbortException;
-import jenkins.security.MasterToSlaveCallable;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import jenkins.security.MasterToSlaveCallable;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 
 /**
  * Reads a file (either a path or URL) over a channel.

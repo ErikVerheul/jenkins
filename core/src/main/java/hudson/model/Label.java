@@ -24,8 +24,12 @@
 package hudson.model;
 
 import antlr.ANTLRException;
+import com.thoughtworks.xstream.converters.Converter;
+import com.thoughtworks.xstream.converters.MarshallingContext;
+import com.thoughtworks.xstream.converters.UnmarshallingContext;
+import com.thoughtworks.xstream.io.HierarchicalStreamReader;
+import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import static hudson.Util.fixNull;
-
 import hudson.model.labels.LabelAtom;
 import hudson.model.labels.LabelExpression;
 import hudson.model.labels.LabelExpression.And;
@@ -41,19 +45,10 @@ import hudson.model.labels.LabelOperatorPrecedence;
 import hudson.model.labels.LabelVisitor;
 import hudson.model.queue.SubTask;
 import hudson.security.ACL;
-import hudson.slaves.NodeProvisioner;
 import hudson.slaves.Cloud;
+import hudson.slaves.NodeProvisioner;
 import hudson.util.QuotedStringTokenizer;
 import hudson.util.VariableResolver;
-import jenkins.model.Jenkins;
-import jenkins.model.ModelObjectWithChildren;
-import org.acegisecurity.context.SecurityContext;
-import org.acegisecurity.context.SecurityContextHolder;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
-import org.kohsuke.stapler.export.Exported;
-import org.kohsuke.stapler.export.ExportedBean;
-
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -63,12 +58,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
-
-import com.thoughtworks.xstream.converters.Converter;
-import com.thoughtworks.xstream.converters.MarshallingContext;
-import com.thoughtworks.xstream.converters.UnmarshallingContext;
-import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
-import com.thoughtworks.xstream.io.HierarchicalStreamReader;
+import jenkins.model.Jenkins;
+import jenkins.model.ModelObjectWithChildren;
+import org.acegisecurity.context.SecurityContext;
+import org.acegisecurity.context.SecurityContextHolder;
+import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.export.Exported;
+import org.kohsuke.stapler.export.ExportedBean;
 
 /**
  * Group of {@link Node}s.

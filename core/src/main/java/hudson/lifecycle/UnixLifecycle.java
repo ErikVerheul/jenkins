@@ -26,14 +26,11 @@ package hudson.lifecycle;
 import com.sun.akuma.JavaVMArguments;
 import com.sun.jna.Native;
 import com.sun.jna.StringArray;
-
+import hudson.Platform;
+import static hudson.util.jna.GNUCLibrary.*;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import static hudson.util.jna.GNUCLibrary.*;
-
-import hudson.Platform;
 import jenkins.model.Jenkins;
 
 /**

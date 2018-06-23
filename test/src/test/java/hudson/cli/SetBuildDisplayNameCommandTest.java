@@ -27,12 +27,11 @@ package hudson.cli;
 import static hudson.cli.CLICommandInvoker.Matcher.failedWith;
 import static hudson.cli.CLICommandInvoker.Matcher.hasNoStandardOutput;
 import static hudson.cli.CLICommandInvoker.Matcher.succeededSilently;
+import hudson.model.FreeStyleBuild;
+import hudson.model.FreeStyleProject;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
-import hudson.model.FreeStyleBuild;
-import hudson.model.FreeStyleProject;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

@@ -23,36 +23,31 @@
  */
 package hudson.tools;
 
-import static org.junit.Assert.assertEquals;
-
+import com.gargoylesoftware.htmlunit.html.HtmlForm;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import hudson.EnvVars;
 import hudson.Functions;
+import hudson.maven.MavenModuleSet;
 import hudson.model.*;
 import hudson.model.labels.LabelAtom;
 import hudson.slaves.DumbSlave;
-import hudson.tasks.Maven;
-import hudson.tasks.BatchFile;
 import hudson.tasks.Ant;
-import hudson.tasks.Shell;
 import hudson.tasks.Ant.AntInstallation;
+import hudson.tasks.BatchFile;
+import hudson.tasks.Maven;
 import hudson.tasks.Maven.MavenInstallation;
-import hudson.EnvVars;
-import hudson.maven.MavenModuleSet;
-
+import hudson.tasks.Shell;
 import java.io.IOException;
-
 import jenkins.model.Jenkins;
-
+import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+import org.jvnet.hudson.test.ExtractResourceSCM;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.JenkinsRule.WebClient;
 import org.jvnet.hudson.test.SingleFileSCM;
-import org.jvnet.hudson.test.ExtractResourceSCM;
-
-import com.gargoylesoftware.htmlunit.html.HtmlForm;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import org.junit.rules.TemporaryFolder;
 import org.jvnet.hudson.test.ToolInstallations;
 
 /**

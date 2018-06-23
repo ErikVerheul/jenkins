@@ -23,8 +23,6 @@
  */
 package hudson.model;
 
-import static org.junit.Assert.*;
-
 import com.gargoylesoftware.htmlunit.WebAssert;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import hudson.matrix.MatrixProject;
@@ -32,6 +30,7 @@ import hudson.maven.MavenModuleSet;
 import hudson.model.Descriptor.FormException;
 import java.util.logging.Level;
 import net.sf.json.JSONObject;
+import static org.junit.Assert.*;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.Issue;

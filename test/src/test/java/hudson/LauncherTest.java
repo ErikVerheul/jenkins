@@ -38,10 +38,8 @@ import hudson.tasks.Builder;
 import hudson.tasks.CommandInterpreter;
 import hudson.tasks.Shell;
 import java.io.IOException;
-
 import java.util.HashMap;
 import java.util.Map;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.Issue;

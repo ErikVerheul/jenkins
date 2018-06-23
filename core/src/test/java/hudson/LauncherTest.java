@@ -34,7 +34,6 @@ import java.io.File;
 import jenkins.security.MasterToSlaveCallable;
 import org.apache.commons.io.FileUtils;
 import static org.junit.Assert.*;
-
 import org.junit.Assume;
 import org.junit.Rule;
 import org.junit.Test;

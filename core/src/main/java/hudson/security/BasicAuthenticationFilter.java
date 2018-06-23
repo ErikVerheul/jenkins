@@ -24,14 +24,9 @@
 package hudson.security;
 
 import hudson.model.User;
-import jenkins.model.Jenkins;
 import hudson.util.Scrambler;
-import jenkins.security.ApiTokenProperty;
-import jenkins.security.SecurityListener;
-import org.acegisecurity.Authentication;
-import org.acegisecurity.context.SecurityContextHolder;
-import org.acegisecurity.userdetails.UserDetails;
-
+import java.io.IOException;
+import java.net.URLEncoder;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -42,8 +37,12 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.net.URLEncoder;
+import jenkins.model.Jenkins;
+import jenkins.security.ApiTokenProperty;
+import jenkins.security.SecurityListener;
+import org.acegisecurity.Authentication;
+import org.acegisecurity.context.SecurityContextHolder;
+import org.acegisecurity.userdetails.UserDetails;
 
 /**
  * Implements the dual authentication mechanism.

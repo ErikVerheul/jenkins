@@ -23,6 +23,7 @@
  */
 package hudson;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -36,10 +37,22 @@ import com.google.inject.Provider;
 import com.google.inject.Scope;
 import com.google.inject.Scopes;
 import com.google.inject.name.Names;
-import com.google.common.collect.ImmutableList;
 import hudson.init.InitMilestone;
 import hudson.model.Descriptor;
 import hudson.model.Hudson;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import jenkins.ExtensionComponentSet;
 import jenkins.ExtensionFilter;
 import jenkins.ExtensionRefreshException;
@@ -49,20 +62,6 @@ import net.java.sezpoz.Index;
 import net.java.sezpoz.IndexItem;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
-
-import java.lang.annotation.Annotation;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.logging.Logger;
-import java.util.logging.Level;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 
 /**
  * Discovers the implementations of an extension point.

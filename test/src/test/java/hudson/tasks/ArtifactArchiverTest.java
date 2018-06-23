@@ -35,24 +35,21 @@ import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
 import hudson.model.Label;
 import hudson.model.Result;
+import hudson.remoting.VirtualChannel;
+import hudson.slaves.DumbSlave;
 import static hudson.tasks.LogRotatorTest.build;
 import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.Collections;
 import java.util.List;
-
-import hudson.remoting.VirtualChannel;
-import hudson.slaves.DumbSlave;
 import jenkins.MasterToSlaveFileCallable;
 import jenkins.util.VirtualFile;
 import org.hamcrest.Matchers;
-import org.jenkinsci.plugins.structs.describable.DescribableModel;
-
 import static org.hamcrest.Matchers.lessThan;
+import org.jenkinsci.plugins.structs.describable.DescribableModel;
 import static org.junit.Assert.*;
 import static org.junit.Assume.*;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.Issue;

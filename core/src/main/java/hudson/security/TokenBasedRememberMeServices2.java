@@ -24,6 +24,12 @@
 package hudson.security;
 
 import hudson.Functions;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Date;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import jenkins.model.Jenkins;
 import jenkins.security.HMACConfidentialKey;
 import jenkins.security.ImpersonatingUserDetailsService;
@@ -34,13 +40,6 @@ import org.acegisecurity.userdetails.UserDetails;
 import org.acegisecurity.userdetails.UserDetailsService;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.util.Assert;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Date;
 
 /**
  * {@link TokenBasedRememberMeServices} with modification so as not to rely

@@ -24,6 +24,11 @@
 package hudson.model;
 
 import hudson.ExtensionList;
+import java.io.StringWriter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 import jenkins.model.Jenkins;
 import jenkins.model.item_category.ItemCategory;
 import org.acegisecurity.AccessDeniedException;
@@ -39,12 +44,6 @@ import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.WebApp;
 import org.kohsuke.stapler.jelly.DefaultScriptInvoker;
 import org.kohsuke.stapler.jelly.JellyClassTearOff;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-import java.io.StringWriter;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * {@link Descriptor} for {@link TopLevelItem}s.

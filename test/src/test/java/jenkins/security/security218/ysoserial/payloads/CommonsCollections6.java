@@ -24,20 +24,19 @@
 
 package jenkins.security.security218.ysoserial.payloads;
 
+import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import jenkins.security.security218.ysoserial.payloads.annotation.Dependencies;
+import jenkins.security.security218.ysoserial.payloads.util.PayloadRunner;
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.collections.functors.ChainedTransformer;
 import org.apache.commons.collections.functors.ConstantTransformer;
 import org.apache.commons.collections.functors.InvokerTransformer;
 import org.apache.commons.collections.keyvalue.TiedMapEntry;
 import org.apache.commons.collections.map.LazyMap;
-import jenkins.security.security218.ysoserial.payloads.annotation.Dependencies;
-import jenkins.security.security218.ysoserial.payloads.util.PayloadRunner;
-
-import java.io.Serializable;
-import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
 
 /*
 	Gadget chain:

@@ -29,10 +29,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.StringReader;
-
 import org.apache.commons.io.output.NullOutputStream;
-import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Test;
 
 public class ComputerLauncherTest {
 

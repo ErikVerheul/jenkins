@@ -1,7 +1,7 @@
 package hudson;
 
-import hudson.model.Node;
 import hudson.model.Executor;
+import hudson.model.Node;
 import hudson.tasks.BuildWrapper;
 import javax.annotation.Nonnull;
 

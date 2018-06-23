@@ -23,15 +23,14 @@
  */
 package hudson.util.jna;
 
+import java.net.UnknownHostException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.jinterop.dcom.common.IJIAuthInfo;
 import org.jinterop.dcom.common.JIException;
 import org.jinterop.winreg.IJIWinReg;
 import org.jinterop.winreg.JIPolicyHandle;
 import org.jinterop.winreg.JIWinRegFactory;
-
-import java.net.UnknownHostException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * .NET related code.

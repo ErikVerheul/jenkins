@@ -27,16 +27,14 @@ import antlr.ANTLRException;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import static java.util.Calendar.MONDAY;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Locale;
-
 import static org.junit.Assert.*;
 import org.junit.Test;
 import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.Url;
-
-import static java.util.Calendar.MONDAY;
-import java.util.List;
 
 /**
  * @author Kohsuke Kawaguchi

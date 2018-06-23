@@ -33,8 +33,6 @@ import hudson.model.Queue;
 import hudson.model.Run;
 import hudson.search.UserSearchProperty;
 import hudson.widgets.HistoryWidget;
-
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -42,6 +40,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Nonnull;
 
 /**
  * History page filter.

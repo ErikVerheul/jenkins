@@ -33,19 +33,10 @@ import hudson.XmlFile;
 import hudson.model.Action;
 import hudson.model.Descriptor.FormException;
 import hudson.model.Failure;
-import hudson.util.*;
-import jenkins.model.Jenkins;
 import hudson.model.Label;
 import hudson.model.Saveable;
 import hudson.model.listeners.SaveableListener;
-import org.kohsuke.accmod.Restricted;
-import org.kohsuke.accmod.restrictions.DoNotUse;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
-import org.kohsuke.stapler.export.Exported;
-import org.kohsuke.stapler.interceptor.RequirePOST;
-
-import javax.servlet.ServletException;
+import hudson.util.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -57,6 +48,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+import javax.servlet.ServletException;
+import jenkins.model.Jenkins;
+import org.kohsuke.accmod.Restricted;
+import org.kohsuke.accmod.restrictions.DoNotUse;
+import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.export.Exported;
+import org.kohsuke.stapler.interceptor.RequirePOST;
 
 /**
  * Atomic single token label, like "foo" or "bar".

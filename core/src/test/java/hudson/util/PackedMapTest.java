@@ -1,11 +1,9 @@
 package hudson.util;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
-
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 /**

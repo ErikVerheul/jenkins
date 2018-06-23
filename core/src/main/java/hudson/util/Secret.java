@@ -30,25 +30,23 @@ import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.trilead.ssh2.crypto.Base64;
-import jenkins.util.SystemProperties;
-import java.util.Arrays;
-import jenkins.model.Jenkins;
 import hudson.Util;
-import jenkins.security.CryptoConfidentialKey;
-import org.kohsuke.stapler.Stapler;
-
-import javax.crypto.Cipher;
+import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
-import java.io.IOException;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import java.security.GeneralSecurityException;
+import java.util.Arrays;
 import java.util.regex.Pattern;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import javax.crypto.Cipher;
+import jenkins.model.Jenkins;
+import jenkins.security.CryptoConfidentialKey;
+import jenkins.util.SystemProperties;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
+import org.kohsuke.stapler.Stapler;
 
 /**
  * Glorified {@link String} that uses encryption in the persisted form, to avoid accidental exposure of a secret.

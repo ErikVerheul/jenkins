@@ -1,18 +1,14 @@
 package hudson.util.io;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-
 import org.junit.After;
 import org.junit.Assert;
+import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 import org.jvnet.hudson.test.Issue;

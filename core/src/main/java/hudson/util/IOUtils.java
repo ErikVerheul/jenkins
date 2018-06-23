@@ -2,18 +2,16 @@ package hudson.util;
 
 import hudson.Functions;
 import hudson.Util;
+import static hudson.Util.fileToPath;
 import hudson.os.PosixAPI;
 import hudson.os.PosixException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
-import org.apache.commons.io.LineIterator;
-
-import java.io.*;
 import java.util.Collection;
 import java.util.List;
 import java.util.regex.Pattern;
-
-import static hudson.Util.fileToPath;
+import org.apache.commons.io.LineIterator;
 
 /**
  * Adds more to commons-io.

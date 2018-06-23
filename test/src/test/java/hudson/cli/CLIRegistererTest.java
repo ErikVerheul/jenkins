@@ -2,14 +2,11 @@ package hudson.cli;
 
 import static hudson.cli.CLICommandInvoker.Matcher.failedWith;
 import static hudson.cli.CLICommandInvoker.Matcher.succeededSilently;
-import static org.hamcrest.MatcherAssert.assertThat;
+import hudson.cli.CLICommandInvoker.Result;
+import jenkins.model.Jenkins;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
-
-import jenkins.model.Jenkins;
-import hudson.cli.CLICommandInvoker;
-import hudson.cli.CLICommandInvoker.Result;
-
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;

@@ -24,11 +24,10 @@
 
 package jenkins;
 
-import java.io.IOException;
-import java.util.List;
-
 import hudson.PluginWrapper.Dependency;
 import hudson.Util;
+import java.io.IOException;
+import java.util.List;
 
 /**
  * Exception thrown if plugin resolution fails due to missing dependencies

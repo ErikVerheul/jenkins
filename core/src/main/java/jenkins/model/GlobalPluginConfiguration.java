@@ -3,12 +3,11 @@ package jenkins.model;
 import hudson.Extension;
 import hudson.Plugin;
 import hudson.StructuredForm;
+import java.io.IOException;
+import javax.servlet.ServletException;
 import net.sf.json.JSONObject;
 import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.StaplerRequest;
-
-import javax.servlet.ServletException;
-import java.io.IOException;
 
 /**
  * Include config.jelly defined for {@link Plugin}s.

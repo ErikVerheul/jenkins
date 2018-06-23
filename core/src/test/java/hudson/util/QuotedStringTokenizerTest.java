@@ -23,10 +23,8 @@
  */
 package hudson.util;
 
-import static org.junit.Assert.assertArrayEquals;
-
 import java.util.Arrays;
-
+import static org.junit.Assert.assertArrayEquals;
 import org.junit.Test;
 
 /**

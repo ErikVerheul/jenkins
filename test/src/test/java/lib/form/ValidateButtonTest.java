@@ -28,26 +28,24 @@ import com.gargoylesoftware.htmlunit.html.HtmlButton;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlElementUtil;
 import com.gargoylesoftware.htmlunit.html.HtmlFormUtil;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import hudson.Extension;
+import hudson.model.Describable;
+import hudson.model.Descriptor;
 import hudson.model.UnprotectedRootAction;
+import javax.annotation.CheckForNull;
 import jenkins.model.Jenkins;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.TestExtension;
 import org.kohsuke.stapler.QueryParameter;
-import hudson.model.Describable;
-import hudson.model.Descriptor;
-import hudson.Extension;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import org.kohsuke.stapler.StaplerRequest;
-
-import javax.annotation.CheckForNull;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 
 /**
  *

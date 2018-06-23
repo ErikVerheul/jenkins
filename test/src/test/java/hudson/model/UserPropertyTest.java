@@ -1,11 +1,25 @@
 package hudson.model;
 
 import com.google.common.base.Throwables;
+import static hudson.model.User.idStrategy;
+import static hudson.model.UserPropertyTest.InnerUserClass.TEST_FILE;
+import java.io.File;
+import java.io.IOException;
+import static java.lang.System.currentTimeMillis;
+import java.util.Collections;
+import static java.util.Collections.emptyMap;
+import java.util.List;
 import jenkins.model.Jenkins;
 import org.apache.commons.io.FileUtils;
+import static org.apache.commons.io.FileUtils.writeStringToFile;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.core.IsNull.notNullValue;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.Issue;
@@ -13,22 +27,6 @@ import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.TestExtension;
 import org.jvnet.hudson.test.recipes.LocalData;
 import org.kohsuke.stapler.DataBoundConstructor;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-
-import static hudson.model.User.idStrategy;
-import static hudson.model.UserPropertyTest.InnerUserClass.TEST_FILE;
-import static java.lang.System.currentTimeMillis;
-import static java.util.Collections.emptyMap;
-import static org.apache.commons.io.FileUtils.writeStringToFile;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.core.IsNull.notNullValue;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 
 /**
  * @author Kohsuke Kawaguchi

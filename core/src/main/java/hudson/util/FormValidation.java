@@ -24,32 +24,22 @@
 package hudson.util;
 
 import hudson.EnvVars;
+import hudson.FilePath;
 import hudson.Functions;
+import static hudson.Functions.jsStringEscape;
 import hudson.Launcher;
 import hudson.ProxyConfiguration;
 import hudson.RelativePath;
 import hudson.Util;
-import hudson.FilePath;
+import static hudson.Util.*;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.model.Descriptor;
 import hudson.tasks.Builder;
 import hudson.util.ReflectionUtils.Parameter;
-import jenkins.model.Jenkins;
-
-import org.kohsuke.stapler.HttpResponse;
-import org.kohsuke.stapler.QueryParameter;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
-import org.kohsuke.stapler.Stapler;
-import org.springframework.util.StringUtils;
-
-import javax.annotation.Nonnull;
-import javax.servlet.ServletException;
-
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -58,9 +48,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
-
-import static hudson.Functions.jsStringEscape;
-import static hudson.Util.*;
+import javax.annotation.Nonnull;
+import javax.servlet.ServletException;
+import jenkins.model.Jenkins;
+import org.kohsuke.stapler.HttpResponse;
+import org.kohsuke.stapler.QueryParameter;
+import org.kohsuke.stapler.Stapler;
+import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerResponse;
+import org.springframework.util.StringUtils;
 
 /**
  * Represents the result of the form field validation.

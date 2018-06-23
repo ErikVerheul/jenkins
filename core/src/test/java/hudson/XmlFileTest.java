@@ -5,15 +5,12 @@ import hudson.util.XStream2;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-
 import jenkins.model.Jenkins;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.xml.sax.SAXParseException;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.xml.sax.SAXParseException;
 
 public class XmlFileTest {
 

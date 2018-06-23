@@ -25,12 +25,11 @@
 package hudson.model;
 
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
+import com.gargoylesoftware.htmlunit.TextPage;
 import com.gargoylesoftware.htmlunit.WebAssert;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.html.HtmlFormUtil;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.gargoylesoftware.htmlunit.TextPage;
-
 import hudson.FilePath;
 import hudson.Functions;
 import hudson.model.queue.QueueTaskFuture;
@@ -38,10 +37,8 @@ import hudson.tasks.ArtifactArchiver;
 import hudson.tasks.BatchFile;
 import hudson.tasks.Shell;
 import hudson.util.TextFile;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.util.concurrent.TimeUnit;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.text.MessageFormat;
@@ -49,24 +46,22 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
-
+import java.util.concurrent.TimeUnit;
 import jenkins.model.ProjectNamingStrategy;
-
 import org.hamcrest.Matchers;
+import static org.hamcrest.Matchers.endsWith;
+import static org.junit.Assert.*;
+import static org.junit.Assume.assumeFalse;
 import org.junit.Rule;
 import org.junit.Test;
-import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.FailureBuilder;
+import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.JenkinsRule.WebClient;
 import org.jvnet.hudson.test.MockFolder;
 import org.jvnet.hudson.test.RunLoadCounter;
 import org.jvnet.hudson.test.SleepBuilder;
 import org.jvnet.hudson.test.recipes.LocalData;
-
-import static org.hamcrest.Matchers.endsWith;
-import static org.junit.Assert.*;
-import static org.junit.Assume.assumeFalse;
 
 /**
  * @author Kohsuke Kawaguchi

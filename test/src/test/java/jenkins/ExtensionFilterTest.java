@@ -1,10 +1,9 @@
 package jenkins;
 
-import static org.junit.Assert.assertTrue;
-
 import hudson.ExtensionComponent;
 import hudson.console.ConsoleAnnotatorFactory;
 import hudson.model.PageDecorator;
+import static org.junit.Assert.assertTrue;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;

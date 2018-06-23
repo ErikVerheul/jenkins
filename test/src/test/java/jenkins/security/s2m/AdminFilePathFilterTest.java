@@ -24,18 +24,17 @@
 
 package jenkins.security.s2m;
 
+import hudson.FilePath;
+import hudson.model.Slave;
+import hudson.remoting.Callable;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Field;
 import javax.inject.Inject;
-import static org.junit.Assert.*;
-
-import hudson.FilePath;
-import hudson.model.Slave;
-import hudson.remoting.Callable;
 import org.jenkinsci.remoting.RoleChecker;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

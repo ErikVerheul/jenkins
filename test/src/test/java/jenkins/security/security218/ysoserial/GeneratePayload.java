@@ -30,7 +30,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-
 import jenkins.security.security218.ysoserial.payloads.ObjectPayload;
 import jenkins.security.security218.ysoserial.payloads.ObjectPayload.Utils;
 import jenkins.security.security218.ysoserial.payloads.annotation.Dependencies;

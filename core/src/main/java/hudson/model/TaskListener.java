@@ -27,7 +27,6 @@ import hudson.console.ConsoleNote;
 import hudson.console.HyperlinkNote;
 import hudson.util.NullStream;
 import hudson.util.StreamTaskListener;
-
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;

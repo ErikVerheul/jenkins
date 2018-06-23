@@ -26,7 +26,6 @@ package hudson.model;
 
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-
 import hudson.Functions;
 import hudson.matrix.AxisList;
 import hudson.matrix.MatrixProject;
@@ -35,7 +34,6 @@ import hudson.security.ACL;
 import hudson.security.ACLContext;
 import hudson.security.AuthorizationStrategy;
 import hudson.security.Permission;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -43,17 +41,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-
-import org.acegisecurity.Authentication;
-
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import javax.servlet.ReadListener;
 import javax.servlet.ServletInputStream;
-
+import org.acegisecurity.Authentication;
 import org.apache.commons.io.IOUtils;
+import static org.junit.Assert.*;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
@@ -64,6 +56,8 @@ import org.jvnet.hudson.test.MockFolder;
 import org.jvnet.hudson.test.recipes.LocalData;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import org.xml.sax.SAXException;
 
 public class ListViewTest {

@@ -28,22 +28,21 @@ import hudson.util.CaseInsensitiveComparator;
 import hudson.util.CyclicGraphDetector;
 import hudson.util.CyclicGraphDetector.CycleDetectedException;
 import hudson.util.VariableResolver;
-import jenkins.security.MasterToSlaveCallable;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.Arrays;
 import java.util.TreeSet;
 import java.util.UUID;
 import java.util.logging.Logger;
 import javax.annotation.Nonnull;
+import jenkins.security.MasterToSlaveCallable;
 
 /**
  * Environment variables.

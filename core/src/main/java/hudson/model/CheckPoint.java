@@ -23,10 +23,10 @@
  */
 package hudson.model;
 
-import hudson.tasks.BuildStep;
-import hudson.tasks.Recorder;
-import hudson.tasks.Builder;
 import hudson.scm.SCM;
+import hudson.tasks.BuildStep;
+import hudson.tasks.Builder;
+import hudson.tasks.Recorder;
 import javax.annotation.Nonnull;
 
 /**

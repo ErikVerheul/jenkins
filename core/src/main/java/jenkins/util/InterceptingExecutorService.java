@@ -1,7 +1,6 @@
 package jenkins.util;
 
 import com.google.common.util.concurrent.ForwardingExecutorService;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;

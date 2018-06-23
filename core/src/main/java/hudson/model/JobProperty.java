@@ -28,21 +28,18 @@ import hudson.Launcher;
 import hudson.model.Descriptor.FormException;
 import hudson.model.queue.SubTask;
 import hudson.tasks.BuildStep;
+import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Builder;
 import hudson.tasks.Publisher;
-import hudson.tasks.BuildStepMonitor;
-
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
-
+import javax.annotation.Nonnull;
 import jenkins.model.Jenkins;
 import jenkins.model.OptionalJobProperty;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.export.ExportedBean;
-
-import javax.annotation.Nonnull;
 
 /**
  * Extensible property of {@link Job}.

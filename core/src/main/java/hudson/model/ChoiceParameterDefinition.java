@@ -1,18 +1,17 @@
 package hudson.model;
 
+import hudson.Extension;
 import hudson.util.FormValidation;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import net.sf.json.JSONObject;
+import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.Symbol;
+import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.export.Exported;
-import org.apache.commons.lang.StringUtils;
-import net.sf.json.JSONObject;
-import hudson.Extension;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Arrays;
 
 /**
  * @author huybrechts

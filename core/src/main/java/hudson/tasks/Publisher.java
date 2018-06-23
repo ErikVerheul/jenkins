@@ -30,14 +30,13 @@ import hudson.model.Action;
 import hudson.model.Build;
 import hudson.model.BuildListener;
 import hudson.model.Describable;
-import hudson.model.Project;
 import hudson.model.Descriptor;
-import jenkins.model.Jenkins;
-
-import java.util.List;
+import hudson.model.Project;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
+import jenkins.model.Jenkins;
 
 /**
  * {@link BuildStep}s that run after the build is completed.

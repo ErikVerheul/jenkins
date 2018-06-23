@@ -23,15 +23,14 @@
  */
 package jenkins.install;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-
 import hudson.Extension;
 import hudson.ExtensionList;
 import hudson.ExtensionPoint;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 import javax.servlet.ServletException;
 import jenkins.model.Jenkins;
 import org.apache.commons.lang.StringUtils;

@@ -1,12 +1,11 @@
 package hudson.cli;
 
-import org.apache.commons.codec.binary.Base64;
-
 import java.net.InetSocketAddress;
 import java.security.GeneralSecurityException;
 import java.security.KeyFactory;
 import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
+import org.apache.commons.codec.binary.Base64;
 
     /**
      * @deprecated Specific to Remoting mode.

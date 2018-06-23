@@ -1,11 +1,8 @@
 package jenkins.security.security218.ysoserial.payloads.util;
 
 import java.util.concurrent.Callable;
-
 import jenkins.security.security218.ysoserial.Deserializer;
 import jenkins.security.security218.ysoserial.Serializer;
-import static jenkins.security.security218.ysoserial.Deserializer.deserialize;
-import static jenkins.security.security218.ysoserial.Serializer.serialize;
 import jenkins.security.security218.ysoserial.payloads.ObjectPayload;
 import jenkins.security.security218.ysoserial.payloads.ObjectPayload.Utils;
 import jenkins.security.security218.ysoserial.secmgr.ExecCheckingSecurityManager;

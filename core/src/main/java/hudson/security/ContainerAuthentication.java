@@ -23,16 +23,15 @@
  */
 package hudson.security;
 
+import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
 import jenkins.model.Jenkins;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.GrantedAuthority;
 import org.acegisecurity.GrantedAuthorityImpl;
-
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
-import java.security.Principal;
-import java.util.List;
-import java.util.ArrayList;
 
 /**
  * {@link Authentication} implementation for {@link Principal}

@@ -31,13 +31,12 @@ import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
 import hudson.Extension;
 import hudson.model.Describable;
 import hudson.model.Descriptor;
-import jenkins.model.Jenkins;
-import org.jvnet.hudson.test.HudsonTestCase;
-import org.kohsuke.stapler.DataBoundConstructor;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import jenkins.model.Jenkins;
+import org.jvnet.hudson.test.HudsonTestCase;
+import org.kohsuke.stapler.DataBoundConstructor;
 
 public class RepeatablePropertyTest extends HudsonTestCase implements Describable<RepeatablePropertyTest> {
 

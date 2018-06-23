@@ -24,7 +24,6 @@
 package hudson.util;
 
 import com.trilead.ssh2.crypto.Base64;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 

@@ -27,8 +27,8 @@ import hudson.model.Executor;
 import hudson.model.Queue;
 import hudson.model.Queue.Executable;
 import hudson.model.Queue.Task;
-import javax.annotation.CheckForNull;
 import hudson.model.Run;
+import javax.annotation.CheckForNull;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 

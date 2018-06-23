@@ -24,15 +24,12 @@
 package hudson.lifecycle;
 
 import hudson.Extension;
-
-import org.kohsuke.accmod.Restricted;
-import org.kohsuke.accmod.restrictions.NoExternalUse;
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import jenkins.model.Configuration;
 import jenkins.model.Jenkins;
+import org.kohsuke.accmod.Restricted;
+import org.kohsuke.accmod.restrictions.NoExternalUse;
 
 /**
  * {@link Lifecycle} that delegates the responsibility to restart Jenkins to an external

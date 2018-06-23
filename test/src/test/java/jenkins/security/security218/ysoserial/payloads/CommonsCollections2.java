@@ -25,13 +25,11 @@ package jenkins.security.security218.ysoserial.payloads;
 
 import java.util.PriorityQueue;
 import java.util.Queue;
-
-import org.apache.commons.collections4.comparators.TransformingComparator;
-import org.apache.commons.collections4.functors.InvokerTransformer;
-
 import jenkins.security.security218.ysoserial.util.Gadgets;
 import jenkins.security.security218.ysoserial.util.PayloadRunner;
 import jenkins.security.security218.ysoserial.util.Reflections;
+import org.apache.commons.collections4.comparators.TransformingComparator;
+import org.apache.commons.collections4.functors.InvokerTransformer;
 import org.apache.xalan.xsltc.trax.TemplatesImpl;
 
 /*

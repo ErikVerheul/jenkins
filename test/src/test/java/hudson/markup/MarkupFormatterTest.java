@@ -23,18 +23,16 @@
  */
 package hudson.markup;
 
-import static org.junit.Assert.assertEquals;
-
 import hudson.security.AuthorizationStrategy.Unsecured;
 import hudson.security.HudsonPrivateSecurityRealm;
+import java.io.IOException;
+import java.io.Writer;
+import static org.junit.Assert.assertEquals;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.TestExtension;
 import org.kohsuke.stapler.DataBoundConstructor;
-
-import java.io.IOException;
-import java.io.Writer;
 
 /**
  * @author Kohsuke Kawaguchi

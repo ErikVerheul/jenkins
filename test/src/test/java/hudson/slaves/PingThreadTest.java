@@ -28,21 +28,18 @@ import hudson.model.Computer;
 import hudson.remoting.Channel;
 import hudson.remoting.ChannelClosedException;
 import hudson.remoting.PingThread;
-import jenkins.security.MasterToSlaveCallable;
-import org.junit.Rule;
-import org.junit.Test;
-import org.jvnet.hudson.test.JenkinsRule;
-
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.reflect.Method;
-import java.util.Date;
 import java.util.concurrent.TimeoutException;
-
+import jenkins.security.MasterToSlaveCallable;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeFalse;
+import org.junit.Rule;
+import org.junit.Test;
+import org.jvnet.hudson.test.JenkinsRule;
 
 /**
  * @author ogondza.

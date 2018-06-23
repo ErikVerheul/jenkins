@@ -24,7 +24,6 @@
 package hudson.model;
 
 import java.io.IOException;
-
 import javax.annotation.Nonnull;
 
 /**

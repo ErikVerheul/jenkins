@@ -25,17 +25,16 @@
 package hudson;
 
 import hudson.model.Hudson;
-import org.jvnet.hudson.test.Issue;
-import org.jvnet.hudson.test.HudsonTestCase;
-import org.jvnet.hudson.test.recipes.LocalData;
-import org.jvnet.hudson.test.recipes.Recipe;
-
 import java.io.File;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import org.jvnet.hudson.test.HudsonTestCase;
+import org.jvnet.hudson.test.Issue;
+import org.jvnet.hudson.test.recipes.LocalData;
+import org.jvnet.hudson.test.recipes.Recipe;
 
 /**
  * @author Alan Harder

@@ -40,19 +40,18 @@ import java.util.Set;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import jenkins.model.Jenkins;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.*;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.Before;
 import org.jvnet.hudson.test.CreateFileBuilder;
-import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.Issue;
+import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.MockFolder;
 import org.jvnet.hudson.test.SecuredMockFolder;
 import org.jvnet.hudson.test.WorkspaceCopyFileBuilder;
-
-import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
 
 
 //TODO: Refactoring: Tests should be exchanged with FingerprinterTest somehow

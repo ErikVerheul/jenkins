@@ -23,12 +23,11 @@
  */
 package hudson.security;
 
+import javax.servlet.http.HttpSession;
+import jenkins.security.NonSerializableSecurityContext;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.context.SecurityContext;
 import org.acegisecurity.userdetails.UserDetails;
-
-import javax.servlet.http.HttpSession;
-import jenkins.security.NonSerializableSecurityContext;
 
 /**
  * {@link UserDetails} that can mark {@link Authentication} invalid.

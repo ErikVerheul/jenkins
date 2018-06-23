@@ -5,12 +5,10 @@ import hudson.ExtensionPoint;
 import hudson.model.Label;
 import hudson.model.Node;
 import hudson.model.queue.CauseOfBlockage;
-import jenkins.model.Jenkins;
-
 import java.util.Collection;
 import java.util.concurrent.Future;
-
 import javax.annotation.Nonnull;
+import jenkins.model.Jenkins;
 
 /**
  * Allows extensions to be notified of events in any {@link Cloud} and to prevent

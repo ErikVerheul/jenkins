@@ -1,10 +1,9 @@
 package hudson.cli;
 
 import hudson.Extension;
+import java.io.PrintStream;
 import jenkins.security.SecurityListener;
 import org.acegisecurity.Authentication;
-
-import java.io.PrintStream;
 
 /**
  * Deletes the credential stored with the login command.

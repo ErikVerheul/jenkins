@@ -34,13 +34,10 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
-
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
-
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.*;
-
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;

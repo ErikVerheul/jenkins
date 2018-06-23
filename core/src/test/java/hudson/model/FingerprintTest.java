@@ -27,7 +27,6 @@ import hudson.Util;
 import hudson.model.Fingerprint.RangeSet;
 import java.io.File;
 import jenkins.model.FingerprintFacet;
-
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;

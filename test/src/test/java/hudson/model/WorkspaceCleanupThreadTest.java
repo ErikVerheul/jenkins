@@ -30,14 +30,11 @@ import hudson.scm.NullSCM;
 import hudson.slaves.DumbSlave;
 import hudson.slaves.WorkspaceList;
 import hudson.util.StreamTaskListener;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
-
 import jenkins.MasterToSlaveFileCallable;
 import static org.junit.Assert.*;
-
 import org.junit.Assume;
 import org.junit.Rule;
 import org.junit.Test;

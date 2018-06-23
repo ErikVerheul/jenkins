@@ -23,8 +23,8 @@
  */
 package hudson.security;
 
-import org.acegisecurity.userdetails.UsernameNotFoundException;
 import org.acegisecurity.userdetails.UserDetailsService;
+import org.acegisecurity.userdetails.UsernameNotFoundException;
 
 /**
  * Thrown from {@link UserDetailsService#loadUserByUsername(String)}

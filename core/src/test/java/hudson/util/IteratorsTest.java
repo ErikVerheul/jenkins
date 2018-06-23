@@ -23,14 +23,11 @@
  */
 package hudson.util;
 
-import static java.util.Arrays.asList;
-import static org.junit.Assert.*;
-
 import hudson.util.Iterators.CountingPredicate;
-
+import static java.util.Arrays.asList;
 import java.util.Iterator;
 import java.util.List;
-
+import static org.junit.Assert.*;
 import org.junit.Test;
 
 /**

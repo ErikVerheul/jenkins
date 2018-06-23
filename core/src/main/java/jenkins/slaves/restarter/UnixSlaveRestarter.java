@@ -5,13 +5,11 @@ import com.sun.akuma.JavaVMArguments;
 import com.sun.jna.Native;
 import com.sun.jna.StringArray;
 import hudson.Extension;
-
+import static hudson.util.jna.GNUCLibrary.*;
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Logger;
-
-import static hudson.util.jna.GNUCLibrary.*;
 import static java.util.logging.Level.*;
+import java.util.logging.Logger;
 
 /**
  * On Unix, restart via exec-ing to itself.

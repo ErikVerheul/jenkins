@@ -9,16 +9,14 @@ import hudson.remoting.EngineListener;
 import hudson.remoting.EngineListenerAdapter;
 import hudson.remoting.VirtualChannel;
 import hudson.slaves.ComputerListener;
-import jenkins.model.Jenkins.MasterComputer;
-
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
-
 import static java.util.logging.Level.*;
+import java.util.logging.Logger;
+import jenkins.model.Jenkins.MasterComputer;
 import jenkins.security.MasterToSlaveCallable;
 
 /**

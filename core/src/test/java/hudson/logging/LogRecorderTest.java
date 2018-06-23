@@ -27,8 +27,8 @@ package hudson.logging;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
-import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Test;
 import org.jvnet.hudson.test.Issue;
 
 public class LogRecorderTest {

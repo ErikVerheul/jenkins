@@ -27,7 +27,6 @@ import hudson.Extension;
 import hudson.ExtensionList;
 import hudson.FilePath;
 import hudson.Functions;
-import jenkins.util.SystemProperties;
 import hudson.Util;
 import hudson.slaves.WorkspaceList;
 import java.io.IOException;
@@ -39,6 +38,7 @@ import java.util.logging.Logger;
 import javax.annotation.Nonnull;
 import jenkins.model.Jenkins;
 import jenkins.model.ModifiableTopLevelItemGroup;
+import jenkins.util.SystemProperties;
 import org.jenkinsci.Symbol;
 
 /**

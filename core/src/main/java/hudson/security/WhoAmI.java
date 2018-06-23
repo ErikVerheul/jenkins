@@ -4,12 +4,9 @@ import hudson.Extension;
 import hudson.Functions;
 import hudson.model.Api;
 import hudson.model.UnprotectedRootAction;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import jenkins.model.Jenkins;
-
 import org.acegisecurity.Authentication;
 import org.acegisecurity.GrantedAuthority;
 import org.jenkinsci.Symbol;

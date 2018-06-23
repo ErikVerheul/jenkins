@@ -4,14 +4,6 @@ import com.google.common.annotations.VisibleForTesting;
 import hudson.FilePath;
 import hudson.remoting.Channel;
 import hudson.util.Secret;
-import jenkins.model.Jenkins;
-import jenkins.security.MasterToSlaveCallable;
-import org.acegisecurity.Authentication;
-import org.acegisecurity.AuthenticationException;
-import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
-import org.acegisecurity.userdetails.UserDetails;
-import org.springframework.dao.DataAccessException;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,9 +12,15 @@ import java.io.Serializable;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import jenkins.security.HMACConfidentialKey;
-
 import javax.annotation.Nonnull;
+import jenkins.model.Jenkins;
+import jenkins.security.HMACConfidentialKey;
+import jenkins.security.MasterToSlaveCallable;
+import org.acegisecurity.Authentication;
+import org.acegisecurity.AuthenticationException;
+import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
+import org.acegisecurity.userdetails.UserDetails;
+import org.springframework.dao.DataAccessException;
 
 /**
  * Represents the authentication credential store of the CLI client.

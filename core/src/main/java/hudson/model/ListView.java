@@ -39,25 +39,21 @@ import hudson.util.FormValidation;
 import hudson.util.HttpResponses;
 import hudson.views.ListViewColumn;
 import hudson.views.ViewJobFilter;
-
 import java.io.IOException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-
 import javax.annotation.CheckForNull;
 import javax.annotation.concurrent.GuardedBy;
 import javax.servlet.ServletException;
 import jenkins.model.Jenkins;
 import jenkins.model.ParameterizedJobMixIn;
-
 import net.sf.json.JSONObject;
 import org.jenkinsci.Symbol;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
-
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.HttpResponse;

@@ -1,16 +1,14 @@
 package jenkins.diagnostics;
 
 import hudson.Extension;
+import static hudson.Util.fixEmpty;
 import hudson.model.*;
 import hudson.util.FormValidation;
+import java.io.IOException;
 import jenkins.model.Jenkins;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.StaplerRequest;
-
-import java.io.IOException;
-
-import static hudson.Util.fixEmpty;
 
 @Restricted(NoExternalUse.class)
 @Extension

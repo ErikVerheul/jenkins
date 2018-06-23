@@ -23,26 +23,25 @@
  */
 package hudson.model;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
+import com.thoughtworks.xstream.converters.UnmarshallingContext;
+import hudson.Util;
 import hudson.console.ModelHyperlinkNote;
 import hudson.diagnosis.OldDataMonitor;
 import hudson.util.XStream2;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 import jenkins.model.Jenkins;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.DoNotUse;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
-import com.thoughtworks.xstream.converters.UnmarshallingContext;
-import hudson.Util;
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
 
 /**
  * Cause object base class.  This class hierarchy is used to keep track of why

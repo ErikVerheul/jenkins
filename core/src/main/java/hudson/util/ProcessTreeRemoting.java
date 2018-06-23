@@ -2,7 +2,6 @@ package hudson.util;
 
 import hudson.EnvVars;
 import hudson.util.ProcessTree.ProcessCallable;
-
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Proxy;

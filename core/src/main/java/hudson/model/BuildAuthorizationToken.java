@@ -26,15 +26,14 @@ package hudson.model;
 import com.thoughtworks.xstream.converters.basic.AbstractSingleValueConverter;
 import hudson.Util;
 import hudson.security.ACL;
-import jenkins.model.Jenkins;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
-
 import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
+import jenkins.model.Jenkins;
 import jenkins.security.ApiTokenProperty;
 import org.acegisecurity.AccessDeniedException;
 import org.kohsuke.stapler.HttpResponses;
+import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerResponse;
 
 /**
  * Authorization token to allow projects to trigger themselves under the secured environment.

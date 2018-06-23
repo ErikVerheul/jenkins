@@ -23,27 +23,22 @@
  */
 package hudson.model.listeners;
 
-import hudson.ExtensionPoint;
-import hudson.ExtensionListView;
 import hudson.Extension;
 import hudson.ExtensionList;
+import hudson.ExtensionListView;
+import hudson.ExtensionPoint;
 import hudson.FilePath;
-import hudson.Functions;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.model.Environment;
-import hudson.model.Job;
 import hudson.model.JobProperty;
 import hudson.model.Run;
 import hudson.model.Run.RunnerAbortedException;
 import hudson.model.TaskListener;
-import jenkins.model.Jenkins;
 import hudson.scm.SCM;
 import hudson.tasks.BuildWrapper;
 import hudson.util.CopyOnWriteList;
-import org.jvnet.tiger_types.Types;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
@@ -51,6 +46,8 @@ import java.lang.reflect.Type;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Nonnull;
+import jenkins.model.Jenkins;
+import org.jvnet.tiger_types.Types;
 
 /**
  * Receives notifications about builds.

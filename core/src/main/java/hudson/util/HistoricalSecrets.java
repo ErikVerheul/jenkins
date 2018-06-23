@@ -26,17 +26,15 @@ package hudson.util;
 
 import com.trilead.ssh2.crypto.Base64;
 import hudson.Util;
+import java.io.IOException;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import java.security.GeneralSecurityException;
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
 import jenkins.model.Jenkins;
 import jenkins.security.CryptoConfidentialKey;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
-
-import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * Historical algorithms for decrypting {@link Secret}s.

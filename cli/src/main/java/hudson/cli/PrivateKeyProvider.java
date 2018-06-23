@@ -23,12 +23,10 @@
  */
 package hudson.cli;
 
-import static java.util.logging.Level.FINE;
-
+import com.trilead.ssh2.crypto.PEMDecoder;
 import java.io.Console;
 import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -41,9 +39,8 @@ import java.security.spec.DSAPublicKeySpec;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import static java.util.logging.Level.FINE;
 import java.util.logging.Logger;
-
-import com.trilead.ssh2.crypto.PEMDecoder;
 
 /**
  * Read DSA or RSA key from file(s) asking for password interactively.

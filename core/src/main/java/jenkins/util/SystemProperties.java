@@ -31,7 +31,6 @@ import java.util.logging.Logger;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-
 import jenkins.util.io.OnMaster;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.accmod.Restricted;

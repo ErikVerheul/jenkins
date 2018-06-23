@@ -23,22 +23,21 @@
  */
 package hudson.tasks;
 
+import hudson.DescriptorExtensionList;
 import hudson.ExtensionPoint;
 import hudson.Launcher;
-import hudson.DescriptorExtensionList;
 import hudson.LauncherDecorator;
 import hudson.console.ConsoleLogFilter;
 import hudson.model.*;
 import hudson.model.Run.RunnerAbortedException;
 import hudson.util.ArgumentListBuilder;
-import jenkins.model.Jenkins;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
+import jenkins.model.Jenkins;
 
 /**
  * Pluggability point for performing pre/post actions for the build process.

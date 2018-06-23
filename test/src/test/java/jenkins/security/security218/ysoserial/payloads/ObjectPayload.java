@@ -26,10 +26,8 @@ package jenkins.security.security218.ysoserial.payloads;
 import java.lang.reflect.Modifier;
 import java.util.Iterator;
 import java.util.Set;
-
-import org.reflections.Reflections;
-
 import jenkins.security.security218.ysoserial.GeneratePayload;
+import org.reflections.Reflections;
 
 public interface ObjectPayload<T> {
     /*

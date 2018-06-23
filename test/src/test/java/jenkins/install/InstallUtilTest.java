@@ -23,21 +23,6 @@
  */
 package jenkins.install;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.jvnet.hudson.test.JenkinsRule;
-import org.mockito.Mockito;
-
 import hudson.Main;
 import hudson.model.UpdateCenter;
 import hudson.model.UpdateCenter.DownloadJob.Failure;
@@ -47,9 +32,22 @@ import hudson.model.UpdateCenter.DownloadJob.Pending;
 import hudson.model.UpdateCenter.DownloadJob.Success;
 import hudson.model.UpdateCenter.UpdateCenterJob;
 import hudson.model.UpdateSite;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.jvnet.hudson.test.JenkinsRule;
+import org.mockito.Mockito;
 
 /**
  * Test

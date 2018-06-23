@@ -23,13 +23,11 @@
  */
 package hudson.cli.handlers;
 
-import hudson.model.ViewGroup;
 import hudson.model.View;
-
+import hudson.model.ViewGroup;
 import java.util.StringTokenizer;
-
+import javax.annotation.CheckForNull;
 import jenkins.model.Jenkins;
-
 import org.acegisecurity.AccessDeniedException;
 import org.kohsuke.MetaInfServices;
 import org.kohsuke.args4j.CmdLineException;
@@ -38,8 +36,6 @@ import org.kohsuke.args4j.OptionDef;
 import org.kohsuke.args4j.spi.OptionHandler;
 import org.kohsuke.args4j.spi.Parameters;
 import org.kohsuke.args4j.spi.Setter;
-
-import javax.annotation.CheckForNull;
 
 /**
  * Refers to {@link View} by its name.
