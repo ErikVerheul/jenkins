@@ -102,7 +102,7 @@ public abstract class AbstractBuild<P extends AbstractProject<P,R>,R extends Abs
     /**
      * Set if we want the blame information to flow from upstream to downstream build.
      */
-    private static final boolean upstreamCulprits = SystemProperties.getBoolean("hudson.upstreamCulprits");
+    private static final boolean UPSTREAMCULPRITS = SystemProperties.getBoolean("hudson.upstreamCulprits");
 
     /**
      * Name of the agent this project was built on.
@@ -338,7 +338,7 @@ public abstract class AbstractBuild<P extends AbstractProject<P,R>,R extends Abs
         Set<User> c = RunWithSCM.super.calculateCulprits();
 
         AbstractBuild<P,R> p = getPreviousCompletedBuild();
-        if (upstreamCulprits) {
+        if (UPSTREAMCULPRITS) {
             // If we have dependencies since the last successful build, add their authors to our list
             if (p != null && p.getPreviousNotFailedBuild() != null) {
                 Map<AbstractProject, AbstractBuild.DependencyChange> depmap =
@@ -694,10 +694,7 @@ public abstract class AbstractBuild<P extends AbstractProject<P,R>,R extends Abs
                                 setResult(Result.FAILURE);
                             }
                         }
-                    } catch (Exception e) {
-                        reportError(bs, e, listener, phase);
-                        r = false;
-                    } catch (LinkageError e) {
+                    } catch (Exception | LinkageError e) {
                         reportError(bs, e, listener, phase);
                         r = false;
                     }
@@ -742,13 +739,12 @@ public abstract class AbstractBuild<P extends AbstractProject<P,R>,R extends Abs
             try {
 
                 canContinue = mon.perform(bs, AbstractBuild.this, launcher, listener);
-            } catch (RequestAbortedException ex) {
+            } catch (RequestAbortedException | ChannelClosedException ex) {
                 // Channel is closed, do not continue
                 reportBrokenChannel(listener);
-            } catch (ChannelClosedException ex) {
-                // Channel is closed, do not continue
-                reportBrokenChannel(listener);
-            } catch (RuntimeException ex) {
+            }
+            // Channel is closed, do not continue
+             catch (RuntimeException ex) {
                 Functions.printStackTrace(ex, listener.error("Build step failed with exception"));
             }
 
@@ -820,7 +816,7 @@ public abstract class AbstractBuild<P extends AbstractProject<P,R>,R extends Abs
 	/*
      * No need to lock the entire AbstractBuild on change set calculation
      */
-    private transient Object changeSetLock = new Object();
+    private transient final Object changeSetLock = new Object();
     
     /**
      * Gets the changes incorporated into this build.
@@ -873,9 +869,7 @@ public abstract class AbstractBuild<P extends AbstractProject<P,R>,R extends Abs
 
         try {
             return scm.parse(this,changelogFile);
-        } catch (IOException e) {
-            LOGGER.log(WARNING, "Failed to parse "+changelogFile,e);
-        } catch (SAXException e) {
+        } catch (IOException | SAXException e) {
             LOGGER.log(WARNING, "Failed to parse "+changelogFile,e);
         }
         return ChangeLogSet.createEmpty(this);
@@ -1098,7 +1092,7 @@ public abstract class AbstractBuild<P extends AbstractProject<P,R>,R extends Abs
         // look for fingerprints that point to this build as the source, and merge them all
         for (Fingerprint e : f.getFingerprints().values()) {
 
-            if (upstreamCulprits) {
+            if (UPSTREAMCULPRITS) {
                 // With upstreamCulprits, we allow downstream relationships
                 // from intermediate jobs
                 rs.add(e.getRangeSet(that));
@@ -1117,18 +1111,18 @@ public abstract class AbstractBuild<P extends AbstractProject<P,R>,R extends Abs
      * the actual build objects, in ascending order.
      * @since 1.150
      */
-    public Iterable<AbstractBuild<?,?>> getDownstreamBuilds(final AbstractProject<?,?> that) {
+    public Iterable<AbstractBuild<?, ?>> getDownstreamBuilds(final AbstractProject<?, ?> that) {
         final Iterable<Integer> nums = getDownstreamRelationship(that).listNumbers();
 
         return new Iterable<AbstractBuild<?, ?>>() {
             @Override
             public Iterator<AbstractBuild<?, ?>> iterator() {
-                return Iterators.removeNull(new AdaptedIterator<Integer,AbstractBuild<?,?>>(nums) {
+                return Iterators.removeNull(new AdaptedIterator<Integer, AbstractBuild<?, ?>>(nums) {
                     @Override
-                        protected AbstractBuild<?, ?> adapt(Integer item) {
-                            return that.getBuildByNumber(item);
-                        }
-                    });
+                    protected AbstractBuild<?, ?> adapt(Integer item) {
+                        return that.getBuildByNumber(item);
+                    }
+                });
             }
         };
     }
@@ -1149,7 +1143,7 @@ public abstract class AbstractBuild<P extends AbstractProject<P,R>,R extends Abs
 
         // look for fingerprints that point to the given project as the source, and merge them all
         for (Fingerprint e : f.getFingerprints().values()) {
-            if (upstreamCulprits) {
+            if (UPSTREAMCULPRITS) {
                 // With upstreamCulprits, we allow upstream relationships
                 // from intermediate jobs
                 Fingerprint.RangeSet rangeset = e.getRangeSet(that);

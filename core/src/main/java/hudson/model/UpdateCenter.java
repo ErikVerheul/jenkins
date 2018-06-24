@@ -1129,7 +1129,7 @@ public class UpdateCenter extends AbstractModelObject implements Saveable, OnMas
                 File dst = job.getDestination();
                 File tmp = new File(dst.getPath()+".tmp");
 
-                LOGGER.info("Downloading "+job.getName());
+                LOGGER.log(Level.INFO, "Downloading {0}", job.getName());
                 Thread t = Thread.currentThread();
                 String oldName = t.getName();
                 t.setName(oldName + ": " + src);
@@ -1339,7 +1339,7 @@ public class UpdateCenter extends AbstractModelObject implements Saveable, OnMas
          *      {@link Future} to keeps track of the status of the execution.
          */
         public Future<UpdateCenterJob> submit() {
-            LOGGER.fine("Scheduling "+this+" to installerService");
+            LOGGER.log(Level.FINE, "Scheduling {0} to installerService", this);
             // TODO: seems like this access to jobs should be synchronized, no?
             // It might get synch'd accidentally via the addJob method, but that wouldn't be good.
             jobs.add(this);
@@ -1648,11 +1648,11 @@ public class UpdateCenter extends AbstractModelObject implements Saveable, OnMas
         @Override
         public void run() {
             try {
-                LOGGER.info("Starting the installation of "+getName()+" on behalf of "+getUser().getName());
+                LOGGER.log(Level.INFO, "Starting the installation of {0} on behalf of {1}", new Object[]{getName(), getUser().getName()});
 
                 _run();
 
-                LOGGER.info("Installation successful: "+getName());
+                LOGGER.log(Level.INFO, "Installation successful: {0}", getName());
                 status = new Success();
                 onSuccess();
             } catch (InstallationStatus e) {
@@ -1870,46 +1870,51 @@ public class UpdateCenter extends AbstractModelObject implements Saveable, OnMas
 
         @Override
         public void _run() throws IOException, InstallationStatus {
-            if (wasInstalled()) {
-                // Do this first so we can avoid duplicate downloads, too
-                // check to see if the plugin is already installed at the same version and skip it
-                LOGGER.info("Skipping duplicate install of: " + plugin.getDisplayName() + "@" + plugin.version);
-                return;
-            }
             try {
-                super._run();
-
-                // if this is a bundled plugin, make sure it won't get overwritten
-                PluginWrapper pw = plugin.getInstalled();
-                if (pw!=null && pw.isBundled()) {
-                    SecurityContext oldContext = ACL.impersonate(ACL.SYSTEM);
-                    try {
-                        pw.doPin();
-                    } finally {
-                        SecurityContextHolder.setContext(oldContext);
+                if (wasInstalled()) {
+                    // Do this first so we can avoid duplicate downloads, too
+                    // check to see if the plugin is already installed at the same version and skip it
+                    LOGGER.log(Level.INFO, "Skipping duplicate install of: {0}@{1}", new Object[]{plugin.getDisplayName(), plugin.version});
+                    return;
+                }
+                try {
+                    super._run();
+                    
+                    // if this is a bundled plugin, make sure it won't get overwritten
+                    PluginWrapper pw = plugin.getInstalled();
+                    if (pw!=null && pw.isBundled()) {
+                        SecurityContext oldContext = ACL.impersonate(ACL.SYSTEM);
+                        try {
+                            pw.doPin();
+                        } finally {
+                            SecurityContextHolder.setContext(oldContext);
+                        }
+                    }
+                    
+                    if (dynamicLoad) {
+                        try {
+                            pm.dynamicLoad(getDestination());
+                        } catch (RestartRequiredException e) {
+                            throw new SuccessButRequiresRestart(e.message);
+                        } catch (IOException | InterruptedException e) {
+                            throw new IOException("Failed to dynamically deploy this plugin",e);
+                        }
+                    } else {
+                        throw new SuccessButRequiresRestart(Messages._UpdateCenter_DownloadButNotActivated());
+                    }
+                } finally {
+                    synchronized(this) {
+                        // There may be other threads waiting on completion
+                        LOGGER.log(Level.FINE, "Install complete for: {0}@{1}", new Object[]{plugin.getDisplayName(), plugin.version});
+                        // some status other than Installing or Downloading needs to be set here
+                        // {@link #isAlreadyInstalling()}, it will be overwritten by {@link DownloadJob#run()}
+                        status = new Skipped();
+                        notifyAll();
                     }
                 }
-
-                if (dynamicLoad) {
-                    try {
-                        pm.dynamicLoad(getDestination());
-                    } catch (RestartRequiredException e) {
-                        throw new SuccessButRequiresRestart(e.message);
-                    } catch (IOException | InterruptedException e) {
-                        throw new IOException("Failed to dynamically deploy this plugin",e);
-                    }
-                } else {
-                    throw new SuccessButRequiresRestart(Messages._UpdateCenter_DownloadButNotActivated());
-                }
-            } finally {
-                synchronized(this) {
-                    // There may be other threads waiting on completion
-                    LOGGER.fine("Install complete for: " + plugin.getDisplayName() + "@" + plugin.version);
-                    // some status other than Installing or Downloading needs to be set here
-                    // {@link #isAlreadyInstalling()}, it will be overwritten by {@link DownloadJob#run()}
-                    status = new Skipped();
-                    notifyAll();
-                }
+            }   catch (InterruptedException ex) {
+                Logger.getLogger(UpdateCenter.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.severe("Install was interrupted");
             }
         }
 
@@ -1917,7 +1922,7 @@ public class UpdateCenter extends AbstractModelObject implements Saveable, OnMas
          * Indicates there is another installation job for this plugin
          * @since 2.1
          */
-        protected boolean wasInstalled() {
+        protected boolean wasInstalled() throws InterruptedException {
             synchronized(UpdateCenter.this) {
                 for (UpdateCenterJob job : getJobs()) {
                     if (job == this) {
@@ -1932,11 +1937,11 @@ public class UpdateCenter extends AbstractModelObject implements Saveable, OnMas
                             synchronized(ij) {
                                 if(ij.status instanceof Installing || ij.status instanceof Pending) {
                                     try {
-                                        LOGGER.fine("Waiting for other plugin install of: " + plugin.getDisplayName() + "@" + plugin.version);
+                                        LOGGER.log(Level.FINE, "Waiting for other plugin install of: {0}@{1}", new Object[]{plugin.getDisplayName(), plugin.version});
                                         //[Erik] While waiting the lock on UpdateCenter.this continues to be in effect so it blocks for completion
                                         ij.wait(); //NOSONAR
                                     } catch (InterruptedException e) {
-                                        throw new RuntimeException(e);
+                                        throw new InterruptedException();
                                     }
                                 }
                                 // Must check for success, otherwise may have failed installation
@@ -2035,11 +2040,11 @@ public class UpdateCenter extends AbstractModelObject implements Saveable, OnMas
         @Override
         public void run() {
             try {
-                LOGGER.info("Starting the downgrade of "+getName()+" on behalf of "+getUser().getName());
+                LOGGER.log(Level.INFO, "Starting the downgrade of {0} on behalf of {1}", new Object[]{getName(), getUser().getName()});
 
                 _run();
 
-                LOGGER.info("Downgrade successful: "+getName());
+                LOGGER.log(Level.INFO, "Downgrade successful: {0}", getName());
                 status = new Success();
                 onSuccess();
             } catch (IOException e) {
@@ -2142,11 +2147,11 @@ public class UpdateCenter extends AbstractModelObject implements Saveable, OnMas
         @Override
         public void run() {
             try {
-                LOGGER.info("Starting the downgrade of "+getName()+" on behalf of "+getUser().getName());
+                LOGGER.log(Level.INFO, "Starting the downgrade of {0} on behalf of {1}", new Object[]{getName(), getUser().getName()});
 
                 _run();
 
-                LOGGER.info("Downgrading successful: "+getName());
+                LOGGER.log(Level.INFO, "Downgrading successful: {0}", getName());
                 status = new Success();
                 onSuccess();
             } catch (IOException e) {

@@ -436,6 +436,8 @@ public class Util {
             Thread.sleep(delayInMs);
             return false;
         } catch (InterruptedException e) {
+            // Restore interrupted state...
+            Thread.currentThread().interrupt();
             return true;
         }
     }

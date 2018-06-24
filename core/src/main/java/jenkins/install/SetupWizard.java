@@ -199,7 +199,7 @@ public class SetupWizard extends PageDecorator {
         try {
             return !Jenkins.get().getInstallState().isSetupComplete()
                     && isUsingSecurityDefaults();
-        } catch (Exception e) {
+        } catch (IllegalStateException e) {
             // ignore
         }
         return false;
@@ -258,6 +258,8 @@ public class SetupWizard extends PageDecorator {
                 try {
                     getInitialAdminPasswordFile().delete();
                 } catch (InterruptedException e) {
+                    // Restore interrupted state...
+                    Thread.currentThread().interrupt();
                     throw new IOException(e);
                 }
                 
@@ -371,7 +373,7 @@ public class SetupWizard extends PageDecorator {
      * @return JSON array with the categorized plugin list
      */
     @CheckForNull
-    /*package*/ JSONArray getPlatformPluginList() {
+    JSONArray getPlatformPluginList() {
         Jenkins.get().checkPermission(Jenkins.ADMINISTER);
         JSONArray initialPluginList = null;
         updateSiteList: for (UpdateSite updateSite : Jenkins.get().getUpdateCenter().getSiteList()) {
@@ -390,13 +392,12 @@ public class SetupWizard extends PageDecorator {
                     
                     String initialPluginJson = IOUtils.toString(connection.getInputStream(), "utf-8");
                     initialPluginList = JSONArray.fromObject(initialPluginJson);
-                    break updateSiteList;
-                } catch(Exception e) {
+                    break;
+                } catch(IOException e) {
                     // not found or otherwise unavailable
                     LOGGER.log(Level.FINE, e.getMessage(), e);
-                    continue updateSiteList;
                 }
-            } catch(Exception e) {
+            } catch(IOException e) {
                 LOGGER.log(Level.FINE, e.getMessage(), e);
             }
         }
@@ -407,7 +408,7 @@ public class SetupWizard extends PageDecorator {
                 URL localPluginData = cl.getResource("jenkins/install/platform-plugins.json");
                 String initialPluginJson = IOUtils.toString(localPluginData.openStream(), "utf-8");
                 initialPluginList =  JSONArray.fromObject(initialPluginJson);
-            } catch (Exception e) {
+            } catch (IOException e) {
                 LOGGER.log(Level.SEVERE, e.getMessage(), e);
             }
         }
@@ -452,7 +453,7 @@ public class SetupWizard extends PageDecorator {
                                             }
                                         }
                                         if (foundCompatibleVersion) {
-                                            continue nextPlugin;
+                                            continue;
                                         }
                                     }
                                 }

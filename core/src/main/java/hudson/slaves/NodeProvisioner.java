@@ -221,7 +221,7 @@ public class NodeProvisioner {
                                 try {
                                     node = f.future.get();
                                 } catch (InterruptedException e) {
-                                    throw new AssertionError("InterruptedException occurred", e); // since we confirmed that the future is already done
+                                    throw new InterruptedException("InterruptedException occurred"); // since we confirmed that the future is already done
                                 } catch (ExecutionException e) {
                                     Throwable cause = e.getCause();
                                     if (!(cause instanceof AbortException)) {

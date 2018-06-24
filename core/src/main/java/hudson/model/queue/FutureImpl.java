@@ -53,7 +53,7 @@ public final class FutureImpl extends AsyncFutureImpl<Executable> implements Que
      *
      * In contrast, {@link FutureImpl} will complete when the task finishes.
      */
-    /*package*/ final AsyncFutureImpl<Executable> start = new AsyncFutureImpl<>();
+    final AsyncFutureImpl<Executable> start = new AsyncFutureImpl<>();
 
     public FutureImpl(Task task) {
         this.task = task;

@@ -832,7 +832,7 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
     @Restricted(NoExternalUse.class)
     public void dynamicLoad(File arc, boolean removeExisting) throws IOException, InterruptedException, RestartRequiredException {
         try (ACLContext context = ACL.as(ACL.SYSTEM)) {
-            LOGGER.info("Attempting to dynamic load "+arc);
+            LOGGER.log(INFO, "Attempting to dynamic load {0}", arc);
             PluginWrapper p = null;
             String sn;
             try {
@@ -1058,7 +1058,7 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
      * @throws IOException Operation error
      */
     @Nonnull
-    /*package*/ static long getModificationDate(@Nonnull URL url) throws IOException {
+    static long getModificationDate(@Nonnull URL url) throws IOException {
         URLConnection uc = url.openConnection();
         
         // It prevents file descriptor leak if the URL references a file within JAR
@@ -1068,7 +1068,6 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
             final JarURLConnection connection = (JarURLConnection) uc;
             final URL jarURL = connection.getJarFileURL();
             if (jarURL.getProtocol().equals("file")) {
-                uc = null;
                 String file = jarURL.getFile();
                 return new File(file).lastModified();
             } else {
@@ -1095,7 +1094,7 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
             Util.deleteFile(newFile);
         }
         if (!legacyFile.renameTo(newFile)) {
-            LOGGER.warning("Failed to rename " + legacyFile + " to " + newFile);
+            LOGGER.log(WARNING, "Failed to rename {0} to {1}", new Object[]{legacyFile, newFile});
         }
     }
 
@@ -1510,6 +1509,8 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
                             Thread.sleep(500);
                         } catch (InterruptedException e) {
                             LOGGER.log(SEVERE, "Unexpected error while waiting for some plugins to install. Plugin Manager state may be invalid. Please restart Jenkins ASAP.", e);
+                            // Restore interrupted state...
+                            Thread.currentThread().interrupt();
                         }
                         if (!deployJob.isCancelled() && !deployJob.isDone()) {
                             // One of the plugins is not installing/canceled, so
