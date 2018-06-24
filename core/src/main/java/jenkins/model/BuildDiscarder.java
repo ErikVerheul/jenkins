@@ -52,7 +52,7 @@ public abstract class BuildDiscarder extends AbstractDescribableImpl<BuildDiscar
      * This converter makes this work by unmarshalling a {@link LogRotator}.
      */
     public static class ConverterImpl implements Converter {
-        private RobustReflectionConverter ref;
+        private final RobustReflectionConverter ref;
 
         public ConverterImpl(Mapper m) {
             ref = new RobustReflectionConverter(m,new JVM().bestReflectionProvider()) {

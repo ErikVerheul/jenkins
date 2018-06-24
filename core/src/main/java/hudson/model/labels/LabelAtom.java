@@ -64,7 +64,7 @@ import org.kohsuke.stapler.interceptor.RequirePOST;
  * @since  1.372
  */
 public class LabelAtom extends Label implements Saveable {
-    private DescribableList<LabelAtomProperty,LabelAtomPropertyDescriptor> properties =
+    private final DescribableList<LabelAtomProperty,LabelAtomPropertyDescriptor> properties =
             new DescribableList<>(this);
 
     @CopyOnWrite
@@ -276,7 +276,7 @@ public class LabelAtom extends Label implements Saveable {
 
     // class name is not ConverterImpl, to avoid getting picked up by AssociatedConverterImpl
     private static class LabelAtomConverter extends XStream2.PassthruConverter<LabelAtom> {
-        private Label.ConverterImpl leafLabelConverter = new Label.ConverterImpl();
+        private final Label.ConverterImpl leafLabelConverter = new Label.ConverterImpl();
 
         private LabelAtomConverter() {
             super(XSTREAM);

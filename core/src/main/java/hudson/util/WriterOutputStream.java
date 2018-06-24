@@ -46,8 +46,8 @@ public class WriterOutputStream extends OutputStream {
     private final Writer writer;
     private final CharsetDecoder decoder;
 
-    private java.nio.ByteBuffer buf = java.nio.ByteBuffer.allocate(1024);
-    private CharBuffer out = CharBuffer.allocate(1024);
+    private final java.nio.ByteBuffer buf = java.nio.ByteBuffer.allocate(1024);
+    private final CharBuffer out = CharBuffer.allocate(1024);
 
     public WriterOutputStream(Writer out) {
         this.writer = out;

@@ -95,7 +95,7 @@ public interface RunWithSCM<JobT extends Job<JobT, RunT>,
         }
 
         return new AbstractSet<User>() {
-            private Set<String> culpritIds = ImmutableSet.copyOf(getCulpritIds());
+            private final Set<String> culpritIds = ImmutableSet.copyOf(getCulpritIds());
 
             @Override
             public Iterator<User> iterator() {

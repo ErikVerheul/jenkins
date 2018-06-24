@@ -39,7 +39,7 @@ import org.acegisecurity.ui.AuthenticationDetailsSourceImpl;
  */
 @Extension
 public class BasicHeaderRealPasswordAuthenticator extends BasicHeaderAuthenticator {
-    private AuthenticationDetailsSource authenticationDetailsSource = new AuthenticationDetailsSourceImpl();
+    private final AuthenticationDetailsSource authenticationDetailsSource = new AuthenticationDetailsSourceImpl();
 
     @Override
     public Authentication authenticate(HttpServletRequest req, HttpServletResponse rsp, String username, String password) throws IOException, ServletException {

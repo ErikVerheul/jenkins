@@ -28,7 +28,7 @@ public class NewViewLinkTest {
 
     private NewViewLink newViewLink;
 
-    private View view = mock(View.class);
+    private final View view = mock(View.class);
     
     @Before
     public void initTests() throws Exception {

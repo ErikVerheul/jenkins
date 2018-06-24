@@ -49,7 +49,7 @@ public class PluginFirstClassLoader
         super(null, false);
     }
 
-    private List<URL> urls = new ArrayList<>();
+    private final List<URL> urls = new ArrayList<>();
 
     @Override
     public void addPathFiles( Collection<File> paths )

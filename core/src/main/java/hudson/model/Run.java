@@ -712,8 +712,8 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
      *      string like "3 minutes" "1 day" etc.
      */
     public @Nonnull String getTimestampString() {
-        long duration = new GregorianCalendar().getTimeInMillis()-timestamp;
-        return Util.getPastTimeString(duration);
+        long d = new GregorianCalendar().getTimeInMillis()-timestamp;
+        return Util.getPastTimeString(d);
     }
 
     /**
@@ -1756,7 +1756,7 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
 
             } catch (ThreadDeath t) {
                 throw t;
-            } catch( Throwable e ) {
+            } catch( Exception e ) {
                 handleFatalBuildProblem(listener,e);
                 result = Result.FAILURE;
             } finally {

@@ -474,7 +474,7 @@ public class XStream2 extends XStream {
      * </pre>
      */
     public static abstract class PassthruConverter<T> implements Converter {
-        private Converter converter;
+        private final Converter converter;
 
         public PassthruConverter(XStream2 xstream) {
             converter = xstream.reflectionConverter;

@@ -91,7 +91,7 @@ public class AntClassLoader extends ClassLoader implements SubBuildListener {
         /**
          * The name of the resource being searched for.
          */
-        private String resourceName;
+        private final String resourceName;
 
         /**
          * The index of the next classpath element to search.

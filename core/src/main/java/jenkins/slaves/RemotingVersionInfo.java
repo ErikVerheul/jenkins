@@ -43,10 +43,10 @@ public class RemotingVersionInfo {
     private static final String RESOURCE_NAME="remoting-info.properties";
 
     @Nonnull
-    private static VersionNumber EMBEDDED_VERSION;
+    private static final VersionNumber EMBEDDED_VERSION;
 
     @Nonnull
-    private static VersionNumber MINIMUM_SUPPORTED_VERSION;
+    private static final VersionNumber MINIMUM_SUPPORTED_VERSION;
 
     //[Erik] EMBEDDED_VERSION and MINIMUM_SUPPORTED_VERSION are assigned a non null value in the static block below
     private RemotingVersionInfo() {} //NOSONAR

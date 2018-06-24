@@ -167,7 +167,7 @@ public class ViewTest {
 
     public static class CompositeView extends View implements ViewGroup {
 
-        private View[] views;
+        private final View[] views;
         private TopLevelItem[] jobs;
 
         protected CompositeView(final String name, View... views) {

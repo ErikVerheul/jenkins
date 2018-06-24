@@ -35,7 +35,7 @@ import java.util.List;
  * @author Kohsuke Kawaguchi
  */
 class SortedList<T extends Comparable<T>> extends AbstractList<T> {
-    private List<T> data;
+    private final List<T> data;
 
     public SortedList(List<T> data) {
         this.data = new ArrayList<>(data);

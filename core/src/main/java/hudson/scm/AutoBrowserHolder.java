@@ -43,7 +43,7 @@ import jenkins.model.Jenkins;
 final class AutoBrowserHolder {
     private int cacheGeneration;
     private RepositoryBrowser cache;
-    private SCM owner;
+    private final SCM owner;
 
     public AutoBrowserHolder(SCM owner) {
         this.owner = owner;

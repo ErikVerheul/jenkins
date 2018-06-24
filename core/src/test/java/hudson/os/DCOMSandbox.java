@@ -31,7 +31,7 @@ public class DCOMSandbox {
 
     static final class JIComOxidStub extends Stub {
 
-        private static Properties defaults = new Properties();
+        private static final Properties defaults = new Properties();
 
         static {
                 defaults.put("rpc.ntlm.lanManagerKey","false");

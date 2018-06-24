@@ -1315,7 +1315,7 @@ public abstract class ProcessTree implements Iterable<OSProcess>, IProcessTree, 
         private static final int KERN_PROC = 14;
         private static final int KERN_PROC_ALL = 0;
         private static final int ENOMEM = 12;
-        private static int[] MIB_PROC_ALL = {CTL_KERN, KERN_PROC, KERN_PROC_ALL};
+        private static final int[] MIB_PROC_ALL = {CTL_KERN, KERN_PROC, KERN_PROC_ALL};
         private static final int KERN_ARGMAX = 8;
         private static final int KERN_PROCARGS2 = 49;
     }

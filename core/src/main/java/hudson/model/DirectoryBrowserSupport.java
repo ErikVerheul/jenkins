@@ -453,7 +453,7 @@ public final class DirectoryBrowserSupport implements HttpResponse {
 
 
     private static final class FileComparator implements Comparator<VirtualFile> {
-        private Collator collator;
+        private final Collator collator;
 
         FileComparator(Locale locale) {
             this.collator = Collator.getInstance(locale);

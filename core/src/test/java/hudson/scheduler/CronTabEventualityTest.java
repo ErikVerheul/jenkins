@@ -31,8 +31,8 @@ public class CronTabEventualityTest {
         return limit;
     }
 
-    private String name;
-    private Hash hash;
+    private final String name;
+    private final Hash hash;
 
     public CronTabEventualityTest(String name, Hash hash) {
         this.name = name;

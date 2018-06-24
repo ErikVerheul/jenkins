@@ -442,7 +442,7 @@ public class RobustReflectionConverter implements Converter {
 
     private static class SeenFields {
 
-        private Set seen = new HashSet();
+        private final Set seen = new HashSet();
 
         public void add(Class definedInCls, String fieldName) {
             String uniqueKey = fieldName;

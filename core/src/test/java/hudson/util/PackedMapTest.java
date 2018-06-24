@@ -15,7 +15,7 @@ public class PackedMapTest {
         PackedMap pm;
     }
 
-    private XStream2 xs = new XStream2();
+    private final XStream2 xs = new XStream2();
 
     @Test
     public void basic() {

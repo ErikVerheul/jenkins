@@ -75,7 +75,7 @@ import org.kohsuke.stapler.interceptor.RequirePOST;
 public class OldDataMonitor extends AdministrativeMonitor {
     private static final Logger LOGGER = Logger.getLogger(OldDataMonitor.class.getName());
 
-    private ConcurrentMap<SaveableReference,VersionRange> data = new ConcurrentHashMap<>();
+    private final ConcurrentMap<SaveableReference,VersionRange> data = new ConcurrentHashMap<>();
 
     static OldDataMonitor get(Jenkins j) {
         return (OldDataMonitor) j.getAdministrativeMonitor("OldData");
@@ -183,7 +183,7 @@ public class OldDataMonitor extends AdministrativeMonitor {
     }
 
     private static class ReportException extends Exception {
-        private String version;
+        private final String version;
         private ReportException(String version) {
             this.version = version;
         }
@@ -227,7 +227,7 @@ public class OldDataMonitor extends AdministrativeMonitor {
     }
 
     public static class VersionRange {
-        private static VersionNumber currentVersion = Jenkins.getVersion();
+        private static final VersionNumber currentVersion = Jenkins.getVersion();
 
         final VersionNumber min;
         final VersionNumber max;

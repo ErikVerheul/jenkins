@@ -32,7 +32,7 @@ public class RSAConfidentialKeyTest {
     @Rule
     public ConfidentialStoreRule store = new ConfidentialStoreRule();
 
-    private RSAConfidentialKey key = new RSAConfidentialKey("test") {};
+    private final RSAConfidentialKey key = new RSAConfidentialKey("test") {};
 
     @Test
     public void loadingExistingKey() {

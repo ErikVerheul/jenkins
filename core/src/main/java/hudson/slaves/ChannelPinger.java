@@ -60,7 +60,7 @@ public class ChannelPinger extends ComputerListener {
     /**
      * Timeout for the ping in seconds.
      */
-    private int pingTimeoutSeconds = SystemProperties.getInteger(TIMEOUT_SECONDS_PROPERTY, PING_TIMEOUT_SECONDS_DEFAULT, Level.WARNING);
+    private final int pingTimeoutSeconds = SystemProperties.getInteger(TIMEOUT_SECONDS_PROPERTY, PING_TIMEOUT_SECONDS_DEFAULT, Level.WARNING);
 
     /**
      * Interval for the ping in seconds.

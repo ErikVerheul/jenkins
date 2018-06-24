@@ -43,9 +43,9 @@ import org.jfree.data.category.DefaultCategoryDataset;
  */
 public final class DataSetBuilder<Row extends Comparable,Column extends Comparable> {
 
-    private List<Number> values = new ArrayList<>();
-    private List<Row> rows = new ArrayList<>();
-    private List<Column> columns = new ArrayList<>();
+    private final List<Number> values = new ArrayList<>();
+    private final List<Row> rows = new ArrayList<>();
+    private final List<Column> columns = new ArrayList<>();
 
     public void add( Number value, Row rowKey, Column columnKey ) {
         values.add(value);

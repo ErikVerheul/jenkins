@@ -40,7 +40,7 @@ import jenkins.util.SystemProperties;
  * @since 1.382
  */
 public class CloudRetentionStrategy extends RetentionStrategy<AbstractCloudComputer> {
-    private int idleMinutes;
+    private final int idleMinutes;
 
     public CloudRetentionStrategy(int idleMinutes) {
         this.idleMinutes = idleMinutes;

@@ -55,7 +55,7 @@ public final class WorkUnitContext {
 
     private final Latch startLatch, endLatch;
 
-    private List<WorkUnit> workUnits = new ArrayList<>();
+    private final List<WorkUnit> workUnits = new ArrayList<>();
 
     /**
      * If the execution is aborted, set to non-null that indicates where it was aborted.

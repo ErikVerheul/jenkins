@@ -34,8 +34,8 @@ import org.kohsuke.stapler.export.CustomExportedBean;
  * @author Kohsuke Kawaguchi
  */
 public final class EditType implements CustomExportedBean {
-    private String name;
-    private String description;
+    private final String name;
+    private final String description;
 
     public EditType(String name, String description) {
         this.name = name;

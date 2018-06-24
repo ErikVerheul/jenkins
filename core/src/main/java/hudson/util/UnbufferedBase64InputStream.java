@@ -17,7 +17,7 @@ import java.util.Base64;
  * @since 1.349
  */
 public class UnbufferedBase64InputStream extends FilterInputStream {
-    private byte[] encoded = new byte[4];
+    private final byte[] encoded = new byte[4];
     private byte[] decoded;
     private int pos;
     private final DataInputStream din;

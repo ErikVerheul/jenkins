@@ -33,4 +33,13 @@
                 <goal>-Dtest=CLIActionTest</goal>
             </goals>
         </action>
+        <action>
+            <actionName>CUSTOM-SetupWizardTest</actionName>
+            <displayName>SetupWizardTest</displayName>
+            <goals>
+                <goal>-Dtest=SetupWizardTest</goal>
+                <goal>test</goal>
+            </goals>
+        </action>
+        
     </actions>

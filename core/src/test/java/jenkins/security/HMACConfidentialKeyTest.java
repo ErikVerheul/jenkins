@@ -11,7 +11,7 @@ public class HMACConfidentialKeyTest {
     @Rule
     public ConfidentialStoreRule store = new ConfidentialStoreRule();
 
-    private HMACConfidentialKey key = new HMACConfidentialKey("test", 16);
+    private final HMACConfidentialKey key = new HMACConfidentialKey("test", 16);
 
     @Test
     public void basics() {

@@ -51,7 +51,7 @@ import org.kohsuke.stapler.export.Flavor;
 @Restricted(NoExternalUse.class)
 public class Categories implements HttpResponse, Serializable {
 
-    private List<Category> items;
+    private final List<Category> items;
 
     public Categories() {
         items = new ArrayList<>();

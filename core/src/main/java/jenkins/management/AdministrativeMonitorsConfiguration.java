@@ -58,5 +58,5 @@ public class AdministrativeMonitorsConfiguration extends GlobalConfiguration {
         return true;
     }
 
-    private static Logger LOGGER = Logger.getLogger(AdministrativeMonitorsConfiguration.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(AdministrativeMonitorsConfiguration.class.getName());
 }

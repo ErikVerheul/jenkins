@@ -139,7 +139,7 @@ public class TarArchiverTest {
     private class GrowingFileRunnable implements Runnable {
         private boolean finish = false;
         private Exception ex = null;
-        private File file;
+        private final File file;
 
         public GrowingFileRunnable(File file) {
             this.file = file;

@@ -49,7 +49,7 @@ public class ExitLifecycle extends Lifecycle {
     private static final String EXIT_CODE_ON_RESTART = "exitCodeOnRestart";
     private static final String DEFAULT_EXIT_CODE = "5";
 
-    private Integer exitOnRestart;
+    private final Integer exitOnRestart;
 
     public ExitLifecycle() {
         exitOnRestart = Integer.parseInt(Configuration.getStringConfigParameter(EXIT_CODE_ON_RESTART, DEFAULT_EXIT_CODE));

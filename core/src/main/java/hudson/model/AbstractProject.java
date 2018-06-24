@@ -2025,7 +2025,7 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
         * of potential terms to match against the list of defined labels.
          */
         static class AutoCompleteSeeder {
-            private String source;
+            private final String source;
 
             AutoCompleteSeeder(String source) {
                 this.source = source;

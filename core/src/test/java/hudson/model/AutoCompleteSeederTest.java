@@ -69,8 +69,8 @@ public class AutoCompleteSeederTest {
                });
     }
 
-    private String seed;
-    private List<String> expected;
+    private final String seed;
+    private final List<String> expected;
 
     public AutoCompleteSeederTest(TestData dataSet) {
         this.seed = dataSet.seed;

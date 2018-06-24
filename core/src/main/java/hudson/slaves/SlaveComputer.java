@@ -133,7 +133,7 @@ public class SlaveComputer extends Computer {
      */
     private volatile Future<?> lastConnectActivity = null;
 
-    private Object constructed = new Object();
+    private final Object constructed = new Object();
 
     private transient volatile String absoluteRemoteFs;
 

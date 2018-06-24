@@ -94,7 +94,7 @@ public class ClassicPluginStrategy implements PluginStrategy {
         }
     };
 
-    private PluginManager pluginManager;
+    private final PluginManager pluginManager;
 
     /**
      * All the plugins eventually delegate this classloader to load core, servlet APIs, and SE runtime.
@@ -731,7 +731,7 @@ public class ClassicPluginStrategy implements PluginStrategy {
          */
         private final File _for;
 
-        private List<Dependency> dependencies;
+        private final List<Dependency> dependencies;
 
         /**
          * Topologically sorted list of transient dependencies.

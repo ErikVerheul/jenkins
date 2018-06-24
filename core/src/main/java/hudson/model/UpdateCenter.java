@@ -1913,8 +1913,9 @@ public class UpdateCenter extends AbstractModelObject implements Saveable, OnMas
                     }
                 }
             }   catch (InterruptedException ex) {
-                Logger.getLogger(UpdateCenter.class.getName()).log(Level.SEVERE, null, ex);
-                LOGGER.severe("Install was interrupted");
+                LOGGER.log(Level.WARNING, "Install was interrupted", ex);
+                // Restore interrupted state...
+                Thread.currentThread().interrupt();
             }
         }
 

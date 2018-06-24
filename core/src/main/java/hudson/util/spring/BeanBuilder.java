@@ -271,8 +271,8 @@ public class BeanBuilder extends GroovyObjectSupport {
 		 *
 		 */
 		private class WrappedPropertyValue extends GroovyObjectSupport {
-			private Object propertyValue;
-			private String propertyName;
+			private final Object propertyValue;
+			private final String propertyName;
 			public WrappedPropertyValue(String propertyName, Object propertyValue) {
 				this.propertyValue = propertyValue;
 				this.propertyName = propertyName;

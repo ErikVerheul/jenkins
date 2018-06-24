@@ -393,7 +393,8 @@ public class DependencyGraph implements Comparator<AbstractProject> {
      * @since 1.341
      */
     public static class Dependency {
-        private AbstractProject upstream, downstream;
+        private final AbstractProject upstream;
+        private AbstractProject downstream;
 
         public Dependency(AbstractProject upstream, AbstractProject downstream) {
             this.upstream = upstream;

@@ -9,7 +9,7 @@ public class CryptoConfidentialKeyTest {
     @Rule
     public ConfidentialStoreRule store = new ConfidentialStoreRule();
 
-    private CryptoConfidentialKey key = new CryptoConfidentialKey("test");
+    private final CryptoConfidentialKey key = new CryptoConfidentialKey("test");
 
     @Test
     public void decryptGetsPlainTextBack() throws Exception {

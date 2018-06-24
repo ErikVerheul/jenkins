@@ -392,10 +392,11 @@ public class SetupWizard extends PageDecorator {
                     
                     String initialPluginJson = IOUtils.toString(connection.getInputStream(), "utf-8");
                     initialPluginList = JSONArray.fromObject(initialPluginJson);
-                    break;
-                } catch(IOException e) {
+                    break updateSiteList;
+                } catch(Exception e) {
                     // not found or otherwise unavailable
                     LOGGER.log(Level.FINE, e.getMessage(), e);
+                    continue updateSiteList;
                 }
             } catch(IOException e) {
                 LOGGER.log(Level.FINE, e.getMessage(), e);
@@ -453,7 +454,7 @@ public class SetupWizard extends PageDecorator {
                                             }
                                         }
                                         if (foundCompatibleVersion) {
-                                            continue;
+                                            continue nextPlugin;
                                         }
                                     }
                                 }

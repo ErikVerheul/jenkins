@@ -53,7 +53,7 @@ public class SparseACL extends SidACL {
     /**
      * Parent to delegate to. Can be null.
      */
-    private ACL parent;
+    private final ACL parent;
 
     public SparseACL(ACL parent) {
         this.parent = parent;

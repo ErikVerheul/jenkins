@@ -36,7 +36,7 @@ import org.jvnet.hudson.test.Issue;
 
 public class ActionableTest {
 
-    private Actionable thing = new ActionableImpl();
+    private final Actionable thing = new ActionableImpl();
 
     @SuppressWarnings("deprecation")
     @Test

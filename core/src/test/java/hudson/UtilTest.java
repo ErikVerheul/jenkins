@@ -590,8 +590,8 @@ public class UtilTest {
     }
 
     private static class DigesterThread extends Thread {
-    	private String string;
-		private String expectedDigest;
+    	private final String string;
+		private final String expectedDigest;
 
 		private String error;
 

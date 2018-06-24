@@ -42,17 +42,17 @@ import org.kohsuke.stapler.export.ExportedBean;
 @Restricted(NoExternalUse.class)
 public class Category implements Serializable {
 
-    private String id;
+    private final String id;
 
-    private String name;
+    private final String name;
 
-    private String description;
+    private final String description;
 
-    private int order;
+    private final int order;
 
-    private int minToShow;
+    private final int minToShow;
 
-    private List<Map<String, Serializable>> items;
+    private final List<Map<String, Serializable>> items;
 
     public Category(String id, String name, String description, int order, int minToShow, List<Map<String, Serializable>> items) {
         this.id= id;

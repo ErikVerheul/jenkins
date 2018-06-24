@@ -50,7 +50,7 @@ final class ExpressionFactory2 implements ExpressionFactory {
     static final class JexlExpression extends ExpressionSupport {
 
         /** The Jexl expression object */
-        private org.apache.commons.jexl.Expression expression;
+        private final org.apache.commons.jexl.Expression expression;
 
         public JexlExpression(org.apache.commons.jexl.Expression expression) {
             this.expression = expression;
@@ -90,7 +90,7 @@ final class ExpressionFactory2 implements ExpressionFactory {
     }
 
     static final class JellyJexlContext implements JexlContext {
-        private Map vars;
+        private final Map vars;
 
         JellyJexlContext(JellyContext context) {
             this.vars = new JellyMap( context );
@@ -111,7 +111,7 @@ final class ExpressionFactory2 implements ExpressionFactory {
 
     static final class JellyMap implements Map {
 
-        private JellyContext context;
+        private final JellyContext context;
 
         JellyMap(JellyContext context) {
             this.context = context;

@@ -65,7 +65,7 @@ public class BackFiller extends LoadPredictor {
     }
 
     private static final class PseudoExecutorSlot extends ExecutorSlot {
-        private Executor executor;
+        private final Executor executor;
 
         private PseudoExecutorSlot(Executor executor) {
             this.executor = executor;

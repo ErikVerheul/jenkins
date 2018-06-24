@@ -113,11 +113,11 @@ public class PluginWrapperTest {
         });
     }
     private final class PluginWrapperBuilder {
-        private String name;
+        private final String name;
         private String version = "42";
         private String requiredCoreVersion = "1.0";
-        private List<PluginWrapper.Dependency> deps = new ArrayList<>();
-        private List<PluginWrapper.Dependency> optDeps = new ArrayList<>();
+        private final List<PluginWrapper.Dependency> deps = new ArrayList<>();
+        private final List<PluginWrapper.Dependency> optDeps = new ArrayList<>();
 
         private PluginWrapperBuilder(String name) {
             this.name = name;

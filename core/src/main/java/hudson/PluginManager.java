@@ -1829,7 +1829,7 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
          * Make generated types visible.
          * Keyed by the generated class name.
          */
-        private ConcurrentMap<String, WeakReference<Class>> generatedClasses = new ConcurrentHashMap<>();
+        private final ConcurrentMap<String, WeakReference<Class>> generatedClasses = new ConcurrentHashMap<>();
         /** Cache of loaded, or known to be unloadable, classes. */
         private final Map<String,Class<?>> loaded = new HashMap<>();
 
@@ -2011,7 +2011,7 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
     @Extension @Symbol("pluginUpdate")
     public static final class PluginUpdateMonitor extends AdministrativeMonitor {
 
-        private Map<String, PluginUpdateInfo> pluginsToBeUpdated = new HashMap<>();
+        private final Map<String, PluginUpdateInfo> pluginsToBeUpdated = new HashMap<>();
 
         /**
          * Convenience method to ease access to this monitor, this allows other plugins to register required updates.

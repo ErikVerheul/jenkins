@@ -116,7 +116,7 @@ public class EncryptedSlaveAgentJnlpFile implements HttpResponse {
      */
     private static class CapturingServletOutputStream extends ServletOutputStream {
 
-        private ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        private final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
         @Override
         public boolean isReady() {

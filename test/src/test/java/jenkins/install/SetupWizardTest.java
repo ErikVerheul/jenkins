@@ -43,6 +43,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.xml.sax.SAXException;
 
 /**
  * Tests of {@link SetupWizard}.
@@ -133,9 +134,10 @@ public class SetupWizardTest {
         final Page res;
         try {
             res = wc.goTo(path, null);
-        } catch (Exception ex) {
-            ex.getMessage();
-            throw new AssertionError("Cannot get a response from " + path, ex);
+        } catch (IOException ex) {
+            throw new AssertionError("IOException:Cannot get a response from " + path, ex);
+        } catch (SAXException ex) {
+            throw new AssertionError("SAXException:Cannot get a response from " + path, ex);
         }
         final String responseJSON = res.getWebResponse().getContentAsString();
         return responseJSON;

@@ -88,7 +88,7 @@ public class ResponseTimeMonitor extends NodeMonitor {
     };
 
     private static final class Step1 extends MasterToSlaveCallable<Data,IOException> {
-        private Data cur;
+        private final Data cur;
 
         private Step1(Data cur) {
             this.cur = cur;

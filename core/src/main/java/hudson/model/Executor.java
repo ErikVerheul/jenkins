@@ -97,7 +97,7 @@ public class Executor extends Thread implements ModelObject {
     /**
      * Executor number that identifies it among other executors for the same {@link Computer}.
      */
-    private int number;
+    private final int number;
     /**
      * {@link hudson.model.Queue.Executable} being executed right now, or null if the executor is idle.
      */
