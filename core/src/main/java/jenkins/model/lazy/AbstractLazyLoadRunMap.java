@@ -568,13 +568,13 @@ public abstract class AbstractLazyLoadRunMap<R> extends AbstractMap<Integer,R> i
      * Replaces all the current loaded Rs with the given ones.
      */
     public synchronized void reset(TreeMap<Integer,R> builds) {
-        Index index = new Index();
+        Index i = new Index();
         for (R r : builds.values()) {
             BuildReference<R> ref = createReference(r);
-            index.byNumber.put(getNumberOf(r),ref);
+            i.byNumber.put(getNumberOf(r),ref);
         }
 
-        this.index = index;
+        this.index = i;
     }
 
     @Override

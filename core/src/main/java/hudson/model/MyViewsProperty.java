@@ -55,7 +55,7 @@ import org.kohsuke.stapler.interceptor.RequirePOST;
  *
  * @author Tom Huybrechts
  */
-public class MyViewsProperty extends UserProperty implements ModifiableViewGroup, Action, StaplerFallback {
+public final class MyViewsProperty extends UserProperty implements ModifiableViewGroup, Action, StaplerFallback {
 
     /**
      * Name of the primary view defined by the user.

@@ -86,7 +86,7 @@ import org.xmlpull.v1.XmlPullParserException;
  * @see FingerprintMap
  */
 @ExportedBean
-public class Fingerprint implements ModelObject, Saveable {
+public final class Fingerprint implements ModelObject, Saveable {
     /**
      * Pointer to a {@link Build}.
      */
@@ -364,11 +364,11 @@ public class Fingerprint implements ModelObject, Saveable {
          * List all numbers in this range set, in the ascending order.
          */
         public Iterable<Integer> listNumbers() {
-            final List<Range> ranges = getRanges();
+            final List<Range> r = getRanges();
             return new Iterable<Integer>() {
                 @Override
                 public Iterator<Integer> iterator() {
-                    return new Iterators.FlattenIterator<Integer,Range>(ranges) {
+                    return new Iterators.FlattenIterator<Integer,Range>(r) {
                         @Override
                         protected Iterator<Integer> expand(Range range) {
                             return Iterators.sequence(range.start,range.end).iterator();
@@ -401,11 +401,11 @@ public class Fingerprint implements ModelObject, Saveable {
          * List all numbers in this range set in the descending order.
          */
         public Iterable<Integer> listNumbersReverse() {
-            final List<Range> ranges = getRanges();
+            final List<Range> r = getRanges();
             return new Iterable<Integer>() {
                 @Override
                 public Iterator<Integer> iterator() {
-                    return new Iterators.FlattenIterator<Integer,Range>(Iterators.reverse(ranges)) {
+                    return new Iterators.FlattenIterator<Integer,Range>(Iterators.reverse(r)) {
                         @Override
                         protected Iterator<Integer> expand(Range range) {
                             return Iterators.reverseSequence(range.start,range.end).iterator();
@@ -761,7 +761,6 @@ public class Fingerprint implements ModelObject, Saveable {
                                         String.format("Unable to parse '%s', expected string with a range M-N", list));
                             }
                             // ignore malformed text like "1-10-50"
-                            continue;
                         }
                     } else {
                         int n = Integer.parseInt(s);
@@ -844,7 +843,7 @@ public class Fingerprint implements ModelObject, Saveable {
                                 try {
                                     f.rename(oldName, newName);
                                 } catch (IOException e) {
-                                    logger.log(Level.WARNING, "Failed to update fingerprint record " + f.getFileName() + " when " + oldName + " was renamed to " + newName, e);
+                                    LOGGER.log(Level.WARNING, "Failed to update fingerprint record " + f.getFileName() + " when " + oldName + " was renamed to " + newName, e);
                                 }
                             }
                         }
@@ -892,7 +891,8 @@ public class Fingerprint implements ModelObject, Saveable {
         this.original = original;
         this.md5sum = md5sum;
         this.fileName = fileName;
-        this.timestamp = new Date();
+        //[Erik] false positive, timestamp is initialized and non null
+        this.timestamp = new Date(); //NOSONAR
     }
 
     /**
@@ -1132,8 +1132,8 @@ public class Fingerprint implements ModelObject, Saveable {
         }
 
         if (modified) {
-            if (logger.isLoggable(Level.FINE)) {
-                logger.log(Level.FINE, "Saving trimmed {0}", getFingerprintFile(md5sum));
+            if (LOGGER.isLoggable(Level.FINE)) {
+                LOGGER.log(Level.FINE, "Saving trimmed {0}", getFingerprintFile(md5sum));
             }
             save();
         }
@@ -1159,11 +1159,11 @@ public class Fingerprint implements ModelObject, Saveable {
      */
     public @Nonnull Collection<FingerprintFacet> getFacets() {
         if (transientFacets==null) {
-            List<FingerprintFacet> transientFacets = new ArrayList<>();
+            List<FingerprintFacet> tfs = new ArrayList<>();
             for (TransientFingerprintFacetFactory fff : TransientFingerprintFacetFactory.all()) {
-                fff.createFor(this,transientFacets);
+                fff.createFor(this,tfs);
             }
-            this.transientFacets = ImmutableList.copyOf(transientFacets);
+            this.transientFacets = ImmutableList.copyOf(tfs);
         }
 
         return new AbstractCollection<FingerprintFacet>() {
@@ -1247,15 +1247,15 @@ public class Fingerprint implements ModelObject, Saveable {
         if(BulkChange.contains(this))   return;
 
         long start=0;
-        if(logger.isLoggable(Level.FINE))
+        if(LOGGER.isLoggable(Level.FINE))
             start = System.currentTimeMillis();
 
         File file = getFingerprintFile(md5sum);
         save(file);
         SaveableListener.fireOnChange(this, getConfigFile(file));
 
-        if(logger.isLoggable(Level.FINE))
-            logger.fine("Saving fingerprint "+file+" took "+(System.currentTimeMillis()-start)+"ms");
+        if(LOGGER.isLoggable(Level.FINE))
+            LOGGER.log(Level.FINE, "Saving fingerprint {0} took {1}ms", new Object[]{file, System.currentTimeMillis()-start});
     }
 
     void save(File file) throws IOException {
@@ -1370,13 +1370,13 @@ public class Fingerprint implements ModelObject, Saveable {
             return null;
 
         long start=0;
-        if(logger.isLoggable(Level.FINE))
+        if(LOGGER.isLoggable(Level.FINE))
             start = System.currentTimeMillis();
 
         try {
             Fingerprint f = (Fingerprint) configFile.read();
-            if(logger.isLoggable(Level.FINE))
-                logger.fine("Loading fingerprint "+file+" took "+(System.currentTimeMillis()-start)+"ms");
+            if(LOGGER.isLoggable(Level.FINE))
+                LOGGER.log(Level.FINE, "Loading fingerprint {0} took {1}ms", new Object[]{file, System.currentTimeMillis()-start});
             if (f.facets==null)
                 f.facets = new PersistedList<>(f);
             for (FingerprintFacet facet : f.facets)
@@ -1390,17 +1390,17 @@ public class Fingerprint implements ModelObject, Saveable {
                 // generally we don't want to wipe out user data just because we can't load it,
                 // but if the file size is 0, which is what's reported in HUDSON-2012, then it seems
                 // like recovering it silently by deleting the file is not a bad idea.
-                logger.log(Level.WARNING, "Size zero fingerprint. Disk corruption? {0}", configFile);
+                LOGGER.log(Level.WARNING, "Size zero fingerprint. Disk corruption? {0}", configFile);
                 file.delete();
                 return null;
             }
             String parseError = messageOfParseException(e);
             if (parseError != null) {
-                logger.log(Level.WARNING, "Malformed XML in {0}: {1}", new Object[] {configFile, parseError});
+                LOGGER.log(Level.WARNING, "Malformed XML in {0}: {1}", new Object[] {configFile, parseError});
                 file.delete();
                 return null;
             }
-            logger.log(Level.WARNING, "Failed to load "+configFile,e);
+            LOGGER.log(Level.WARNING, "Failed to load "+configFile,e);
             throw e;
         }
     }
@@ -1498,5 +1498,5 @@ public class Fingerprint implements ModelObject, Saveable {
         ),10);
     }
 
-    private static final Logger logger = Logger.getLogger(Fingerprint.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(Fingerprint.class.getName());
 }

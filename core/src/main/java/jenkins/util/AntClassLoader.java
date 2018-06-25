@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -599,7 +600,7 @@ public class AntClassLoader extends ClassLoader implements SubBuildListener {
                     cons[0].newInstance((Object[]) strs);
                     // Expecting an exception to be thrown by this call:
                     // IllegalArgumentException: wrong number of Arguments
-                } catch (Exception e) {
+                } catch (IllegalAccessException | IllegalArgumentException | InstantiationException | InvocationTargetException e) {
                     // Ignore - we are interested only in the side
                     // effect - that of getting the static initializers
                     // invoked.  As we do not want to call a valid
@@ -811,7 +812,7 @@ public class AntClassLoader extends ClassLoader implements SubBuildListener {
                     return jarFile.getInputStream(entry);
                 }
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             log("Ignoring Exception " + e.getClass().getName() + ": " + e.getMessage()
                     + " reading resource " + resourceName + " from " + file, Project.MSG_VERBOSE);
         }
@@ -1035,11 +1036,10 @@ public class AntClassLoader extends ClassLoader implements SubBuildListener {
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             String msg = "Unable to obtain resource from " + file + ": ";
             log(msg + e, Project.MSG_WARN);
             System.err.println(msg);
-            e.printStackTrace();
         }
         return null;
     }
@@ -1305,7 +1305,7 @@ public class AntClassLoader extends ClassLoader implements SubBuildListener {
     private Class getClassFromStream(InputStream stream, String classname, File container)
             throws IOException, SecurityException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        int bytesRead = -1;
+        int bytesRead;
         byte[] buffer = new byte[BUFFER_SIZE];
 
         while ((bytesRead = stream.read(buffer, 0, BUFFER_SIZE)) != -1) {
@@ -1577,9 +1577,7 @@ public class AntClassLoader extends ClassLoader implements SubBuildListener {
                 ReflectUtil.newInstance(subClassToLoad,
                                         CONSTRUCTOR_ARGS,
                                         new Object[] {
-                                            parent, project, path,
-                                            Boolean.valueOf(parentFirst)
-                                        });
+                                            parent, project, path, parentFirst});
         }
         return new AntClassLoader(parent, project, path, parentFirst);
     }

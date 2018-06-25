@@ -5,7 +5,8 @@ In a nutshell, Jenkins is the leading open-source automation server.
 Built with Java, it provides over 1000 plugins to support automating virtually anything, 
 so that humans can actually spend their time doing things machines cannot.
 
-This fork enables Sonarqube to do static code analysis in particular the code coverage of the unit and integration tests. 
+This fork enables Sonarqube to do static code analysis in particular the code coverage of the unit and integration tests.
+Sonarqube's Sonar way finds many bugs and vulnerabilities not detected by the Findbugs implementation already in use.
 Run mvn --batch-mode clean -Pjacoco-agent -Dmaven.test.failure.ignore=true install -Dsonar.host.url=http://localhost:9000
 to prepare the coverage files and initialize the Sonarqube when installed locally.
 Note that the coverage data from the integration tests are placed in ../core/target to enable Sonarqube scanner to find

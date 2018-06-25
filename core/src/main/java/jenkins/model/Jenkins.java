@@ -226,6 +226,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import static javax.servlet.http.HttpServletResponse.*;
+import javax.xml.xpath.XPathExpressionException;
 import jenkins.AgentProtocol;
 import jenkins.ExtensionComponentSet;
 import jenkins.ExtensionRefreshException;
@@ -290,6 +291,7 @@ import org.kohsuke.stapler.interceptor.RequirePOST;
 import org.kohsuke.stapler.jelly.JellyClassLoaderTearOff;
 import org.kohsuke.stapler.jelly.JellyRequestDispatcher;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 /**
  * Root object of the system.
@@ -888,8 +890,9 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
                 LOGGER.log(SEVERE, "Failed to load proxy configuration", e);
             }
 
-            if (pluginManager==null)
+            if (pluginManager==null) {
                 pluginManager = PluginManager.createDefault(this);
+            }
             this.pluginManager = pluginManager;
             // JSON binding needs to be able to see all the classes from all the plugins
             WebApp.get(servletContext).setClassLoader(pluginManager.uberClassLoader);
@@ -917,9 +920,10 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
             }
 
 
-            if(KILL_AFTER_LOAD)
+            if(KILL_AFTER_LOAD) {
                 // TODO cleanUp?
                 System.exit(0);
+            }
             save();
 
             launchTcpSlaveAgentListener();
@@ -949,7 +953,7 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
                     for (ComputerListener cl : ComputerListener.all()) {
                         try {
                             cl.onOnline(c, new LogTaskListener(LOGGER, INFO));
-                        } catch (Throwable t) {
+                        } catch (Throwable t) { //NOSONAR
                             if (t instanceof Error) {
                                 // We propagate Runtime errors, because they are fatal.
                                 throw t;
@@ -2016,8 +2020,8 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
     public JDK getJDK(String name) {
         if(name==null) {
             // if only one JDK is configured, "default JDK" should mean that JDK.
-            List<JDK> jdks = getJDKs();
-            if(jdks.size()==1)  return jdks.get(0);
+            List<JDK> dks = getJDKs();
+            if(dks.size()==1)  return dks.get(0);
             return null;
         }
         for (JDK j : getJDKs()) {
@@ -3152,7 +3156,7 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
 
                 // initialize views by inserting the default view if necessary
                 // this is both for clean Jenkins and for backward compatibility.
-                if(views.size()==0 || primaryView==null) {
+                if(views.isEmpty() || primaryView==null) {
                     View v = new AllView(AllView.DEFAULT_VIEW_NAME);
                     setViewOwner(v);
                     views.add(0,v);
@@ -3844,12 +3848,16 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
         for (Computer c : getComputers()) {
             try {
                 future.put(c.getName(), RemotingDiagnostics.getThreadDumpAsync(c.getChannel()));
-            } catch(Exception e) {
-                LOGGER.info("Failed to get thread dump for node " + c.getName() + ": " + e.getMessage());
+            } catch(IOException e) {
+                LOGGER.log(INFO, "Failed to get thread dump for node {0}: {1}", new Object[]{c.getName(), e.getMessage()});
+            } catch(InterruptedException e) {
+                LOGGER.log(INFO, "Failed to get thread dump for node {0}: {1}", new Object[]{c.getName(), e.getMessage()});
+                // Restore interrupted state...
+                Thread.currentThread().interrupt();
             }
         }
         if (toComputer() == null) {
-            future.put("master", RemotingDiagnostics.getThreadDumpAsync(FilePath.localChannel));
+            future.put("master", RemotingDiagnostics.getThreadDumpAsync(FilePath.LOCALCHANNEL));
         }
 
         // if the result isn't available in 5 sec, ignore that.
@@ -3860,8 +3868,12 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
         for (Entry<String, Future<Map<String, String>>> e : future.entrySet()) {
             try {
                 r.put(e.getKey(), e.getValue().get(endTime-System.currentTimeMillis(), TimeUnit.MILLISECONDS));
-            } catch (Exception x) {
+            } catch (ExecutionException | TimeoutException x) {
                 r.put(e.getKey(), Collections.singletonMap("Failed to retrieve thread dump", Functions.printThrowable(x)));
+            } catch (InterruptedException x) {
+                r.put(e.getKey(), Collections.singletonMap("Failed to retrieve thread dump", Functions.printThrowable(x)));
+                // Restore interrupted state...
+                Thread.currentThread().interrupt();
             }
         }
         return Collections.unmodifiableSortedMap(new TreeMap<>(r));
@@ -4028,9 +4040,14 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
                 try {
                     ACL.impersonate(ACL.SYSTEM);
                     reload();
-                } catch (Exception e) {
+                } catch (IOException | ReactorException e) {
                     LOGGER.log(SEVERE,"Failed to reload Jenkins config",e);
                     new JenkinsReloadFailed(e).publish(servletContext,root);
+                } catch (InterruptedException e) {
+                    LOGGER.log(SEVERE,"Failed to reload Jenkins config",e);
+                    new JenkinsReloadFailed(e).publish(servletContext,root);
+                    // Restore interrupted state...
+                    Thread.currentThread().interrupt();
                 }
             }
         }.start();
@@ -4124,7 +4141,7 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
      * Obtains the heap dump.
      */
     public HeapDump getHeapDump() throws IOException {
-        return new HeapDump(this,FilePath.localChannel);
+        return new HeapDump(this,FilePath.LOCALCHANNEL);
     }
 
     /**
@@ -4252,8 +4269,12 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
                     } else {
                         LOGGER.info("Safe-restart mode cancelled");
                     }
-                } catch (Throwable e) {
+                } catch (IOException e) {
                     LOGGER.log(Level.WARNING, "Failed to restart Jenkins",e);
+                } catch (InterruptedException e) {
+                    LOGGER.log(Level.WARNING, "Failed to restart Jenkins",e);
+                    // Restore interrupted state...
+                    Thread.currentThread().interrupt();
                 }
             }
         }.start();
@@ -4332,8 +4353,12 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
                         cleanUp();
                         System.exit(0);
                     }
-                } catch (Exception e) {
+                } catch (IOException e) {
                     LOGGER.log(Level.WARNING, "Failed to shut down Jenkins", e);
+                } catch (InterruptedException e) {
+                    LOGGER.log(Level.WARNING, "Failed to shut down Jenkins", e);
+                    // Restore interrupted state...
+                    Thread.currentThread().interrupt();
                 }
             }
         }.start();
@@ -4361,14 +4386,14 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
      * Run arbitrary Groovy script.
      */
     public void doScript(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException {
-        _doScript(req, rsp, req.getView(this, "_script.jelly"), FilePath.localChannel, getACL());
+        _doScript(req, rsp, req.getView(this, "_script.jelly"), FilePath.LOCALCHANNEL, getACL());
     }
 
     /**
      * Run arbitrary Groovy script and return result as plain text.
      */
     public void doScriptText(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException {
-        _doScript(req, rsp, req.getView(this, "_scriptText.jelly"), FilePath.localChannel, getACL());
+        _doScript(req, rsp, req.getView(this, "_scriptText.jelly"), FilePath.LOCALCHANNEL, getACL());
     }
 
     /**
@@ -4682,14 +4707,10 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
                 return false;
             }
         }
-
         // TODO SlaveComputer.doSlaveAgentJnlp; there should be an annotation to request unprotected access
-        if (restOfPath.matches("/computer/[^/]+/slave-agent[.]jnlp")
-            && "true".equals(Stapler.getCurrentRequest().getParameter("encrypt"))) {
-            return false;
-        }
 
-        return true;
+        return !(restOfPath.matches("/computer/[^/]+/slave-agent[.]jnlp")
+            && "true".equals(Stapler.getCurrentRequest().getParameter("encrypt")));
     }
 
     /**
@@ -4739,7 +4760,6 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
                 // we won't compare the candidate displayName against the current
                 // item. This is to prevent an validation warning if the user
                 // sets the displayName to what the existing display name is
-                continue;
             }
             else if(displayName.equals(item.getDisplayName())) {
                 return false;
@@ -4761,15 +4781,10 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
             // the candidate name didn't return any items so the name is unique
             return true;
         }
-        else if(item.getName().equals(currentJobName)) {
-            // the candidate name returned an item, but the item is the item
-            // that the user is configuring so this is ok
-            return true;
-        }
-        else {
-            // the candidate name returned an item, so it is not unique
-            return false;
-        }
+        else return item.getName().equals(currentJobName); // the candidate name returned an item, but the item is the item
+        // that the user is configuring so this is ok
+        // the candidate name returned an item, so it is not unique
+        
     }
 
     /**
@@ -4783,7 +4798,7 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
         displayName = displayName.trim();
 
         if(LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.log(Level.FINE, "Current job name is " + jobName);
+            LOGGER.log(Level.FINE, "Current job name is {0}", jobName);
         }
 
         if(!isNameUnique(displayName, jobName)) {
@@ -4881,7 +4896,7 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
 
         @Override
         public VirtualChannel getChannel() {
-            return FilePath.localChannel;
+            return FilePath.LOCALCHANNEL;
         }
 
         @Override
@@ -4914,7 +4929,7 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
          *      Use {@link FilePath#localChannel}
          */
         @Deprecated
-        public static final LocalChannel localChannel = FilePath.localChannel;
+        public static final LocalChannel LOCALCHANNEL = FilePath.LOCALCHANNEL;
     }
 
     /**
@@ -4959,7 +4974,7 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
             if(is!=null)
                 props.load(is);
         } catch (IOException e) {
-            e.printStackTrace(); // if the version properties is missing, that's OK.
+            // if the version properties is missing, that's OK.
         }
         String ver = props.getProperty("version");
         if(ver==null)   ver = UNCOMPUTED_VERSION;
@@ -4971,14 +4986,14 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
                     File pom = new File(dir, "pom.xml");
                     if (pom.exists() && "pom".equals(XMLUtils.getValue("/project/artifactId", pom))) {
                         pom =  pom.getCanonicalFile();
-                        LOGGER.info("Reading version from: " + pom.getAbsolutePath());
+                        LOGGER.log(INFO, "Reading version from: {0}", pom.getAbsolutePath());
                         ver = XMLUtils.getValue("/project/version", pom);
                         break;
                     }
                     dir = dir.getParentFile();
                 }
-                LOGGER.info("Jenkins is in dev mode, using version: " + ver);
-            } catch (Exception e) {
+                LOGGER.log(INFO, "Jenkins is in dev mode, using version: {0}", ver);
+            } catch (IOException | XPathExpressionException | SAXException e) {
                 LOGGER.log(Level.WARNING, "Unable to read Jenkins version: " + e.getMessage(), e);
             }
         }

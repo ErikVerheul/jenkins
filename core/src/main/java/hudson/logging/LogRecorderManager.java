@@ -63,6 +63,7 @@ import org.kohsuke.stapler.interceptor.RequirePOST;
 public class LogRecorderManager extends AbstractModelObject implements ModelObjectWithChildren {
     /**
      * {@link LogRecorder}s keyed by their {@linkplain LogRecorder#name name}.
+     * 
      */
     public transient final Map<String,LogRecorder> logRecorders = new CopyOnWriteMap.Tree<String,LogRecorder>();
 

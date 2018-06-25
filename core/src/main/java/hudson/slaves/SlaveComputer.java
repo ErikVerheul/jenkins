@@ -915,7 +915,7 @@ public class SlaveComputer extends Computer {
      */
     public static VirtualChannel getChannelToMaster() {
         if (Jenkins.getInstanceOrNull()!=null) // check if calling thread is on master or on slave
-            return FilePath.localChannel;
+            return FilePath.LOCALCHANNEL;
 
         // if this method is called from within the agent computation thread, this should work
         Channel c = Channel.current();

@@ -227,7 +227,7 @@ public interface ModelObjectWithContextMenu extends ModelObject {
      * Menu item in {@link ContextMenu}
      */
     @ExportedBean
-    public class MenuItem {
+    public static final class MenuItem {
         /**
          * Target of the link.
          *

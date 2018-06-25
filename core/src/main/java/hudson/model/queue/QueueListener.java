@@ -18,7 +18,7 @@ import java.util.concurrent.Executor;
  * {@link Queue} is highly synchronized objects, and these callbacks are invoked synchronously.
  * To avoid the risk of deadlocks and general slow down, please minimize the amount of work callbacks
  * will perform, and push any sizable work to asynchronous execution via {@link Executor}, such as
- * {@link Computer#threadPoolForRemoting}.
+ * {@link Computer#THREADPOOL_FOR_REMOTING}.
  *
  * <p>
  * For the state transition of {@link hudson.model.Queue.Item} in {@link Queue}, please refer to the Queue javadoc.

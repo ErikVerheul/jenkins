@@ -45,7 +45,7 @@ import org.acegisecurity.userdetails.ldap.LdapUserDetails;
  *      the initialization order issue that this code was trying to address no longer exists.
  */
 @Deprecated
-public class DeferredCreationLdapAuthoritiesPopulator implements LdapAuthoritiesPopulator {
+public final class DeferredCreationLdapAuthoritiesPopulator implements LdapAuthoritiesPopulator {
 
     /**
      * A default role which will be assigned to all authenticated users if set.

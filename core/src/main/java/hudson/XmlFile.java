@@ -116,8 +116,8 @@ import org.xml.sax.helpers.DefaultHandler;
 public final class XmlFile {
     private final XStream xs;
     private final File file;
-    private static final Map<Object, Void> beingWritten = Collections.synchronizedMap(new IdentityHashMap<>());
-    private static final ThreadLocal<File> writing = new ThreadLocal<>();
+    private static final Map<Object, Void> BEINGWRITTEN = Collections.synchronizedMap(new IdentityHashMap<>());
+    private static final ThreadLocal<File> WRITING = new ThreadLocal<>();
 
     public XmlFile(File file) {
         this(DEFAULT_XSTREAM,file);
@@ -141,7 +141,7 @@ public final class XmlFile {
      */
     public Object read() throws IOException {
         if (LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.fine("Reading "+file);
+            LOGGER.log(Level.FINE, "Reading {0}", file);
         }
         try (InputStream in = new BufferedInputStream(Files.newInputStream(file.toPath()))) {
             return xs.fromXML(in);
@@ -188,13 +188,13 @@ public final class XmlFile {
         AtomicFileWriter w = new AtomicFileWriter(file); //NOSONAR
         try {
             w.write("<?xml version='1.1' encoding='UTF-8'?>\n");
-            beingWritten.put(o, null);
-            writing.set(file);
+            BEINGWRITTEN.put(o, null);
+            WRITING.set(file);
             try {
                 xs.toXML(o, w);
             } finally {
-                beingWritten.remove(o);
-                writing.set(null);
+                BEINGWRITTEN.remove(o);
+                WRITING.set(null);
             }
             w.commit();
         } catch(RuntimeException e) {
@@ -216,8 +216,8 @@ public final class XmlFile {
      * @since 2.74
      */
     public static Object replaceIfNotAtTopLevel(Object o, Supplier<Object> replacement) {
-        File currentlyWriting = writing.get();
-        if (beingWritten.containsKey(o) || currentlyWriting == null) {
+        File currentlyWriting = WRITING.get();
+        if (BEINGWRITTEN.containsKey(o) || currentlyWriting == null) {
             return o;
         } else {
             LOGGER.log(Level.WARNING, "JENKINS-45892: reference to " + o + " being saved from unexpected " + currentlyWriting, new IllegalStateException());
@@ -243,27 +243,26 @@ public final class XmlFile {
     }
 
     /**
-     * Opens a {@link Reader} that loads XML.
-     * This method uses {@link #sniffEncoding() the right encoding},
-     * not just the system default encoding.
-     * [Erik] leaves the InputStream open at exit.
+     * Opens a {@link Reader} that loads XML. This method uses {@link #sniffEncoding() the right encoding}, not just the
+     * system default encoding. [Erik] leaves the InputStream open at exit.
+     *
      * @throws IOException Encoding issues
      * @return Reader for the file. should be close externally once read.
      */
-     public Reader readRaw() throws IOException {
-      try {
-        InputStream fileInputStream = Files.newInputStream(file.toPath()); //NOSONAR
+    public Reader readRaw() throws IOException {
         try {
-          return new InputStreamReader(fileInputStream, sniffEncoding());
-        } catch (IOException ex) {
-          // Exception may happen if we fail to find encoding or if this encoding is unsupported.
-          // In such case we close the underlying stream and rethrow.
-          Util.closeAndLogFailures(fileInputStream, LOGGER, "FileInputStream", file.toString());
-          throw ex;
+            InputStream fileInputStream = Files.newInputStream(file.toPath()); //NOSONAR
+            try {
+                return new InputStreamReader(fileInputStream, sniffEncoding());
+            } catch (IOException ex) {
+                // Exception may happen if we fail to find encoding or if this encoding is unsupported.
+                // In such case we close the underlying stream and rethrow.
+                Util.closeAndLogFailures(fileInputStream, LOGGER, "FileInputStream", file.toString());
+                throw ex;
+            }
+        } catch (InvalidPathException e) {
+            throw new IOException(e);
         }
-      } catch (InvalidPathException e) {
-        throw new IOException(e);
-      }
     }
 
     /**

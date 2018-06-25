@@ -900,7 +900,7 @@ public abstract class Launcher {
      */
     public static class LocalLauncher extends Launcher {
         public LocalLauncher(@Nonnull TaskListener listener) {
-            this(listener, FilePath.localChannel);
+            this(listener, FilePath.LOCALCHANNEL);
         }
 
         public LocalLauncher(TaskListener listener, VirtualChannel channel) {

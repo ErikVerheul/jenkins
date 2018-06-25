@@ -299,7 +299,7 @@ public abstract class ProcessTree implements Iterable<OSProcess>, IProcessTree, 
          */
         @Override
         public <T> T act(ProcessCallable<T> callable) throws IOException, InterruptedException {
-            return callable.invoke(this, FilePath.localChannel);
+            return callable.invoke(this, FilePath.LOCALCHANNEL);
         }
 
         Object writeReplace() {

@@ -849,7 +849,8 @@ public abstract class PluginManager extends AbstractModelObject implements OnMas
                         pw = i.next();
                         if(sn.equals(pw.getShortName())) {
                             i.remove();
-                            pw = null;
+                            //[Erik] garbage collect?
+                            pw = null; //NOSONAR
                             break;
                         }
                     }

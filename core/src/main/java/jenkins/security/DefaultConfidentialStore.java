@@ -29,7 +29,7 @@ import org.apache.commons.io.IOUtils;
  * @author Kohsuke Kawaguchi
  */
 // @MetaInfServices --- not annotated because this is the fallback implementation
-public class DefaultConfidentialStore extends ConfidentialStore {
+public final class DefaultConfidentialStore extends ConfidentialStore {
     private final SecureRandom sr = new SecureRandom();
 
     /**

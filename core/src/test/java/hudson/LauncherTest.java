@@ -99,10 +99,10 @@ public class LauncherTest {
     @Test public void decoratedByEnvMaintainsIsUnix() throws Exception {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         TaskListener listener = new StreamBuildListener(output);
-        Launcher remoteLauncher = new Launcher.RemoteLauncher(listener, FilePath.localChannel, false);
+        Launcher remoteLauncher = new Launcher.RemoteLauncher(listener, FilePath.LOCALCHANNEL, false);
         Launcher decorated = remoteLauncher.decorateByEnv(new EnvVars());
         assertEquals(false, decorated.isUnix());
-        remoteLauncher = new Launcher.RemoteLauncher(listener, FilePath.localChannel, true);
+        remoteLauncher = new Launcher.RemoteLauncher(listener, FilePath.LOCALCHANNEL, true);
         decorated = remoteLauncher.decorateByEnv(new EnvVars());
         assertEquals(true, decorated.isUnix());
     }
@@ -111,10 +111,10 @@ public class LauncherTest {
     @Test public void decoratedByPrefixMaintainsIsUnix() throws Exception {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         TaskListener listener = new StreamBuildListener(output);
-        Launcher remoteLauncher = new Launcher.RemoteLauncher(listener, FilePath.localChannel, false);
+        Launcher remoteLauncher = new Launcher.RemoteLauncher(listener, FilePath.LOCALCHANNEL, false);
         Launcher decorated = remoteLauncher.decorateByPrefix("test");
         assertEquals(false, decorated.isUnix());
-        remoteLauncher = new Launcher.RemoteLauncher(listener, FilePath.localChannel, true);
+        remoteLauncher = new Launcher.RemoteLauncher(listener, FilePath.LOCALCHANNEL, true);
         decorated = remoteLauncher.decorateByPrefix("test");
         assertEquals(true, decorated.isUnix());
     }

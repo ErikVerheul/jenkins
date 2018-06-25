@@ -210,7 +210,7 @@ public class SCMTrigger extends Trigger<Item> {
     }
 
     @Extension @Symbol("pollSCM")
-    public static class DescriptorImpl extends TriggerDescriptor {
+    public static final class DescriptorImpl extends TriggerDescriptor {
 
         private static ThreadFactory threadFactory() {
             return new NamingThreadFactory(Executors.defaultThreadFactory(), "SCMTrigger");

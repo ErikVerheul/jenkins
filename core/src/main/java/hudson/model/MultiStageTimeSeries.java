@@ -191,7 +191,7 @@ public class MultiStageTimeSeries implements Serializable {
      * <p>
      * This object is renderable as HTTP response.
      */
-    public static class TrendChart implements HttpResponse {
+    public static final class TrendChart implements HttpResponse {
         public final TimeScale timeScale;
         public final List<MultiStageTimeSeries> series;
         public final DefaultCategoryDataset dataset;

@@ -238,6 +238,7 @@ public /*transient*/ abstract class Computer extends Actionable implements Acces
     }
 
     public Computer(Node node) {
+        //[Erik] is overridden
         setNode(node);
     }
 
@@ -297,7 +298,7 @@ public /*transient*/ abstract class Computer extends Actionable implements Acces
     protected @Nonnull File getLogDir() {
         File dir = new File(Jenkins.get().getRootDir(),"logs/slaves/"+nodeName);
         if (!dir.exists() && !dir.mkdirs()) {
-            LOGGER.severe("Failed to create agent log directory " + dir.getAbsolutePath());
+            LOGGER.log(Level.SEVERE, "Failed to create agent log directory {0}", dir.getAbsolutePath());
         }
         return dir;
     }
@@ -1350,8 +1351,10 @@ public /*transient*/ abstract class Computer extends Actionable implements Acces
         }
         private static final long serialVersionUID = 1L;
     }
-
-    public static final ExecutorService threadPoolForRemoting = new ContextResettingExecutorService(
+    //[Erik] Do not rename threadPoolForRemoting. It will cause
+    //  java.lang.NoSuchFieldError: threadPoolForRemoting
+    //	at hudson.maven.AbstractMavenProcessFactory.newProcess(AbstractMavenProcessFactory.java:294)
+    public static final ExecutorService threadPoolForRemoting = new ContextResettingExecutorService( //NOSONAR
             Executors.newCachedThreadPool(
                     new ExceptionCatchingThreadFactory(
                             new NamingThreadFactory(new DaemonThreadFactory(), "Computer.threadPoolForRemoting"))));
@@ -1708,11 +1711,7 @@ public /*transient*/ abstract class Computer extends Actionable implements Acces
 
             DisplayExecutor that = (DisplayExecutor) o;
 
-            if (!executor.equals(that.executor)) {
-                return false;
-            }
-
-            return true;
+            return executor.equals(that.executor);
         }
 
         @Extension(ordinal = Double.MAX_VALUE)

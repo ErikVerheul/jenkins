@@ -58,7 +58,7 @@ import org.kohsuke.stapler.StaplerResponse;
  *
  * @author Kohsuke Kawaguchi
  */
-public class FileParameterValue extends ParameterValue {
+public final class FileParameterValue extends ParameterValue {
     private transient final FileItem file;
 
     /**

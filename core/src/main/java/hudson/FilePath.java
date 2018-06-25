@@ -1064,7 +1064,7 @@ public final class FilePath implements Serializable {
             }
         } else {
             // the file is on the local machine.
-            return callable.invoke(new File(remote), localChannel);
+            return callable.invoke(new File(remote), LOCALCHANNEL);
         }
     }
 
@@ -1138,7 +1138,7 @@ public final class FilePath implements Serializable {
             for (FileCallableWrapperFactory factory : ExtensionList.lookup(FileCallableWrapperFactory.class)) {
                 wrapper = factory.wrap(wrapper);
             }
-            return (channel != null ? channel : localChannel)
+            return (channel != null ? channel : LOCALCHANNEL)
                 .callAsync(wrapper);
         } catch (IOException e) {
             // wrap it into a new IOException so that we get the caller's stack trace as well.
@@ -2914,7 +2914,7 @@ public final class FilePath implements Serializable {
         if (channel != null) {
             return channel;
         } else {
-            return localChannel;
+            return LOCALCHANNEL;
         }
     }
 
@@ -3072,7 +3072,7 @@ public final class FilePath implements Serializable {
         }
     }
 
-    private static final ExecutorService threadPoolForRemoting = new ContextResettingExecutorService(
+    private static final ExecutorService THREADPOOL = new ContextResettingExecutorService(
         Executors.newCachedThreadPool(
             new ExceptionCatchingThreadFactory(
                 new NamingThreadFactory(new DaemonThreadFactory(), "FilePath.localPool"))
@@ -3082,7 +3082,7 @@ public final class FilePath implements Serializable {
      * Channel to the current instance.
      */
     @Nonnull
-    public static final LocalChannel localChannel = new LocalChannel(threadPoolForRemoting);
+    public static final LocalChannel LOCALCHANNEL = new LocalChannel(THREADPOOL);
 
     private @Nonnull
     SoloFilePathFilter filterNonNull() {

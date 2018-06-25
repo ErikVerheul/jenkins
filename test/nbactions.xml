@@ -41,5 +41,29 @@
                 <goal>test</goal>
             </goals>
         </action>
+        <action>
+            <actionName>CUSTOM-ToolLocationNodePropertyTest</actionName>
+            <displayName>ToolLocationNodePropertyTest</displayName>
+            <goals>
+                <goal>-Dtest=ToolLocationNodePropertyTest</goal>
+                <goal>test</goal>
+            </goals>
+        </action>
+        <action>
+            <actionName>CUSTOM-QueueTest test</actionName>
+            <displayName>QueueTest test</displayName>
+            <goals>
+                <goal>-Dtest=QueueTest</goal>
+                <goal>test</goal>
+            </goals>
+        </action>
+        <action>
+            <actionName>CUSTOM-EnvVarsInConfigTasksTest</actionName>
+            <displayName>EnvVarsInConfigTasksTest</displayName>
+            <goals>
+                <goal>-Dtest=EnvVarsInConfigTasksTest</goal>
+                <goal>test</goal>
+            </goals>
+        </action>
         
     </actions>

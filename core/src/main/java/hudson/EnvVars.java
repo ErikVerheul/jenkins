@@ -72,7 +72,7 @@ import jenkins.security.MasterToSlaveCallable;
  * @author Kohsuke Kawaguchi
  */
 public class EnvVars extends TreeMap<String,String> {
-    private static Logger LOGGER = Logger.getLogger(EnvVars.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(EnvVars.class.getName());
     /**
      * If this {@link EnvVars} object represents the whole environment variable set,
      * not just a partial list used for overriding later, then we need to know

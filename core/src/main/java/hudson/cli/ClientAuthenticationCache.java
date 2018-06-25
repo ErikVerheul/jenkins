@@ -51,7 +51,7 @@ public class ClientAuthenticationCache implements Serializable {
     final Properties props = new Properties();
 
     public ClientAuthenticationCache(Channel channel) throws IOException, InterruptedException {
-        store = (channel==null ? FilePath.localChannel :  channel).call(new MasterToSlaveCallable<FilePath, IOException>() {
+        store = (channel==null ? FilePath.LOCALCHANNEL :  channel).call(new MasterToSlaveCallable<FilePath, IOException>() {
             @Override
             public FilePath call() throws IOException {
                 File home = new File(System.getProperty("user.home"));

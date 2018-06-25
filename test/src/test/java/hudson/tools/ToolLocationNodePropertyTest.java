@@ -161,23 +161,23 @@ public class ToolLocationNodePropertyTest {
         String mavenPath = maven.getHome();
         Jenkins.get().getDescriptorByType(Maven.DescriptorImpl.class).setInstallations(new MavenInstallation("maven", "THIS IS WRONG", j.NO_PROPERTIES));
 
-        MavenModuleSet project = j.jenkins.createProject(MavenModuleSet.class, "p");
-        project.setScm(new ExtractResourceSCM(getClass().getResource(
+        MavenModuleSet proj = j.jenkins.createProject(MavenModuleSet.class, "p");
+        proj.setScm(new ExtractResourceSCM(getClass().getResource(
                 "/simple-projects.zip")));
-        project.setAssignedLabel(slave.getSelfLabel());
-        project.setJDK(j.jenkins.getJDK("default"));
+        proj.setAssignedLabel(slave.getSelfLabel());
+        proj.setJDK(j.jenkins.getJDK("default"));
 
-        project.setMaven("maven");
-        project.setGoals("clean");
+        proj.setMaven("maven");
+        proj.setGoals("clean");
 
-        Run build = project.scheduleBuild2(0).get();
+        Run build = proj.scheduleBuild2(0).get();
         j.assertBuildStatus(Result.FAILURE, build);
 
         ToolLocationNodeProperty property = new ToolLocationNodeProperty(
                 new ToolLocationNodeProperty.ToolLocation(j.jenkins.getDescriptorByType(MavenInstallation.DescriptorImpl.class), "maven", mavenPath));
         slave.getNodeProperties().add(property);
 
-        build = project.scheduleBuild2(0).get();
+        build = proj.scheduleBuild2(0).get();
         System.out.println(build.getLog());
         j.assertBuildStatus(Result.SUCCESS, build);
     }

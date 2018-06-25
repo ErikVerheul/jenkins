@@ -40,7 +40,7 @@ import javax.servlet.ServletResponse;
  *
  * @author Kohsuke Kawaguchi
  */
-public class ChainedServletFilter implements Filter {
+public final class ChainedServletFilter implements Filter {
     // array is assumed to be immutable once set
     protected volatile Filter[] filters;
 

@@ -120,7 +120,7 @@ public abstract class SU {
     }
 
     private static LocalChannel newLocalChannel() {
-        return FilePath.localChannel;
+        return FilePath.LOCALCHANNEL;
     }
 
     /**

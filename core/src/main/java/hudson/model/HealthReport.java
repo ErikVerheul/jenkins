@@ -46,7 +46,7 @@ import org.kohsuke.stapler.export.ExportedBean;
  */
 @ExportedBean(defaultVisibility = 2)
 // this is always exported as a part of Job and never on its own, so start with 2.
-public class HealthReport implements Serializable, Comparable<HealthReport> {
+public final class HealthReport implements Serializable, Comparable<HealthReport> {
     // These are now 0-20, 21-40, 41-60, 61-80, 81+ but filenames unchanged for compatibility
     private static final String HEALTH_OVER_80 = "icon-health-80plus";
     private static final String HEALTH_61_TO_80 = "icon-health-60to79";
