@@ -887,12 +887,12 @@ public final class Fingerprint implements ModelObject, Saveable {
         save();
     }
 
-    Fingerprint(@CheckForNull BuildPtr original, @Nonnull String fileName, @Nonnull byte[] md5sum) {
+    Fingerprint(@CheckForNull BuildPtr original, @Nonnull String fileName, @Nonnull byte[] md5sum) { //NOSONAR
         this.original = original;
         this.md5sum = md5sum;
         this.fileName = fileName;
         //[Erik] false positive, timestamp is initialized and non null
-        this.timestamp = new Date(); //NOSONAR
+        this.timestamp = new Date();
     }
 
     /**
