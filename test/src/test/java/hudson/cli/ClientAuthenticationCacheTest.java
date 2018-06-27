@@ -89,7 +89,10 @@ public class ClientAuthenticationCacheTest {
         }
     }
 
-    @Ignore("TODO fails unless CLICommand.main patched to replace (auth==Jenkins.ANONYMOUS) with (auth instanceof AnonymousAuthenticationToken), not just (Jenkins.ANONYMOUS.equals(auth)), since SecurityFilters.groovy sets userAttribute='anonymous,' so UserAttributeEditor.setAsText configures AnonymousProcessingFilter with a token with an empty authority which fails AbstractAuthenticationToken.equals")
+    @Ignore("TODO fails unless CLICommand.main patched to replace (auth==Jenkins.ANONYMOUS) with (auth instanceof "
+        + "AnonymousAuthenticationToken), not just (Jenkins.ANONYMOUS.equals(auth)), since SecurityFilters.groovy "
+        + "sets userAttribute='anonymous,' so UserAttributeEditor.setAsText configures AnonymousProcessingFilter with "
+        + "a token with an empty authority which fails AbstractAuthenticationToken.equals")
     @Test
     public void overHttp() throws Exception {
         File jar = tmp.newFile("jenkins-cli.jar");

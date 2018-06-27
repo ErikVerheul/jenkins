@@ -118,7 +118,6 @@ public class SetupWizardTest {
     // Oleg Nenashev: I am not able to reproduce it
     @Test
     @Issue("JENKINS-45841")
-    @Ignore
     public void shouldDisableUnencryptedProtocolsByDefault() throws Exception {
         AgentProtocolTest.assertProtocols(j.jenkins, true, 
                 "Encrypted JNLP4-protocols protocol should be enabled", "JNLP4-connect");

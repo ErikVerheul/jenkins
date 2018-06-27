@@ -29,7 +29,6 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.Issue;
@@ -47,11 +46,7 @@ public class ManagementLinkTest {
 
     /**
      * Makes sure every link works.
-     * Ignore this test as Jacoco says:
-     * IOException: Error while instrumenting com/steadystate/css/parser/SACParserCSS3TokenManager
-     * java.lang.RuntimeException: Method code too large!
      */
-    @Ignore 
     @Test
     public void links() throws Exception {
         WebClient wc = j.createWebClient();

@@ -37,7 +37,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.Issue;
@@ -62,7 +61,6 @@ public class AgentProtocolTest {
      * @see SetupWizardTest#shouldDisableUnencryptedProtocolsByDefault() 
      */
     @Test
-    @Ignore
     @LocalData
     @Issue("JENKINS-45841")
     public void testShouldNotDisableProtocolsForMigratedInstances() throws Exception {
