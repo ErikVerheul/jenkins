@@ -65,5 +65,21 @@
                 <goal>test</goal>
             </goals>
         </action>
+        <action>
+            <actionName>CUSTOM-BuildListTableTest</actionName>
+            <displayName>BuildListTableTest</displayName>
+            <goals>
+                <goal>-Dtest=BuildListTableTest</goal>
+                <goal>test</goal>
+            </goals>
+        </action>
+        <action>
+            <actionName>CUSTOM-ReverseBuildTriggerTest</actionName>
+            <displayName>ReverseBuildTriggerTest</displayName>
+            <goals>
+                <goal>-Dtest=ReverseBuildTriggerTest</goal>
+                <goal>test</goal>
+            </goals>
+        </action>
         
     </actions>
