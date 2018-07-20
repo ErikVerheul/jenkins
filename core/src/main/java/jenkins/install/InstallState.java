@@ -139,9 +139,10 @@ public class InstallState implements ExtensionPoint {
     
     /**
      * Upgrade of an existing Jenkins install.
+     * Note an instance of this class is already an @Extension in {@link InstallState#UPGRADE}
      */
     @Extension
-    public static final InstallState UPGRADE = new UpgradeWizard();
+    public static final InstallState UPGRADE = new UpgradeWizard(); //NOSONAR
     
     /**
      * Downgrade of an existing Jenkins install.

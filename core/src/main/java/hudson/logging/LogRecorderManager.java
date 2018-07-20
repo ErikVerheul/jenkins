@@ -198,7 +198,11 @@ public class LogRecorderManager extends AbstractModelObject implements ModelObje
 
             @Override
             public String getEntryAuthor(LogRecord entry) {
-                return JenkinsLocationConfiguration.get().getAdminAddress();
+                JenkinsLocationConfiguration jConf = JenkinsLocationConfiguration.get();
+                if (jConf == null) {
+                    return "unknown";
+                }
+                return jConf.getAdminAddress();
             }
         },req,rsp);
     }

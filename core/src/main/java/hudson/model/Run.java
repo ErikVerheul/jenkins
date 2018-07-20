@@ -2479,7 +2479,11 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
 
         @Override
         public String getEntryAuthor(Run entry) {
-            return JenkinsLocationConfiguration.get().getAdminAddress();
+            JenkinsLocationConfiguration jConf = JenkinsLocationConfiguration.get();
+            if (jConf == null) {
+                return "unknown";
+            }
+            return jConf.getAdminAddress();
         }
     }
 
