@@ -644,6 +644,8 @@ public final class FilePath implements Serializable {
                             target.chmod(mode);
                         }
                     } catch (InterruptedException ex) {
+                        // Restore interrupted state...
+                        Thread.currentThread().interrupt();
                         LOGGER.log(Level.WARNING, "unable to set permissions", ex);
                     }
                     f.setLastModified(e.getTime());
@@ -1173,7 +1175,9 @@ public final class FilePath implements Serializable {
                 try {
                     return act(task);
                 } catch (InterruptedException e) {
-                    throw (IOException) new InterruptedIOException().initCause(e);
+                    // Restore interrupted state...
+                    Thread.currentThread().interrupt();
+                    throw new IOException(e);
                 }
             }
 
@@ -1350,7 +1354,11 @@ public final class FilePath implements Serializable {
      * Short for {@code getParent().child(rel)}. Useful for getting other files in the same directory.
      */
     public FilePath sibling(String rel) {
-        return getParent().child(rel);
+        FilePath parent = getParent();
+        if (parent == null) {
+            return null;
+        }
+        return parent.child(rel);
     }
 
     /**
@@ -2327,6 +2335,8 @@ public final class FilePath implements Serializable {
                                 writing(new File(dest, target));
                                 Util.createSymlink(dest, target, relativePath, TaskListener.NULL);
                             } catch (InterruptedException x) {
+                                // Restore interrupted state...
+                                Thread.currentThread().interrupt();
                                 throw new IOException(x);
                             }
                             count.incrementAndGet();
@@ -2819,6 +2829,8 @@ public final class FilePath implements Serializable {
                 return FormValidation.warning(msg);
             }
         } catch (InterruptedException e) {
+            // Restore interrupted state...
+            Thread.currentThread().interrupt();
             return FormValidation.ok(Messages.FilePath_did_not_manage_to_validate_may_be_too_sl(value));
         }
     }
@@ -2879,6 +2891,8 @@ public final class FilePath implements Serializable {
                 return FormValidation.warning(msg);
             }
         } catch (InterruptedException e) {
+            // Restore interrupted state...
+            Thread.currentThread().interrupt();
             return FormValidation.ok();
         }
     }
@@ -2983,6 +2997,8 @@ public final class FilePath implements Serializable {
             try {
                 return callable.invoke(new File(remote), Channel.current());
             } catch (InterruptedException e) {
+                // Restore interrupted state...
+                Thread.currentThread().interrupt();
                 throw new TunneledInterruptedException(e);
             }
         }

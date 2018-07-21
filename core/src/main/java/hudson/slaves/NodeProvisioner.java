@@ -213,22 +213,23 @@ public class NodeProvisioner {
                     int plannedCapacitySnapshot = 0;
 
                     List<PlannedNode> snapPendingLaunches = new ArrayList<>(pendingLaunches.get());
-                    for (Iterator<PlannedNode> itr = snapPendingLaunches.iterator(); itr.hasNext(); ) {
-                        PlannedNode f = itr.next();
+                    for (PlannedNode f : snapPendingLaunches) {
                         if (f.future.isDone()) {
                             try {
                                 Node node = null;
                                 try {
                                     node = f.future.get();
                                 } catch (InterruptedException e) {
+                                    // Restore interrupted state...
+                                    Thread.currentThread().interrupt();
                                     throw new InterruptedException("InterruptedException occurred"); // since we confirmed that the future is already done
                                 } catch (ExecutionException e) {
                                     Throwable cause = e.getCause();
                                     if (!(cause instanceof AbortException)) {
                                         LOGGER.log(Level.WARNING,
-                                                "Unexpected exception encountered while provisioning agent "
-                                                        + f.displayName,
-                                                cause);
+                                            "Unexpected exception encountered while provisioning agent "
+                                                + f.displayName,
+                                            cause);
                                     }
                                     fireOnFailure(f, cause);
                                 }
@@ -239,14 +240,14 @@ public class NodeProvisioner {
                                     try {
                                         jenkins.addNode(node);
                                         LOGGER.log(Level.INFO,
-                                                "{0} provisioning successfully completed. "
-                                                        + "We have now {1,number,integer} computer(s)",
-                                                new Object[]{f.displayName, jenkins.getComputers().length});
+                                            "{0} provisioning successfully completed. "
+                                                + "We have now {1,number,integer} computer(s)",
+                                            new Object[]{f.displayName, jenkins.getComputers().length});
                                         fireOnCommit(f, node);
                                     } catch (IOException e) {
                                         LOGGER.log(Level.WARNING,
-                                                "Provisioned agent " + f.displayName + " failed to launch",
-                                                e);
+                                            "Provisioned agent " + f.displayName + " failed to launch",
+                                            e);
                                         fireOnRollback(f, node, e);
                                     }
                                 }
@@ -256,9 +257,9 @@ public class NodeProvisioner {
                             } catch (Throwable e) {
                                 // Just log it
                                 LOGGER.log(Level.SEVERE,
-                                        "Unexpected uncaught exception encountered while processing agent "
-                                                + f.displayName,
-                                        e);
+                                    "Unexpected uncaught exception encountered while processing agent "
+                                        + f.displayName,
+                                    e);
                             } finally {
                                 while (true) {
                                     List<PlannedNode> orig = pendingLaunches.get();
@@ -560,21 +561,21 @@ public class NodeProvisioner {
          * @param plannedNodes the {@link hudson.slaves.NodeProvisioner.PlannedNode} instances.
          */
         public void recordPendingLaunches(Collection<PlannedNode> plannedNodes) {
-            int additionalPlannedCapacity = 0;
+            int additionalPC = 0;
             for (PlannedNode f : plannedNodes) {
                 if (f.future.isDone()) {
                     // if done we should use the actual delivered capacity
                     try {
                         Node node = f.future.get();
                         if (node != null) {
-                            additionalPlannedCapacity += node.getNumExecutors();
+                            additionalPC += node.getNumExecutors();
                         }
                     } catch (InterruptedException | ExecutionException e) {
                         // InterruptedException: should never happen as we were told the future was done
                         // ExecutionException: ignore, this will be caught by others later
                     }
                 } else {
-                    additionalPlannedCapacity += f.numExecutors;
+                    additionalPC += f.numExecutors;
                 }
             }
             while (!plannedNodes.isEmpty()) {
@@ -582,9 +583,9 @@ public class NodeProvisioner {
                 List<PlannedNode> repl = new ArrayList<>(orig);
                 repl.addAll(plannedNodes);
                 if (pendingLaunches.compareAndSet(orig, repl)) {
-                    if (additionalPlannedCapacity > 0) {
+                    if (additionalPC > 0) {
                         synchronized (this) {
-                            this.additionalPlannedCapacity += additionalPlannedCapacity;
+                            this.additionalPlannedCapacity += additionalPC;
                         }
                     }
                     break;
@@ -665,17 +666,21 @@ public class NodeProvisioner {
                 float connectingCapacity = Math.min(state.getConnectingExecutorsLatest(), snapshot.getConnectingExecutors());
 
                 // ... and this is the additional executors we've already provisioned.
-                float plannedCapacity = Math.max(state.getPlannedCapacityLatest(), state.getPlannedCapacitySnapshot())
+                //[Erik] Ignore SONAR issue S2164
+                float plannedCapacity = Math.max(state.getPlannedCapacityLatest(), state.getPlannedCapacitySnapshot()) //NOSONAR
                         + state.getAdditionalPlannedCapacity();
 
-                float excessWorkload = qlen - plannedCapacity - connectingCapacity;
+                //[Erik] Ignore SONAR issue S2164
+                float excessWorkload = qlen - plannedCapacity - connectingCapacity; //NOSONAR
                 if (needSomeWhenNoneAtAll && excessWorkload < 1) {
                     // in this specific exceptional case we should just provision right now
                     // the exponential smoothing will delay the build unnecessarily
                     excessWorkload = 1;
                 }
                 float m = calcThresholdMargin(state.getTotalSnapshot());
-                if (excessWorkload > 1 - m) {// and there's more work to do...
+                //[Erik] Ignore SONAR issue S2164
+                if (excessWorkload > 1f - m) { //NOSONAR
+                    // and there's more work to do...
                     LOGGER.log(Level.FINE, "Excess workload {0,number,#.###} detected. "
                                     + "(planned capacity={1,number,#.###},connecting capacity={7,number,#.###},"
                                     + "Qlen={2,number,#.###},available={3,number,#.###}&{4,number,integer},"
@@ -701,7 +706,8 @@ public class NodeProvisioner {
                             // so the threshold here is 1-MARGIN, and hence floor(excessWorkload+MARGIN) is needed to
                             // handle this.
 
-                            int workloadToProvision = (int) Math.round(Math.floor(excessWorkload + m));
+                            //[Erik] Ignore SONAR issue S2164
+                            int workloadToProvision = (int) Math.round(Math.floor(excessWorkload + m)); //NOSONAR
 
                             for (CloudProvisioningListener cl : CloudProvisioningListener.all()) {
                                 if (cl.canProvision(c, state.getLabel(), workloadToProvision) != null) {
@@ -725,7 +731,8 @@ public class NodeProvisioner {
                         }
                     }
                     // we took action, only pass on to other strategies if our action was insufficient
-                    return excessWorkload > 1 - m ? StrategyDecision.CONSULT_REMAINING_STRATEGIES : StrategyDecision.PROVISIONING_COMPLETED;
+                    //[Erik] Ignore SONAR issue S2164
+                    return excessWorkload > 1 - m ? StrategyDecision.CONSULT_REMAINING_STRATEGIES : StrategyDecision.PROVISIONING_COMPLETED; //NOSONAR
                 }
             }
             // if we reach here then the standard strategy obviously decided to do nothing, so let any other strategies
@@ -811,7 +818,8 @@ public class NodeProvisioner {
     }
 
     private static final Logger LOGGER = Logger.getLogger(NodeProvisioner.class.getName());
-    private static final float MARGIN = SystemProperties.getInteger(NodeProvisioner.class.getName()+".MARGIN",10)/100f;
+    //[Erik] Ignore SONAR issue S2164
+    private static final float MARGIN = SystemProperties.getInteger(NodeProvisioner.class.getName()+".MARGIN",10)/100f; //NOSONAR
     private static final float MARGIN0 = Math.max(MARGIN, getFloatSystemProperty(NodeProvisioner.class.getName()+".MARGIN0",0.5f));
     private static final float MARGIN_DECAY = getFloatSystemProperty(NodeProvisioner.class.getName()+".MARGIN_DECAY",0.5f);
 
@@ -824,7 +832,7 @@ public class NodeProvisioner {
             try {
                 return Float.parseFloat(v);
             } catch (NumberFormatException e) {
-                LOGGER.warning("Failed to parse a float value from system property "+propName+". value was "+v);
+                LOGGER.log(Level.WARNING, "Failed to parse a float value from system property {0}. value was {1}", new Object[]{propName, v});
             }
         return defaultValue;
     }
