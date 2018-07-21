@@ -432,7 +432,7 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
     /**
      * The sole instance.
      */
-    private static Jenkins theInstance;
+    private static volatile Jenkins theInstance;
 
     private transient volatile boolean isQuietingDown;
     private transient volatile boolean terminating;
@@ -846,7 +846,8 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
             computeVersion(context);
             if(theInstance!=null)
                 throw new IllegalStateException("second instance");
-            theInstance = this;
+            //[Erik] ignore error S3010 as this is the only instance
+            theInstance = this; //NOSONAR
 
             if (!new File(root,"jobs").exists()) {
                 // if this is a fresh install, use more modern default layout that's consistent with agents
@@ -3760,8 +3761,11 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
         }
 
         updateComputerList();
-
-        rsp.sendRedirect(req.getContextPath()+'/'+toComputer().getUrl());  // back to the computer page
+        
+        Computer c = toComputer();
+        if (c != null) {
+            rsp.sendRedirect(req.getContextPath() + '/' + toComputer().getUrl());  // back to the computer page
+        }
     }
 
     /**
@@ -3777,6 +3781,8 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
         try {
             return doQuietDown(false,0);
         } catch (InterruptedException e) {
+            // Restore interrupted state...
+            Thread.currentThread().interrupt();
             throw new AssertionError(); // impossible
         }
     }
@@ -4086,7 +4092,8 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
     public void doDoFingerprintCheck( StaplerRequest req, StaplerResponse rsp ) throws IOException, ServletException {
         // Parse the request
         try (MultipartFormDataParser p = new MultipartFormDataParser(req)) {
-            if (isUseCrumbs() && !getCrumbIssuer().validateCrumb(req, p)) {
+            CrumbIssuer cI = getCrumbIssuer();
+            if (cI != null && isUseCrumbs() && !cI.validateCrumb(req, p)) {
                 // TODO investigate whether this check can be removed
                 rsp.sendError(HttpServletResponse.SC_FORBIDDEN, "No crumb found");
             }
@@ -4415,8 +4422,10 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
 
             try {
                 req.setAttribute("output",
-                        RemotingDiagnostics.executeGroovy(text, channel));
+                    RemotingDiagnostics.executeGroovy(text, channel));
             } catch (InterruptedException e) {
+                // Restore interrupted state...
+                Thread.currentThread().interrupt();
                 throw new ServletException(e);
             }
         }
@@ -5022,7 +5031,7 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
     /**
      * Version number of this Jenkins.
      */
-    public static String VERSION = UNCOMPUTED_VERSION;
+    public static volatile String VERSION = UNCOMPUTED_VERSION;
 
     /**
      * Parses {@link #VERSION} into {@link VersionNumber}, or null if it's not parseable as a version number
@@ -5087,7 +5096,7 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
      * We used to use {@link #VERSION_HASH}, but making this session local allows us to
      * reuse the same {@link #RESOURCE_PATH} for static resources in plugins.
      */
-    public static String SESSION_HASH;
+    public static volatile String SESSION_HASH;
 
     /**
      * Prefix to static resources like images and javascripts in the war file.
@@ -5096,7 +5105,7 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
      * <p>
      * Value computed in {@link WebAppMain}.
      */
-    public static String RESOURCE_PATH = "";
+    public static volatile String RESOURCE_PATH = "";
 
     /**
      * Prefix to resources alongside view scripts.
@@ -5105,7 +5114,7 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
      * <p>
      * Value computed in {@link WebAppMain}.
      */
-    public static String VIEW_RESOURCE_PATH = "/resources/TBD";
+    public static volatile String VIEW_RESOURCE_PATH = "/resources/TBD";
 
     public static boolean PARALLEL_LOAD = Configuration.getBooleanConfigParameter("parallelLoad", true);
     public static boolean KILL_AFTER_LOAD = Configuration.getBooleanConfigParameter("killAfterLoad", false);
