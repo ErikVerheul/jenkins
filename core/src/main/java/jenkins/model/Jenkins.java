@@ -5114,7 +5114,8 @@ public class Jenkins extends AbstractCIBase implements DirectlyModifiableTopLeve
      * <p>
      * Value computed in {@link WebAppMain}.
      */
-    public static volatile String VIEW_RESOURCE_PATH = "/resources/TBD";
+    //[Erik] Cannot make this field both volatile and final; and not just final as it is assigned another value later on
+    public static volatile String VIEW_RESOURCE_PATH = "/resources/TBD"; //NOSONAR
 
     public static boolean PARALLEL_LOAD = Configuration.getBooleanConfigParameter("parallelLoad", true);
     public static boolean KILL_AFTER_LOAD = Configuration.getBooleanConfigParameter("killAfterLoad", false);
