@@ -747,10 +747,16 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
     /**
      * Gets the icon color for display.
      */
-    public @Nonnull BallColor getIconColor() {
-        if(!isBuilding()) {
+    public @Nonnull
+    BallColor getIconColor() {
+        if (!isBuilding()) {
             // already built
-            return getResult().color;
+            Result r = getResult();
+            if (r != null) {
+                return r.color;
+            } else {
+                return BallColor.NOTBUILT;
+            }
         }
 
         // a new build is in progress
@@ -948,7 +954,8 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
         RunT r = getPreviousBuild();
         while (r != null && builds.size() < numberOfBuilds) {
             if (!r.isBuilding() && 
-                 (r.getResult() != null && r.getResult().isBetterOrEqualTo(threshold))) {
+                //[Erik] false positive; r.getResult() is checked for null before evaluation takes place after the &&
+                 (r.getResult() != null && r.getResult().isBetterOrEqualTo(threshold))) { //NOSONAR
                 builds.add(r);
             }
             r = r.getPreviousBuild();
@@ -1113,7 +1120,7 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
 
     private int addArtifacts(@Nonnull VirtualFile dir, 
             @Nonnull String path, @Nonnull String pathHref, 
-            @Nonnull ArtifactList r, @Nonnull Artifact parent, int upTo) throws IOException {
+            @Nonnull ArtifactList r, Artifact parent, int upTo) throws IOException {
         VirtualFile[] kids = dir.list();
         Arrays.sort(kids);
 
@@ -1267,7 +1274,7 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
          * (though when directories with single items are collapsed for tree view, name may
          *  include multiple path components, like "dist/pkg/mypkg")
          */
-        private String name;
+        private final String name;
 
         /**
          * Properly encoded relativePath for use in URLs.  This field is null for directories.
@@ -1282,7 +1289,7 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
         /**
          *length of this artifact for files.
          */
-        private String length;
+        private final String length;
 
         /*package for test*/ Artifact(String name, String relativePath, String href, String len, String treeNodeId) {
             this.name = name;
@@ -1472,6 +1479,8 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
         try {
             getArtifactManager().delete();
         } catch (InterruptedException x) {
+            // Restore interrupted state...
+            Thread.currentThread().interrupt();
             throw new IOException(x);
         }
     }
@@ -1685,11 +1694,11 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
     }
 
     protected final void execute(@Nonnull RunExecution job) {
-        if(result!=null)
+        if (result != null) {
             return;     // already built.
-
+        }
         OutputStream logger = null;
-        StreamBuildListener listener=null;
+        StreamBuildListener listener = null;
 
         runner = job;
         onStartBuilding();
@@ -1700,64 +1709,71 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
             long start = System.currentTimeMillis();
 
             try {
+                Computer computer = Computer.currentComputer();
+                Charset chset = null;
+                if (computer != null) {
+                    chset = computer.getDefaultCharset();
+                    this.charset = chset.name();
+                }
+                logger = createLogger();
+                listener = createBuildListener(job, logger, chset);
                 try {
-                    Computer computer = Computer.currentComputer();
-                    Charset charset = null;
-                    if (computer != null) {
-                        charset = computer.getDefaultCharset();
-                        this.charset = charset.name();
-                    }
-                    logger = createLogger();
-                    listener = createBuildListener(job, logger, charset);
                     listener.started(getCauses());
 
                     Authentication auth = Jenkins.getAuthentication();
                     if (!auth.equals(ACL.SYSTEM)) {
-                        String id = auth.getName();
+                        String name = auth.getName();
                         if (!auth.equals(Jenkins.ANONYMOUS)) {
-                            final User usr = User.getById(id, false);
+                            final User usr = User.getById(name, false);
                             if (usr != null) { // Encode user hyperlink for existing users
-                                id = ModelHyperlinkNote.encodeTo(usr);
+                                name = ModelHyperlinkNote.encodeTo(usr);
                             }
                         }
-                        listener.getLogger().println(Messages.Run_running_as_(id));
+                        listener.getLogger().println(Messages.Run_running_as_(name));
                     }
 
-                    RunListener.fireStarted(this,listener);
+                    RunListener.fireStarted(this, listener);
 
                     updateSymlinks(listener);
 
                     setResult(job.run(listener));
 
-                    LOGGER.log(INFO, "{0} main build action completed: {1}", new Object[] {this, result});
+                    LOGGER.log(INFO, "{0} main build action completed: {1}", new Object[]{this, result});
                     CheckPoint.MAIN_COMPLETED.report();
                 } catch (ThreadDeath t) {
                     throw t;
-                } catch( AbortException e ) {// orderly abortion.
+                } catch (AbortException e) {// orderly abortion.
                     result = Result.FAILURE;
                     listener.error(e.getMessage());
-                    LOGGER.log(FINE, "Build "+this+" aborted",e);
-                } catch( RunnerAbortedException e ) {// orderly abortion.
+                    LOGGER.log(FINE, "Build " + this + " aborted", e);
+                } catch (RunnerAbortedException e) {// orderly abortion.
                     result = Result.FAILURE;
-                    LOGGER.log(FINE, "Build "+this+" aborted",e);
-                } catch( InterruptedException e) {
-                    // aborted
-                    result = Executor.currentExecutor().abortResult();
+                    LOGGER.log(FINE, "Build " + this + " aborted", e);
+                } catch (InterruptedException e) {
+                    // Restore interrupted state...
+                    Thread.currentThread().interrupt();
+                    Executor ex = Executor.currentExecutor();
+                    if (ex != null) {
+                        result = ex.abortResult();
+                        ex.recordCauseOfInterruption(Run.this, listener);
+                    } else {
+                        result = Result.FAILURE;
+                    }
                     listener.getLogger().println(Messages.Run_BuildAborted());
-                    Executor.currentExecutor().recordCauseOfInterruption(Run.this,listener);
                     LOGGER.log(Level.INFO, this + " aborted", e);
-                } catch( Throwable e ) {
-                    handleFatalBuildProblem(listener,e);
+                } catch (Exception e) {
+                    handleFatalBuildProblem(listener, e);
                     result = Result.FAILURE;
                 }
 
                 // even if the main build fails fatally, try to run post build processing
                 job.post(listener);
-
             } catch (ThreadDeath t) {
                 throw t;
-            } catch( Exception e ) {
-                handleFatalBuildProblem(listener,e);
+            } catch (Exception e) {
+                if (listener != null) {
+                    handleFatalBuildProblem(listener, e);
+                }
                 result = Result.FAILURE;
             } finally {
                 long end = System.currentTimeMillis();
@@ -1772,11 +1788,11 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
                 state = State.POST_PRODUCTION;
 
                 if (listener != null) {
-                    RunListener.fireCompleted(this,listener);
+                    RunListener.fireCompleted(this, listener);
                     try {
                         job.cleanUp(listener);
                     } catch (Exception e) {
-                        handleFatalBuildProblem(listener,e);
+                        handleFatalBuildProblem(listener, e);
                         // too late to update the result now
                     }
                     listener.finished(result);
@@ -1786,14 +1802,14 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
                 try {
                     save();
                 } catch (IOException e) {
-                    LOGGER.log(Level.SEVERE, "Failed to save build record",e);
+                    LOGGER.log(Level.SEVERE, "Failed to save build record", e);
                 }
             }
 
             try {
                 getParent().logRotate();
-            } catch (Exception e) {
-                LOGGER.log(Level.SEVERE, "Failed to rotate log",e);
+            } catch (InterruptedException | IOException e) {
+                LOGGER.log(Level.SEVERE, "Failed to rotate log", e);
             }
         } finally {
             onEndBuilding();
@@ -2087,7 +2103,11 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
                 if(since==null)
                     return new Summary(false, Messages.Run_Summary_BrokenForALongTime());
                 RunT failedBuild = since.getNextBuild();
-                return new Summary(false, Messages.Run_Summary_BrokenSince(failedBuild.getDisplayName()));
+                if (failedBuild != null) {
+                    return new Summary(false, Messages.Run_Summary_BrokenSince(failedBuild.getDisplayName()));
+                } else {
+                    return new Summary(false, Messages.Run_Summary_BrokenSince("build not found"));
+                }
            
             case NOW_UNSTABLE:
             case STILL_UNSTABLE :
@@ -2169,14 +2189,12 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
      * @since 1.510
      */
     public boolean canToggleLogKeep() {
-        if (!keepLog && isKeepLog()) {
-            // Definitely prevented.
-            return false;
-        }
+        // Definitely prevented.
         // TODO may be that keepLog is on (perhaps toggler earlier) yet isKeepLog() would be true anyway.
         // In such a case this will incorrectly return true and logKeep.jelly will allow the toggle.
         // However at least then (after redirecting to the same page) the toggle button will correctly disappear.
-        return true;
+
+        return !(!keepLog && isKeepLog());
     }
 
     @RequirePOST
@@ -2253,6 +2271,8 @@ public abstract class Run <JobT extends Job<JobT,RunT>,RunT extends Run<JobT,Run
         } catch (IOException e) {
             return new EnvVars();
         } catch (InterruptedException e) {
+            // Restore interrupted state...
+            Thread.currentThread().interrupt();
             return new EnvVars();
         }
     }
